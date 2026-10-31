@@ -3,64 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OBYXA 2014 - Classic Gaming & Studio</title>
+    <title>OBYXA 2014 - Ultimate Classic Platform</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Verdana, Arial, sans-serif; font-weight: bold; user-select: none; -webkit-tap-highlight-color: transparent; }
-        body { background: #d9d9d9; overflow: hidden; touch-action: none; color: #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Verdana, sans-serif; font-weight: bold; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background: #1e293b; overflow: hidden; touch-action: none; color: #fff; }
         
         /* TOPBAR */
-        #topbar { height: 42px; background: #114081; color: #fff; display: flex; align-items: center; padding: 0 12px; z-index: 20; position: relative; border-bottom: 3px solid #0a2a55; justify-content: space-between; }
-        #topbar h1 { font-size: 18px; letter-spacing: 1px; }
-        .top-right { display: flex; gap: 8px; align-items: center; }
-        #coins { background: #ffcc00; color: #000; padding: 4px 10px; border-radius: 4px; font-size: 12px; }
-        #roomId { background: #02b757; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 11px; }
-        #langSelect { background: #fff; border: 1px solid #aaa; padding: 3px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+        #topbar { height: 48px; background: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%); color: #fff; display: flex; align-items: center; padding: 0 16px; z-index: 20; border-bottom: 3px solid #3b82f6; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        #topbar h1 { font-size: 22px; letter-spacing: 2px; color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .top-right { display: flex; gap: 10px; align-items: center; }
+        #coins { background: #eab308; color: #000; padding: 5px 12px; border-radius: 6px; font-size: 13px; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2); }
+        #roomId { background: #22c55e; color: #fff; padding: 5px 12px; border-radius: 6px; font-size: 12px; }
+        #langSelect { background: #334155; color: #fff; border: 1px solid #475569; padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; outline: none; }
 
         /* LAYOUT */
-        #layout { display: flex; height: calc(100vh - 42px); }
-        #sidebar { width: 210px; background: #e9e9e9; border-right: 2px solid #bbb; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+        #layout { display: flex; height: calc(100vh - 48px); }
+        #sidebar { width: 230px; background: #0f172a; border-right: 2px solid #334155; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
         
-        .sideBtn { background: #fff; border: 2px solid #aaa; padding: 8px; font-size: 12px; text-align: left; cursor: pointer; border-radius: 4px; }
-        .sideBtn.active { background: #114081; color: #fff; border-color: #114081; }
-        .sideBtn.studio { background: #6a5acd; color: #fff; border-color: #483d8b; }
+        .sideBtn { background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 10px; font-size: 13px; text-align: left; cursor: pointer; border-radius: 6px; transition: 0.15s; }
+        .sideBtn:hover, .sideBtn.active { background: #0284c7; color: #fff; border-color: #38bdf8; }
+        .sideBtn.studio { background: #7c3aed; color: #fff; border-color: #a855f7; }
 
-        .box { background: #fff; border: 2px solid #aaa; padding: 8px; border-radius: 4px; font-size: 11px; }
-        .box b { display: block; margin-bottom: 4px; color: #114081; font-size: 12px; }
-        .box input { width: 100%; padding: 5px; border: 1px solid #aaa; margin-top: 4px; border-radius: 3px; font-size: 11px; }
-        .box button { width: 100%; padding: 6px; margin-top: 4px; background: #02b757; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .box button.blue { background: #114081; }
+        .box { background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 6px; font-size: 11px; }
+        .box b { display: block; margin-bottom: 6px; color: #38bdf8; font-size: 12px; }
+        .box input { width: 100%; padding: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; margin-top: 4px; border-radius: 4px; font-size: 12px; outline: none; }
+        .box button { width: 100%; padding: 8px; margin-top: 6px; background: #22c55e; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .box button.blue { background: #0284c7; }
 
         /* MAIN & AVATAR EDITOR */
-        #main { flex: 1; background: #f2f2f2; overflow-y: auto; padding: 12px; }
-        #main h2 { font-size: 14px; margin-bottom: 8px; color: #114081; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
-        .games { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        #main { flex: 1; background: #0f172a; overflow-y: auto; padding: 16px; }
+        #main h2 { font-size: 16px; margin-bottom: 12px; color: #38bdf8; border-bottom: 2px solid #334155; padding-bottom: 6px; }
+        .games { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
         
-        .gameCard { background: #fff; border: 2px solid #bbb; border-radius: 6px; overflow: hidden; cursor: pointer; }
-        .gameCard:hover { border-color: #114081; }
-        .gameCard .thumb { height: 80px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; text-align: center; padding: 4px; }
-        .gameCard .info { padding: 6px; font-size: 11px; color: #114081; }
-        .gameCard .info span { color: #666; font-weight: normal; display: block; margin-top: 2px; font-size: 9px; }
+        .gameCard { background: #1e293b; border: 2px solid #334155; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.2s; }
+        .gameCard:hover { border-color: #38bdf8; transform: translateY(-3px); }
+        .gameCard .thumb { height: 90px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; text-shadow: 0 2px 4px rgba(0,0,0,0.6); text-align: center; padding: 6px; }
+        .gameCard .info { padding: 8px; font-size: 12px; color: #f8fafc; }
+        .gameCard .info span { color: #94a3b8; font-weight: normal; display: block; margin-top: 3px; font-size: 10px; }
 
         /* AVATAR SHOP PAGE */
         #avatarPage { display: none; }
-        .shopGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
-        .shopItem { background: #fff; border: 2px solid #aaa; padding: 10px; text-align: center; border-radius: 6px; }
-        .shopItem button { margin-top: 6px; width: 100%; background: #ffcc00; border: none; padding: 6px; cursor: pointer; border-radius: 4px; font-size: 11px; }
+        .shopGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 12px; }
+        .shopItem { background: #1e293b; border: 1px solid #334155; padding: 12px; text-align: center; border-radius: 8px; }
+        .shopItem button { margin-top: 8px; width: 100%; background: #eab308; border: none; padding: 7px; cursor: pointer; border-radius: 4px; font-size: 12px; font-weight: bold; color: #000; }
 
         /* 3D GAME LAYER */
         #gameLayer { display: none; position: fixed; inset: 0; background: #87CEEB; z-index: 100; }
-        #hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; pointer-events: none; z-index: 101; }
-        #hud .panel { background: rgba(255, 255, 255, 0.9); border: 2px solid #114081; padding: 6px 10px; border-radius: 6px; font-size: 12px; pointer-events: auto; }
-        #backBtn { position: absolute; top: 10px; right: 10px; background: #ff4444; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; z-index: 103; font-size: 12px; cursor: pointer; }
+        #hud { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; pointer-events: none; z-index: 101; }
+        #hud .panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 8px; font-size: 13px; color: #fff; pointer-events: auto; }
+        #backBtn { position: absolute; top: 12px; right: 12px; background: #ef4444; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; z-index: 103; font-size: 12px; cursor: pointer; }
 
         /* CONTROLS */
         #camTouchZone { position: absolute; inset: 0; z-index: 90; touch-action: none; }
-        #joystick { position: absolute; bottom: 20px; left: 20px; width: 110px; height: 110px; background: radial-gradient(#fff4,#0002); border: 2px solid #fff; border-radius: 50%; z-index: 102; touch-action: none; display: none; }
-        #joystick #knob { position: absolute; width: 40px; height: 40px; background: #fff; border: 2px solid #114081; border-radius: 50%; left: 33px; top: 33px; }
-        #jumpBtn { position: absolute; bottom: 25px; right: 20px; width: 75px; height: 75px; background: rgba(255, 255, 255, 0.9); border: 2px solid #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; color: #114081; font-size: 14px; z-index: 102; }
-        #buildBtn { position: absolute; bottom: 25px; right: 110px; width: 75px; height: 75px; background: #6a5acd; border: 2px solid #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; color: #fff; font-size: 12px; z-index: 102; }
+        #joystick { position: absolute; bottom: 25px; left: 25px; width: 120px; height: 120px; background: radial-gradient(#fff4,#0002); border: 2px solid #fff; border-radius: 50%; z-index: 102; touch-action: none; display: none; }
+        #joystick #knob { position: absolute; width: 44px; height: 44px; background: #fff; border: 2px solid #0284c7; border-radius: 50%; left: 36px; top: 36px; }
+        #jumpBtn { position: absolute; bottom: 30px; right: 25px; width: 80px; height: 80px; background: rgba(255, 255, 255, 0.9); border: 2px solid #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; color: #0f172a; font-size: 15px; font-weight: 800; z-index: 102; }
+        #buildBtn { position: absolute; bottom: 30px; right: 120px; width: 80px; height: 80px; background: #7c3aed; border: 2px solid #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; color: #fff; font-size: 13px; z-index: 102; }
     </style>
 </head>
 <body>
@@ -92,56 +92,54 @@
         <div class="box">
             <b id="lblMulti">🔗 MULTIPLAYER PARTY</b>
             <span id="lblPartyDesc">Share code with friends:</span>
-            <div id="myCodeBox" style="background:#114081;color:#fff;padding:6px;text-align:center;font-size:16px;letter-spacing:2px;margin-top:4px;border-radius:4px">----</div>
+            <div id="myCodeBox" style="background:#0284c7;color:#fff;padding:6px;text-align:center;font-size:16px;letter-spacing:2px;margin-top:4px;border-radius:4px">----</div>
             <button onclick="createRoom()" id="btnCreateRoom">CREATE ROOM</button>
             <input id="joinInput" placeholder="Code: 4829">
             <button class="blue" onclick="joinRoom()" id="btnJoinRoom">JOIN ROOM</button>
-            <div id="multiLog" style="margin-top:6px;color:#555;font-size:10px">1 Player in party</div>
+            <div id="multiLog" style="margin-top:6px;color:#94a3b8;font-size:10px">1 Player in party</div>
         </div>
     </div>
 
     <div id="main">
-        <!-- GAMES TAB -->
         <div id="gamesPage">
             <h2 id="lblPopular">🔥 POPULAR 2014 GAMES</h2>
             <div class="games">
                 <div class="gameCard" onclick="play('tycoon')">
-                    <div class="thumb" style="background:linear-gradient(#114081,#0a2a55)">TYCOON</div>
+                    <div class="thumb" style="background:linear-gradient(#1e3a8a,#0f172a)">TYCOON</div>
                     <div class="info">Beach Tycoon 2014 <span id="tagTycoon">Build base & earn coins</span></div>
                 </div>
                 <div class="gameCard" onclick="play('disaster')">
-                    <div class="thumb" style="background:linear-gradient(#cc3300,#8b0000)">DISASTER</div>
+                    <div class="thumb" style="background:linear-gradient(#dc2626,#7f1d1d)">DISASTER</div>
                     <div class="info">Natural Disaster <span id="tagDisaster">Survive meteor showers!</span></div>
                 </div>
                 <div class="gameCard" onclick="play('obby')">
-                    <div class="thumb" style="background:linear-gradient(#8B4513,#5a2e0c)">OBBY</div>
+                    <div class="thumb" style="background:linear-gradient(#d97706,#78350f)">OBBY</div>
                     <div class="info">Classic Obby <span id="tagObby">Jump over obstacles</span></div>
                 </div>
                 <div class="gameCard" onclick="play('studio')">
-                    <div class="thumb" style="background:linear-gradient(#6a5acd,#483d8b)">STUDIO</div>
+                    <div class="thumb" style="background:linear-gradient(#7c3aed,#4c1d95)">STUDIO</div>
                     <div class="info">Create Mode <span id="tagStudio">Place blocks & build</span></div>
                 </div>
             </div>
         </div>
 
-        <!-- AVATAR SHOP TAB -->
         <div id="avatarPage">
             <h2>👕 CHARACTER CUSTOMIZER (AVATAR SHOP)</h2>
-            <p style="font-size:12px;color:#666;">Buy clothes & hats using ObyxCoin!</p>
+            <p style="font-size:12px;color:#94a3b8;">Buy clothes & hats using ObyxCoin!</p>
             <div class="shopGrid">
                 <div class="shopItem">
-                    <div style="width:40px;height:40px;background:#ff0000;margin:0 auto;border-radius:4px;"></div>
-                    <div style="font-size:11px;margin-top:4px;">Red Shirt</div>
-                    <button onclick="buyShirt(0xff0000)">Buy (50 Coin)</button>
+                    <div style="width:40px;height:40px;background:#ef4444;margin:0 auto;border-radius:6px;"></div>
+                    <div style="font-size:12px;margin-top:6px;">Red Shirt</div>
+                    <button onclick="buyShirt(0xef4444)">Buy (50 Coin)</button>
                 </div>
                 <div class="shopItem">
-                    <div style="width:40px;height:40px;background:#00ff00;margin:0 auto;border-radius:4px;"></div>
-                    <div style="font-size:11px;margin-top:4px;">Green Shirt</div>
-                    <button onclick="buyShirt(0x00ff00)">Buy (50 Coin)</button>
+                    <div style="width:40px;height:40px;background:#22c55e;margin:0 auto;border-radius:6px;"></div>
+                    <div style="font-size:12px;margin-top:6px;">Green Shirt</div>
+                    <button onclick="buyShirt(0x22c55e)">Buy (50 Coin)</button>
                 </div>
                 <div class="shopItem">
-                    <div style="width:40px;height:40px;background:#38bdf8;margin:0 auto;border-radius:4px;"></div>
-                    <div style="font-size:11px;margin-top:4px;">Blue Shirt</div>
+                    <div style="width:40px;height:40px;background:#38bdf8;margin:0 auto;border-radius:6px;"></div>
+                    <div style="font-size:12px;margin-top:6px;">Blue Shirt</div>
                     <button onclick="buyShirt(0x38bdf8)">Buy (50 Coin)</button>
                 </div>
             </div>
@@ -149,7 +147,6 @@
     </div>
 </div>
 
-<!-- 3D OYUN KATMANI -->
 <div id="gameLayer">
     <div id="camTouchZone"></div>
     <div id="hud">
@@ -166,7 +163,6 @@
 </div>
 
 <script>
-// ----- DICTIONARY (8 LANGUAGES) -----
 const langData = {
     en: { home: "🏠 Home", avatar: "👕 Avatar Customizer", studio: "🛠️ Obyxa Studio", multi: "🔗 MULTIPLAYER PARTY", partyDesc: "Share code with friends:", create: "CREATE ROOM", join: "JOIN ROOM", popular: "🔥 POPULAR 2014 GAMES", jump: "JUMP", lobby: "✕ LOBBY", tagTycoon: "Build base & earn coins", tagDisaster: "Survive meteor showers!", tagObby: "Jump over obstacles", tagStudio: "Place blocks & build" },
     tr: { home: "🏠 Ana Sayfa", avatar: "👕 Karakter Düzenle", studio: "🛠️ Obyxa Stüdyo", multi: "🔗 ÇOK OYUNCULU PARTİ", partyDesc: "Kodu arkadaşınla paylaş:", create: "ODA KUR", join: "KATIL", popular: "🔥 POPÜLER 2014 OYUNLARI", jump: "ZIPLA", lobby: "✕ LOBİ", tagTycoon: "Taban inşa et & kazan", tagDisaster: "Meteor yağmurundan kaç!", tagObby: "Engellerden zıpla", tagStudio: "Blok koy & harita yap" },
@@ -202,7 +198,6 @@ function showTab(tab) {
     document.getElementById('avatarPage').style.display = tab === 'avatar' ? 'block' : 'none';
 }
 
-// ----- AVATAR CUSTOMIZER & COINS -----
 let obyxCoins = parseInt(localStorage.getItem('obyxa_coins') || '100');
 let playerColor = 0x38bdf8;
 document.getElementById('coins').innerText = '💰 ' + obyxCoins + ' ObyxCoin';
@@ -214,12 +209,9 @@ function buyShirt(color) {
         document.getElementById('coins').innerText = '💰 ' + obyxCoins + ' ObyxCoin';
         playerColor = color;
         alert('Item equipped!');
-    } else {
-        alert('Not enough ObyxCoin!');
-    }
+    } else { alert('Not enough ObyxCoin!'); }
 }
 
-// ----- MULTIPLAYER (PEERJS) -----
 let peer = null, conns = {}, myRoom = '', others = {};
 function createRoom() {
     let code = Math.floor(1000 + Math.random() * 9000).toString();
@@ -247,14 +239,13 @@ function doJoin(code) {
 }
 function moveOther(id, d) {
     if(!scene) return;
-    if(!others[id]) { let m = makeChar(0xff0000); scene.add(m); others[id] = m; }
+    if(!others[id]) { let m = makeChar(0xef4444); scene.add(m); others[id] = m; }
     others[id].position.set(d.x, d.y, d.z);
 }
 function broadcast(pos) {
     Object.values(conns).forEach(c => { if(c.open) c.send({ t: 'p', x: pos.x, y: pos.y, z: pos.z }); });
 }
 
-// ----- 3D GAME ENGINE -----
 let scene, camera, renderer, player, keys = {}, plats = [], buttons = [], meteors = [];
 let cameraAngleX = 0, cameraAngleY = 0.3;
 
@@ -264,7 +255,7 @@ function makeChar(col) {
     head.position.y = 1.05; g.add(head);
     let body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.45), new THREE.MeshLambertMaterial({ color: col }));
     body.position.y = 0.25; g.add(body);
-    let leg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.6, 0.4), new THREE.MeshLambertMaterial({ color: 0x114081 }));
+    let leg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.6, 0.4), new THREE.MeshLambertMaterial({ color: 0x0f172a }));
     leg.position.set(-0.22, -0.5, 0); g.add(leg);
     let leg2 = leg.clone(); leg2.position.x = 0.22; g.add(leg2);
     return g;
@@ -309,38 +300,33 @@ function buildLevel(type) {
     meteors.forEach(m => scene.remove(m)); meteors = [];
     player.x = 0; player.y = 3; player.z = 0;
 
-    // BASE GROUND
-    let ground = new THREE.Mesh(new THREE.BoxGeometry(100, 2, 100), new THREE.MeshLambertMaterial({ color: 0x5fbf4a }));
+    let ground = new THREE.Mesh(new THREE.BoxGeometry(100, 2, 100), new THREE.MeshLambertMaterial({ color: 0x22c55e }));
     ground.position.y = -1; scene.add(ground); plats.push(ground);
 
     if(type === 'tycoon') {
-        // TYCOON BUTTON
-        let btn = new THREE.Mesh(new THREE.BoxGeometry(3, 0.4, 3), new THREE.MeshLambertMaterial({ color: 0xff0000 }));
+        let btn = new THREE.Mesh(new THREE.BoxGeometry(3, 0.4, 3), new THREE.MeshLambertMaterial({ color: 0xef4444 }));
         btn.position.set(6, 0.2, 6); scene.add(btn); buttons.push(btn);
     } else if(type === 'disaster') {
-        // METEOR SPANNER
         for(let i = 0; i < 5; i++) {
-            let m = new THREE.Mesh(new THREE.SphereGeometry(1.2), new THREE.MeshLambertMaterial({ color: 0xff3300 }));
+            let m = new THREE.Mesh(new THREE.SphereGeometry(1.2), new THREE.MeshLambertMaterial({ color: 0xdc2626 }));
             m.position.set((Math.random()-0.5)*40, 30 + i*10, (Math.random()-0.5)*40);
             scene.add(m); meteors.push(m);
         }
     } else if(type === 'obby') {
         for(let i = 0; i < 12; i++) {
-            let m = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), new THREE.MeshLambertMaterial({ color: i%2===0?0xff6600:0x8B4513 }));
+            let m = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), new THREE.MeshLambertMaterial({ color: i%2===0?0xd97706:0x78350f }));
             m.position.set(i*6 - 20, i*1.2 + 2, Math.sin(i)*4);
             scene.add(m); plats.push(m);
         }
     }
 }
 
-// STUDIO BLOCK CREATION
 document.getElementById('buildBtn').addEventListener('click', () => {
-    let m = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), new THREE.MeshLambertMaterial({ color: 0x6a5acd }));
+    let m = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), new THREE.MeshLambertMaterial({ color: 0x7c3aed }));
     m.position.set(player.x, player.y - 0.5, player.z - 3);
     scene.add(m); plats.push(m);
 });
 
-// CAMERA TOUCH ROTATION
 function setupTouchCam() {
     let zone = document.getElementById('camTouchZone');
     let lx = 0, ly = 0, touching = false;
@@ -355,7 +341,6 @@ function setupTouchCam() {
     zone.addEventListener('touchend', () => touching = false);
 }
 
-// GAME LOOP
 function animate() {
     requestAnimationFrame(animate);
     if(!player || !scene) return;
@@ -381,7 +366,6 @@ function animate() {
     player.vy -= 0.01;
     let nx = player.x + player.vx, nz = player.z + player.vz, ny = player.y + player.vy;
 
-    // SOLID COLLISION
     let on = false;
     plats.forEach(p => {
         let halfW = 2.2, halfD = 2.2;
@@ -393,18 +377,16 @@ function animate() {
         }
     });
 
-    // TYCOON BUTTON TOUCH
     buttons.forEach(b => {
         if(Math.abs(player.x - b.position.x) < 1.5 && Math.abs(player.z - b.position.z) < 1.5) {
-            b.position.y = -5; // Remove button
-            let wall = new THREE.Mesh(new THREE.BoxGeometry(8, 6, 1), new THREE.MeshLambertMaterial({ color: 0x114081 }));
+            b.position.y = -5;
+            let wall = new THREE.Mesh(new THREE.BoxGeometry(8, 6, 1), new THREE.MeshLambertMaterial({ color: 0x0284c7 }));
             wall.position.set(6, 3, 10); scene.add(wall); plats.push(wall);
             obyxCoins += 50; localStorage.setItem('obyxa_coins', obyxCoins);
             document.getElementById('coins').innerText = '💰 ' + obyxCoins + ' ObyxCoin';
         }
     });
 
-    // METEOR FALL
     meteors.forEach(m => {
         m.position.y -= 0.2;
         if(m.position.y < 0) m.position.y = 40;
@@ -425,12 +407,11 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// JOYSTICK
 let joy = document.getElementById('joystick'), knob = document.getElementById('knob'), touchMove = { x: 0, y: 0 };
 joy.addEventListener('touchstart', e => e.preventDefault(), {passive: false});
 joy.addEventListener('touchmove', e => {
     let r = joy.getBoundingClientRect(), t = e.touches[0];
-    let dx = t.clientX - (r.left + 55), dy = t.clientY - (r.top + 55);
+    let dx = t.clientX - (r.left + 60), dy = t.clientY - (r.top + 60);
     let dist = Math.min(35, Math.hypot(dx, dy)), ang = Math.atan2(dy, dx);
     knob.style.transform = `translate(${Math.cos(ang)*dist}px, ${Math.sin(ang)*dist}px)`;
     touchMove.x = dx / 35; touchMove.y = dy / 35;

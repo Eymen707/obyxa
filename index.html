@@ -169,6 +169,11 @@
         </div>
 
         <div class="flex items-center space-x-3 rtl:space-x-reverse">
+            <!-- Theme Toggle Button -->
+            <button onclick="toggleTheme()" class="bg-slate-800 border border-slate-700 hover:border-slate-500 text-yellow-400 p-2 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow">
+                <i id="theme-icon" class="fa-solid fa-moon"></i> <span id="theme-text" class="hidden sm:inline">Dark</span>
+            </button>
+
             <div id="auth-header-btn" onclick="openAuthModal()" class="cursor-pointer bg-slate-900 border border-blue-400/60 hover:border-blue-400 px-3 py-1.5 rounded-lg text-xs font-black text-yellow-300 flex items-center gap-1.5 shadow">
                 <i class="fa-solid fa-right-to-bracket"></i> <span id="auth-status-text">Login / Register</span>
             </div>
@@ -307,8 +312,4 @@
                             </div>
 
                             <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 space-y-2">
-                                <label class="text-slate-300">Face Glasses & Shades:</label>
-                                <select id="avatar-face-select" onchange="updateAvatarPreviewFromSelect()" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-lg">
-                                    <option value="none">No Glasses</option>
-                                    <option value="shades">Clockwork Black Sunglasses</option>
-          
+                                <label class="text-slate-300">Face Gl

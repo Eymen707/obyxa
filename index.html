@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>obyxa001 - Retro Roblox 2014 & Simülatör</title>
+    <title>obyxa001 - Retro Roblox 2014 & 3D Simülatör</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js (3D Kütüphanesi) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -54,19 +56,43 @@
             color: white;
             font-weight: bold;
         }
+
+        /* Sanal Joystick */
+        #joystick-base {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            z-index: 10;
+            touch-action: none;
+        }
+        #joystick-stick {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%);
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- ÜST MENÜ (HEADER) -->
+    <!-- ÜST MENÜ -->
     <header class="roblox-header text-white h-16 flex items-center justify-between px-4 sticky top-0 z-40">
         <div class="flex items-center space-x-3">
             <div class="bg-red-600 text-white font-black italic text-xl px-3 py-1 rounded border border-red-800 transform -rotate-1 shadow-md">
                 obyxa<span class="text-yellow-300">001</span>
             </div>
-            <span class="font-bold text-sm hidden sm:inline">Retro Roblox 2014</span>
+            <span class="font-bold text-sm hidden sm:inline">Retro Roblox 2014 - 3D Studio</span>
         </div>
-
         <div class="flex items-center space-x-3 text-xs font-semibold">
             <div class="bg-blue-950 px-3 py-1.5 rounded border border-blue-500/50 flex items-center gap-2">
                 <span class="text-green-400 font-bold">R$</span>
@@ -77,140 +103,188 @@
         </div>
     </header>
 
-    <!-- ANA İÇERİK CONTAINER -->
+    <!-- ANA İÇERİK -->
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-4">
-        
-        <div class="roblox-card p-4 rounded-lg shadow-sm flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-black text-blue-600">Popüler Retro Oyunlar</h1>
-                <p class="text-xs text-gray-500">Oynamak istediğin oyuna tıkla!</p>
-            </div>
+        <div class="roblox-card p-4 rounded-lg shadow-sm">
+            <h1 class="text-xl font-black text-blue-600">3D Simülatör ve Dünyalar</h1>
+            <p class="text-xs text-gray-500">3D Roblox dünyasına girmek için bir oyuna tıkla!</p>
         </div>
 
-        <!-- OYUN KARTLARI GRİDİ -->
         <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- JavaScript Oyun Kartlarını Buraya Basacak -->
+            <!-- Oyun kartları buraya gelecek -->
         </div>
-
     </main>
 
-    <!-- OYUN OYNAMA PENCERESİ (MODAL) -->
-    <div id="game-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col justify-center items-center p-2">
-        <div class="w-full max-w-lg bg-slate-900 text-white rounded-t-lg p-3 flex justify-between items-center">
-            <span id="active-game-title" class="font-bold text-sm">Oyun</span>
-            <button onclick="closeGame()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">✕ Kapat</button>
+    <!-- 3D OYUN PENCERESİ (MODAL) -->
+    <div id="game-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col">
+        <div class="roblox-header p-3 flex justify-between items-center text-white z-20">
+            <span id="active-game-title" class="font-bold text-sm">3D Oyun Dünyası</span>
+            <button onclick="closeGame()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">✕ Çıkış</button>
         </div>
         
-        <div class="relative w-full max-w-lg h-[350px] bg-black rounded-b-lg overflow-hidden flex flex-col items-center justify-center">
-            <canvas id="game-canvas" width="400" height="300" class="bg-slate-800 border border-slate-700"></canvas>
-            
-            <div id="game-controls" class="w-full p-2 bg-slate-900 flex justify-around text-xs font-bold">
-                <button onclick="handleInput('LEFT')" class="bg-blue-600 px-4 py-2 rounded">◀ Sol</button>
-                <button onclick="handleInput('ACTION')" class="bg-green-600 px-6 py-2 rounded text-sm">⚡ TIKLA / ZIPLA</button>
-                <button onclick="handleInput('RIGHT')" class="bg-blue-600 px-4 py-2 rounded">Sağ ▶</button>
+        <div id="canvas-container" class="relative flex-1 w-full h-full overflow-hidden">
+            <!-- Sanal Joystick -->
+            <div id="joystick-base">
+                <div id="joystick-stick"></div>
             </div>
         </div>
     </div>
 
     <script>
         const gamesList = [
-            { id: 'muscle', title: '💪 Muscle Legends 2014', desc: 'Tıkla ve kaslarını geliştir!', color: 'from-orange-500 to-red-600' },
-            { id: 'speed', title: '⚡ Speed Run Simulator', desc: 'Engellerden kaç ve hızlan!', color: 'from-amber-400 to-yellow-600' },
-            { id: 'sword', title: '⚔️ Sword Fight Arena', desc: 'Kılıcını salla ve puan topla!', color: 'from-blue-500 to-indigo-600' }
+            { id: 'muscle', title: '💪 Muscle Legends 3D', desc: '3D dünyada kaslarını geliştir!', color: 'from-orange-500 to-red-600' },
+            { id: 'speed', title: '⚡ Speed Run 3D', desc: 'Parkurda koş ve rekor kır!', color: 'from-amber-400 to-yellow-600' },
+            { id: 'sword', title: '⚔️ Sword Fight Arena 3D', desc: 'Klasik 2014 kılıç dövüşü!', color: 'from-blue-500 to-indigo-600' }
         ];
 
         function renderGames() {
             const grid = document.getElementById('games-grid');
             grid.innerHTML = gamesList.map(g => `
-                <div class="game-card p-4 rounded-lg shadow cursor-pointer space-y-3" onclick="openGame('${g.id}', '${g.title}')">
+                <div class="game-card p-4 rounded-lg shadow cursor-pointer space-y-3" onclick="openGame('${g.title}')">
                     <div class="h-32 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-xl shadow-inner">
-                        ${g.title.split(' ')[0]} ${g.title.split(' ')[1]}
+                        ${g.title}
                     </div>
                     <div>
                         <h3 class="font-bold text-sm text-gray-800">${g.title}</h3>
                         <p class="text-xs text-gray-500">${g.desc}</p>
                     </div>
-                    <button class="w-full btn-green py-2 rounded text-xs">OYNA</button>
+                    <button class="w-full btn-green py-2 rounded text-xs">3D OYNA</button>
                 </div>
             `).join('');
         }
 
-        let canvas, ctx;
-        let currentGameId = null;
-        let gameInterval = null;
-        let score = 0;
-        let playerX = 180;
+        let scene, camera, renderer, player, animId;
+        let moveX = 0, moveZ = 0;
 
-        function openGame(id, title) {
-            currentGameId = id;
+        function openGame(title) {
             document.getElementById('active-game-title').innerText = title;
             document.getElementById('game-modal').classList.remove('hidden');
             
-            canvas = document.getElementById('game-canvas');
-            ctx = canvas.getContext('2d');
-            score = 0;
-            playerX = 180;
-
-            if(gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(updateGame, 1000 / 30); // 30 FPS
+            setTimeout(() => {
+                init3D();
+            }, 100);
         }
 
         function closeGame() {
             document.getElementById('game-modal').classList.add('hidden');
-            if(gameInterval) clearInterval(gameInterval);
+            if(animId) cancelAnimationFrame(animId);
+            const canvas = document.querySelector('#canvas-container canvas');
+            if(canvas) canvas.remove();
         }
 
-        function handleInput(type) {
-            if(type === 'LEFT') playerX = Math.max(10, playerX - 20);
-            if(type === 'RIGHT') playerX = Math.min(350, playerX + 20);
-            if(type === 'ACTION') score += 10;
-        }
+        function init3D() {
+            const container = document.getElementById('canvas-container');
+            const oldCanvas = container.querySelector('canvas');
+            if(oldCanvas) oldCanvas.remove();
 
-        function updateGame() {
-            // Arka planı temizle
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const width = container.clientWidth;
+            const height = container.clientHeight;
 
-            // Skor Yazısı
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '16px Source Sans Pro';
-            ctx.fillText('Skor / Güç: ' + score, 15, 30);
+            // Sahne, Kamera, Renderer
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87ceeb); // Gökyüzü mavisi
 
-            if(currentGameId === 'muscle') {
-                // Kas Simülatörü (Karakter)
-                ctx.fillStyle = '#ffccaa'; // Kafa
-                ctx.fillRect(playerX + 10, 100, 20, 20);
-                
-                ctx.fillStyle = '#0055ff'; // Gövde (Skor arttıkça büyür)
-                let size = Math.min(100, score / 2);
-                ctx.fillRect(playerX - size/4, 120, 40 + size/2, 50 + size/2);
+            camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+            camera.position.set(0, 6, 12);
 
-                ctx.fillStyle = '#f59e0b';
-                ctx.fillText('Gelişmek için "⚡ TIKLA" butonuna bas!', 50, 260);
-            } 
-            else if(currentGameId === 'speed') {
-                // Koşu Oyunu
-                ctx.fillStyle = '#38bdf8';
-                ctx.fillRect(playerX, 200, 30, 40);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(width, height);
+            container.appendChild(renderer.domElement);
 
-                ctx.fillStyle = '#ef4444';
-                ctx.fillRect(100, (score * 5) % 250, 40, 20);
+            // Işıklar
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
 
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText('Sol / Sağ butonları ile hareket et!', 60, 260);
-            } 
-            else {
-                // Kılıç Arena
-                ctx.fillStyle = '#22c55e';
-                ctx.fillRect(playerX, 180, 30, 50);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            dirLight.position.set(10, 20, 10);
+            scene.add(dirLight);
 
-                // Kılıç
-                ctx.fillStyle = '#e2e8f0';
-                ctx.fillRect(playerX + 30, 190, 25, 6);
+            // Zemin (Baseplate)
+            const floorGeo = new THREE.PlaneGeometry(80, 80);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x339933 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            scene.add(floor);
 
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText('Saldırmak için "⚡ TIKLA" butonuna bas!', 50, 260);
+            // Klasik Bacon Hair Karakteri (Bloklar)
+            const playerGroup = new THREE.Group();
+
+            // Gövde
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0055ff });
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.6), bodyMat);
+            body.position.y = 1.75;
+            playerGroup.add(body);
+
+            // Kafa
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa });
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), headMat);
+            head.position.y = 2.8;
+            playerGroup.add(head);
+
+            // Kahverengi Saç (Bacon Hair)
+            const hairMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+            const hair = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.3, 0.9), hairMat);
+            hair.position.y = 3.2;
+            playerGroup.add(hair);
+
+            player = playerGroup;
+            scene.add(player);
+
+            setupJoystickControls();
+
+            // Animasyon Döngüsü
+            function animate() {
+                animId = requestAnimationFrame(animate);
+
+                // Karakteri hareket ettir
+                player.position.x += moveX * 0.1;
+                player.position.z += moveZ * 0.1;
+
+                // Kamerayı karakteri takip ettir
+                camera.position.x = player.position.x;
+                camera.position.z = player.position.z + 12;
+                camera.lookAt(player.position.x, player.position.y + 1, player.position.z);
+
+                renderer.render(scene, camera);
             }
+            animate();
+        }
+
+        function setupJoystickControls() {
+            const base = document.getElementById('joystick-base');
+            const stick = document.getElementById('joystick-stick');
+            let isDragging = false;
+            let center = { x: 50, y: 50 };
+
+            base.ontouchstart = base.onmousedown = (e) => { isDragging = true; };
+            
+            window.ontouchend = window.onmouseup = () => {
+                isDragging = false;
+                moveX = 0;
+                moveZ = 0;
+                stick.style.transform = `translate(0px, 0px)`;
+            };
+
+            window.ontouchmove = window.onmousemove = (e) => {
+                if(!isDragging) return;
+                const rect = base.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                let x = clientX - rect.left - center.x;
+                let y = clientY - rect.top - center.y;
+
+                const dist = Math.sqrt(x*x + y*y);
+                const maxDist = 35;
+                if(dist > maxDist) {
+                    x = (x / dist) * maxDist;
+                    y = (y / dist) * maxDist;
+                }
+
+                stick.style.transform = `translate(${x}px, ${y}px)`;
+                moveX = x / maxDist;
+                moveZ = y / maxDist;
+            };
         }
 
         window.onload = renderGames;

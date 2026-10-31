@@ -1,315 +1,339 @@
-```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>obyxa - Retro Roblox 2014 & Simulator Studio</title>
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js for 3D Games -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Firebase Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'obyxa-sim-v15';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-
-        window.FB_DB = null;
-        window.CURRENT_USER = null;
-        window.APP_ID = appId;
-
-        if (firebaseConfig) {
-            const app = initializeApp(firebaseConfig);
-            window.FB_DB = getFirestore(app);
-            const auth = getAuth(app);
-
-            async function initAuth() {
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        const cred = await signInWithCustomToken(auth, __initial_auth_token);
-                        window.CURRENT_USER = cred.user;
-                    } else {
-                        const cred = await signInAnonymously(auth);
-                        window.CURRENT_USER = cred.user;
-                    }
-                } catch (e) {
-                    window.CURRENT_USER = { uid: 'guest_' + Math.random().toString(36).substring(2, 9) };
-                }
-            }
-            initAuth();
-        } else {
-            window.CURRENT_USER = { uid: 'guest_' + Math.random().toString(36).substring(2, 9) };
-        }
-    </script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;0,900;1,700&display=swap');
-
-        * {
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        body {
-            font-family: 'Source Sans Pro', Arial, sans-serif;
-            background-color: #e3e3e3;
-            color: #222222;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* Roblox 2014 Classic Styling */
-        .roblox-header {
-            background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%);
-            border-bottom: 2px solid #00367d;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .btn-retro-green {
-            background: linear-gradient(180deg, #02b700 0%, #008200 100%);
-            border: 1px solid #004d00;
-            color: white;
-            text-shadow: 0px -1px 0px rgba(0,0,0,0.5);
-        }
-
-        .btn-retro-blue {
-            background: linear-gradient(180deg, #1e7bd1 0%, #0d5494 100%);
-            border: 1px solid #073866;
-            color: white;
-            text-shadow: 0px -1px 0px rgba(0,0,0,0.5);
-        }
-
-        .game-card {
-            background: #ffffff;
-            border: 1px solid #c3c3c3;
-            transition: all 0.15s ease;
-        }
-        .game-card:hover {
-            border-color: #0055b3;
-            box-shadow: 0 4px 12px rgba(0, 85, 179, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Mobile Controls */
-        #mobile-hud {
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            pointer-events: none;
-        }
-
-        .touch-btn {
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            pointer-events: auto !important;
-        }
-
-        #virtual-joystick-base {
-            position: absolute;
-            width: 130px;
-            height: 130px;
-            bottom: 30px;
-            left: 30px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.5);
-            border: 3px solid rgba(255, 255, 255, 0.8);
-            pointer-events: auto !important;
-            touch-action: none;
-            display: block !important;
-            z-index: 9999;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-        }
-
-        #virtual-joystick-stick {
-            position: absolute;
-            width: 55px;
-            height: 55px;
-            left: 37px;
-            top: 37px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%);
-            box-shadow: 0 0 8px rgba(0,0,0,0.8);
-            pointer-events: none;
-            transform: translate(0px, 0px);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>obyxa - Retro Roblox 2014 & Simulator Studio</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Three.js for 3D Games & Avatar Customizer -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;0,900;1,700&display=swap');
+* {
+touch-action: manipulation;
+-webkit-tap-highlight-color: transparent;
+user-select: none;
+}
+body {
+font-family: 'Source Sans Pro', Arial, sans-serif;
+background-color: #e3e3e3;
+color: #222222;
+overflow-x: hidden;
+min-height: 100vh;
+}
+.dark-mode {
+background-color: #0f172a !important;
+color: #f8fafc !important;
+}
+.dark-mode .roblox-card {
+background-color: #1e293b !important;
+border-color: #334155 !important;
+color: #f8fafc !important;
+}
+/* Roblox 2014 Klasik Stil */
+.roblox-header {
+background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%);
+border-bottom: 2px solid #00367d;
+box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.btn-retro-green {
+background: linear-gradient(180deg, #02b700 0%, #008200 100%);
+border: 1px solid #004d00;
+color: white;
+text-shadow: 0px -1px 0px rgba(0,0,0,0.5);
+}
+.btn-retro-blue {
+background: linear-gradient(180deg, #1e7bd1 0%, #0d5494 100%);
+border: 1px solid #073866;
+color: white;
+text-shadow: 0px -1px 0px rgba(0,0,0,0.5);
+}
+.game-card {
+background: #ffffff;
+border: 1px solid #c3c3c3;
+transition: all 0.15s ease;
+}
+.game-card:hover {
+border-color: #0055b3;
+box-shadow: 0 4px 12px rgba(0, 85, 179, 0.3);
+transform: translateY(-2px);
+}
+/* Mobil Joystick */
+#virtual-joystick-base {
+position: absolute;
+width: 130px;
+height: 130px;
+bottom: 30px;
+left: 30px;
+border-radius: 50%;
+background: rgba(0, 0, 0, 0.5);
+border: 3px solid rgba(255, 255, 255, 0.8);
+pointer-events: auto !important;
+touch-action: none;
+display: block !important;
+z-index: 9999;
+box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+#virtual-joystick-stick {
+position: absolute;
+width: 55px;
+height: 55px;
+left: 37px;
+top: 37px;
+border-radius: 50%;
+background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%);
+box-shadow: 0 0 8px rgba(0,0,0,0.8);
+pointer-events: none;
+transform: translate(0px, 0px);
+}
+</style>
 </head>
-<body class="min-h-screen flex flex-col">
-
-    <!-- TOP NAVIGATION BAR -->
-    <header class="roblox-header text-white text-sm h-16 flex items-center justify-between px-3 sm:px-6 sticky top-0 z-40">
-        <div class="flex items-center space-x-3 sm:space-x-5 rtl:space-x-reverse">
-            <!-- Hamburger button for mobile menu -->
-            <button onclick="toggleMobileSidebar()" class="md:hidden text-white text-2xl px-1">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <div onclick="showTab('games')" class="flex items-center cursor-pointer">
-                <div class="bg-red-600 text-white font-black italic text-lg sm:text-2xl px-3 py-1 rounded border border-red-800 tracking-tighter transform -rotate-1 shadow-md">
-                    obyxa<span class="text-yellow-300">001</span>
-                </div>
-            </div>
-            <nav class="hidden md:flex space-x-1.5 font-bold text-sm rtl:space-x-reverse">
-                <button onclick="showTab('games')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition">Games</button>
-                <button onclick="showTab('simulators')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-yellow-300 font-extrabold">Simulators</button>
-                <button onclick="showTab('avatar')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-blue-300 font-bold">Avatar Room</button>
-                <button onclick="showTab('friends')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition">Friends</button>
-                <button onclick="showTab('settings')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-green-300">Settings</button>
-                <button onclick="showTab('develop')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-yellow-400 font-extrabold">Rbx Studio</button>
-            </nav>
-        </div>
-
-        <div class="flex items-center space-x-3 rtl:space-x-reverse">
-            <!-- Theme Toggle Button -->
-            <button onclick="toggleTheme()" class="bg-slate-800 border border-slate-700 hover:border-slate-500 text-yellow-400 p-2 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow">
-                <i id="theme-icon" class="fa-solid fa-moon"></i> <span id="theme-text" class="hidden sm:inline">Dark</span>
-            </button>
-
-            <div id="auth-header-btn" onclick="openAuthModal()" class="cursor-pointer bg-slate-900 border border-blue-400/60 hover:border-blue-400 px-3 py-1.5 rounded-lg text-xs font-black text-yellow-300 flex items-center gap-1.5 shadow">
-                <i class="fa-solid fa-right-to-bracket"></i> <span id="auth-status-text">Login / Register</span>
-            </div>
-
-            <div class="hidden sm:flex items-center space-x-2 text-xs font-semibold rtl:space-x-reverse">
-                <div class="flex items-center space-x-1 bg-slate-900 px-2.5 py-1.5 rounded border border-slate-700">
-                    <span class="text-green-400 font-bold">R$</span>
-                    <span id="user-robux-display">250,000</span>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2 border-l border-blue-500 pl-3 text-xs font-bold" onclick="showTab('avatar')">
-                <div class="w-8 h-8 bg-slate-800 rounded-full overflow-hidden border-2 border-white shrink-0 shadow cursor-pointer">
-                    <img id="header-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=BaconHair" class="w-full h-full object-cover">
-                </div>
-                <span id="header-username" class="hidden sm:inline truncate max-w-[90px] text-white">BaconHair</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- MOBILE SIDEBAR OVERLAY -->
-    <div id="mobile-sidebar" class="fixed inset-0 bg-black/80 z-50 hidden md:hidden" onclick="toggleMobileSidebar()">
-        <div class="w-72 bg-slate-900 h-full p-5 space-y-4 shadow-2xl text-white" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span class="font-extrabold text-blue-400 text-lg">obyxa Menu</span>
-                <button onclick="toggleMobileSidebar()" class="text-slate-400 text-2xl font-bold">&times;</button>
-            </div>
-            <nav class="flex flex-col space-y-2 font-bold text-sm">
-                <button onclick="showTab('games'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded flex items-center gap-2"><i class="fa-solid fa-gamepad text-blue-400"></i> Games</button>
-                <button onclick="showTab('simulators'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-yellow-300 font-black flex items-center gap-2"><i class="fa-solid fa-bolt text-yellow-400"></i> Simulators</button>
-                <button onclick="showTab('avatar'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-blue-300 flex items-center gap-2"><i class="fa-solid fa-user-gear text-blue-400"></i> 3D Avatar Room</button>
-                <button onclick="showTab('friends'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded flex items-center gap-2"><i class="fa-solid fa-user-group text-blue-400"></i> Friends System</button>
-                <button onclick="showTab('settings'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-green-400 flex items-center gap-2"><i class="fa-solid fa-sliders text-green-400"></i> Settings</button>
-                <button onclick="showTab('develop'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-yellow-400 font-black flex items-center gap-2"><i class="fa-solid fa-hammer text-yellow-400"></i> Rbx Studio</button>
-            </nav>
-        </div>
-    </div>
-
-    <!-- MAIN CONTAINER -->
-    <div class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 flex gap-5">
-        <aside class="w-52 shrink-0 hidden md:block space-y-4">
-            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 text-center shadow-lg">
-                <div class="w-20 h-20 mx-auto bg-blue-950 rounded-xl border border-blue-500/40 overflow-hidden mb-2 shadow">
-                    <img id="sidebar-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=BaconHair" class="w-full h-full object-cover">
-                </div>
-                <div id="sidebar-username" class="font-bold text-sm text-white truncate">BaconHair</div>
-                <div class="text-[10px] text-yellow-400 font-extrabold mt-1">⭐ Roblox R6 Avatar</div>
-            </div>
-
-            <div class="bg-slate-900 rounded-xl border border-slate-800 p-2 space-y-1 text-xs font-semibold">
-                <a href="#" onclick="showTab('games')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-gamepad text-blue-400"></i> Games</a>
-                <a href="#" onclick="showTab('simulators')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-bolt text-yellow-400"></i> Simulators</a>
-                <a href="#" onclick="showTab('avatar')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-user-gear text-blue-400"></i> 3D Avatar Room</a>
-                <a href="#" onclick="showTab('friends')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-user-group text-blue-400"></i> Friends</a>
-                <a href="#" onclick="showTab('settings')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-sliders text-green-400"></i> Graphics & Settings</a>
-                <a href="#" onclick="showTab('develop')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-hammer text-yellow-400"></i> Rbx Studio</a>
-            </div>
-        </aside>
-
-        <main class="flex-1 min-w-0 space-y-5">
-            <!-- TAB 1: GAMES HUB -->
-            <div id="tab-games" class="space-y-5">
-                <div class="bg-white p-4 rounded border border-gray-300 flex flex-wrap items-center justify-between gap-3 text-xs shadow-sm">
-                    <span class="font-black text-gray-800 text-lg">Featured 2014 Classic Games & Hard Obbies</span>
-                    <input type="text" id="game-search-input" oninput="filterGames()" placeholder="Search Games..." class="bg-gray-50 border border-gray-300 text-gray-800 rounded px-3 py-1.5 text-xs focus:outline-none">
-                </div>
-
-                <div id="grid-featured" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-
-                <div>
-                    <h2 class="font-extrabold text-blue-800 text-base mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-hammer"></i> Player Creations & Published Studio Arenas
-                    </h2>
-                    <div id="grid-user-games" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-                </div>
-            </div>
-
-            <!-- TAB 2: SIMULATORS SUITE -->
-            <div id="tab-simulators" class="hidden space-y-5">
-                <div class="bg-white p-5 rounded border border-gray-300 shadow-sm">
-                    <h1 class="text-xl font-black text-blue-900 mb-1">⚡ Roblox Simulator Worlds</h1>
-                    <p class="text-xs text-gray-600 mb-4">Train stats, eat bananas & burgers, level up, grow bigger, run faster, and jump to the sky!</p>
-                    <div id="grid-simulators" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                </div>
-            </div>
-
-            <!-- TAB 3: REAL 3D AVATAR CUSTOMIZER ROOM -->
-            <div id="tab-avatar" class="hidden space-y-4">
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-lg space-y-4">
-                    <div class="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3">
-                        <div>
-                            <h1 class="text-lg font-black text-white">3D Roblox Character Customizer</h1>
-                            <p class="text-xs text-slate-400">Authentic Blocky R6 Roblox Avatar with Live 3D Preview & Legendary 2014 Accessories!</p>
-                        </div>
-                        <div class="flex gap-2 flex-wrap">
-                            <button onclick="equipPreset('bacon')" class="btn-retro-blue text-xs font-bold px-3 py-1.5 rounded-lg">Bacon Hair</button>
-                            <button onclick="equipPreset('valkyrie')" class="bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Valkyrie Helm</button>
-                            <button onclick="equipPreset('pro')" class="bg-purple-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Dominus Pro</button>
-                            <button onclick="equipPreset('ninja')" class="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Shadow Ninja</button>
-                            <button onclick="equipPreset('king')" class="bg-yellow-500 text-black text-xs font-bold px-3 py-1.5 rounded-lg">Royal King</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="relative w-full h-[360px] bg-slate-950 rounded-xl border border-slate-700 overflow-hidden shadow-inner">
-                            <div id="avatar-preview-container" class="w-full h-full"></div>
-                            <div class="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded backdrop-blur">
-                                Drag mouse / touch to rotate avatar 360°
-                            </div>
-                        </div>
-
-                        <div class="space-y-3 text-xs font-bold max-h-[360px] overflow-y-auto pr-1">
-                            <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 space-y-2">
-                                <label class="text-slate-300">Torso & Shirt Color:</label>
-                                <div class="flex gap-2 flex-wrap">
-                                    <button onclick="setTorsoColor(0x0055b3)" class="w-8 h-8 rounded-full bg-blue-600 border-2 border-white"></button>
-                                    <button onclick="setTorsoColor(0xd97706)" class="w-8 h-8 rounded-full bg-amber-600 border-2 border-white"></button>
-                                    <button onclick="setTorsoColor(0xd1d5db)" class="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"></button>
-                                    <button onclick="setTorsoColor(0x9333ea)" class="w-8 h-8 rounded-full bg-purple-600 border-2 border-white"></button>
-                                    <button onclick="setTorsoColor(0xeab308)" class="w-8 h-8 rounded-full bg-yellow-500 border-2 border-white"></button>
-                                    <button onclick="setTorsoColor(0xdc2626)" class="w-8 h-8 rounded-full bg-red-600 border-2 border-white"></button>
-                                </div>
-                            </div>
-
-                            <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 space-y-2">
-                                <label class="text-slate-300">Head / Legendary Hats & Helmets:</label>
-                                <select id="avatar-hat-select" onchange="updateAvatarPreviewFromSelect()" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-lg">
-                                    <option value="bacon">Classic Bacon Hair (Pal Hair)</option>
-                                    <option value="valkyrie">Valkyrie Helm of Glory</option>
-                                    <option value="dominus">Dominus Empyreus Hood</option>
-                                    <option value="clockwork">Clockwork Gold Headphones</option>
-                                    <option value="bc_crown">Builder's Club Imperial Crown</option>
-                                    <option value="noob">Noob Blue Snapback Cap</option>
-                                    <option value="tophat">Gentleman's Top Hat</option>
-                                    <option value="none">Bare Head (No Hat)</option>
-                                </select>
-                            </div>
-
-                            <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 space-y-2">
-                                <label class="text-slate-300">Face Gl
+<body id="app-body" class="min-h-screen flex flex-col">
+<!-- ÜST MENÜ ÇUBUĞU -->
+<header class="roblox-header text-white text-sm h-16 flex items-center justify-between px-3 sm:px-6 sticky top-0 z-40">
+<div class="flex items-center space-x-3 sm:space-x-5 rtl:space-x-reverse">
+<button onclick="toggleMobileSidebar()" class="md:hidden text-white text-2xl px-1">
+<i class="fa-solid fa-bars"></i>
+</button>
+<div onclick="showTab('games')" class="flex items-center cursor-pointer">
+<div class="bg-red-600 text-white font-black italic text-lg sm:text-2xl px-3 py-1 rounded border border-red-800 tracking-tighter transform -rotate-1 shadow-md">
+obyxa<span class="text-yellow-300">001</span>
+</div>
+</div>
+<nav class="hidden md:flex space-x-1.5 font-bold text-sm rtl:space-x-reverse">
+<button onclick="showTab('games')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition">Oyunlar</button>
+<button onclick="showTab('simulators')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-yellow-300 font-extrabold">Simülatörler</button>
+<button onclick="showTab('avatar')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-blue-300 font-bold">Avatar Odası</button>
+<button onclick="showTab('friends')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition">Arkadaşlar</button>
+<button onclick="showTab('settings')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-green-300">Ayarlar</button>
+<button onclick="showTab('develop')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-yellow-400 font-extrabold">Rbx Studio</button>
+</nav>
+</div>
+<div class="flex items-center space-x-3 rtl:space-x-reverse">
+<!-- Karanlık / Aydınlık Mod Butonu -->
+<button onclick="toggleTheme()" class="bg-slate-800 border border-slate-700 hover:border-slate-500 text-yellow-400 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow">
+<i id="theme-icon" class="fa-solid fa-moon"></i> <span id="theme-text" class="hidden sm:inline">Tema</span>
+</button>
+<div id="auth-header-btn" onclick="openAuthModal()" class="cursor-pointer bg-slate-900 border border-blue-400/60 hover:border-blue-400 px-3 py-1.5 rounded-lg text-xs font-black text-yellow-300 flex items-center gap-1.5 shadow">
+<i class="fa-solid fa-right-to-bracket"></i> <span id="auth-status-text">Giriş Yap</span>
+</div>
+<div class="hidden sm:flex items-center space-x-2 text-xs font-semibold rtl:space-x-reverse">
+<div class="flex items-center space-x-1 bg-slate-900 px-2.5 py-1.5 rounded border border-slate-700 text-white">
+<span class="text-green-400 font-bold">R$</span>
+<span id="user-robux-display">250,000</span>
+</div>
+</div>
+<div class="flex items-center space-x-2 border-l border-blue-500 pl-3 text-xs font-bold cursor-pointer" onclick="showTab('avatar')">
+<div class="w-8 h-8 bg-slate-800 rounded-full overflow-hidden border-2 border-white shrink-0 shadow">
+<img id="header-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=BaconHair" class="w-full h-full object-cover">
+</div>
+<span id="header-username" class="hidden sm:inline truncate max-w-[90px] text-white">BaconHair</span>
+</div>
+</div>
+</header>
+<!-- MOBİL YAN MENÜ -->
+<div id="mobile-sidebar" class="fixed inset-0 bg-black/80 z-50 hidden md:hidden" onclick="toggleMobileSidebar()">
+<div class="w-72 bg-slate-900 h-full p-5 space-y-4 shadow-2xl text-white" onclick="event.stopPropagation()">
+<div class="flex items-center justify-between border-b border-slate-800 pb-3">
+<span class="font-extrabold text-blue-400 text-lg">obyxa Menü</span>
+<button onclick="toggleMobileSidebar()" class="text-slate-400 text-2xl font-bold">×</button>
+</div>
+<nav class="flex flex-col space-y-2 font-bold text-sm">
+<button onclick="showTab('games'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded flex items-center gap-2"><i class="fa-solid fa-gamepad text-blue-400"></i> Oyunlar</button>
+<button onclick="showTab('simulators'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-yellow-300 font-black flex items-center gap-2"><i class="fa-solid fa-bolt text-yellow-400"></i> Simülatörler</button>
+<button onclick="showTab('avatar'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-blue-300 flex items-center gap-2"><i class="fa-solid fa-user-gear text-blue-400"></i> Avatar Odası</button>
+<button onclick="showTab('friends'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded flex items-center gap-2"><i class="fa-solid fa-user-group text-blue-400"></i> Arkadaşlar</button>
+<button onclick="showTab('settings'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-green-400 flex items-center gap-2"><i class="fa-solid fa-sliders text-green-400"></i> Ayarlar</button>
+<button onclick="showTab('develop'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-yellow-400 font-black flex items-center gap-2"><i class="fa-solid fa-hammer text-yellow-400"></i> Rbx Studio</button>
+</nav>
+</div>
+</div>
+<!-- ANA İÇERİK -->
+<div class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 flex gap-5">
+<aside class="w-52 shrink-0 hidden md:block space-y-4">
+<div class="roblox-card bg-white p-4 rounded-xl border border-gray-300 text-center shadow-lg">
+<div class="w-20 h-20 mx-auto bg-blue-950 rounded-xl border border-blue-500/40 overflow-hidden mb-2 shadow">
+<img id="sidebar-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=BaconHair" class="w-full h-full object-cover">
+</div>
+<div id="sidebar-username" class="font-bold text-sm truncate">BaconHair</div>
+<div class="text-[10px] text-yellow-500 font-extrabold mt-1">⭐ Roblox R6 Avatar</div>
+</div>
+<div class="roblox-card bg-white rounded-xl border border-gray-300 p-2 space-y-1 text-xs font-semibold shadow">
+<a href="#" onclick="showTab('games')" class="flex items-center p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 gap-2.5"><i class="fa-solid fa-gamepad text-blue-500"></i> Oyunlar</a>
+<a href="#" onclick="showTab('simulators')" class="flex items-center p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-yellow-600 dark:text-yellow-400 font-extrabold gap-2.5"><i class="fa-solid fa-bolt"></i> Simülatörler</a>
+<a href="#" onclick="showTab('avatar')" class="flex items-center p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-blue-600 gap-2.5"><i class="fa-solid fa-user-gear"></i> Avatar Odası</a>
+<a href="#" onclick="showTab('friends')" class="flex items-center p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 gap-2.5"><i class="fa-solid fa-user-group text-blue-500"></i> Arkadaşlar</a>
+<a href="#" onclick="showTab('settings')" class="flex items-center p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-green-600 gap-2.5"><i class="fa-solid fa-sliders"></i> Ayarlar</a>
+<a href="#" onclick="showTab('develop')" class="flex items-center p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-yellow-600 font-extrabold gap-2.5"><i class="fa-solid fa-hammer"></i> Rbx Studio</a>
+</div>
+</aside>
+<main class="flex-1 min-w-0 space-y-5">
+<!-- OYUNLAR SEKMESİ -->
+<div id="tab-games" class="space-y-5">
+<div class="roblox-card bg-white p-4 rounded border border-gray-300 flex flex-wrap items-center justify-between gap-3 text-xs shadow-sm">
+<span class="font-black text-lg">Klasik 2014 Oyunları & Zorlu Parkurlar</span>
+<input type="text" id="game-search-input" oninput="filterGames()" placeholder="Oyun ara..." class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded px-3 py-1.5 text-xs focus:outline-none">
+</div>
+<div id="grid-featured" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+<div>
+<h2 class="font-extrabold text-blue-600 text-base mb-3 flex items-center gap-2">
+<i class="fa-solid fa-hammer"></i> Oyuncu Yapımları ve Stüdyo Arenaları
+</h2>
+<div id="grid-user-games" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+</div>
+</div>
+<!-- SİMÜLATÖRLER SEKMESİ -->
+<div id="tab-simulators" class="hidden space-y-5">
+<div class="roblox-card bg-white p-5 rounded border border-gray-300 shadow-sm">
+<h1 class="text-xl font-black text-blue-600 mb-1">⚡ Roblox Simülatör Dünyaları</h1>
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Muz ye, pizza ye, ağırlık kaldır, hız kazan ve gökyüzüne zıpla!</p>
+<div id="grid-simulators" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+</div>
+</div>
+<!-- 3D AVATAR ÖZELLEŞTİRİCİ -->
+<div id="tab-avatar" class="hidden space-y-4">
+<div class="roblox-card bg-white p-5 rounded-xl border border-gray-300 shadow-lg space-y-4">
+<div class="flex flex-wrap items-center justify-between border-b border-gray-200 dark:border-slate-800 pb-3 gap-2">
+<div>
+<h1 class="text-lg font-black">3D Karakter Tasarım Odası</h1>
+<p class="text-xs text-gray-500">Klasik R6 blok Roblox karakteri ve efsanevi aksesuarlar!</p>
+</div>
+<div class="flex gap-2 flex-wrap">
+<button onclick="equipPreset('bacon')" class="btn-retro-blue text-xs font-bold px-3 py-1.5 rounded-lg">Bacon Hair</button>
+<button onclick="equipPreset('valkyrie')" class="bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Valkyrie</button>
+<button onclick="equipPreset('pro')" class="bg-purple-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Dominus</button>
+<button onclick="equipPreset('ninja')" class="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Ninja</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<div class="relative w-full h-[360px] bg-slate-950 rounded-xl border border-slate-700 overflow-hidden shadow-inner">
+<div id="avatar-preview-container" class="w-full h-full"></div>
+<div class="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded backdrop-blur">
+Döndürmek için ekranda parmağını kaydır
+</div>
+</div>
+<div class="space-y-3 text-xs font-bold max-h-[360px] overflow-y-auto pr-1">
+<div class="bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
+<label>Gövde ve Tişört Rengi:</label>
+<div class="flex gap-2 flex-wrap">
+<button onclick="setTorsoColor(0x0055b3)" class="w-8 h-8 rounded-full bg-blue-600 border-2 border-white"></button>
+<button onclick="setTorsoColor(0xd97706)" class="w-8 h-8 rounded-full bg-amber-600 border-2 border-white"></button>
+<button onclick="setTorsoColor(0x9333ea)" class="w-8 h-8 rounded-full bg-purple-600 border-2 border-white"></button>
+<button onclick="setTorsoColor(0xeab308)" class="w-8 h-8 rounded-full bg-yellow-500 border-2 border-white"></button>
+<button onclick="setTorsoColor(0xdc2626)" class="w-8 h-8 rounded-full bg-red-600 border-2 border-white"></button>
+</div>
+</div>
+<div class="bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
+<label>Efsanevi Şapkalar:</label>
+<select id="avatar-hat-select" onchange="updateAvatarPreviewFromSelect()" class="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 p-2 rounded-lg">
+<option value="bacon">Klasik Bacon Hair</option>
+<option value="valkyrie">Valkyrie Helm of Glory</option>
+<option value="bc_crown">Builder's Club Crown</option>
+<option value="noob">Noob Mavi Şapka</option>
+<option value="none">Şapkasız</option>
+</select>
+</div>
+<div class="bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
+<label>Pantolon Rengi:</label>
+<div class="flex gap-2 flex-wrap">
+<button onclick="setLegColor(0x02b700)" class="w-8 h-8 rounded-full bg-green-600 border-2 border-white"></button>
+<button onclick="setLegColor(0x1e3a8a)" class="w-8 h-8 rounded-full bg-blue-900 border-2 border-white"></button>
+<button onclick="setLegColor(0x111827)" class="w-8 h-8 rounded-full bg-gray-900 border-2 border-white"></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ARKADAŞLAR SEKMESİ -->
+<div id="tab-friends" class="hidden space-y-4">
+<div class="roblox-card bg-white p-5 rounded-xl border border-gray-300 shadow-lg space-y-4">
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 dark:border-slate-800 pb-3">
+<h1 class="text-lg font-black">Arkadaşlar ve Çevrimiçi Lobi</h1>
+<div class="flex gap-2">
+<input type="text" id="add-friend-input" placeholder="Arkadaş kullanıcı adı..." class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-xs px-3 py-2 rounded-lg font-bold focus:outline-none">
+<button onclick="sendFriendRequest()" class="btn-retro-green text-xs font-bold px-3 py-2 rounded-lg">+ Arkadaş Ekle</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="border border-gray-200 dark:border-slate-800 rounded-xl p-4 bg-gray-50 dark:bg-slate-950/50 space-y-2">
+<h3 class="font-bold text-xs text-blue-500 uppercase">Arkadaşlarım</h3>
+<div id="friends-list-container" class="space-y-2 max-h-60 overflow-y-auto text-xs"></div>
+</div>
+<div class="border border-gray-200 dark:border-slate-800 rounded-xl p-4 bg-gray-50 dark:bg-slate-950/50 space-y-2">
+<h3 class="font-bold text-xs text-green-500 uppercase">Çevrimiçi Oyuncular</h3>
+<div id="online-players-container" class="space-y-2 max-h-60 overflow-y-auto text-xs"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- AYARLAR SEKMESİ -->
+<div id="tab-settings" class="hidden space-y-4">
+<div class="roblox-card bg-white p-5 rounded-xl border border-gray-300 shadow-lg space-y-5">
+<h1 class="text-xl font-black flex items-center gap-2">
+<i class="fa-solid fa-sliders text-green-500"></i> Grafik ve Motor Ayarları
+</h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-bold">
+<div class="bg-gray-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
+<label>Hedef FPS Sınırı:</label>
+<select id="setting-fps" onchange="saveEngineSettings()" class="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-lg p-2">
+<option value="60">60 FPS (Önerilen)</option>
+<option value="120">120 FPS Ultra</option>
+<option value="30">30 FPS Tasarruf</option>
+</select>
+</div>
+<div class="bg-gray-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
+<label>Çevre Hızı:</label>
+<input type="range" id="setting-env-speed" min="0.5" max="2.5" step="0.1" value="1.0" class="w-full cursor-pointer">
+</div>
+<div class="bg-gray-50 dark:bg-slate-800/80 p-3.5 rounded-xl border border-gray-200 dark:border-slate-700 flex items-center justify-between">
+<span>Gölge Efektleri:</span>
+<input type="checkbox" id="setting-shadows" checked class="w-5 h-5 rounded cursor-pointer">
+</div>
+</div>
+</div>
+</div>
+<!-- RBX STUDIO YAPICI -->
+<div id="tab-develop" class="hidden space-y-4">
+<div class="roblox-card bg-white p-5 rounded-xl border border-gray-300 flex flex-wrap items-center justify-between gap-4 shadow-lg">
+<div>
+<h1 class="text-lg sm:text-xl font-black">obyxa Rbx Studio</h1>
+<p class="text-xs text-gray-500">Kendi haritanı tasarla, test et ve yayınla!</p>
+</div>
+<div class="flex items-center space-x-2 rtl:space-x-reverse w-full sm:w-auto">
+<input type="text" id="studio-game-title" value="Yeni Stüdyo Arenam" class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-xs px-3 py-2 rounded-lg font-bold focus:outline-none flex-1 sm:w-48">
+<button onclick="publishStudioGame()" class="btn-retro-green font-bold text-xs px-4 py-2 rounded-lg shadow shrink-0">
+<i class="fa-solid fa-cloud-arrow-up"></i> Çevrimiçi Yayınla
+</button>
+</div>
+</div>
+<div class="roblox-card bg-white p-3 rounded-xl border border-gray-300 space-y-3 shadow-lg">
+<div class="flex flex-wrap items-center justify-between gap-2 bg-gray-100 dark:bg-slate-800/80 p-2.5 rounded-lg border border-gray-200 dark:border-slate-700 text-xs">
+<div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
+<span class="font-bold mr-1">Ekle:</span>
+<button onclick="addStudioBlock('block')" class="bg-blue-600 text-white font-bold px-2.5 py-1 rounded shadow">+ Blok</button>
+<button onclick="addStudioBlock('lava')" class="bg-red-600 text-white font-bold px-2.5 py-1 rounded shadow">+ Lav</button>
+<button onclick="addStudioBlock('speed')" class="bg-yellow-500 text-zinc-950 font-black px-2.5 py-1 rounded shadow">+ Hız Pedi</button>
+</div>
+<button onclick="clearStudio()" class="bg-red-500 text-white font-bold px-2.5 py-1 rounded"><i class="fa-solid fa-trash"></i> Sıfırla</button>
+</div>
+<div class="relative w-full h-[380px] sm:h-[480px] bg-slate-950 rounded-xl border border-slate-700 overflow-hidden shadow-inner">
+<div id="studio-container" class="w-full h-full"></div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- OYUN PENCERESİ (MODAL) -->
+<div id="game-modal" class="fixed inset-0 bg-black z-50 hidden flex flex-col select-none">
+<div class="w-full bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between border-b border-slate-800 shrink-0 z-40 shadow-lg">
+<div class="flex items-center space-x-3 rtl:space-x-reverse">
+<span class="bg-red-600 text-[11px] font-black px-2.5 py-0.5 rounded shadow">obyxa</span>
+<h3 id="modal-game-title" class="font-extrabold text-sm sm:text-base text-yellow-400 truncate max-w-[180px]">Oyun</h3>
+</div>
+<div class="flex items-center space-x-3">
+<div id="modal-sim-stats" class="text-xs font-black text-green-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">Skor: 0</div>
+<button onclick

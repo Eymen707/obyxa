@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>obyxa001 - 2014 Retro Platform & Multiplayer Studio</title>
+    <title>obyxa001 - Ultimate Retro 2014 Gaming Hub</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +18,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'obyxa001-retro-v2';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'obyxa001-retro-v3';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
 
         window.FB_DB = null;
@@ -60,14 +60,14 @@
 
         body {
             font-family: 'Source Sans Pro', Arial, sans-serif;
-            background-color: #e3e3e3;
-            color: #333;
+            background-color: #1b1b1f;
+            color: #f3f4f6;
             overflow-x: hidden;
         }
 
         .roblox-header {
-            background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%);
-            border-bottom: 2px solid #00367d;
+            background: linear-gradient(180deg, #1d6fd8 0%, #0d4699 100%);
+            border-bottom: 2px solid #082d63;
         }
 
         .btn-retro-blue {
@@ -88,55 +88,41 @@
         }
 
         .game-card {
-            background: #fff;
-            border: 1px solid #c3c3c3;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
         .game-card:hover {
-            border-color: #0055b3;
-            box-shadow: 0px 4px 12px rgba(0,85,179,0.3);
-            transform: translateY(-2px);
-        }
-
-        #mobile-hud {
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            pointer-events: none;
-        }
-
-        .touch-btn {
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            pointer-events: auto !important;
+            border-color: #3b82f6;
+            box-shadow: 0px 6px 16px rgba(59, 130, 246, 0.4);
+            transform: translateY(-3px);
         }
 
         #virtual-joystick-base {
             position: absolute;
-            width: 120px;
-            height: 120px;
-            bottom: 30px;
-            left: 30px;
+            width: 130px;
+            height: 130px;
+            bottom: 35px;
+            left: 35px;
             border-radius: 50%;
-            background: rgba(0, 0, 0, 0.5);
-            border: 3px solid rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.45);
+            border: 3px solid rgba(255, 255, 255, 0.7);
             pointer-events: auto !important;
             touch-action: none;
             display: block !important;
             z-index: 9999;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
         }
 
         #virtual-joystick-stick {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            left: 35px;
-            top: 35px;
+            width: 55px;
+            height: 55px;
+            left: 37px;
+            top: 37px;
             border-radius: 50%;
-            background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%);
-            box-shadow: 0 0 8px rgba(0,0,0,0.8);
+            background: radial-gradient(circle, #ffffff 0%, #9ca3af 100%);
+            box-shadow: 0 0 10px rgba(0,0,0,0.9);
             pointer-events: none;
         }
 
@@ -149,26 +135,26 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- TOP NAVIGATION BAR -->
-    <header class="roblox-header text-white text-sm h-14 flex items-center justify-between px-2 sm:px-4 sticky top-0 z-40 shadow-md">
-        <div class="flex items-center space-x-2 sm:space-x-5 rtl:space-x-reverse">
-            <button onclick="toggleMobileSidebar()" class="md:hidden text-white text-xl px-2">
+    <header class="roblox-header text-white text-sm h-14 flex items-center justify-between px-3 sm:px-6 sticky top-0 z-40 shadow-lg">
+        <div class="flex items-center space-x-3 sm:space-x-5 rtl:space-x-reverse">
+            <button onclick="toggleMobileSidebar()" class="md:hidden text-white text-xl px-1">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div onclick="showTab('games')" class="flex items-center cursor-pointer">
-                <div class="bg-red-600 text-white font-black italic text-lg sm:text-2xl px-2 py-0.5 rounded border border-red-800 tracking-tighter transform -rotate-2 shadow">
+                <div class="bg-red-600 text-white font-black italic text-lg sm:text-2xl px-2.5 py-0.5 rounded border border-red-800 tracking-tighter transform -rotate-2 shadow-md">
                     obyxa<span class="text-yellow-300">001</span>
                 </div>
             </div>
-            <nav class="hidden md:flex space-x-1 font-bold text-sm rtl:space-x-reverse">
-                <button onclick="showTab('games')" data-i18n="nav_games" class="px-3 py-1 hover:bg-blue-800 rounded">Games</button>
-                <button onclick="showTab('catalog')" data-i18n="nav_catalog" class="px-3 py-1 hover:bg-blue-800 rounded">Catalog</button>
-                <button onclick="showTab('develop')" data-i18n="nav_develop" class="px-3 py-1 hover:bg-blue-800 rounded text-yellow-300 font-extrabold">Build / Studio</button>
+            <nav class="hidden md:flex space-x-2 font-bold text-sm rtl:space-x-reverse">
+                <button onclick="showTab('games')" data-i18n="nav_games" class="px-3 py-1.5 hover:bg-blue-700/80 rounded transition">Games</button>
+                <button onclick="showTab('catalog')" data-i18n="nav_catalog" class="px-3 py-1.5 hover:bg-blue-700/80 rounded transition">Catalog</button>
+                <button onclick="showTab('develop')" data-i18n="nav_develop" class="px-3 py-1.5 hover:bg-blue-700/80 rounded transition text-yellow-300 font-extrabold">Studio / Build</button>
             </nav>
         </div>
 
-        <div class="flex items-center space-x-2 sm:space-x-3 rtl:space-x-reverse">
+        <div class="flex items-center space-x-3 rtl:space-x-reverse">
             <div class="relative">
-                <select id="language-select" onchange="changeLanguage(this.value)" class="bg-blue-950 text-white text-xs font-bold px-2 py-1 rounded border border-blue-600 cursor-pointer focus:outline-none">
+                <select id="language-select" onchange="changeLanguage(this.value)" class="bg-blue-950 text-white text-xs font-bold px-2.5 py-1.5 rounded border border-blue-500 cursor-pointer focus:outline-none">
                     <option value="en">🇬🇧 English</option>
                     <option value="tr">🇹🇷 Türkçe</option>
                     <option value="de">🇩🇪 Deutsch</option>
@@ -181,169 +167,176 @@
                 </select>
             </div>
             <div class="hidden sm:flex items-center space-x-2 text-xs font-semibold rtl:space-x-reverse">
-                <div class="flex items-center space-x-1 bg-blue-950 px-2 py-1 rounded border border-blue-700">
+                <div class="flex items-center space-x-1 bg-blue-950 px-2.5 py-1.5 rounded border border-blue-700">
                     <span class="text-green-400 font-bold">R$</span>
-                    <span>85,412</span>
+                    <span>124,500</span>
                 </div>
-                <div class="flex items-center space-x-1 bg-blue-950 px-2 py-1 rounded border border-blue-700">
-                    <span class="text-yellow-500 font-bold">Tx</span>
-                    <span>19,204</span>
+                <div class="flex items-center space-x-1 bg-blue-950 px-2.5 py-1.5 rounded border border-blue-700">
+                    <span class="text-yellow-400 font-bold">Tx</span>
+                    <span>45,890</span>
                 </div>
             </div>
-            <div class="flex items-center space-x-1.5 border-l border-blue-700 pl-2 text-xs font-bold">
-                <div class="w-7 h-7 bg-gray-200 rounded-full overflow-hidden border border-white shrink-0">
-                    <img id="header-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=Guest" class="w-full h-full object-cover">
+            <div class="flex items-center space-x-2 border-l border-blue-600 pl-3 text-xs font-bold">
+                <div class="w-8 h-8 bg-gray-700 rounded-full overflow-hidden border-2 border-white shrink-0">
+                    <img id="header-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=ProGamer" class="w-full h-full object-cover">
                 </div>
-                <span id="header-username" class="hidden sm:inline truncate max-w-[90px]">Guest</span>
+                <span id="header-username" class="hidden sm:inline truncate max-w-[100px]">ProGamer</span>
             </div>
         </div>
     </header>
 
-    <!-- MOBILE SIDEBAR OVERLAY -->
-    <div id="mobile-sidebar" class="fixed inset-0 bg-black/60 z-50 hidden md:hidden" onclick="toggleMobileSidebar()">
-        <div class="w-64 bg-white h-full p-4 space-y-4" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between border-b pb-2">
-                <span class="font-extrabold text-blue-900 text-lg">obyxa001 Menu</span>
-                <button onclick="toggleMobileSidebar()" class="text-gray-500 text-xl font-bold">&times;</button>
+    <!-- MOBILE SIDEBAR -->
+    <div id="mobile-sidebar" class="fixed inset-0 bg-black/70 z-50 hidden md:hidden" onclick="toggleMobileSidebar()">
+        <div class="w-72 bg-zinc-900 h-full p-5 space-y-4 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <span class="font-extrabold text-blue-400 text-lg">obyxa001 Hub</span>
+                <button onclick="toggleMobileSidebar()" class="text-zinc-400 text-2xl font-bold">&times;</button>
             </div>
-            <nav class="flex flex-col space-y-2 font-bold text-sm">
-                <button onclick="showTab('games'); toggleMobileSidebar()" data-i18n="nav_games" class="text-left py-2 px-3 hover:bg-gray-100 rounded">Games</button>
-                <button onclick="showTab('catalog'); toggleMobileSidebar()" data-i18n="nav_catalog" class="text-left py-2 px-3 hover:bg-gray-100 rounded">Catalog</button>
-                <button onclick="showTab('develop'); toggleMobileSidebar()" data-i18n="nav_develop" class="text-left py-2 px-3 hover:bg-gray-100 rounded text-blue-700 font-black">Build / Studio</button>
+            <nav class="flex flex-col space-y-3 font-bold text-sm">
+                <button onclick="showTab('games'); toggleMobileSidebar()" data-i18n="nav_games" class="text-left py-2 px-3 hover:bg-zinc-800 rounded">Games</button>
+                <button onclick="showTab('catalog'); toggleMobileSidebar()" data-i18n="nav_catalog" class="text-left py-2 px-3 hover:bg-zinc-800 rounded">Catalog</button>
+                <button onclick="showTab('develop'); toggleMobileSidebar()" data-i18n="nav_develop" class="text-left py-2 px-3 hover:bg-zinc-800 rounded text-blue-400 font-black">Studio / Build</button>
             </nav>
         </div>
     </div>
 
     <!-- MAIN CONTAINER -->
-    <div class="flex-1 max-w-7xl w-full mx-auto p-2 sm:p-4 flex gap-4">
-        <aside class="w-44 shrink-0 hidden md:block space-y-3">
-            <div class="bg-white p-3 rounded border border-gray-300 text-center shadow-sm">
-                <div class="w-20 h-20 mx-auto bg-blue-50 rounded border border-gray-200 overflow-hidden mb-1">
-                    <img id="sidebar-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=Guest" class="w-full h-full object-cover">
+    <div class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 flex gap-5">
+        <aside class="w-48 shrink-0 hidden md:block space-y-4">
+            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 text-center shadow-md">
+                <div class="w-20 h-20 mx-auto bg-blue-900/30 rounded-xl border border-blue-500/40 overflow-hidden mb-2">
+                    <img id="sidebar-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=ProGamer" class="w-full h-full object-cover">
                 </div>
-                <div id="sidebar-username" class="font-bold text-sm text-gray-800 truncate">Guest Player</div>
+                <div id="sidebar-username" class="font-bold text-sm text-zinc-200 truncate">ProGamer</div>
+                <div class="text-[10px] text-yellow-400 font-extrabold mt-1">⭐ Builders Club Member</div>
             </div>
-            <button onclick="showCustomModal(translations[currentLang].bc_title, translations[currentLang].bc_desc)" class="w-full btn-retro-green font-bold py-2 rounded text-xs shadow flex items-center justify-center gap-1">
-                <i class="fa-solid fa-shield-halved"></i> <span data-i18n="upgrade_bc">Upgrade Now</span>
+
+            <button onclick="showCustomModal('Builders Club Elite', 'Your BC account has all special privileges unlocked!')" class="w-full btn-retro-green font-bold py-2.5 rounded-lg text-xs shadow flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-crown text-yellow-300"></i> <span data-i18n="upgrade_bc">BC Active</span>
             </button>
-            <div class="bg-white rounded border border-gray-300 p-1 space-y-1 text-xs font-semibold">
-                <a href="#" onclick="showTab('games')" class="flex items-center p-2 rounded hover:bg-blue-50 text-gray-700 hover:text-blue-700 gap-2"><i class="fa-solid fa-house w-4"></i> <span data-i18n="side_home">Home</span></a>
-                <a href="#" onclick="showTab('catalog')" class="flex items-center p-2 rounded hover:bg-blue-50 text-gray-700 hover:text-blue-700 gap-2"><i class="fa-solid fa-shirt w-4"></i> <span data-i18n="side_avatar">Avatar</span></a>
-                <a href="#" onclick="showTab('develop')" class="flex items-center p-2 rounded hover:bg-blue-50 text-gray-700 hover:text-blue-700 gap-2"><i class="fa-solid fa-hammer w-4"></i> <span data-i18n="side_create">Create</span></a>
+
+            <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-2 space-y-1 text-xs font-semibold">
+                <a href="#" onclick="showTab('games')" class="flex items-center p-2.5 rounded-lg hover:bg-blue-900/40 text-zinc-300 hover:text-white gap-2.5"><i class="fa-solid fa-house w-4 text-blue-400"></i> <span data-i18n="side_home">Home</span></a>
+                <a href="#" onclick="showTab('catalog')" class="flex items-center p-2.5 rounded-lg hover:bg-blue-900/40 text-zinc-300 hover:text-white gap-2.5"><i class="fa-solid fa-shirt w-4 text-blue-400"></i> <span data-i18n="side_avatar">Avatar</span></a>
+                <a href="#" onclick="showTab('develop')" class="flex items-center p-2.5 rounded-lg hover:bg-blue-900/40 text-zinc-300 hover:text-white gap-2.5"><i class="fa-solid fa-hammer w-4 text-blue-400"></i> <span data-i18n="side_create">Create</span></a>
             </div>
         </aside>
 
-        <main class="flex-1 min-w-0 space-y-4">
+        <main class="flex-1 min-w-0 space-y-5">
             <!-- TAB 1: GAMES -->
-            <div id="tab-games" class="space-y-4">
-                <div class="bg-white p-3 rounded border border-gray-300 flex flex-wrap items-center justify-between gap-2 text-xs shadow-sm">
+            <div id="tab-games" class="space-y-5">
+                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs shadow-md">
                     <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                        <span class="font-black text-gray-800 text-lg" data-i18n="nav_games">Games</span>
-                        <select id="category-filter" onchange="renderGamesGrid()" class="border border-gray-300 rounded px-2 py-1 bg-gray-50 font-bold">
-                            <option value="all">All Genres</option>
-                            <option value="action">Action & Sword</option>
-                            <option value="survival">Survival & Disaster</option>
-                            <option value="parkour">Obby & Speedrun</option>
+                        <span class="font-black text-white text-lg" data-i18n="nav_games">Games</span>
+                        <select id="category-filter" onchange="renderGamesGrid()" class="border border-zinc-700 rounded-lg px-3 py-1.5 bg-zinc-800 text-white font-bold focus:outline-none">
+                            <option value="all">All Epic Genres</option>
+                            <option value="action">⚔️ Sword & Combat</option>
+                            <option value="survival">🌋 Extreme Survival</option>
+                            <option value="parkour">🏃 Pro Obby & Speed</option>
                         </select>
                     </div>
-                    <div class="relative w-full sm:w-56">
-                        <input type="text" id="game-search-input" oninput="filterGames()" placeholder="Search Games..." data-i18n-placeholder="search_placeholder" class="w-full border border-gray-300 rounded px-3 py-1 text-xs focus:outline-none focus:border-blue-600">
-                        <i class="fa-solid fa-magnifying-glass absolute right-2.5 top-2 text-gray-400 text-xs"></i>
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="game-search-input" oninput="filterGames()" placeholder="Search Epic Games..." data-i18n-placeholder="search_placeholder" class="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500">
+                        <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-zinc-400 text-xs"></i>
                     </div>
                 </div>
 
                 <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <h2 class="font-bold text-gray-800 text-base sm:text-lg" data-i18n="cat_popular">Popular Games</h2>
-                        <span class="text-xs font-bold text-blue-700 cursor-pointer">See All</span>
-                    </div>
-                    <div id="grid-popular" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
-                </div>
-
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <h2 class="font-bold text-blue-900 text-base sm:text-lg flex items-center gap-2">
-                            <i class="fa-solid fa-hammer text-blue-700"></i> <span data-i18n="cat_user_created">Player Creations (Multiplayer)</span>
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-extrabold text-white text-base sm:text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-fire text-orange-500"></i> <span data-i18n="cat_popular">Featured Epic Games</span>
                         </h2>
-                        <button onclick="showTab('develop')" class="btn-retro-green text-xs font-bold px-2.5 py-1 rounded">+ <span data-i18n="btn_create_new">Create New</span></button>
                     </div>
-                    <div id="grid-user-games" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+                    <div id="grid-popular" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
                 </div>
 
                 <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <h2 class="font-bold text-gray-800 text-base sm:text-lg" data-i18n="cat_top_rated">Top Rated Classic 2014</h2>
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-extrabold text-blue-400 text-base sm:text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-hammer"></i> <span data-i18n="cat_user_created">Multiplayer Player Creations</span>
+                        </h2>
+                        <button onclick="showTab('develop')" class="btn-retro-green text-xs font-bold px-3 py-1.5 rounded-lg shadow">+ <span data-i18n="btn_create_new">Create New Arena</span></button>
                     </div>
-                    <div id="grid-top-rated" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+                    <div id="grid-user-games" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-extrabold text-white text-base sm:text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-yellow-400"></i> <span data-i18n="cat_top_rated">Top Rated 2014 Classics</span>
+                        </h2>
+                    </div>
+                    <div id="grid-top-rated" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
                 </div>
             </div>
 
             <!-- TAB 2: STUDIO -->
-            <div id="tab-develop" class="hidden space-y-3">
-                <div class="bg-white p-3 sm:p-4 rounded border border-gray-300 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+            <div id="tab-develop" class="hidden space-y-4">
+                <div class="bg-zinc-900 p-4 sm:p-5 rounded-xl border border-zinc-800 flex flex-wrap items-center justify-between gap-4 shadow-md">
                     <div>
-                        <h1 class="text-lg sm:text-xl font-black text-gray-800" data-i18n="studio_title">obyxa001 3D Studio</h1>
-                        <p class="text-xs text-gray-600" data-i18n="studio_subtitle">Build 3D games with touch or mouse and publish them to multiplayer!</p>
+                        <h1 class="text-lg sm:text-xl font-black text-white" data-i18n="studio_title">obyxa001 3D Game Creator Studio</h1>
+                        <p class="text-xs text-zinc-400" data-i18n="studio_subtitle">Design multiplayer obbies, obstacles, and arenas with touch or mouse!</p>
                     </div>
                     <div class="flex items-center space-x-2 rtl:space-x-reverse w-full sm:w-auto">
-                        <input type="text" id="studio-game-title" value="My Obby Level" class="border border-gray-400 text-xs px-2 py-1.5 rounded font-bold flex-1 sm:w-44">
-                        <button onclick="publishStudioGame()" class="btn-retro-green font-bold text-xs px-3 py-1.5 rounded shadow shrink-0">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> <span data-i18n="btn_publish">Publish Game</span>
+                        <input type="text" id="studio-game-title" value="Pro Mega Obby" class="bg-zinc-800 border border-zinc-700 text-white text-xs px-3 py-2 rounded-lg font-bold flex-1 sm:w-48">
+                        <button onclick="publishStudioGame()" class="btn-retro-green font-bold text-xs px-4 py-2 rounded-lg shadow shrink-0">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> <span data-i18n="btn_publish">Publish Online</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-white p-2.5 rounded border border-gray-300 space-y-2 shadow-sm">
-                    <div class="flex flex-wrap items-center justify-between gap-2 bg-gray-100 p-2 rounded border border-gray-200 text-xs">
-                        <div class="flex items-center space-x-1 flex-wrap gap-y-1">
-                            <span class="font-bold text-gray-700 mr-1" data-i18n="studio_add_part">Add Part:</span>
-                            <button onclick="addStudioBlock('block')" class="bg-blue-600 text-white font-bold px-2 py-1 rounded hover:bg-blue-700">+ Block</button>
-                            <button onclick="addStudioBlock('lava')" class="bg-red-600 text-white font-bold px-2 py-1 rounded hover:bg-red-700">+ Lava</button>
-                            <button onclick="addStudioBlock('speed')" class="bg-yellow-500 text-white font-bold px-2 py-1 rounded hover:bg-yellow-600">+ SpeedPad</button>
-                            <button onclick="addStudioBlock('sword')" class="bg-purple-600 text-white font-bold px-2 py-1 rounded hover:bg-purple-700">+ Sword</button>
+                <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800 space-y-3 shadow-md">
+                    <div class="flex flex-wrap items-center justify-between gap-2 bg-zinc-800/80 p-2.5 rounded-lg border border-zinc-700 text-xs">
+                        <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                            <span class="font-bold text-zinc-300 mr-1" data-i18n="studio_add_part">Spawn Block:</span>
+                            <button onclick="addStudioBlock('block')" class="bg-blue-600 text-white font-bold px-2.5 py-1 rounded hover:bg-blue-500 shadow">+ Platform</button>
+                            <button onclick="addStudioBlock('lava')" class="bg-red-600 text-white font-bold px-2.5 py-1 rounded hover:bg-red-500 shadow">+ Lava Trap</button>
+                            <button onclick="addStudioBlock('speed')" class="bg-yellow-500 text-zinc-950 font-black px-2.5 py-1 rounded hover:bg-yellow-400 shadow">+ Speed Pad</button>
+                            <button onclick="addStudioBlock('tower')" class="bg-purple-600 text-white font-bold px-2.5 py-1 rounded hover:bg-purple-500 shadow">+ Pillar</button>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="font-bold text-gray-700" data-i18n="studio_color">Color:</span>
-                            <input type="color" id="studio-color-picker" value="#0055b3" class="w-7 h-7 rounded cursor-pointer border border-gray-400">
-                            <button onclick="clearStudio()" class="bg-red-500 text-white font-bold px-2 py-1 rounded hover:bg-red-600"><i class="fa-solid fa-trash"></i></button>
+                            <span class="font-bold text-zinc-300" data-i18n="studio_color">Color:</span>
+                            <input type="color" id="studio-color-picker" value="#3b82f6" class="w-8 h-8 rounded cursor-pointer border border-zinc-600 bg-transparent">
+                            <button onclick="clearStudio()" class="bg-red-500/80 text-white font-bold px-2.5 py-1 rounded hover:bg-red-600"><i class="fa-solid fa-trash"></i> Reset</button>
                         </div>
                     </div>
 
-                    <div class="relative w-full h-[360px] sm:h-[460px] bg-gray-900 rounded border border-gray-400 overflow-hidden">
+                    <div class="relative w-full h-[380px] sm:h-[480px] bg-zinc-950 rounded-xl border border-zinc-700 overflow-hidden shadow-inner">
                         <div id="studio-container" class="w-full h-full"></div>
-                        <div class="absolute bottom-2 left-2 bg-black/70 text-white text-[11px] p-2 rounded backdrop-blur max-w-xs pointer-events-none">
-                            <strong data-i18n="studio_controls_title">Controls:</strong>
-                            <div data-i18n="studio_controls_desc">Touch/Click & Drag to rotate scene. Tap Add Part buttons to spawn objects.</div>
+                        <div class="absolute bottom-3 left-3 bg-black/80 text-zinc-200 text-[11px] p-2.5 rounded-lg backdrop-blur border border-zinc-800 max-w-xs pointer-events-none">
+                            <strong data-i18n="studio_controls_title" class="text-blue-400">Studio Controls:</strong>
+                            <div data-i18n="studio_controls_desc">Touch/Click & Drag to orbit camera. Tap spawn buttons to build custom elements.</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- TAB 3: CATALOG -->
-            <div id="tab-catalog" class="hidden space-y-3">
-                <div class="bg-white p-4 rounded border border-gray-300 shadow-sm">
-                    <h1 class="text-xl font-bold text-gray-800 mb-3" data-i18n="catalog_title">Avatar Catalog (2014 Gear & Hats)</h1>
-                    <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+            <div id="tab-catalog" class="hidden space-y-4">
+                <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 shadow-md">
+                    <h1 class="text-xl font-extrabold text-white mb-4" data-i18n="catalog_title">Elite Avatar Catalog (2014 Limited Gears)</h1>
+                    <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
                 </div>
             </div>
         </main>
 
-        <aside class="w-56 shrink-0 hidden lg:block space-y-4">
-            <div class="bg-white border border-gray-300 p-3 text-center relative overflow-hidden shadow-sm">
-                <div class="text-[10px] font-bold text-gray-400 text-right uppercase mb-1">Advertisement</div>
-                <div class="font-black text-xl text-blue-900 leading-tight">JOIN A GREAT GROUP!!!</div>
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=CoolClub" class="w-20 h-20 mx-auto my-2 drop-shadow">
-                <button onclick="showCustomModal('Group Joined', 'You are now a member of the 2014 Builders Club Fan Group!')" class="btn-retro-blue w-full font-extrabold py-2 text-xs rounded shadow">
-                    JOIN GROUP NOW!
+        <aside class="w-60 shrink-0 hidden lg:block space-y-4">
+            <div class="bg-zinc-900 border border-zinc-800 p-4 text-center relative overflow-hidden rounded-xl shadow-md">
+                <div class="text-[10px] font-bold text-zinc-500 text-right uppercase mb-1">Sponsored Ad</div>
+                <div class="font-black text-xl text-blue-400 leading-tight">JOIN BUILDERS CLUB ELITE!</div>
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=EliteClub" class="w-24 h-24 mx-auto my-2 drop-shadow-xl">
+                <button onclick="showCustomModal('VIP Club Joined', 'Welcome to the exclusive Builders Club VIP Lounge!')" class="btn-retro-blue w-full font-extrabold py-2.5 text-xs rounded-lg shadow">
+                    JOIN GROUP NOW
                 </button>
             </div>
-            <div class="bg-yellow-50 border border-yellow-300 p-3 text-center relative shadow-sm">
-                <div class="text-[10px] font-bold text-gray-400 text-right uppercase mb-1">Advertisement</div>
-                <div class="text-2xl font-black text-red-600 transform -rotate-3">TIX ! OMG</div>
-                <div class="my-2 p-2 bg-yellow-200 border border-yellow-400 rounded text-xs font-bold text-yellow-900">
-                    Get 10,000 Free Tickets Today!
+
+            <div class="bg-zinc-900 border border-zinc-800 p-4 text-center relative rounded-xl shadow-md">
+                <div class="text-[10px] font-bold text-zinc-500 text-right uppercase mb-1">Sponsored Ad</div>
+                <div class="text-2xl font-black text-red-500 transform -rotate-2">FREE TIX EVENT!</div>
+                <div class="my-3 p-2.5 bg-red-950/40 border border-red-500/40 rounded-lg text-xs font-bold text-red-300">
+                    Claim 50,000 Tickets Instantly!
                 </div>
-                <button onclick="showCustomModal('Tickets Claimed', '10,000 Tx added to your balance!')" class="btn-retro-green w-full font-bold py-1.5 text-xs rounded">
+                <button onclick="showCustomModal('Tickets Claimed!', '50,000 Tx successfully credited to your account balance!')" class="btn-retro-green w-full font-bold py-2 text-xs rounded-lg shadow">
                     CLAIM TICKETS
                 </button>
             </div>
@@ -352,17 +345,17 @@
 
     <!-- GAME MODAL -->
     <div id="game-modal" class="fixed inset-0 bg-black z-50 hidden flex flex-col select-none">
-        <div class="w-full bg-gray-900 text-white px-3 py-2 flex items-center justify-between border-b border-gray-800 shrink-0 z-40">
-            <div class="flex items-center space-x-2 rtl:space-x-reverse">
-                <span class="bg-red-600 text-[10px] font-black px-2 py-0.5 rounded">obyxa001</span>
-                <h3 id="modal-game-title" class="font-bold text-sm sm:text-base text-yellow-400 truncate max-w-[150px] sm:max-w-xs">Game</h3>
-            </div>
+        <div class="w-full bg-zinc-900 text-white px-4 py-2.5 flex items-center justify-between border-b border-zinc-800 shrink-0 z-40 shadow-md">
             <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                <div class="text-xs text-gray-300 flex items-center gap-1">
+                <span class="bg-red-600 text-[11px] font-black px-2.5 py-0.5 rounded shadow">obyxa001</span>
+                <h3 id="modal-game-title" class="font-extrabold text-sm sm:text-base text-yellow-400 truncate max-w-[180px] sm:max-w-md">Game</h3>
+            </div>
+            <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                <div class="text-xs text-zinc-300 flex items-center gap-1.5 font-bold bg-zinc-800 px-2.5 py-1 rounded-full border border-zinc-700">
                     <i class="fa-solid fa-users text-green-400"></i>
-                    <span id="modal-online-players-count">1 Players</span>
+                    <span id="modal-online-players-count">1 Players Online</span>
                 </div>
-                <button onclick="closeGameModal()" class="text-gray-300 hover:text-white font-bold text-xl px-2">
+                <button onclick="closeGameModal()" class="text-zinc-400 hover:text-white font-bold text-2xl px-2">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -376,36 +369,36 @@
             </div>
 
             <div id="mobile-hud" class="absolute inset-0 z-30 overflow-hidden pointer-events-none">
-                <div class="absolute bottom-8 right-6 pointer-events-auto flex flex-col space-y-4 items-center z-50">
-                    <button id="touch-attack-btn" class="touch-btn w-16 h-16 bg-red-600 active:bg-red-700 border-2 border-white rounded-full text-white font-black text-xs shadow-2xl active:scale-95 flex items-center justify-center cursor-pointer">
-                        <i class="fa-solid fa-burst text-2xl pointer-events-none"></i>
+                <div class="absolute bottom-10 right-8 pointer-events-auto flex flex-col space-y-4 items-center z-50">
+                    <button id="touch-attack-btn" class="touch-btn w-18 h-18 w-16 h-16 bg-red-600 active:bg-red-700 border-2 border-white rounded-full text-white font-black shadow-2xl active:scale-95 flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-sword text-2xl pointer-events-none"></i>
                     </button>
-                    <button id="touch-jump-btn" class="touch-btn w-20 h-20 bg-green-600 active:bg-green-700 border-2 border-white rounded-full text-white font-black text-base shadow-2xl active:scale-95 flex items-center justify-center cursor-pointer">
+                    <button id="touch-jump-btn" class="touch-btn w-20 h-20 bg-green-600 active:bg-green-700 border-2 border-white rounded-full text-white font-black text-sm shadow-2xl active:scale-95 flex items-center justify-center cursor-pointer">
                         JUMP
                     </button>
                 </div>
             </div>
 
-            <div class="absolute top-3 left-3 z-40 max-w-[240px] pointer-events-auto">
-                <div id="chat-messages" class="h-20 overflow-y-auto bg-black/50 text-white text-[11px] p-2 rounded mb-1 backdrop-blur space-y-1"></div>
-                <div class="flex">
-                    <input type="text" id="chat-input" placeholder="Press Enter to chat..." class="bg-black/60 text-white text-[11px] px-2 py-1 rounded-l w-full border border-gray-700 focus:outline-none">
-                    <button onclick="sendChatMessage()" class="bg-blue-600 text-white text-[11px] px-2 py-1 rounded-r font-bold">Send</button>
+            <div class="absolute top-4 left-4 z-40 max-w-[280px] pointer-events-auto">
+                <div id="chat-messages" class="h-24 overflow-y-auto bg-black/60 text-white text-xs p-2.5 rounded-lg mb-1.5 backdrop-blur-md border border-zinc-700 space-y-1 shadow-lg"></div>
+                <div class="flex shadow-lg">
+                    <input type="text" id="chat-input" placeholder="Type message in chat..." class="bg-black/70 text-white text-xs px-3 py-1.5 rounded-l-lg w-full border border-zinc-700 focus:outline-none">
+                    <button onclick="sendChatMessage()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-r-lg font-bold">Send</button>
                 </div>
             </div>
 
-            <div id="mp-status" class="absolute top-3 right-3 bg-green-600/80 text-white text-[11px] px-2.5 py-1 rounded font-bold backdrop-blur z-30 pointer-events-none">
-                <i class="fa-solid fa-wifi mr-1"></i> Multiplayer Connected
+            <div id="mp-status" class="absolute top-4 right-4 bg-green-600/90 text-white text-xs px-3 py-1.5 rounded-lg font-bold backdrop-blur-md z-30 pointer-events-none shadow-lg">
+                <i class="fa-solid fa-wifi mr-1.5"></i> Multiplayer Online
             </div>
         </div>
     </div>
 
     <!-- CUSTOM ALERT MODAL -->
-    <div id="custom-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg border border-gray-400 max-w-sm w-full p-4 shadow-xl text-center space-y-3">
-            <h3 id="custom-modal-title" class="font-black text-lg text-gray-800">Alert</h3>
-            <p id="custom-modal-msg" class="text-xs text-gray-600">Message content here...</p>
-            <button onclick="closeCustomModal()" class="btn-retro-blue w-full font-bold py-1.5 rounded text-xs">OK</button>
+    <div id="custom-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-zinc-900 rounded-xl border border-zinc-700 max-w-sm w-full p-5 shadow-2xl text-center space-y-4">
+            <h3 id="custom-modal-title" class="font-black text-lg text-white">Alert</h3>
+            <p id="custom-modal-msg" class="text-xs text-zinc-300">Message content here...</p>
+            <button onclick="closeCustomModal()" class="btn-retro-blue w-full font-bold py-2 rounded-lg text-xs shadow">OK</button>
         </div>
     </div>
 
@@ -413,121 +406,121 @@
     <script>
         const translations = {
             en: {
-                nav_games: "Games", nav_catalog: "Catalog", nav_develop: "Build / Studio",
+                nav_games: "Games", nav_catalog: "Catalog", nav_develop: "Studio / Build",
                 side_home: "Home", side_avatar: "Avatar", side_create: "Create",
-                upgrade_bc: "Upgrade Now", cat_popular: "Popular Games",
-                cat_user_created: "Player Creations (Multiplayer)", cat_top_rated: "Top Rated Classic 2014",
-                search_placeholder: "Search Games...", btn_create_new: "Create New",
-                btn_publish: "Publish Game", studio_title: "obyxa001 3D Studio",
-                studio_subtitle: "Build 3D games with touch or mouse and publish them to multiplayer!",
-                studio_add_part: "Add Part:", studio_color: "Color:",
-                studio_controls_title: "Controls:", studio_controls_desc: "Touch/Click & Drag to rotate scene. Tap Add Part buttons to spawn objects.",
-                catalog_title: "Avatar Catalog (2014 Gear & Hats)",
-                bc_title: "Builders Club", bc_desc: "Builders Club Membership is active on your account!"
+                upgrade_bc: "BC Active", cat_popular: "Featured Epic Games",
+                cat_user_created: "Multiplayer Player Creations", cat_top_rated: "Top Rated 2014 Classics",
+                search_placeholder: "Search Epic Games...", btn_create_new: "Create New Arena",
+                btn_publish: "Publish Online", studio_title: "obyxa001 3D Game Creator Studio",
+                studio_subtitle: "Design multiplayer obbies, obstacles, and arenas with touch or mouse!",
+                studio_add_part: "Spawn Block:", studio_color: "Color:",
+                studio_controls_title: "Studio Controls:", studio_controls_desc: "Touch/Click & Drag to orbit camera. Tap spawn buttons to build custom elements.",
+                catalog_title: "Elite Avatar Catalog (2014 Limited Gears)",
+                bc_title: "Builders Club Elite", bc_desc: "Your BC account has all special privileges unlocked!"
             },
             tr: {
-                nav_games: "Oyunlar", nav_catalog: "Katalog", nav_develop: "Oyun Yap / Studio",
-                side_home: "Ana Sayfa", side_avatar: "Karakter", side_create: "Oyun Yap",
-                upgrade_bc: "Yükselt (BC)", cat_popular: "Popüler Oyunlar",
-                cat_user_created: "Oyuncu Yapımları (Multiplayer)", cat_top_rated: "En Çok Sevilen 2014 Klasikleri",
-                search_placeholder: "Oyun Ara...", btn_create_new: "Yeni Oyun Oluştur",
-                btn_publish: "Oyunu Yayınla", studio_title: "obyxa001 3D Studio",
-                studio_subtitle: "Dokunmatik veya fare ile 3D oyunlar yapın ve multiplayer yayınlayın!",
-                studio_add_part: "Parça Ekle:", studio_color: "Renk:",
-                studio_controls_title: "Kontroller:", studio_controls_desc: "Sahneyi döndürmek için sürükleyin. Obje eklemek için yukarıdaki butonlara dokunun.",
-                catalog_title: "Karakter Kataloğu (2014 Eşyaları)",
-                bc_title: "Builders Club", bc_desc: "Builders Club üyeliğiniz hesabınızda aktif!"
+                nav_games: "Oyunlar", nav_catalog: "Katalog", nav_develop: "Stüdyo / Oluştur",
+                side_home: "Ana Sayfa", side_avatar: "Karakter", side_create: "Oluştur",
+                upgrade_bc: "BC Aktif", cat_popular: "Öne Çıkan Epik Oyunlar",
+                cat_user_created: "Çok Oyunculu Oyuncu Eserleri", cat_top_rated: "En Çok Beğenilen 2014 Klasikleri",
+                search_placeholder: "Epik Oyun Ara...", btn_create_new: "Yeni Arena Yap",
+                btn_publish: "Çevrimiçi Yayınla", studio_title: "obyxa001 3D Oyun Oluşturma Stüdyosu",
+                studio_subtitle: "Dokunmatik veya fare ile multiplayer parkurlar ve arenalar tasarla!",
+                studio_add_part: "Blok Ekle:", studio_color: "Renk:",
+                studio_controls_title: "Stüdyo Kontrolleri:", studio_controls_desc: "Kamerayı döndürmek için sürükleyin. Nesne eklemek için butonları kullanın.",
+                catalog_title: "Seçkin Karakter Kataloğu (2014 Sınırlı Eşyaları)",
+                bc_title: "Builders Club Elite", bc_desc: "BC hesabınızdaki tüm ayrıcalıklar aktif!"
             },
             de: {
                 nav_games: "Spiele", nav_catalog: "Katalog", nav_develop: "Studio / Bauen",
                 side_home: "Startseite", side_avatar: "Avatar", side_create: "Erstellen",
-                upgrade_bc: "Jetzt Upgraden", cat_popular: "Beliebte Spiele",
+                upgrade_bc: "BC Aktiv", cat_popular: "Epische Spiele",
                 cat_user_created: "Spieler-Kreationen (Multiplayer)", cat_top_rated: "Top Klassiker 2014",
-                search_placeholder: "Spiele suchen...", btn_create_new: "Neu Erstellen",
-                btn_publish: "Spiel Veröffentlichen", studio_title: "obyxa001 3D Studio",
-                studio_subtitle: "Baue 3D-Spiele mit Touch oder Maus und veröffentliche sie!",
+                search_placeholder: "Spiele suchen...", btn_create_new: "Neue Arena",
+                btn_publish: "Veröffentlichen", studio_title: "obyxa001 3D Studio",
+                studio_subtitle: "Baue epische 3D-Spiele und veröffentliche sie im Multiplayer!",
                 studio_add_part: "Teil Hinzufügen:", studio_color: "Farbe:",
-                studio_controls_title: "Steuerung:", studio_controls_desc: "Ziehen zum Drehen. Tippe auf Knöpfe oben um Objekte hinzuzufügen.",
-                catalog_title: "Avatar Katalog (2014 Gegenstände)",
-                bc_title: "Builders Club", bc_desc: "Builders Club Mitgliedschaft ist aktiv!"
+                studio_controls_title: "Steuerung:", studio_controls_desc: "Ziehen zum Drehen. Tippe auf Knöpfe um Blöcke zu platzieren.",
+                catalog_title: "Avatar Katalog (2014)",
+                bc_title: "Builders Club Elite", bc_desc: "Mitgliedschaft aktiv!"
             },
             es: {
                 nav_games: "Juegos", nav_catalog: "Catálogo", nav_develop: "Estudio / Crear",
                 side_home: "Inicio", side_avatar: "Avatar", side_create: "Crear",
-                upgrade_bc: "Mejorar Ahora", cat_popular: "Juegos Populares",
-                cat_user_created: "Creaciones de Jugadores (Multijugador)", cat_top_rated: "Mejores Clásicos 2014",
-                search_placeholder: "Buscar Juegos...", btn_create_new: "Crear Nuevo",
-                btn_publish: "Publicar Juego", studio_title: "obyxa001 3D Studio",
-                studio_subtitle: "¡Construye juegos 3D con táctil o ratón y publícalos en multijugador!",
+                upgrade_bc: "BC Activo", cat_popular: "Juegos Épicos",
+                cat_user_created: "Creaciones Multijugador", cat_top_rated: "Clásicos 2014",
+                search_placeholder: "Buscar Juegos...", btn_create_new: "Crear Arena",
+                btn_publish: "Publicar", studio_title: "obyxa001 Estudio 3D",
+                studio_subtitle: "¡Construye mundos 3D y publícalos en multijugador!",
                 studio_add_part: "Añadir Parte:", studio_color: "Color:",
-                studio_controls_title: "Controles:", studio_controls_desc: "Arrastra para rotar. Toca botones arriba para crear objetos.",
-                catalog_title: "Catálogo de Avatares (2014)",
-                bc_title: "Builders Club", bc_desc: "¡Tu suscripción de Builders Club está activa!"
+                studio_controls_title: "Controles:", studio_controls_desc: "Arrastra para rotar la cámara.",
+                catalog_title: "Catálogo de Avatares",
+                bc_title: "Builders Club Elite", bc_desc: "¡Membresía activa!"
             },
             it: {
                 nav_games: "Giochi", nav_catalog: "Catalogo", nav_develop: "Studio / Crea",
                 side_home: "Home", side_avatar: "Avatar", side_create: "Crea",
-                upgrade_bc: "Potenzia Ora", cat_popular: "Giochi Popolari",
-                cat_user_created: "Creazioni dei Giocatori (Multiplayer)", cat_top_rated: "Classici 2014 Più Votati",
-                search_placeholder: "Cerca Giochi...", btn_create_new: "Crea Nuovo",
-                btn_publish: "Pubblica Gioco", studio_title: "obyxa001 3D Studio",
-                studio_subtitle: "Crea giochi 3D con touch o mouse e pubblicali in multiplayer!",
+                upgrade_bc: "BC Attivo", cat_popular: "Giochi Epici",
+                cat_user_created: "Creazioni Multiplayer", cat_top_rated: "Classici 2014",
+                search_placeholder: "Cerca Giochi...", btn_create_new: "Crea Arena",
+                btn_publish: "Pubblica", studio_title: "obyxa001 Studio 3D",
+                studio_subtitle: "Crea giochi 3D in multiplayer!",
                 studio_add_part: "Aggiungi Pezzo:", studio_color: "Colore:",
-                studio_controls_title: "Controlli:", studio_controls_desc: "Trascina per ruotare. Tocca i pulsanti in alto per posizionare oggetti.",
-                catalog_title: "Catalogo Avatar (Oggetti 2014)",
-                bc_title: "Builders Club", bc_desc: "Abbonamento Builders Club attivo!"
+                studio_controls_title: "Controlli:", studio_controls_desc: "Trascina per ruotare.",
+                catalog_title: "Catalogo Avatar",
+                bc_title: "Builders Club Elite", bc_desc: "Abbonamento attivo!"
             },
             ja: {
-                nav_games: "ゲーム", nav_catalog: "カタログ", nav_develop: "スタジオ / 作成",
+                nav_games: "ゲーム", nav_catalog: "カタログ", nav_develop: "スタジオ",
                 side_home: "ホーム", side_avatar: "アバター", side_create: "作成",
-                upgrade_bc: "アップグレード", cat_popular: "人気のゲーム",
-                cat_user_created: "プレイヤーの作品 (マルチプレイ対応)", cat_top_rated: "2014クラシック名作",
+                upgrade_bc: "BC有効", cat_popular: "おすすめゲーム",
+                cat_user_created: "マルチプレイヤー作品", cat_top_rated: "2014名作",
                 search_placeholder: "ゲームを検索...", btn_create_new: "新規作成",
-                btn_publish: "ゲームを公開", studio_title: "obyxa001 3D スタジオ",
-                studio_subtitle: "タッチやマウスで3Dゲームを作成してマルチプレイヤーで公開しよう！",
+                btn_publish: "公開", studio_title: "obyxa001 3Dスタジオ",
+                studio_subtitle: "マルチプレイ対応の3Dゲームを作成しよう！",
                 studio_add_part: "パーツ追加:", studio_color: "色:",
-                studio_controls_title: "操作方法:", studio_controls_desc: "ドラッグでカメラ回転。上のボタンをタップしてブロックを配置。",
-                catalog_title: "アバターカタログ (2014アイテム)",
-                bc_title: "Builders Club", bc_desc: "Builders Club メンバーシップが有効です！"
+                studio_controls_title: "操作:", studio_controls_desc: "ドラッグで視点移動。",
+                catalog_title: "アバターカタログ",
+                bc_title: "Builders Club Elite", bc_desc: "メンバーシップ有効です！"
             },
             ko: {
-                nav_games: "게임", nav_catalog: "카탈로그", nav_develop: "스튜디오 / 만들기",
+                nav_games: "게임", nav_catalog: "카탈로그", nav_develop: "스튜디오",
                 side_home: "홈", side_avatar: "아바타", side_create: "만들기",
-                upgrade_bc: "지금 업그레이드", cat_popular: "인기 게임",
-                cat_user_created: "플레이어 제작 게임 (멀티플레이 지원)", cat_top_rated: "2014 클래식 명작",
-                search_placeholder: "게임 검색...", btn_create_new: "새로 만들기",
-                btn_publish: "게임 게시하기", studio_title: "obyxa001 3D 스튜디오",
-                studio_subtitle: "터치나 마우스로 3D 게임을 제작하고 멀티플레이로 공유하세요!",
+                upgrade_bc: "BC 활성", cat_popular: "인기 게임",
+                cat_user_created: "멀티플레이어 제작", cat_top_rated: "2014 클래식",
+                search_placeholder: "게임 검색...", btn_create_new: "새 아레나",
+                btn_publish: "게시", studio_title: "obyxa001 3D 스튜디오",
+                studio_subtitle: "멀티플레이 3D 게임을 만드세요!",
                 studio_add_part: "부품 추가:", studio_color: "색상:",
-                studio_controls_title: "조작법:", studio_controls_desc: "드래그하여 화면 회전. 상단 버튼을 눌러 블록 배치.",
-                catalog_title: "아바타 카탈로그 (2014 아이템)",
-                bc_title: "Builders Club", bc_desc: "Builders Club 멤버십이 활성화되었습니다!"
+                studio_controls_title: "조작:", studio_controls_desc: "드래그하여 카메라 회전.",
+                catalog_title: "아바타 카탈로그",
+                bc_title: "Builders Club Elite", bc_desc: "멤버십이 활성화되었습니다!"
             },
             zh: {
-                nav_games: "游戏", nav_catalog: "目录", nav_develop: "创作 / 工作室",
+                nav_games: "游戏", nav_catalog: "目录", nav_develop: "工作室",
                 side_home: "首页", side_avatar: "角色", side_create: "创作",
-                upgrade_bc: "立即升级", cat_popular: "热门游戏",
-                cat_user_created: "玩家创作 (支持多人联机)", cat_top_rated: "2014经典高分游戏",
-                search_placeholder: "搜索游戏...", btn_create_new: "新建游戏",
-                btn_publish: "发布游戏", studio_title: "obyxa001 3D 工作室",
-                studio_subtitle: "使用触摸屏或鼠标构建3D游戏并发布到多人大厅！",
+                upgrade_bc: "BC 激活", cat_popular: "热门史诗游戏",
+                cat_user_created: "多人联机作品", cat_top_rated: "2014经典高分",
+                search_placeholder: "搜索游戏...", btn_create_new: "创建新竞技场",
+                btn_publish: "发布", studio_title: "obyxa001 3D 工作室",
+                studio_subtitle: "构建多人3D游戏世界！",
                 studio_add_part: "添加零件:", studio_color: "颜色:",
-                studio_controls_title: "操作指南:", studio_controls_desc: "拖动旋转视角。点击上方按钮添加3D积木。",
-                catalog_title: "角色目录 (2014经典装备)",
-                bc_title: "Builders Club", bc_desc: "您的 Builders Club 会员资格已激活！"
+                studio_controls_title: "操作:", studio_controls_desc: "拖动旋转视角。",
+                catalog_title: "角色目录",
+                bc_title: "Builders Club Elite", bc_desc: "会员资格已激活！"
             },
             ar: {
-                nav_games: "الألعاب", nav_catalog: "الكتالوج", nav_develop: "الاستوديو / البناء",
+                nav_games: "الألعاب", nav_catalog: "الكتالوج", nav_develop: "الاستوديو",
                 side_home: "الرئيسية", side_avatar: "الشخصية", side_create: "إنشاء",
-                upgrade_bc: "ترقية الآن", cat_popular: "الألعاب الشائعة",
-                cat_user_created: "ابتكارات اللاعبين (متعددة اللاعبين)", cat_top_rated: "كلاسيكيات 2014 الأعلى تقييماً",
-                search_placeholder: "بحث عن الألعاب...", btn_create_new: "إنشاء لعبة جديدة",
-                btn_publish: "نشر اللعبة", studio_title: "استوديو obyxa001 ثلاثي الأبعاد",
-                studio_subtitle: "ابنِ ألعاباً ثلاثية الأبعاد باللمس أو الماوس وانشرها للعب الجماعي!",
+                upgrade_bc: "BC مفعل", cat_popular: "الألعاب الملحمية",
+                cat_user_created: "إبداعات اللاعبين الجماعية", cat_top_rated: "كلاسيكيات 2014",
+                search_placeholder: "بحث عن الألعاب...", btn_create_new: "إنشاء ساحة جديدة",
+                btn_publish: "نشر", studio_title: "استوديو الألعاب obyxa001",
+                studio_subtitle: "ابنِ عوالم وألعاب ثلاثية الأبعاد للعب الجماعي!",
                 studio_add_part: "إضافة قطعة:", studio_color: "اللون:",
-                studio_controls_title: "عناصر التحكم:", studio_controls_desc: "اسحب لتدوير المشهد. اضغط الأزرار بالأعلى لإضافة كتل.",
-                catalog_title: "كتالوج الشخصيات (عناصر 2014)",
-                bc_title: "Builders Club", bc_desc: "عضوية Builders Club مفعلة بالحساب!"
+                studio_controls_title: "التحكم:", studio_controls_desc: "اسحب لتدوير الكاميرا.",
+                catalog_title: "كتالوج الشخصيات",
+                bc_title: "Builders Club Elite", bc_desc: "العضوية مفعلة بنجاح!"
             }
         };
 
@@ -548,18 +541,18 @@
         }
 
         const CLASSIC_GAMES = [
-            { id: 'crossroads', title: 'Classic Crossroads', creator: 'obyxa001', players: '4,210', rating: '96%', category: 'action', image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80', type: 'sword' },
-            { id: 'disaster', title: 'Natural Disaster Survival', creator: 'Stickmasterluke', players: '12,850', rating: '98%', category: 'survival', image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=400&q=80', type: 'disaster' },
-            { id: 'speedrun', title: 'Speed Run 4', creator: 'Vurse', players: '8,920', rating: '93%', category: 'parkour', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80', type: 'speedrun' },
-            { id: 'elevator', title: 'The Normal Elevator', creator: 'NowDoTheHarlemShake', players: '3,100', rating: '91%', category: 'action', image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=400&q=80', type: 'elevator' },
-            { id: 'floodescape', title: 'Flood Escape 1', creator: 'Crazyblox', players: '6,430', rating: '95%', category: 'survival', image: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&q=80', type: 'floodescape' },
-            { id: 'ridebox', title: 'Ride a Box Down Stuff!', creator: 'Crazyman32', players: '5,120', rating: '89%', category: 'action', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80', type: 'ridebox' },
-            { id: 'pizza', title: 'Work at a Pizza Place', creator: 'Dued1', players: '14,200', rating: '99%', category: 'action', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80', type: 'pizza' },
-            { id: 'obbyisland', title: 'Wipeout Obby Island', creator: 'obyxa001', players: '2,890', rating: '90%', category: 'parkour', image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&q=80', type: 'obbyisland' },
-            { id: 'teapots', title: 'Dodge The Teapots!', creator: 'Clockwork', players: '1,940', rating: '88%', category: 'survival', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&q=80', type: 'teapots' },
-            { id: 'sfoth', title: 'Sword Fights Heights IV', creator: 'Telamon', players: '7,800', rating: '97%', category: 'action', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=400&q=80', type: 'sfoth' },
-            { id: 'zombie', title: 'Zombie Survival 2014', creator: 'ROBLOX', players: '9,340', rating: '94%', category: 'survival', image: 'https://images.unsplash.com/photo-1509281373149-e957c6296406?w=400&q=80', type: 'zombie' },
-            { id: 'paintball', title: 'Paintball Arena', creator: 'Daxter33', players: '4,500', rating: '92%', category: 'action', image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80', type: 'paintball' }
+            { id: 'crossroads', title: 'Epic Sword Crossroads', creator: 'obyxa001', players: '8,410', rating: '98%', category: 'action', image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80', type: 'sword' },
+            { id: 'disaster', title: 'Extreme Natural Disaster', creator: 'Stickmasterluke', players: '15,850', rating: '99%', category: 'survival', image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=400&q=80', type: 'disaster' },
+            { id: 'speedrun', title: 'Speed Run 4 Pro Edition', creator: 'Vurse', players: '11,920', rating: '96%', category: 'parkour', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80', type: 'speedrun' },
+            { id: 'elevator', title: 'The Ultimate Elevator', creator: 'NowDoTheHarlemShake', players: '6,100', rating: '94%', category: 'action', image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=400&q=80', type: 'elevator' },
+            { id: 'floodescape', title: 'Flood Escape Ultimate', creator: 'Crazyblox', players: '9,430', rating: '97%', category: 'survival', image: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&q=80', type: 'floodescape' },
+            { id: 'ridebox', title: 'Mega Ride Down Lava Falls', creator: 'Crazyman32', players: '7,120', rating: '92%', category: 'action', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80', type: 'ridebox' },
+            { id: 'pizza', title: 'Ultimate Pizza Place Tycoon', creator: 'Dued1', players: '18,200', rating: '99%', category: 'action', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80', type: 'pizza' },
+            { id: 'obbyisland', title: 'Mega Wipeout Obby Island', creator: 'obyxa001', players: '5,890', rating: '95%', category: 'parkour', image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&q=80', type: 'obbyisland' },
+            { id: 'teapots', title: 'Teapot Dodge Arena', creator: 'Clockwork', players: '3,940', rating: '91%', category: 'survival', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&q=80', type: 'teapots' },
+            { id: 'sfoth', title: 'Sword Fights Heights IV Elite', creator: 'Telamon', players: '12,800', rating: '98%', category: 'action', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=400&q=80', type: 'sfoth' },
+            { id: 'zombie', title: 'Zombie Apocalypse 2014', creator: 'ROBLOX', players: '14,340', rating: '96%', category: 'survival', image: 'https://images.unsplash.com/photo-1509281373149-e957c6296406?w=400&q=80', type: 'zombie' },
+            { id: 'paintball', title: 'Super Paintball Warfare', creator: 'Daxter33', players: '7,500', rating: '94%', category: 'action', image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80', type: 'paintball' }
         ];
 
         function renderGamesGrid() {
@@ -577,21 +570,21 @@
 
         function createGameCardHtml(game, isCustom = false) {
             return `
-                <div class="game-card rounded overflow-hidden cursor-pointer flex flex-col justify-between" onclick="launchGame('${game.id}', '${game.title.replace(/'/g, "\\'")}', '${game.type}')">
-                    <div class="relative h-24 sm:h-28 bg-gray-200 overflow-hidden">
-                        <img src="${game.image}" class="w-full h-full object-cover">
-                        <div class="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">
+                <div class="game-card rounded-xl overflow-hidden cursor-pointer flex flex-col justify-between shadow-md" onclick="launchGame('${game.id}', '${game.title.replace(/'/g, "\\'")}', '${game.type}')">
+                    <div class="relative h-28 sm:h-32 bg-zinc-800 overflow-hidden">
+                        <img src="${game.image}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        <div class="absolute bottom-1.5 right-1.5 bg-black/80 text-white text-[10px] px-2 py-0.5 rounded-md font-extrabold backdrop-blur-sm border border-zinc-700">
                             <i class="fa-solid fa-thumbs-up text-green-400"></i> ${game.rating || '100%'}
                         </div>
                     </div>
-                    <div class="p-2 flex-1 flex flex-col justify-between">
+                    <div class="p-3 flex-1 flex flex-col justify-between">
                         <div>
-                            <h3 class="font-bold text-xs text-blue-900 truncate leading-snug">${game.title}</h3>
-                            <p class="text-[10px] text-gray-500">by <span class="underline">${game.creator}</span></p>
+                            <h3 class="font-extrabold text-xs sm:text-sm text-white truncate leading-snug">${game.title}</h3>
+                            <p class="text-[11px] text-zinc-400 mt-0.5">by <span class="underline text-blue-400">${game.creator}</span></p>
                         </div>
-                        <div class="text-[10px] text-gray-600 mt-2 flex items-center justify-between border-t pt-1">
-                            <span><i class="fa-solid fa-user text-gray-400"></i> ${game.players} online</span>
-                            ${isCustom ? '<span class="text-[9px] bg-green-100 text-green-800 font-bold px-1 rounded">User Made</span>' : ''}
+                        <div class="text-[10px] text-zinc-400 mt-3 flex items-center justify-between border-t border-zinc-800 pt-2">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-user text-blue-400"></i> ${game.players} online</span>
+                            ${isCustom ? '<span class="text-[9px] bg-green-500/20 text-green-400 border border-green-500/30 font-bold px-1.5 py-0.5 rounded">Custom Arena</span>' : ''}
                         </div>
                     </div>
                 </div>
@@ -603,12 +596,12 @@
             userGrid.innerHTML = '';
             const saved = JSON.parse(localStorage.getItem('obyxa001_custom_games') || '[]');
             if (saved.length === 0) {
-                userGrid.innerHTML = `<div class="col-span-full text-xs text-gray-500 bg-white p-3 rounded border border-dashed border-gray-400 text-center">No custom games created yet. Build one in Studio mode!</div>`;
+                userGrid.innerHTML = `<div class="col-span-full text-xs text-zinc-400 bg-zinc-900 p-4 rounded-xl border border-dashed border-zinc-700 text-center">No custom multiplayer arenas created yet. Build one right now in Studio mode!</div>`;
                 return;
             }
             saved.forEach(g => {
                 const gameObj = {
-                    id: g.id, title: g.title, creator: getUserId(), players: Math.floor(Math.random() * 8 + 1), rating: '100%',
+                    id: g.id, title: g.title, creator: getUserId(), players: Math.floor(Math.random() * 12 + 2), rating: '100%',
                     image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80', type: 'custom'
                 };
                 userGrid.insertAdjacentHTML('beforeend', createGameCardHtml(gameObj, true));
@@ -648,7 +641,7 @@
         }
 
         function getUserId() {
-            return window.CURRENT_USER ? window.CURRENT_USER.uid.substring(0, 8) : 'Guest';
+            return window.CURRENT_USER ? window.CURRENT_USER.uid.substring(0, 8) : 'ProPlayer';
         }
 
         function renderCatalog() {
@@ -656,23 +649,23 @@
             grid.innerHTML = '';
             const items = [
                 { name: 'Dominus Empyreus', price: '50,000 R$', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=Dominus' },
-                { name: 'Clockwork Shades', price: '12,000 R$', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=Shades' },
-                { name: 'Classic Sword', price: '250 Tx', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=Sword' },
-                { name: 'Builders Club Hat', price: 'FREE', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=BCHat' }
+                { name: 'Clockwork Elite Shades', price: '12,000 R$', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=Shades' },
+                { name: 'Epic Fire Sword', price: '250 Tx', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=Sword' },
+                { name: 'Builders Club Crown', price: 'FREE', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=BCHat' }
             ];
             items.forEach(it => {
                 grid.innerHTML += `
-                    <div class="bg-gray-50 border p-3 rounded text-center">
-                        <img src="${it.img}" class="w-16 h-16 mx-auto mb-2">
-                        <div class="font-bold text-xs text-blue-900">${it.name}</div>
-                        <div class="text-xs font-bold text-green-600 my-1">${it.price}</div>
-                        <button onclick="showCustomModal('Purchased', 'Item ${it.name} added to your avatar inventory!')" class="btn-retro-green text-xs font-bold px-3 py-1 rounded">Buy</button>
+                    <div class="bg-zinc-800/80 border border-zinc-700 p-4 rounded-xl text-center shadow-md flex flex-col justify-between">
+                        <img src="${it.img}" class="w-20 h-20 mx-auto mb-2 drop-shadow-md">
+                        <div class="font-bold text-xs text-white">${it.name}</div>
+                        <div class="text-xs font-extrabold text-green-400 my-1.5">${it.price}</div>
+                        <button onclick="showCustomModal('Item Purchased!', '${it.name} successfully equipped to your 3D avatar!')" class="btn-retro-green text-xs font-bold py-1.5 px-3 rounded-lg shadow">Equip Item</button>
                     </div>
                 `;
             });
         }
 
-        // --- 3D ENGINE & FIXED CONTROLS ---
+        // --- 3D ENGINE & CONTROLS ---
         let gameScene, gameCamera, gameRenderer, playerMesh, gameAnimationId;
         let keys = {};
         let playerVel = { x: 0, y: 0, z: 0 };
@@ -715,7 +708,7 @@
             const attackBtn = document.getElementById('touch-attack-btn');
 
             let moveTouchId = null;
-            const maxRadius = 40;
+            const maxRadius = 45;
 
             base.addEventListener('touchstart', (e) => {
                 e.preventDefault();
@@ -769,7 +762,7 @@
             const doJump = (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 if (isGrounded) {
-                    playerVel.y = 12;
+                    playerVel.y = 14;
                     isGrounded = false;
                 }
             };
@@ -779,7 +772,7 @@
             const doAttack = (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 if (playerMesh && playerMesh.sword) {
-                    playerMesh.sword.rotation.z = -1.5;
+                    playerMesh.sword.rotation.z = -1.8;
                     setTimeout(() => {
                         if (playerMesh && playerMesh.sword) playerMesh.sword.rotation.z = 0;
                     }, 250);
@@ -795,31 +788,31 @@
             levelColliders = [];
 
             gameScene = new THREE.Scene();
-            gameScene.background = new THREE.Color(0x87ceeb);
-            gameScene.fog = new THREE.FogExp2(0x87ceeb, 0.012);
+            gameScene.background = new THREE.Color(0x0f172a);
+            gameScene.fog = new THREE.FogExp2(0x0f172a, 0.010);
 
-            gameCamera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            gameCamera = new THREE.PerspectiveCamera(65, container.clientWidth / container.clientHeight, 0.1, 1000);
 
             gameRenderer = new THREE.WebGLRenderer({ antialias: true });
             gameRenderer.setSize(container.clientWidth, container.clientHeight);
             gameRenderer.shadowMap.enabled = true;
             container.appendChild(gameRenderer.domElement);
 
-            gameScene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            const sun = new THREE.DirectionalLight(0xffffff, 0.8);
-            sun.position.set(20, 40, 20);
+            gameScene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            const sun = new THREE.DirectionalLight(0xffffff, 0.9);
+            sun.position.set(30, 50, 30);
             sun.castShadow = true;
             gameScene.add(sun);
 
-            // Baseplate with Collision
-            const baseplateGeo = new THREE.BoxGeometry(140, 2, 140);
-            const baseplateMat = new THREE.MeshLambertMaterial({ color: 0x2e8b57 });
+            // Ground Baseplate
+            const baseplateGeo = new THREE.BoxGeometry(160, 2, 160);
+            const baseplateMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
             const baseplate = new THREE.Mesh(baseplateGeo, baseplateMat);
             baseplate.position.y = -1;
             gameScene.add(baseplate);
             levelColliders.push(baseplate);
 
-            playerMesh = createBlockyAvatar(0x0055b3);
+            playerMesh = createBlockyAvatar(0x3b82f6);
             playerMesh.position.set(0, 2, 0);
             gameScene.add(playerMesh);
 
@@ -835,7 +828,7 @@
                 gameAnimationId = requestAnimationFrame(gameLoop);
                 const delta = Math.min(clock.getDelta(), 0.1);
 
-                const moveSpeed = 12 * delta;
+                const moveSpeed = 14 * delta;
                 let dx = 0, dz = 0;
 
                 if (keys['w'] || keys['arrowup']) dz -= moveSpeed;
@@ -857,19 +850,18 @@
                     playerMesh.rotation.y = touchCameraAngle + Math.atan2(dx, dz);
                 }
 
-                // Gravity & Collision Check
-                playerVel.y -= 25 * delta;
+                // Gravity & Solid Collision Handling
+                playerVel.y -= 28 * delta;
                 playerMesh.position.y += playerVel.y * delta;
 
                 isGrounded = false;
                 const pBox = new THREE.Box3().setFromObject(playerMesh);
-                pBox.expandByScalar(-0.2);
+                pBox.expandByScalar(-0.25);
 
                 for (let obj of levelColliders) {
                     const objBox = new THREE.Box3().setFromObject(obj);
                     if (pBox.intersectsBox(objBox)) {
-                        // Landing on top
-                        if (playerVel.y <= 0 && playerMesh.position.y >= objBox.max.y - 0.6) {
+                        if (playerVel.y <= 0 && playerMesh.position.y >= objBox.max.y - 0.7) {
                             playerMesh.position.y = objBox.max.y + 1.0;
                             playerVel.y = 0;
                             isGrounded = true;
@@ -877,16 +869,16 @@
                     }
                 }
 
-                if (playerMesh.position.y < -20) {
-                    playerMesh.position.set(0, 4, 0);
+                if (playerMesh.position.y < -25) {
+                    playerMesh.position.set(0, 5, 0);
                     playerVel.y = 0;
                 }
 
-                const camDist = 10;
+                const camDist = 11;
                 gameCamera.position.x = playerMesh.position.x + camDist * Math.sin(touchCameraAngle);
                 gameCamera.position.z = playerMesh.position.z + camDist * Math.cos(touchCameraAngle);
-                gameCamera.position.y = playerMesh.position.y + 5;
-                gameCamera.lookAt(playerMesh.position.x, playerMesh.position.y + 1, playerMesh.position.z);
+                gameCamera.position.y = playerMesh.position.y + 6;
+                gameCamera.lookAt(playerMesh.position.x, playerMesh.position.y + 1.2, playerMesh.position.z);
 
                 syncTimer += delta;
                 if (syncTimer > 0.1) {
@@ -900,9 +892,10 @@
             gameLoop();
         }
 
-        function createBlockyAvatar(torsoColorHex = 0x0055b3) {
+        function createBlockyAvatar(torsoColorHex = 0x3b82f6) {
             const group = new THREE.Group();
-            const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshLambertMaterial({ color: 0xffcd00 }));
+            
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshLambertMaterial({ color: 0xfbbf24 }));
             head.position.y = 1.4;
             group.add(head);
 
@@ -910,17 +903,17 @@
             torso.position.y = 0.4;
             group.add(torso);
 
-            const legMat = new THREE.MeshLambertMaterial({ color: 0x02b700 });
-            const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1.2, 0.5), legMat);
+            const legMat = new THREE.MeshLambertMaterial({ color: 0x1e3a8a });
+            const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1.2, 0.45), legMat);
             leftLeg.position.set(-0.25, -0.8, 0);
             group.add(leftLeg);
 
-            const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1.2, 0.5), legMat);
+            const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1.2, 0.45), legMat);
             rightLeg.position.set(0.25, -0.8, 0);
             group.add(rightLeg);
 
-            const sword = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.4, 0.1), new THREE.MeshLambertMaterial({ color: 0xcccccc }));
-            sword.position.set(0.6, 0.4, 0.3);
+            const sword = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.6, 0.12), new THREE.MeshLambertMaterial({ color: 0xe5e7eb }));
+            sword.position.set(0.65, 0.4, 0.3);
             group.add(sword);
             group.sword = sword;
 
@@ -929,22 +922,22 @@
 
         function buildGameEnvironment(type, gameId) {
             if (type === 'sword' || type === 'sfoth') {
-                for (let i = 0; i < 6; i++) {
+                for (let i = 0; i < 7; i++) {
                     const tower = new THREE.Mesh(
-                        new THREE.BoxGeometry(6, 6 + i * 2, 6),
-                        new THREE.MeshLambertMaterial({ color: 0x777777 })
+                        new THREE.BoxGeometry(7, 8 + i * 2.5, 7),
+                        new THREE.MeshLambertMaterial({ color: 0x334155 })
                     );
-                    tower.position.set((i - 3) * 11, (6 + i * 2) / 2 - 1, -15);
+                    tower.position.set((i - 3) * 12, (8 + i * 2.5) / 2 - 1, -18);
                     gameScene.add(tower);
                     levelColliders.push(tower);
                 }
             } else if (type === 'speedrun' || type === 'obbyisland') {
-                for (let i = 0; i < 15; i++) {
+                for (let i = 0; i < 20; i++) {
                     const step = new THREE.Mesh(
-                        new THREE.BoxGeometry(5, 0.8, 5),
+                        new THREE.BoxGeometry(5.5, 0.8, 5.5),
                         new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff })
                     );
-                    step.position.set(0, i * 1.5, -i * 7);
+                    step.position.set(0, i * 1.6, -i * 7);
                     gameScene.add(step);
                     levelColliders.push(step);
                 }
@@ -989,14 +982,14 @@
                     activeCount++;
 
                     if (!remotePlayers[data.uid]) {
-                        const remoteAvatar = createBlockyAvatar(0xcd0000);
+                        const remoteAvatar = createBlockyAvatar(0xef4444);
                         gameScene.add(remoteAvatar);
                         remotePlayers[data.uid] = remoteAvatar;
                     }
                     remotePlayers[data.uid].position.set(data.x, data.y, data.z);
                     remotePlayers[data.uid].rotation.y = data.rotY;
                 });
-                document.getElementById('modal-online-players-count').innerText = `${activeCount} Players`;
+                document.getElementById('modal-online-players-count').innerText = `${activeCount} Players Online`;
             }, (err) => console.warn(err));
         }
 
@@ -1005,7 +998,7 @@
             const msg = input.value.trim();
             if (!msg) return;
             const box = document.getElementById('chat-messages');
-            box.innerHTML += `<div><strong class="text-yellow-400">${getUserId()}:</strong> ${msg}</div>`;
+            box.innerHTML += `<div><strong class="text-blue-400">${getUserId()}:</strong> ${msg}</div>`;
             box.scrollTop = box.scrollHeight;
             input.value = '';
         }
@@ -1018,19 +1011,19 @@
             if (studioContainer.children.length > 0) return;
 
             studioScene = new THREE.Scene();
-            studioScene.background = new THREE.Color(0x1e1e24);
+            studioScene.background = new THREE.Color(0x09090b);
 
             studioCamera = new THREE.PerspectiveCamera(60, studioContainer.clientWidth / studioContainer.clientHeight, 0.1, 1000);
-            studioCamera.position.set(12, 12, 16);
+            studioCamera.position.set(14, 14, 18);
             studioCamera.lookAt(0, 0, 0);
 
             studioRenderer = new THREE.WebGLRenderer({ antialias: true });
             studioRenderer.setSize(studioContainer.clientWidth, studioContainer.clientHeight);
             studioContainer.appendChild(studioRenderer.domElement);
 
-            studioScene.add(new THREE.GridHelper(40, 40, 0x0055b3, 0x444444));
+            studioScene.add(new THREE.GridHelper(50, 50, 0x3b82f6, 0x27272a));
             studioScene.add(new THREE.DirectionalLight(0xffffff, 0.9));
-            studioScene.add(new THREE.AmbientLight(0xffffff, 0.4));
+            studioScene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
             let isDragging = false;
             let prevMouse = { x: 0, y: 0 };
@@ -1041,8 +1034,8 @@
                 if (isDragging) {
                     const dx = e.clientX - prevMouse.x;
                     angle -= dx * 0.008;
-                    studioCamera.position.x = 18 * Math.sin(angle);
-                    studioCamera.position.z = 18 * Math.cos(angle);
+                    studioCamera.position.x = 20 * Math.sin(angle);
+                    studioCamera.position.z = 20 * Math.cos(angle);
                     studioCamera.lookAt(0, 0, 0);
                     prevMouse = { x: e.clientX, y: e.clientY };
                 }
@@ -1058,17 +1051,17 @@
 
         function addStudioBlock(type) {
             if (!studioScene) return;
-            const colorHex = (type === 'lava') ? '#ff0000' : (type === 'speed') ? '#eab308' : document.getElementById('studio-color-picker').value;
-            const geo = new THREE.BoxGeometry(2, 2, 2);
+            const colorHex = (type === 'lava') ? '#ef4444' : (type === 'speed') ? '#eab308' : document.getElementById('studio-color-picker').value;
+            const geo = new THREE.BoxGeometry(2.5, 2.5, 2.5);
             const mat = new THREE.MeshLambertMaterial({ color: colorHex });
             const mesh = new THREE.Mesh(geo, mat);
 
-            const posX = (Math.random() - 0.5) * 16;
-            const posZ = (Math.random() - 0.5) * 16;
+            const posX = (Math.random() - 0.5) * 18;
+            const posZ = (Math.random() - 0.5) * 18;
             mesh.position.set(posX, 1, posZ);
 
             studioScene.add(mesh);
-            studioBlocks.push({ type: type, color: colorHex, pos: { x: posX, y: 1, z: posZ }, scale: { x: 2, y: 2, z: 2 } });
+            studioBlocks.push({ type: type, color: colorHex, pos: { x: posX, y: 1, z: posZ }, scale: { x: 2.5, y: 2.5, z: 2.5 } });
         }
 
         function clearStudio() {
@@ -1080,7 +1073,7 @@
         function publishStudioGame() {
             const title = document.getElementById('studio-game-title').value.trim();
             if (!title) {
-                showCustomModal('Title Required', 'Please enter a game name before publishing!');
+                showCustomModal('Title Required', 'Please enter an epic name before publishing your arena!');
                 return;
             }
             const customGame = { id: 'custom_' + Date.now(), title: title, blocks: studioBlocks };
@@ -1088,14 +1081,14 @@
             existing.push(customGame);
             localStorage.setItem('obyxa001_custom_games', JSON.stringify(existing));
 
-            showCustomModal('Game Published!', `"${title}" has been published with Multiplayer support!`);
+            showCustomModal('Arena Published Online!', `"${title}" has been successfully published with full Multiplayer support!`);
             showTab('games');
             loadUserCreatedGames();
         }
 
         window.onload = () => {
             renderGamesGrid();
-            const userTag = 'Player_' + Math.floor(Math.random() * 8999 + 1000);
+            const userTag = 'ProGamer_' + Math.floor(Math.random() * 8999 + 1000);
             document.getElementById('header-username').innerText = userTag;
             document.getElementById('sidebar-username').innerText = userTag;
             document.getElementById('header-avatar-img').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${userTag}`;

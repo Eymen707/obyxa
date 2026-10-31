@@ -76,6 +76,36 @@
             box-shadow: 0 4px 12px rgba(0, 85, 179, 0.3);
             transform: translateY(-2px);
         }
+
+        /* Mobile Joystick */
+        #virtual-joystick-base {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            bottom: 40px;
+            left: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            pointer-events: auto !important;
+            touch-action: none;
+            display: block;
+            z-index: 9999;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        #virtual-joystick-stick {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            left: 32px;
+            top: 32px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%);
+            box-shadow: 0 0 8px rgba(0,0,0,0.8);
+            pointer-events: none;
+            transform: translate(0px, 0px);
+        }
     </style>
 </head>
 <body id="app-body" class="min-h-screen flex flex-col">
@@ -175,7 +205,20 @@
         </main>
     </div>
 
-    <!-- JAVASCRIPT -->
+    <!-- GAME / SIMULATOR PLAY MODAL WITH 3D WORLD -->
+    <div id="game-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col">
+        <div class="roblox-header p-3 flex justify-between items-center text-white z-10">
+            <span id="active-game-title" class="font-bold text-sm">Playing Game</span>
+            <button onclick="closeGameModal()" class="text-white font-bold text-lg px-3 py-1 bg-red-600 rounded">&times; Exit</button>
+        </div>
+        <div id="game-canvas-container" class="relative flex-1 w-full h-full overflow-hidden">
+            <div id="virtual-joystick-base">
+                <div id="virtual-joystick-stick"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT WITH 3D ENGINE -->
     <script>
         const simulatorsData = [
             { id: 'muscle', title: '💪 Muscle Legends 2014', desc: 'Train to get huge and strong!', players: '1.2K', color: 'from-orange-500 to-red-600' },
@@ -196,7 +239,7 @@
 
             if(simMain) {
                 simMain.innerHTML = simulatorsData.map(g => `
-                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 p-3 rounded border">
+                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 border" onclick="openGameModal('${g.title}')">
                         <div class="h-28 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-lg shadow-inner">${g.title.split(' ')[1]}</div>
                         <h3 class="font-bold text-xs truncate">${g.title}</h3>
                         <p class="text-[10px] text-gray-500 truncate">${g.desc}</p>
@@ -207,17 +250,18 @@
 
             if(simFull) {
                 simFull.innerHTML = simulatorsData.map(g => `
-                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 p-3 rounded border">
+                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 border" onclick="openGameModal('${g.title}')">
                         <div class="h-32 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-xl shadow-inner">${g.title}</div>
                         <h3 class="font-bold text-sm">${g.title}</h3>
                         <p class="text-xs text-gray-500">${g.desc}</p>
+                        <button class="w-full btn-retro-green py-1 rounded text-xs font-bold">Play Simulator</button>
                     </div>
                 `).join('');
             }
 
             if(popGrid) {
                 popGrid.innerHTML = popularGames.map(g => `
-                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 p-3 rounded border">
+                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 border" onclick="openGameModal('${g.title}')">
                         <div class="h-24 rounded bg-blue-500 flex items-center justify-center text-white font-black text-sm">${g.title}</div>
                         <h3 class="font-bold text-xs truncate">${g.title}</h3>
                         <div class="text-[10px] text-green-600 font-bold"><i class="fa-solid fa-user"></i> ${g.players} Playing</div>
@@ -244,9 +288,98 @@
             document.getElementById('app-body').classList.toggle('dark-mode');
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            renderGames();
-        });
-    </script>
-</body>
-</html>
+        let gameScene, gameCamera, gameRenderer, playerMesh, animationFrameId;
+        let moveX = 0, moveZ = 0;
+
+        function openGameModal(title) {
+            document.getElementById('active-game-title').innerText = title;
+            document.getElementById('game-modal').classList.remove('hidden');
+            init3DGame();
+        }
+
+        function closeGameModal() {
+            document.getElementById('game-modal').classList.add('hidden');
+            if(animationFrameId) cancelAnimationFrame(animationFrameId);
+            const container = document.getElementById('game-canvas-container');
+            const canvas = container.querySelector('canvas');
+            if(canvas) canvas.remove();
+        }
+
+        function init3DGame() {
+            const container = document.getElementById('game-canvas-container');
+            const oldCanvas = container.querySelector('canvas');
+            if(oldCanvas) oldCanvas.remove();
+
+            gameScene = new THREE.Scene();
+            gameScene.background = new THREE.Color(0x87ceeb);
+
+            gameCamera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            gameCamera.position.set(0, 5, 10);
+
+            gameRenderer = new THREE.WebGLRenderer({ antialias: true });
+            gameRenderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(gameRenderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            gameScene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            dirLight.position.set(10, 20, 10);
+            gameScene.add(dirLight);
+
+            // Zemin (Baseplate)
+            const floorGeo = new THREE.PlaneGeometry(100, 100);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x339933 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            gameScene.add(floor);
+
+            // Bacon Hair Karakteri (Retro Blok)
+            const playerGroup = new THREE.Group();
+            
+            // Gövde
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0055ff });
+            const bodyGeo = new THREE.BoxGeometry(1.2, 1.5, 0.6);
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = 1.75;
+            playerGroup.add(body);
+
+            // Kafa (Bacon Hair Kahverengi Saç)
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa });
+            const headGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+            const head = new THREE.Mesh(headGeo, headMat);
+            head.position.y = 2.8;
+            playerGroup.add(head);
+
+            const hairMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+            const hairGeo = new THREE.BoxGeometry(0.9, 0.3, 0.9);
+            const hair = new THREE.Mesh(hairGeo, hairMat);
+            hair.position.y = 3.2;
+            playerGroup.add(hair);
+
+            playerMesh = playerGroup;
+            gameScene.add(playerMesh);
+
+            // Joystick Kontrolleri
+            setupJoystick();
+
+            function animate() {
+                animationFrameId = requestAnimationFrame(animate);
+
+                if(playerMesh) {
+                    playerMesh.position.x += moveX * 0.1;
+                    playerMesh.position.z += moveY_val * 0.1;
+                    gameCamera.position.x = playerMesh.position.x;
+                    gameCamera.position.z = playerMesh.position.z + 10;
+                    gameCamera.lookAt(playerMesh.position);
+                }
+
+                gameRenderer.render(gameScene, gameCamera);
+            }
+            animate();
+        }
+
+        let moveY_val = 0;
+        function setupJoystick() {
+            const base = document.getElementById('virtual-joystick-base');
+            const stick = document.getElementById(

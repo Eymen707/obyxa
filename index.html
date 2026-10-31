@@ -1,210 +1,219 @@
-    <script>
-        // ... (simulatorsData ve popularGames aynı kalacak) ...
-        const simulatorsData = [
-            { id: 'muscle', title: '💪 Muscle Legends 2014', desc: 'Train to get huge and strong!', players: '1.2K', color: 'from-orange-500 to-red-600' },
-            { id: 'speed', title: '⚡ Speed Run 4 Retro', desc: 'Click to run faster and break records!', players: '950', color: 'from-yellow-400 to-amber-600' },
-            { id: 'jump', title: '🚀 Mega Jump Simulator', desc: 'Upgrade springs and jump into the clouds!', players: '820', color: 'from-blue-500 to-indigo-600' }
-        ];
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>obyxa001 - Retro Roblox 2014 & Simülatör</title>
 
-        const popularGames = [
-            { id: 'pizzaplace', title: 'Work at a Pizza Place', desc: 'Classic 2014 roleplay & job game.', players: '3.4K' },
-            { id: 'naturaldisaster', title: 'Natural Disaster Survival', desc: 'Survive floods, meteors, and storms.', players: '2.1K' },
-            { id: 'swordfight', title: 'SFOTH IV (Sword Fight)', desc: 'Classic sword fighting arena.', players: '1.4K' }
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap');
+
+        * {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', Arial, sans-serif;
+            background-color: #e3e3e3;
+            color: #222222;
+            min-height: 100vh;
+        }
+
+        .roblox-header {
+            background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%);
+            border-bottom: 2px solid #00367d;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .roblox-card {
+            background-color: #ffffff;
+            border: 1px solid #c3c3c3;
+        }
+
+        .game-card {
+            background: #ffffff;
+            border: 1px solid #c3c3c3;
+            transition: all 0.15s ease;
+        }
+        .game-card:hover {
+            border-color: #0055b3;
+            box-shadow: 0 4px 12px rgba(0, 85, 179, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-green {
+            background: linear-gradient(180deg, #02b700 0%, #008200 100%);
+            border: 1px solid #004d00;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- ÜST MENÜ (HEADER) -->
+    <header class="roblox-header text-white h-16 flex items-center justify-between px-4 sticky top-0 z-40">
+        <div class="flex items-center space-x-3">
+            <div class="bg-red-600 text-white font-black italic text-xl px-3 py-1 rounded border border-red-800 transform -rotate-1 shadow-md">
+                obyxa<span class="text-yellow-300">001</span>
+            </div>
+            <span class="font-bold text-sm hidden sm:inline">Retro Roblox 2014</span>
+        </div>
+
+        <div class="flex items-center space-x-3 text-xs font-semibold">
+            <div class="bg-blue-950 px-3 py-1.5 rounded border border-blue-500/50 flex items-center gap-2">
+                <span class="text-green-400 font-bold">R$</span>
+                <span>86,400</span>
+                <span class="text-amber-400 font-bold ml-2">TIX</span>
+                <span>19,250</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ANA İÇERİK CONTAINER -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-4">
+        
+        <div class="roblox-card p-4 rounded-lg shadow-sm flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-black text-blue-600">Popüler Retro Oyunlar</h1>
+                <p class="text-xs text-gray-500">Oynamak istediğin oyuna tıkla!</p>
+            </div>
+        </div>
+
+        <!-- OYUN KARTLARI GRİDİ -->
+        <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- JavaScript Oyun Kartlarını Buraya Basacak -->
+        </div>
+
+    </main>
+
+    <!-- OYUN OYNAMA PENCERESİ (MODAL) -->
+    <div id="game-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col justify-center items-center p-2">
+        <div class="w-full max-w-lg bg-slate-900 text-white rounded-t-lg p-3 flex justify-between items-center">
+            <span id="active-game-title" class="font-bold text-sm">Oyun</span>
+            <button onclick="closeGame()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">✕ Kapat</button>
+        </div>
+        
+        <div class="relative w-full max-w-lg h-[350px] bg-black rounded-b-lg overflow-hidden flex flex-col items-center justify-center">
+            <canvas id="game-canvas" width="400" height="300" class="bg-slate-800 border border-slate-700"></canvas>
+            
+            <div id="game-controls" class="w-full p-2 bg-slate-900 flex justify-around text-xs font-bold">
+                <button onclick="handleInput('LEFT')" class="bg-blue-600 px-4 py-2 rounded">◀ Sol</button>
+                <button onclick="handleInput('ACTION')" class="bg-green-600 px-6 py-2 rounded text-sm">⚡ TIKLA / ZIPLA</button>
+                <button onclick="handleInput('RIGHT')" class="bg-blue-600 px-4 py-2 rounded">Sağ ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gamesList = [
+            { id: 'muscle', title: '💪 Muscle Legends 2014', desc: 'Tıkla ve kaslarını geliştir!', color: 'from-orange-500 to-red-600' },
+            { id: 'speed', title: '⚡ Speed Run Simulator', desc: 'Engellerden kaç ve hızlan!', color: 'from-amber-400 to-yellow-600' },
+            { id: 'sword', title: '⚔️ Sword Fight Arena', desc: 'Kılıcını salla ve puan topla!', color: 'from-blue-500 to-indigo-600' }
         ];
 
         function renderGames() {
-            const simMain = document.getElementById('grid-simulators-main');
-            const simFull = document.getElementById('grid-simulators-full');
-            const popGrid = document.getElementById('grid-popular');
-
-            if(simMain) {
-                simMain.innerHTML = simulatorsData.map(g => `
-                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 border" onclick="openGameModal('${g.title}')">
-                        <div class="h-28 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-lg shadow-inner">${g.title.split(' ')[1]}</div>
-                        <h3 class="font-bold text-xs truncate">${g.title}</h3>
-                        <p class="text-[10px] text-gray-500 truncate">${g.desc}</p>
-                        <div class="text-[10px] text-green-600 font-bold"><i class="fa-solid fa-user"></i> ${g.players} Playing</div>
+            const grid = document.getElementById('games-grid');
+            grid.innerHTML = gamesList.map(g => `
+                <div class="game-card p-4 rounded-lg shadow cursor-pointer space-y-3" onclick="openGame('${g.id}', '${g.title}')">
+                    <div class="h-32 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-xl shadow-inner">
+                        ${g.title.split(' ')[0]} ${g.title.split(' ')[1]}
                     </div>
-                `).join('');
-            }
-
-            if(simFull) {
-                simFull.innerHTML = simulatorsData.map(g => `
-                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 border" onclick="openGameModal('${g.title}')">
-                        <div class="h-32 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-xl shadow-inner">${g.title}</div>
-                        <h3 class="font-bold text-sm">${g.title}</h3>
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800">${g.title}</h3>
                         <p class="text-xs text-gray-500">${g.desc}</p>
-                        <button class="w-full btn-retro-green py-1 rounded text-xs font-bold">Play Simulator</button>
                     </div>
-                `).join('');
-            }
-
-            if(popGrid) {
-                popGrid.innerHTML = popularGames.map(g => `
-                    <div class="game-card p-3 rounded cursor-pointer space-y-2 shadow-sm bg-white dark:bg-slate-800 border" onclick="openGameModal('${g.title}')">
-                        <div class="h-24 rounded bg-blue-500 flex items-center justify-center text-white font-black text-sm">${g.title}</div>
-                        <h3 class="font-bold text-xs truncate">${g.title}</h3>
-                        <div class="text-[10px] text-green-600 font-bold"><i class="fa-solid fa-user"></i> ${g.players} Playing</div>
-                    </div>
-                `).join('');
-            }
+                    <button class="w-full btn-green py-2 rounded text-xs">OYNA</button>
+                </div>
+            `).join('');
         }
 
-        function showTab(tabId) {
-            ['games', 'simulators', 'catalog', 'profile', 'friends', 'avatar', 'develop'].forEach(t => {
-                const el = document.getElementById('tab-' + t);
-                if(el) el.classList.add('hidden');
-            });
-            const target = document.getElementById('tab-' + tabId);
-            if(target) target.classList.remove('hidden');
-        }
+        let canvas, ctx;
+        let currentGameId = null;
+        let gameInterval = null;
+        let score = 0;
+        let playerX = 180;
 
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('mobile-sidebar');
-            if(sidebar) sidebar.classList.toggle('hidden');
-        }
-
-        function toggleTheme() {
-            document.getElementById('app-body').classList.toggle('dark-mode');
-        }
-
-        let gameScene, gameCamera, gameRenderer, playerMesh, animationFrameId;
-        let moveX = 0, moveY_val = 0;
-
-        function openGameModal(title) {
+        function openGame(id, title) {
+            currentGameId = id;
             document.getElementById('active-game-title').innerText = title;
             document.getElementById('game-modal').classList.remove('hidden');
             
-            // Boyutların oturması için çok kısa bir gecikme (100 milisaniye) ekledik
-            setTimeout(() => {
-                init3DGame();
-            }, 100);
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
+            score = 0;
+            playerX = 180;
+
+            if(gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(updateGame, 1000 / 30); // 30 FPS
         }
 
-        function closeGameModal() {
+        function closeGame() {
             document.getElementById('game-modal').classList.add('hidden');
-            if(animationFrameId) cancelAnimationFrame(animationFrameId);
-            const container = document.getElementById('game-canvas-container');
-            const canvas = container.querySelector('canvas');
-            if(canvas) canvas.remove();
+            if(gameInterval) clearInterval(gameInterval);
         }
 
-        function init3DGame() {
-            const container = document.getElementById('game-canvas-container');
-            if (!container) return;
-            
-            const oldCanvas = container.querySelector('canvas');
-            if(oldCanvas) oldCanvas.remove();
+        function handleInput(type) {
+            if(type === 'LEFT') playerX = Math.max(10, playerX - 20);
+            if(type === 'RIGHT') playerX = Math.min(350, playerX + 20);
+            if(type === 'ACTION') score += 10;
+        }
 
-            const width = container.clientWidth || window.innerWidth;
-            const height = container.clientHeight || 400;
+        function updateGame() {
+            // Arka planı temizle
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            gameScene = new THREE.Scene();
-            gameScene.background = new THREE.Color(0x87ceeb);
+            // Skor Yazısı
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '16px Source Sans Pro';
+            ctx.fillText('Skor / Güç: ' + score, 15, 30);
 
-            gameCamera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-            gameCamera.position.set(0, 5, 10);
+            if(currentGameId === 'muscle') {
+                // Kas Simülatörü (Karakter)
+                ctx.fillStyle = '#ffccaa'; // Kafa
+                ctx.fillRect(playerX + 10, 100, 20, 20);
+                
+                ctx.fillStyle = '#0055ff'; // Gövde (Skor arttıkça büyür)
+                let size = Math.min(100, score / 2);
+                ctx.fillRect(playerX - size/4, 120, 40 + size/2, 50 + size/2);
 
-            gameRenderer = new THREE.WebGLRenderer({ antialias: true });
-            gameRenderer.setSize(width, height);
-            container.appendChild(gameRenderer.domElement);
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillText('Gelişmek için "⚡ TIKLA" butonuna bas!', 50, 260);
+            } 
+            else if(currentGameId === 'speed') {
+                // Koşu Oyunu
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(playerX, 200, 30, 40);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-            gameScene.add(ambientLight);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(100, (score * 5) % 250, 40, 20);
 
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-            dirLight.position.set(10, 20, 10);
-            gameScene.add(dirLight);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText('Sol / Sağ butonları ile hareket et!', 60, 260);
+            } 
+            else {
+                // Kılıç Arena
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(playerX, 180, 30, 50);
 
-            // Zemin
-            const floorGeo = new THREE.PlaneGeometry(100, 100);
-            const floorMat = new THREE.MeshStandardMaterial({ color: 0x339933 });
-            const floor = new THREE.Mesh(floorGeo, floorMat);
-            floor.rotation.x = -Math.PI / 2;
-            gameScene.add(floor);
+                // Kılıç
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillRect(playerX + 30, 190, 25, 6);
 
-            // Bacon Hair Karakteri
-            const playerGroup = new THREE.Group();
-            
-            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0055ff });
-            const bodyGeo = new THREE.BoxGeometry(1.2, 1.5, 0.6);
-            const body = new THREE.Mesh(bodyGeo, bodyMat);
-            body.position.y = 1.75;
-            playerGroup.add(body);
-
-            const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa });
-            const headGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-            const head = new THREE.Mesh(headGeo, headMat);
-            head.position.y = 2.8;
-            playerGroup.add(head);
-
-            const hairMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
-            const hairGeo = new THREE.BoxGeometry(0.9, 0.3, 0.9);
-            const hair = new THREE.Mesh(hairGeo, hairMat);
-            hair.position.y = 3.2;
-            playerGroup.add(hair);
-
-            playerMesh = playerGroup;
-            gameScene.add(playerMesh);
-
-            setupJoystick();
-
-            function animate() {
-                animationFrameId = requestAnimationFrame(animate);
-
-                if(playerMesh) {
-                    playerMesh.position.x += moveX * 0.1;
-                    playerMesh.position.z += moveY_val * 0.1;
-                    gameCamera.position.x = playerMesh.position.x;
-                    gameCamera.position.z = playerMesh.position.z + 10;
-                    gameCamera.lookAt(playerMesh.position);
-                }
-
-                gameRenderer.render(gameScene, gameCamera);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText('Saldırmak için "⚡ TIKLA" butonuna bas!', 50, 260);
             }
-            animate();
         }
 
-        function setupJoystick() {
-            const base = document.getElementById('virtual-joystick-base');
-            const stick = document.getElementById('virtual-joystick-stick');
-            if(!base || !stick) return;
-
-            let isDragging = false;
-            let center = { x: 60, y: 60 };
-
-            base.ontouchstart = base.onmousedown = () => { isDragging = true; };
-
-            window.ontouchend = window.onmouseup = () => {
-                isDragging = false;
-                moveX = 0;
-                moveY_val = 0;
-                stick.style.transform = `translate(0px, 0px)`;
-            };
-
-            window.ontouchmove = window.onmousemove = (e) => {
-                if(!isDragging) return;
-                const rect = base.getBoundingClientRect();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                let x = clientX - rect.left - center.x;
-                let y = clientY - rect.top - center.y;
-                
-                const dist = Math.sqrt(x*x + y*y);
-                const maxDist = 40;
-                if(dist > maxDist) {
-                    x = (x / dist) * maxDist;
-                    y = (y / dist) * maxDist;
-                }
-
-                stick.style.transform = `translate(${x}px, ${y}px)`;
-                moveX = x / maxDist;
-                moveY_val = y / maxDist;
-            };
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            renderGames();
-        });
+        window.onload = renderGames;
     </script>
+</body>
+</html>

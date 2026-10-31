@@ -1,457 +1,477 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Obyxa - 3D Parkour Arena</title>
+    <title>OBYXA - Classic Gaming Platform</title>
+    <!-- 3D Engine & P2P Networking -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #0f172a;
-            color: #fff;
-        }
-        #ui-layer {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 16px;
-            z-index: 10;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .title-box {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(8px);
-            padding: 10px 18px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .title-box h1 {
-            font-size: 20px;
-            color: #38bdf8;
-            font-weight: 800;
-            letter-spacing: 2px;
-        }
-        .stats {
-            display: flex;
-            gap: 10px;
-        }
-        .stat-badge {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(8px);
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-weight: 700;
-            font-size: 14px;
-            color: #facc15;
-        }
-        .controls-hint {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(8px);
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 300px;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #cbd5e1;
-        }
-        #controls-mobile {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-        }
-        #joystick-base {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            pointer-events: auto;
-            touch-action: none;
-            display: none;
-        }
-        #joystick-stick {
-            position: absolute;
-            top: 35px;
-            left: 35px;
-            width: 50px;
-            height: 50px;
-            background: #38bdf8;
-            border-radius: 50%;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
-        }
-        #jump-btn {
-            position: absolute;
-            bottom: 40px;
-            right: 30px;
-            width: 80px;
-            height: 80px;
-            background: rgba(56, 189, 248, 0.8);
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 16px;
-            color: #0f172a;
-            pointer-events: auto;
-            touch-action: none;
-            box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
-        }
-        #canvas-container {
-            width: 100%;
-            height: 100%;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Verdana, Arial, sans-serif; font-weight: bold; -webkit-tap-highlight-color: transparent; }
+        body { background: #d9d9d9; overflow: hidden; touch-action: none; user-select: none; color: #333; }
+        
+        /* TOPBAR */
+        #topbar { height: 44px; background: #114081; color: #fff; display: flex; align-items: center; padding: 0 12px; z-index: 20; position: relative; border-bottom: 3px solid #0a2a55; justify-content: space-between; }
+        #topbar h1 { font-size: 18px; letter-spacing: 1px; color: #fff; }
+        .top-right { display: flex; gap: 8px; align-items: center; }
+        #coins { background: #ffcc00; color: #000; padding: 4px 10px; border-radius: 4px; font-size: 12px; }
+        #roomId { background: #02b757; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 12px; }
+        #langSelect { background: #fff; border: 1px solid #aaa; padding: 3px 6px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+
+        /* LAYOUT */
+        #layout { display: flex; height: calc(100vh - 44px); }
+        #sidebar { width: 220px; background: #e9e9e9; border-right: 2px solid #bbb; padding: 10px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+        
+        .nav-btn { background: #fff; border: 2px solid #aaa; padding: 8px 10px; font-size: 12px; text-align: left; cursor: pointer; border-radius: 4px; }
+        .nav-btn.active { background: #114081; color: #fff; border-color: #114081; }
+        
+        .box { background: #fff; border: 2px solid #aaa; padding: 8px; border-radius: 4px; font-size: 11px; line-height: 1.4; }
+        .box b { display: block; margin-bottom: 4px; color: #114081; font-size: 12px; }
+        .box input { width: 100%; padding: 6px; border: 1px solid #aaa; margin-top: 4px; border-radius: 3px; font-size: 11px; }
+        .box button { width: 100%; padding: 6px; margin-top: 4px; background: #02b757; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .box button.blue { background: #114081; }
+        
+        /* MAIN GAMES FEED */
+        #main { flex: 1; background: #f2f2f2; overflow-y: auto; padding: 12px; }
+        #main h2 { font-size: 14px; margin: 10px 0 6px 0; color: #114081; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        
+        .gameCard { background: #fff; border: 2px solid #bbb; border-radius: 6px; overflow: hidden; cursor: pointer; transition: 0.15s; }
+        .gameCard:hover { transform: translateY(-2px); border-color: #114081; }
+        .gameCard .thumb { height: 80px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; text-shadow: 0 1px 3px rgba(0,0,0,0.6); text-align: center; padding: 4px; }
+        .gameCard .info { padding: 6px; font-size: 11px; color: #114081; }
+        .gameCard .info span { color: #666; font-weight: normal; display: block; margin-top: 2px; font-size: 9px; }
+
+        /* 3D GAME LAYER */
+        #gameLayer { display: none; position: fixed; inset: 0; background: #87CEEB; z-index: 100; }
+        #hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; pointer-events: none; z-index: 101; }
+        #hud .panel { background: rgba(255, 255, 255, 0.9); border: 2px solid #114081; padding: 6px 10px; border-radius: 6px; font-size: 12px; pointer-events: auto; }
+        #backBtn { position: absolute; top: 10px; right: 10px; background: #ff4444; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; z-index: 103; font-size: 12px; cursor: pointer; }
+
+        /* TOUCH CONTROLS */
+        #joystick { position: absolute; bottom: 20px; left: 20px; width: 110px; height: 110px; background: radial-gradient(#fff4,#0002); border: 2px solid #fff; border-radius: 50%; z-index: 102; touch-action: none; display: none; }
+        #joystick #knob { position: absolute; width: 40px; height: 40px; background: #fff; border: 2px solid #114081; border-radius: 50%; left: 33px; top: 33px; }
+        #jumpBtn { position: absolute; bottom: 25px; right: 20px; width: 75px; height: 75px; background: rgba(255, 255, 255, 0.9); border: 2px solid #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; color: #114081; font-size: 14px; z-index: 102; }
     </style>
 </head>
 <body>
 
-    <div id="canvas-container"></div>
-
-    <div id="ui-layer">
-        <div class="header">
-            <div class="title-box">
-                <h1>OBYXA</h1>
-            </div>
-            <div class="stats">
-                <div class="stat-badge" id="score-display">⭐ Skor: 0</div>
-            </div>
-        </div>
-
-        <div class="controls-hint">
-            <b>🎮 Kontroller:</b><br>
-            • Yön Tuşları / WASD: Hareket<br>
-            • Boşluk (Space): Zıplama<br>
-            • Fare Sağ Tık + Sürükle: Kamera Açısı
-        </div>
+<div id="topbar">
+    <h1>OBYXA</h1>
+    <div class="top-right">
+        <div id="coins">💰 1000</div>
+        <div id="roomId">ROOM: ----</div>
+        <select id="langSelect" onchange="changeLanguage(this.value)">
+            <option value="en" selected>English</option>
+            <option value="tr">Türkçe</option>
+            <option value="de">Deutsch</option>
+            <option value="es">Español</option>
+            <option value="zh">中文</option>
+            <option value="ko">한국어</option>
+            <option value="it">Italiano</option>
+            <option value="ar">العربية</option>
+        </select>
     </div>
+</div>
 
-    <div id="controls-mobile">
-        <div id="joystick-base">
-            <div id="joystick-stick"></div>
-        </div>
-        <div id="jump-btn">ZIPLA</div>
-    </div>
-
-    <script>
-        // --- 1. SAHNE / MODELLER VE IŞIKLANDIRMA ---
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0f172a);
-        scene.fog = new THREE.FogExp2(0x0f172a, 0.015);
-
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        container.appendChild(renderer.domElement);
-
-        // Işıklar
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(20, 40, 20);
-        dirLight.castShadow = true;
-        dirLight.shadow.mapSize.width = 2048;
-        dirLight.shadow.mapSize.height = 2048;
-        dirLight.shadow.camera.near = 0.5;
-        dirLight.shadow.camera.far = 150;
-        const d = 40;
-        dirLight.shadow.camera.left = -d;
-        dirLight.shadow.camera.right = d;
-        dirLight.shadow.camera.top = d;
-        dirLight.shadow.camera.bottom = -d;
-        scene.add(dirLight);
-
-        // --- 2. OYUNCU (KARAKTER) YAPISI ---
-        const playerGroup = new THREE.Group();
+<div id="layout">
+    <div id="sidebar">
+        <div class="nav-btn active" id="btnHome">🏠 Home</div>
+        <div class="nav-btn" id="btnFav">⭐ Favorites</div>
         
-        // Karakter Gövdesi
-        const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 1.2, 16);
-        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.3 });
-        const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-        bodyMesh.position.y = 0.6;
-        bodyMesh.castShadow = true;
-        playerGroup.add(bodyMesh);
+        <!-- MULTIPLAYER PARTY -->
+        <div class="box">
+            <b id="lblMulti">🔗 MULTIPLAYER PARTY</b>
+            <span id="lblPartyDesc">Share code with friends:</span>
+            <div id="myCodeBox" style="background:#114081;color:#fff;padding:6px;text-align:center;font-size:16px;letter-spacing:2px;margin-top:4px;border-radius:4px">----</div>
+            <button onclick="createRoom()" id="btnCreateRoom">CREATE ROOM</button>
+            <input id="joinInput" placeholder="Code: 4829">
+            <button class="blue" onclick="joinRoom()" id="btnJoinRoom">JOIN ROOM</button>
+            <div id="multiLog" style="margin-top:6px;color:#555;font-size:10px">1 Player in party</div>
+        </div>
 
-        // Karakter Kafası
-        const headGeo = new THREE.SphereGeometry(0.35, 16, 16);
-        const headMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2 });
-        const headMesh = new THREE.Mesh(headGeo, headMat);
-        headMesh.position.y = 1.4;
-        headMesh.castShadow = true;
-        playerGroup.add(headMesh);
+        <!-- FRIENDS LIST -->
+        <div class="box">
+            <b id="lblFriends">👥 FRIENDS</b>
+            <input id="friendInput" placeholder="Friend Username">
+            <button onclick="addFriend()" class="blue" id="btnAddFriend">ADD FRIEND</button>
+            <div id="friendsList" style="margin-top:6px;font-size:10px;color:#444;">No friends online</div>
+        </div>
+    </div>
 
-        scene.add(playerGroup);
+    <div id="main">
+        <h2 id="lblPopular">🔥 POPULAR GAMES</h2>
+        <div class="games-grid">
+            <div class="gameCard" onclick="play('obby_easy')">
+                <div class="thumb" style="background:linear-gradient(#8B4513,#5a2e0c)">OBBY</div>
+                <div class="info">Classic Obby <span id="tagEasy">Easy - 14 Checkpoints</span></div>
+            </div>
+            <div class="gameCard" onclick="play('obby_hard')">
+                <div class="thumb" style="background:linear-gradient(#ff6600,#cc3300)">MEGA</div>
+                <div class="info">Mega Fun Obby <span id="tagHard">Hard - 22 Checkpoints</span></div>
+            </div>
+            <div class="gameCard" onclick="play('speedrun')">
+                <div class="thumb" style="background:linear-gradient(#10b981,#047857)">SPEED</div>
+                <div class="info">Speed Run 4 <span id="tagSpeed">High Speed Track</span></div>
+            </div>
+            <div class="gameCard" onclick="play('tycoon')">
+                <div class="thumb" style="background:linear-gradient(#114081,#0a2a55)">TYCOON</div>
+                <div class="info">Beach Tycoon <span id="tagTycoon">Build & Earn</span></div>
+            </div>
+        </div>
 
-        // --- 3. HARİTA (PLATFORMLAR VE ELMASLAR) ---
-        const platforms = [];
-        const collectibles = [];
-        let score = 0;
+        <h2 id="lblNew">🆕 NEW & FEATURED</h2>
+        <div class="games-grid">
+            <div class="gameCard" onclick="play('parkour')">
+                <div class="thumb" style="background:linear-gradient(#6a5acd,#483d8b)">PARKOUR</div>
+                <div class="info">City Parkour <span id="tagParkour">Rooftop Jump</span></div>
+            </div>
+            <div class="gameCard" onclick="play('floodescape')">
+                <div class="thumb" style="background:linear-gradient(#0284c7,#0369a1)">ESCAPE</div>
+                <div class="info">Flood Escape <span id="tagFlood">Climb Fast!</span></div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        function createLevel() {
-            // Başlangıç Platformu
-            createPlatform(0, 0, 0, 8, 1, 8, 0x334155);
+<!-- 3D LAYER -->
+<div id="gameLayer">
+    <div id="hud">
+        <div class="panel">
+            <div id="hudTitle">Game</div>
+            <div id="hudCoin" style="font-weight:normal">Checkpoint: 0</div>
+        </div>
+        <div class="panel" id="hudMulti">1 Player</div>
+    </div>
+    <button id="backBtn" onclick="closeGame()">✕ LOBBY</button>
+    <div id="joystick"><div id="knob"></div></div>
+    <div id="jumpBtn">JUMP</div>
+</div>
 
-            // Parkour Yolu
-            const colors = [0xf43f5e, 0x8b5cf6, 0x10b981, 0xf59e0b, 0x06b6d4];
-            let currentPos = { x: 0, y: 0, z: -6 };
+<script>
+// ----- DICTIONARY (8 LANGUAGES) -----
+const langData = {
+    en: {
+        home: "🏠 Home", fav: "⭐ Favorites", multi: "🔗 MULTIPLAYER PARTY", partyDesc: "Share code with friends:",
+        create: "CREATE ROOM", join: "JOIN ROOM", friends: "👥 FRIENDS", addFriend: "ADD FRIEND",
+        popular: "🔥 POPULAR GAMES", newGames: "🆕 NEW & FEATURED", room: "ROOM: ",
+        jump: "JUMP", lobby: "✕ LOBBY", players: " Players", noFriends: "No friends online",
+        tagEasy: "Easy - 14 Checkpoints", tagHard: "Hard - 22 Checkpoints", tagSpeed: "High Speed Track",
+        tagTycoon: "Build & Earn", tagParkour: "Rooftop Jump", tagFlood: "Climb Fast!"
+    },
+    tr: {
+        home: "🏠 Ana Sayfa", fav: "⭐ Favoriler", multi: "🔗 ÇOK OYUNCULU PARTİ", partyDesc: "Kodu arkadaşınla paylaş:",
+        create: "ODA KUR", join: "KATIL", friends: "👥 ARKADAŞLAR", addFriend: "EKLE",
+        popular: "🔥 POPÜLER OYUNLAR", newGames: "🆕 YENİ OYUNLAR", room: "ODA: ",
+        jump: "ZIPLA", lobby: "✕ LOBİ", players: " Oyuncu", noFriends: "Çevrimiçi arkadaş yok",
+        tagEasy: "Kolay - 14 Bölüm", tagHard: "Zor - 22 Bölüm", tagSpeed: "Yüksek Hızlı Parkur",
+        tagTycoon: "İnşa Et & Kazan", tagParkour: "Çatı Parkuru", tagFlood: "Hızlı Tırman!"
+    },
+    de: {
+        home: "🏠 Startseite", fav: "⭐ Favoriten", multi: "🔗 MEHRSPIELER PARTY", partyDesc: "Code mit Freunden teilen:",
+        create: "RAUM ERSTELLEN", join: "BEITRETEN", friends: "👥 FREUNDE", addFriend: "HINZUFÜGEN",
+        popular: "🔥 BELIEBTE SPIELE", newGames: "🆕 NEU & BELIEBT", room: "RAUM: ",
+        jump: "SPRINGEN", lobby: "✕ LOBBY", players: " Spieler", noFriends: "Keine Freunde online",
+        tagEasy: "Einfach - 14 Kontrollpunkte", tagHard: "Schwer - 22 Kontrollpunkte", tagSpeed: "Schnelle Strecke",
+        tagTycoon: "Bauen & Verdienen", tagParkour: "Dach-Parkour", tagFlood: "Schnell klettern!"
+    },
+    es: {
+        home: "🏠 Inicio", fav: "⭐ Favoritos", multi: "🔗 MULTIJUGADOR", partyDesc: "Comparte código con amigos:",
+        create: "CREAR SALA", join: "UNIRSE", friends: "👥 AMIGOS", addFriend: "AGREGAR",
+        popular: "🔥 JUEGOS POPULARES", newGames: "🆕 NUEVOS", room: "SALA: ",
+        jump: "SALTAR", lobby: "✕ LOBBY", players: " Jugadores", noFriends: "Sin amigos en línea",
+        tagEasy: "Fácil - 14 Puntos", tagHard: "Difícil - 22 Puntos", tagSpeed: "Pista Rápida",
+        tagTycoon: "Construir y Ganar", tagParkour: "Parkour Urbano", tagFlood: "¡Escapa del agua!"
+    },
+    zh: {
+        home: "🏠 首页", fav: "⭐ 收藏", multi: "🔗 多人派对", partyDesc: "与朋友分享代码：",
+        create: "创建房间", join: "加入房间", friends: "👥 好友", addFriend: "添加好友",
+        popular: "🔥 热门游戏", newGames: "🆕 最新游戏", room: "房间: ",
+        jump: "跳跃", lobby: "✕ 大厅", players: " 玩家", noFriends: "没有在线好友",
+        tagEasy: "简单 - 14关", tagHard: "困难 - 22关", tagSpeed: "极速赛道",
+        tagTycoon: "建设与盈利", tagParkour: "屋顶跑酷", tagFlood: "快速攀爬！"
+    },
+    ko: {
+        home: "🏠 홈", fav: "⭐ 즐겨찾기", multi: "🔗 멀티플레이어 파티", partyDesc: "친구와 코드 공유:",
+        create: "방 만들기", join: "참여하기", friends: "👥 친구", addFriend: "친구 추가",
+        popular: "🔥 인기 게임", newGames: "🆕 신규 게임", room: "방: ",
+        jump: "점프", lobby: "✕ 로비", players: " 명의 플레이어", noFriends: "온라인 친구 없음",
+        tagEasy: "쉬움 - 14 단계", tagHard: "어려움 - 22 단계", tagSpeed: "고속 트랙",
+        tagTycoon: "건설 및 수익", tagParkour: "루프탑 파쿠르", tagFlood: "탈출하세요!"
+    },
+    it: {
+        home: "🏠 Home", fav: "⭐ Preferiti", multi: "🔗 MULTIPLAYER", partyDesc: "Condividi codice:",
+        create: "CREA STANZA", join: "ENTRA", friends: "👥 AMICI", addFriend: "AGGIUNGI",
+        popular: "🔥 GIOCHI POPOLARI", newGames: "🆕 NUOVI GIOCHI", room: "STANZA: ",
+        jump: "SALTA", lobby: "✕ LOBBY", players: " Giocatori", noFriends: "Nessun amico online",
+        tagEasy: "Facile - 14 Checkpoint", tagHard: "Difficile - 22 Checkpoint", tagSpeed: "Pista Veloce",
+        tagTycoon: "Costruisci & Guadagna", tagParkour: "Parkour Urbano", tagFlood: "Sali in fretta!"
+    },
+    ar: {
+        home: "🏠 الرئيسية", fav: "⭐ المفضلة", multi: "🔗 متعدد اللاعبين", partyDesc: "شارك الرمز مع أصدقائك:",
+        create: "إنشاء غرفة", join: "انضمام", friends: "👥 الأصدقاء", addFriend: "إضافة",
+        popular: "🔥 الألعاب الشائعة", newGames: "🆕 ألعاب جديدة", room: "غرفة: ",
+        jump: "قفز", lobby: "✕ اللوبي", players: " لاعبين", noFriends: "لا يوجد أصدقاء متصلون",
+        tagEasy: "سهل - 14 مرحلة", tagHard: "صعب - 22 مرحلة", tagSpeed: "مسار سريع",
+        tagTycoon: "بناء وكسب", tagParkour: "باركور السطح", tagFlood: "تسلق بسرعة!"
+    }
+};
 
-            for (let i = 0; i < 25; i++) {
-                const w = 3 + Math.random() * 2;
-                const d = 3 + Math.random() * 2;
-                const color = colors[i % colors.length];
+let currentLang = 'en';
 
-                createPlatform(currentPos.x, currentPos.y, currentPos.z, w, 0.8, d, color);
-                
-                // Elmas Ekle
-                createGem(currentPos.x, currentPos.y + 1.5, currentPos.z);
+function changeLanguage(lang) {
+    currentLang = lang;
+    const d = langData[lang];
+    document.getElementById('btnHome').innerText = d.home;
+    document.getElementById('btnFav').innerText = d.fav;
+    document.getElementById('lblMulti').innerText = d.multi;
+    document.getElementById('lblPartyDesc').innerText = d.partyDesc;
+    document.getElementById('btnCreateRoom').innerText = d.create;
+    document.getElementById('btnJoinRoom').innerText = d.join;
+    document.getElementById('lblFriends').innerText = d.friends;
+    document.getElementById('btnAddFriend').innerText = d.addFriend;
+    document.getElementById('lblPopular').innerText = d.popular;
+    document.getElementById('lblNew').innerText = d.newGames;
+    document.getElementById('jumpBtn').innerText = d.jump;
+    document.getElementById('backBtn').innerText = d.lobby;
+    
+    document.getElementById('tagEasy').innerText = d.tagEasy;
+    document.getElementById('tagHard').innerText = d.tagHard;
+    document.getElementById('tagSpeed').innerText = d.tagSpeed;
+    document.getElementById('tagTycoon').innerText = d.tagTycoon;
+    document.getElementById('tagParkour').innerText = d.tagParkour;
+    document.getElementById('tagFlood').innerText = d.tagFlood;
+    updateMultiUI();
+}
 
-                currentPos.x += (Math.random() - 0.5) * 6;
-                currentPos.y += (Math.random() - 0.2) * 1.5;
-                currentPos.z -= 6 + Math.random() * 2;
-            }
+// ----- MULTIPLAYER & FRIENDS -----
+let coins = parseInt(localStorage.getItem('obyxa_coins') || '1000');
+document.getElementById('coins').innerText = '💰 ' + coins;
+let peer = null, conns = {}, myRoom = '', isHost = false, others = {}, friends = [];
+
+function updateMultiUI() {
+    let count = Object.keys(conns).length + 1;
+    const d = langData[currentLang];
+    document.getElementById('hudMulti').innerText = count + d.players;
+    document.getElementById('multiLog').innerText = count + d.players;
+    document.getElementById('roomId').innerText = d.room + (myRoom || '----');
+}
+
+function createRoom() {
+    let code = Math.floor(1000 + Math.random() * 9000).toString();
+    if(peer) peer.destroy();
+    peer = new Peer('obyxa-' + code);
+    peer.on('open', id => {
+        myRoom = code; isHost = true;
+        document.getElementById('myCodeBox').innerText = code;
+        updateMultiUI();
+    });
+    peer.on('connection', c => {
+        c.on('open', () => { conns[c.peer] = c; updateMultiUI(); });
+        c.on('data', d => { if(d.t === 'p') moveOther(c.peer, d); });
+        c.on('close', () => { delete conns[c.peer]; if(others[c.peer]){ scene.remove(others[c.peer]); delete others[c.peer]; } updateMultiUI(); });
+    });
+}
+
+function joinRoom() {
+    let code = document.getElementById('joinInput').value.trim();
+    if(!code) return alert('Enter code!');
+    if(!peer) { peer = new Peer(); peer.on('open', () => doJoin(code)); } else doJoin(code);
+}
+
+function doJoin(code) {
+    let c = peer.connect('obyxa-' + code);
+    c.on('open', () => { conns[c.peer] = c; myRoom = code; isHost = false; document.getElementById('myCodeBox').innerText = code; updateMultiUI(); });
+    c.on('data', d => { if(d.t === 'p') moveOther(c.peer, d); });
+    c.on('error', () => alert('Room not found!'));
+}
+
+function moveOther(id, d) {
+    if(!scene) return;
+    if(!others[id]) {
+        let m = makeChar(0xff3333); scene.add(m); others[id] = m;
+    }
+    others[id].position.set(d.x, d.y, d.z);
+}
+
+function broadcast(pos) {
+    Object.values(conns).forEach(c => { if(c.open) c.send({ t: 'p', x: pos.x, y: pos.y, z: pos.z }); });
+}
+
+function addFriend() {
+    let name = document.getElementById('friendInput').value.trim();
+    if(!name) return;
+    friends.push(name);
+    document.getElementById('friendInput').value = '';
+    renderFriends();
+}
+
+function renderFriends() {
+    let container = document.getElementById('friendsList');
+    if(friends.length === 0) {
+        container.innerText = langData[currentLang].noFriends;
+    } else {
+        container.innerHTML = friends.map(f => `🟢 ${f}`).join('<br>');
+    }
+}
+
+// ----- 3D GAME ENGINE -----
+let scene, camera, renderer, player, keys = {}, plats = [], check = 0, gameType = '';
+
+function makeChar(col) {
+    let g = new THREE.Group();
+    let matSkin = new THREE.MeshLambertMaterial({ color: 0xffdbac });
+    let matShirt = new THREE.MeshLambertMaterial({ color: col });
+    let head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), matSkin); head.position.y = 1.05; g.add(head);
+    let body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.45), matShirt); body.position.y = 0.25; g.add(body);
+    let leg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.6, 0.4), new THREE.MeshLambertMaterial({ color: 0x114081 }));
+    leg.position.set(-0.22, -0.5, 0); g.add(leg);
+    let leg2 = leg.clone(); leg2.position.x = 0.22; g.add(leg2);
+    return g;
+}
+
+function play(type) {
+    gameType = type; check = 0;
+    document.getElementById('gameLayer').style.display = 'block';
+    document.getElementById('hudTitle').innerText = type.toUpperCase();
+    if(!scene) init3D();
+    buildLevel(type);
+}
+
+function closeGame() { document.getElementById('gameLayer').style.display = 'none'; }
+
+function init3D() {
+    scene = new THREE.Scene(); scene.background = new THREE.Color(0x87CEEB); scene.fog = new THREE.Fog(0x87CEEB, 60, 180);
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 500);
+    renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('gameLayer').appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    let sun = new THREE.DirectionalLight(0xffffff, 0.7); sun.position.set(30, 50, 20); scene.add(sun);
+
+    player = { x: -28, y: 8, z: 0, vx: 0, vy: 0, vz: 0, onG: false, speed: 0.22, mesh: makeChar(0x38bdf8) };
+    scene.add(player.mesh);
+
+    let ground = new THREE.Mesh(new THREE.BoxGeometry(1000, 3, 1000), new THREE.MeshLambertMaterial({ color: 0x5fbf4a }));
+    ground.position.y = -2.5; scene.add(ground);
+
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if(isMobile) {
+        document.getElementById('joystick').style.display = 'block';
+        document.getElementById('jumpBtn').style.display = 'flex';
+    }
+
+    animate();
+    window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+}
+
+function buildLevel(type) {
+    plats.forEach(m => scene.remove(m)); plats = []; check = 0;
+    player.x = -28; player.y = 8; player.z = 0; player.vx = 0; player.vy = 0; player.vz = 0; player.speed = 0.22;
+
+    if(type.includes('obby')) {
+        let count = type === 'obby_hard' ? 22 : 14;
+        for(let i = 0; i < count; i++) {
+            let m = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), new THREE.MeshLambertMaterial({ color: i%2===0?0x8B4513:0xff6600 }));
+            m.position.set(i*6 - 28, i*1.25 + 2, Math.sin(i)*3);
+            scene.add(m); plats.push(m);
         }
-
-        function createPlatform(x, y, z, w, h, d, color) {
-            const geo = new THREE.BoxGeometry(w, h, d);
-            const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.4 });
-            const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.set(x, y, z);
-            mesh.receiveShadow = true;
-            mesh.castShadow = true;
-            scene.add(mesh);
-
-            platforms.push({
-                mesh: mesh,
-                size: { w, h, d }
-            });
+    } else if(type === 'speedrun') {
+        player.speed = 0.45;
+        for(let i = 0; i < 20; i++) {
+            let m = new THREE.Mesh(new THREE.BoxGeometry(6, 1, 15), new THREE.MeshLambertMaterial({ color: 0x10b981 }));
+            m.position.set(0, 2, -i*18);
+            scene.add(m); plats.push(m);
         }
-
-        function createGem(x, y, z) {
-            const geo = new THREE.OctahedronGeometry(0.35);
-            const mat = new THREE.MeshStandardMaterial({ 
-                color: 0xfacc15, 
-                emissive: 0xeab308, 
-                emissiveIntensity: 0.5,
-                roughness: 0.1 
-            });
-            const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.set(x, y, z);
-            scene.add(mesh);
-
-            collectibles.push({ mesh: mesh, active: true });
+    } else if(type === 'tycoon') {
+        for(let i = 0; i < 6; i++) {
+            let m = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 6), new THREE.MeshLambertMaterial({ color: 0x114081 }));
+            m.position.set((i - 2.5)*10, 2, 10);
+            scene.add(m); plats.push(m);
         }
-
-        createLevel();
-
-        // --- 4. FİZİK VE HAREKET ---
-        const playerState = {
-            pos: new THREE.Vector3(0, 3, 0),
-            vel: new THREE.Vector3(0, 0, 0),
-            onGround: false,
-            speed: 0.12,
-            jumpForce: 0.22,
-            gravity: 0.009
-        };
-
-        const keys = {};
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
-
-        // --- 5. MOBİL KONTROLLER ---
-        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        if (isMobile) {
-            document.getElementById('joystick-base').style.display = 'block';
-            document.getElementById('jump-btn').style.display = 'flex';
+    } else { // parkour / flood
+        for(let i = 0; i < 16; i++) {
+            let m = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.8, 3.5), new THREE.MeshLambertMaterial({ color: 0x6a5acd }));
+            m.position.set(i*5 - 28, i*2 + 2, Math.cos(i)*4);
+            scene.add(m); plats.push(m);
         }
+    }
+}
 
-        let touchMove = { x: 0, y: 0 };
-        const joyBase = document.getElementById('joystick-base');
-        const joyStick = document.getElementById('joystick-stick');
+function animate() {
+    requestAnimationFrame(animate);
+    if(!player || !scene) return;
 
-        joyBase.addEventListener('touchstart', e => { e.preventDefault(); }, { passive: false });
-        joyBase.addEventListener('touchmove', e => {
-            const touch = e.touches[0];
-            const rect = joyBase.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
+    if(keys['w'] || keys['arrowup']) player.vz -= player.speed;
+    if(keys['s'] || keys['arrowdown']) player.vz += player.speed;
+    if(keys['a'] || keys['arrowleft']) player.vx -= player.speed;
+    if(keys['d'] || keys['arrowright']) player.vx += player.speed;
 
-            let dx = touch.clientX - centerX;
-            let dy = touch.clientY - centerY;
-            const dist = Math.hypot(dx, dy);
-            const maxDist = 35;
+    player.vx *= 0.82; player.vz *= 0.82; player.vy -= 0.055;
 
-            if (dist > maxDist) {
-                dx = (dx / dist) * maxDist;
-                dy = (dy / dist) * maxDist;
-            }
+    let nx = player.x + player.vx, nz = player.z + player.vz, ny = player.y + player.vy;
+    let blocked = false;
 
-            joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
-            touchMove.x = dx / maxDist;
-            touchMove.y = dy / maxDist;
-            e.preventDefault();
-        }, { passive: false });
+    plats.forEach(p => {
+        if(Math.abs(nx - p.position.x) < 2.2 && Math.abs(nz - p.position.z) < 2.2 && Math.abs(player.y - p.position.y) < 1.2) blocked = true;
+    });
 
-        const resetJoy = () => {
-            joyStick.style.transform = `translate(0px, 0px)`;
-            touchMove.x = 0;
-            touchMove.y = 0;
-        };
-        joyBase.addEventListener('touchend', resetJoy);
-        joyBase.addEventListener('touchcancel', resetJoy);
+    if(!blocked) { player.x = nx; player.z = nz; }
 
-        document.getElementById('jump-btn').addEventListener('touchstart', e => {
-            if (playerState.onGround) {
-                playerState.vel.y = playerState.jumpForce;
-                playerState.onGround = false;
-            }
-            e.preventDefault();
-        }, { passive: false });
-
-        // --- 6. KAMERA KONTROLÜ (MOUSE) ---
-        let cameraAngleX = 0;
-        let cameraAngleY = 0.3;
-        let isMouseDown = false;
-
-        window.addEventListener('mousedown', e => { if (e.button === 2) isMouseDown = true; });
-        window.addEventListener('mouseup', e => { if (e.button === 2) isMouseDown = false; });
-        window.addEventListener('contextmenu', e => e.preventDefault());
-        window.addEventListener('mousemove', e => {
-            if (isMouseDown) {
-                cameraAngleX -= e.movementX * 0.005;
-                cameraAngleY = Math.max(0.1, Math.min(1.2, cameraAngleY + e.movementY * 0.005));
-            }
-        });
-
-        // --- 7. OYUN DÖNGÜSÜ ---
-        function animate() {
-            requestAnimationFrame(animate);
-
-            let moveX = 0;
-            let moveZ = 0;
-
-            if (keys['KeyW'] || keys['ArrowUp']) moveZ -= 1;
-            if (keys['KeyS'] || keys['ArrowDown']) moveZ += 1;
-            if (keys['KeyA'] || keys['ArrowLeft']) moveX -= 1;
-            if (keys['KeyD'] || keys['ArrowRight']) moveX += 1;
-
-            if (touchMove.x !== 0 || touchMove.y !== 0) {
-                moveX = touchMove.x;
-                moveZ = touchMove.y;
-            }
-
-            if (keys['Space'] && playerState.onGround) {
-                playerState.vel.y = playerState.jumpForce;
-                playerState.onGround = false;
-            }
-
-            const forward = new THREE.Vector3(Math.sin(cameraAngleX), 0, Math.cos(cameraAngleX)).negate();
-            const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
-
-            const inputDir = new THREE.Vector3()
-                .addScaledVector(right, moveX)
-                .addScaledVector(forward, -moveZ);
-
-            if (inputDir.lengthSq() > 0) {
-                inputDir.normalize();
-                playerState.pos.x += inputDir.x * playerState.speed;
-                playerState.pos.z += inputDir.z * playerState.speed;
-
-                const targetRotation = Math.atan2(inputDir.x, inputDir.z);
-                playerGroup.rotation.y = targetRotation;
-            }
-
-            playerState.vel.y -= playerState.gravity;
-            playerState.pos.y += playerState.vel.y;
-
-            playerState.onGround = false;
-            const playerRadius = 0.4;
-
-            platforms.forEach(p => {
-                const b = p.mesh.position;
-                const halfW = p.size.w / 2;
-                const halfH = p.size.h / 2;
-                const halfD = p.size.d / 2;
-
-                if (playerState.pos.x + playerRadius > b.x - halfW &&
-                    playerState.pos.x - playerRadius < b.x + halfW &&
-                    playerState.pos.z + playerRadius > b.z - halfD &&
-                    playerState.pos.z - playerRadius < b.z + halfD) {
-                    
-                    const topY = b.y + halfH;
-                    if (playerState.pos.y <= topY && playerState.pos.y >= topY - 0.4 && playerState.vel.y <= 0) {
-                        playerState.pos.y = topY;
-                        playerState.vel.y = 0;
-                        playerState.onGround = true;
+    let on = false;
+    plats.forEach((p, idx) => {
+        if(Math.abs(player.x - p.position.x) < 2.15 && Math.abs(player.z - p.position.z) < 2.15) {
+            if(ny <= p.position.y + 1.35 && ny >= p.position.y && player.vy <= 0) {
+                ny = p.position.y + 1.35; player.vy = 0; on = true;
+                if(idx > check) {
+                    check = idx;
+                    document.getElementById('hudCoin').innerText = 'Checkpoint: ' + check + ' / ' + plats.length;
+                    if(idx === plats.length - 1) {
+                        coins += 100; localStorage.setItem('obyxa_coins', coins);
+                        document.getElementById('coins').innerText = '💰 ' + coins;
+                        document.getElementById('hudCoin').innerText = '🏆 COMPLETED! +100 Coins!';
                     }
                 }
-            });
-
-            if (playerState.pos.y < -15) {
-                playerState.pos.set(0, 4, 0);
-                playerState.vel.set(0, 0, 0);
             }
-
-            playerGroup.position.copy(playerState.pos);
-
-            collectibles.forEach(c => {
-                if (c.active) {
-                    c.mesh.rotation.y += 0.03;
-                    c.mesh.position.y += Math.sin(Date.now() * 0.003) * 0.002;
-
-                    if (playerGroup.position.distanceTo(c.mesh.position) < 1.0) {
-                        c.active = false;
-                        scene.remove(c.mesh);
-                        score += 10;
-                        document.getElementById('score-display').innerText = '⭐ Skor: ' + score;
-                    }
-                }
-            });
-
-            const camDist = 9;
-            camera.position.x = playerState.pos.x + Math.sin(cameraAngleX) * camDist * Math.cos(cameraAngleY);
-            camera.position.y = playerState.pos.y + Math.sin(cameraAngleY) * camDist + 1;
-            camera.position.z = playerState.pos.z + Math.cos(cameraAngleX) * camDist * Math.cos(cameraAngleY);
-            camera.lookAt(playerState.pos.x, playerState.pos.y + 1, playerState.pos.z);
-
-            renderer.render(scene, camera);
         }
+    });
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+    player.y = ny; player.onG = on;
+    if(player.y < -25) { player.x = -28; player.y = 10; player.vy = 0; }
 
-        animate();
-    </script>
+    player.mesh.position.set(player.x, player.y, player.z);
+    camera.position.set(player.x, player.y + 5.5, player.z + 10.5);
+    camera.lookAt(player.x, player.y + 0.5, player.z);
+
+    broadcast(player.mesh.position);
+    renderer.render(scene, camera);
+}
+
+// CONTROLS
+window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; if(e.code === 'Space' && player && player.onG) player.vy = 0.62; });
+window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+let joy = document.getElementById('joystick'), knob = document.getElementById('knob'), joyActive = false;
+joy.addEventListener('touchstart', e => joyActive = true, {passive: false});
+joy.addEventListener('touchmove', e => {
+    if(!joyActive) return;
+    let r = joy.getBoundingClientRect(), t = e.touches[0];
+    let dx = t.clientX - (r.left + 55), dy = t.clientY - (r.top + 55);
+    let ang = Math.atan2(dy, dx), dist = Math.min(35, Math.hypot(dx, dy));
+    knob.style.left = (33 + Math.cos(ang)*dist) + 'px'; knob.style.top = (33 + Math.sin(ang)*dist) + 'px';
+    keys['w'] = dy < -10; keys['s'] = dy > 10; keys['a'] = dx < -10; keys['d'] = dx > 10;
+    e.preventDefault();
+}, {passive: false});
+
+function endJoy() { joyActive = false; keys['w'] = keys['a'] = keys['s'] = keys['d'] = false; knob.style.left = '33px'; knob.style.top = '33px'; }
+joy.addEventListener('touchend', endJoy); joy.addEventListener('touchcancel', endJoy);
+
+document.getElementById('jumpBtn').addEventListener('touchstart', e => { if(player && player.onG) player.vy = 0.62; e.preventDefault(); }, {passive: false});
+
+// AUTO ROOM CREATION
+setTimeout(() => { if(!peer) createRoom(); }, 1000);
+changeLanguage('en');
+</script>
 </body>
 </html>
-

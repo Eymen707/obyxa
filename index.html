@@ -19,7 +19,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'obyxa-sim-v13';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'obyxa-sim-v15';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
 
         window.FB_DB = null;
@@ -61,57 +61,73 @@
 
         body {
             font-family: 'Source Sans Pro', Arial, sans-serif;
-            background: linear-gradient(135deg, #090d16 0%, #111827 100%);
-            color: #f3f4f6;
+            background-color: #e3e3e3;
+            color: #222222;
             overflow-x: hidden;
             min-height: 100vh;
         }
 
+        /* Roblox 2014 Classic Styling */
         .roblox-header {
-            background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%);
-            border-bottom: 2px solid #1e3a8a;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+            background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%);
+            border-bottom: 2px solid #00367d;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         .btn-retro-green {
-            background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
-            border: 1px solid #14532d;
+            background: linear-gradient(180deg, #02b700 0%, #008200 100%);
+            border: 1px solid #004d00;
             color: white;
             text-shadow: 0px -1px 0px rgba(0,0,0,0.5);
         }
 
         .btn-retro-blue {
-            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-            border: 1px solid #1e3a8a;
+            background: linear-gradient(180deg, #1e7bd1 0%, #0d5494 100%);
+            border: 1px solid #073866;
             color: white;
             text-shadow: 0px -1px 0px rgba(0,0,0,0.5);
         }
 
         .game-card {
-            background: #1f2937;
-            border: 1px solid #374151;
-            transition: all 0.2s ease;
+            background: #ffffff;
+            border: 1px solid #c3c3c3;
+            transition: all 0.15s ease;
         }
         .game-card:hover {
-            border-color: #60a5fa;
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
-            transform: translateY(-3px);
+            border-color: #0055b3;
+            box-shadow: 0 4px 12px rgba(0, 85, 179, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Controls */
+        #mobile-hud {
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: none;
+        }
+
+        .touch-btn {
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: auto !important;
         }
 
         #virtual-joystick-base {
             position: absolute;
             width: 130px;
             height: 130px;
-            bottom: 35px;
-            left: 35px;
+            bottom: 30px;
+            left: 30px;
             border-radius: 50%;
-            background: rgba(15, 23, 42, 0.75);
-            border: 3px solid rgba(96, 165, 250, 0.8);
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.8);
             pointer-events: auto !important;
             touch-action: none;
             display: block !important;
             z-index: 9999;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
 
         #virtual-joystick-stick {
@@ -121,8 +137,8 @@
             left: 37px;
             top: 37px;
             border-radius: 50%;
-            background: radial-gradient(circle, #ffffff 0%, #94a3b8 100%);
-            box-shadow: 0 0 12px rgba(0,0,0,0.9);
+            background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%);
+            box-shadow: 0 0 8px rgba(0,0,0,0.8);
             pointer-events: none;
             transform: translate(0px, 0px);
         }
@@ -133,6 +149,7 @@
     <!-- TOP NAVIGATION BAR -->
     <header class="roblox-header text-white text-sm h-16 flex items-center justify-between px-3 sm:px-6 sticky top-0 z-40">
         <div class="flex items-center space-x-3 sm:space-x-5 rtl:space-x-reverse">
+            <!-- Hamburger button for mobile menu -->
             <button onclick="toggleMobileSidebar()" class="md:hidden text-white text-2xl px-1">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -142,12 +159,12 @@
                 </div>
             </div>
             <nav class="hidden md:flex space-x-1.5 font-bold text-sm rtl:space-x-reverse">
-                <button onclick="showTab('games')" data-i18n="nav_games" class="px-3 py-1.5 hover:bg-blue-600 rounded transition">Games</button>
-                <button onclick="showTab('simulators')" data-i18n="nav_simulators" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-yellow-300 font-extrabold">Simulators</button>
-                <button onclick="showTab('avatar')" data-i18n="nav_avatar" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-blue-300 font-bold">Avatar Room</button>
-                <button onclick="showTab('friends')" data-i18n="nav_friends" class="px-3 py-1.5 hover:bg-blue-600 rounded transition">Friends</button>
-                <button onclick="showTab('settings')" data-i18n="nav_settings" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-green-300">Settings</button>
-                <button onclick="showTab('develop')" data-i18n="nav_develop" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-yellow-400 font-extrabold">Rbx Studio</button>
+                <button onclick="showTab('games')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition">Games</button>
+                <button onclick="showTab('simulators')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-yellow-300 font-extrabold">Simulators</button>
+                <button onclick="showTab('avatar')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-blue-300 font-bold">Avatar Room</button>
+                <button onclick="showTab('friends')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition">Friends</button>
+                <button onclick="showTab('settings')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-green-300">Settings</button>
+                <button onclick="showTab('develop')" class="px-3 py-1.5 hover:bg-blue-600 rounded transition text-yellow-400 font-extrabold">Rbx Studio</button>
             </nav>
         </div>
 
@@ -171,20 +188,20 @@
         </div>
     </header>
 
-    <!-- MOBILE SIDEBAR -->
+    <!-- MOBILE SIDEBAR OVERLAY -->
     <div id="mobile-sidebar" class="fixed inset-0 bg-black/80 z-50 hidden md:hidden" onclick="toggleMobileSidebar()">
-        <div class="w-72 bg-slate-900 h-full p-5 space-y-4 shadow-2xl" onclick="event.stopPropagation()">
+        <div class="w-72 bg-slate-900 h-full p-5 space-y-4 shadow-2xl text-white" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <span class="font-extrabold text-blue-400 text-lg">obyxa Menu</span>
                 <button onclick="toggleMobileSidebar()" class="text-slate-400 text-2xl font-bold">&times;</button>
             </div>
             <nav class="flex flex-col space-y-2 font-bold text-sm">
-                <button onclick="showTab('games'); toggleMobileSidebar()" class="text-left py-2 px-3 hover:bg-slate-800 rounded">Games</button>
-                <button onclick="showTab('simulators'); toggleMobileSidebar()" class="text-left py-2 px-3 hover:bg-slate-800 rounded text-yellow-300 font-black">Simulators</button>
-                <button onclick="showTab('avatar'); toggleMobileSidebar()" class="text-left py-2 px-3 hover:bg-slate-800 rounded text-blue-300">3D Avatar Room</button>
-                <button onclick="showTab('friends'); toggleMobileSidebar()" class="text-left py-2 px-3 hover:bg-slate-800 rounded">Friends System</button>
-                <button onclick="showTab('settings'); toggleMobileSidebar()" class="text-left py-2 px-3 hover:bg-slate-800 rounded text-green-400">Settings</button>
-                <button onclick="showTab('develop'); toggleMobileSidebar()" class="text-left py-2 px-3 hover:bg-slate-800 rounded text-yellow-400 font-black">Rbx Studio</button>
+                <button onclick="showTab('games'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded flex items-center gap-2"><i class="fa-solid fa-gamepad text-blue-400"></i> Games</button>
+                <button onclick="showTab('simulators'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-yellow-300 font-black flex items-center gap-2"><i class="fa-solid fa-bolt text-yellow-400"></i> Simulators</button>
+                <button onclick="showTab('avatar'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-blue-300 flex items-center gap-2"><i class="fa-solid fa-user-gear text-blue-400"></i> 3D Avatar Room</button>
+                <button onclick="showTab('friends'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded flex items-center gap-2"><i class="fa-solid fa-user-group text-blue-400"></i> Friends System</button>
+                <button onclick="showTab('settings'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-green-400 flex items-center gap-2"><i class="fa-solid fa-sliders text-green-400"></i> Settings</button>
+                <button onclick="showTab('develop'); toggleMobileSidebar()" class="text-left py-2.5 px-3 hover:bg-slate-800 rounded text-yellow-400 font-black flex items-center gap-2"><i class="fa-solid fa-hammer text-yellow-400"></i> Rbx Studio</button>
             </nav>
         </div>
     </div>
@@ -203,7 +220,7 @@
             <div class="bg-slate-900 rounded-xl border border-slate-800 p-2 space-y-1 text-xs font-semibold">
                 <a href="#" onclick="showTab('games')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-gamepad text-blue-400"></i> Games</a>
                 <a href="#" onclick="showTab('simulators')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-bolt text-yellow-400"></i> Simulators</a>
-                <a href="#" onclick="showTab('avatar')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-user-gear text-blue-400"></i> 3D Avatar Customizer</a>
+                <a href="#" onclick="showTab('avatar')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-user-gear text-blue-400"></i> 3D Avatar Room</a>
                 <a href="#" onclick="showTab('friends')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-user-group text-blue-400"></i> Friends</a>
                 <a href="#" onclick="showTab('settings')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-sliders text-green-400"></i> Graphics & Settings</a>
                 <a href="#" onclick="showTab('develop')" class="flex items-center p-2.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white gap-2.5"><i class="fa-solid fa-hammer text-yellow-400"></i> Rbx Studio</a>
@@ -213,15 +230,15 @@
         <main class="flex-1 min-w-0 space-y-5">
             <!-- TAB 1: GAMES HUB -->
             <div id="tab-games" class="space-y-5">
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs shadow-lg">
-                    <span class="font-black text-white text-lg">Pro Roblox 2014 Featured Games</span>
-                    <input type="text" id="game-search-input" oninput="filterGames()" placeholder="Search Games..." class="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none">
+                <div class="bg-white p-4 rounded border border-gray-300 flex flex-wrap items-center justify-between gap-3 text-xs shadow-sm">
+                    <span class="font-black text-gray-800 text-lg">Featured 2014 Classic Games & Hard Obbies</span>
+                    <input type="text" id="game-search-input" oninput="filterGames()" placeholder="Search Games..." class="bg-gray-50 border border-gray-300 text-gray-800 rounded px-3 py-1.5 text-xs focus:outline-none">
                 </div>
 
                 <div id="grid-featured" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
 
                 <div>
-                    <h2 class="font-extrabold text-blue-400 text-base mb-3 flex items-center gap-2">
+                    <h2 class="font-extrabold text-blue-800 text-base mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-hammer"></i> Player Creations & Published Studio Arenas
                     </h2>
                     <div id="grid-user-games" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
@@ -230,10 +247,10 @@
 
             <!-- TAB 2: SIMULATORS SUITE -->
             <div id="tab-simulators" class="hidden space-y-5">
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-lg">
-                    <h1 class="text-xl font-black text-yellow-400 mb-1">⚡ Roblox Simulator Worlds</h1>
-                    <p class="text-xs text-slate-400 mb-4">Train stats, level up, grow bigger, run faster, and jump to the sky!</p>
-                    <div id="grid-simulators" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                <div class="bg-white p-5 rounded border border-gray-300 shadow-sm">
+                    <h1 class="text-xl font-black text-blue-900 mb-1">⚡ Roblox Simulator Worlds</h1>
+                    <p class="text-xs text-gray-600 mb-4">Train stats, eat bananas & burgers, level up, grow bigger, run faster, and jump to the sky!</p>
+                    <div id="grid-simulators" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 </div>
             </div>
 
@@ -243,75 +260,55 @@
                     <div class="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3">
                         <div>
                             <h1 class="text-lg font-black text-white">3D Roblox Character Customizer</h1>
-                            <p class="text-xs text-slate-400">Authentic Blocky R6 Roblox Avatar with Live 3D Preview!</p>
+                            <p class="text-xs text-slate-400">Authentic Blocky R6 Roblox Avatar with Live 3D Preview & Legendary 2014 Accessories!</p>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 flex-wrap">
                             <button onclick="equipPreset('bacon')" class="btn-retro-blue text-xs font-bold px-3 py-1.5 rounded-lg">Bacon Hair</button>
-                            <button onclick="equipPreset('noob')" class="btn-retro-green text-xs font-bold px-3 py-1.5 rounded-lg">Classic Noob</button>
+                            <button onclick="equipPreset('valkyrie')" class="bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Valkyrie Helm</button>
                             <button onclick="equipPreset('pro')" class="bg-purple-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Dominus Pro</button>
+                            <button onclick="equipPreset('ninja')" class="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Shadow Ninja</button>
+                            <button onclick="equipPreset('king')" class="bg-yellow-500 text-black text-xs font-bold px-3 py-1.5 rounded-lg">Royal King</button>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <!-- 3D LIVE AVATAR PREVIEW CANVAS -->
-                        <div class="relative w-full h-[320px] bg-slate-950 rounded-xl border border-slate-700 overflow-hidden shadow-inner">
+                        <div class="relative w-full h-[360px] bg-slate-950 rounded-xl border border-slate-700 overflow-hidden shadow-inner">
                             <div id="avatar-preview-container" class="w-full h-full"></div>
                             <div class="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded backdrop-blur">
-                                Drag mouse / touch to rotate avatar
+                                Drag mouse / touch to rotate avatar 360°
                             </div>
                         </div>
 
-                        <!-- CUSTOMIZATION CONTROLS -->
-                        <div class="space-y-3 text-xs font-bold">
+                        <div class="space-y-3 text-xs font-bold max-h-[360px] overflow-y-auto pr-1">
                             <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 space-y-2">
                                 <label class="text-slate-300">Torso & Shirt Color:</label>
                                 <div class="flex gap-2 flex-wrap">
                                     <button onclick="setTorsoColor(0x0055b3)" class="w-8 h-8 rounded-full bg-blue-600 border-2 border-white"></button>
                                     <button onclick="setTorsoColor(0xd97706)" class="w-8 h-8 rounded-full bg-amber-600 border-2 border-white"></button>
-                                    <button onclick="setTorsoColor(0xd97706)" class="w-8 h-8 rounded-full bg-yellow-500 border-2 border-white"></button>
                                     <button onclick="setTorsoColor(0xd1d5db)" class="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"></button>
                                     <button onclick="setTorsoColor(0x9333ea)" class="w-8 h-8 rounded-full bg-purple-600 border-2 border-white"></button>
+                                    <button onclick="setTorsoColor(0xeab308)" class="w-8 h-8 rounded-full bg-yellow-500 border-2 border-white"></button>
+                                    <button onclick="setTorsoColor(0xdc2626)" class="w-8 h-8 rounded-full bg-red-600 border-2 border-white"></button>
                                 </div>
                             </div>
 
                             <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 space-y-2">
-                                <label class="text-slate-300">Head / Hat Attachment:</label>
-                                <select id="avatar-hat-select" onchange="updateAvatarPreview()" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-lg">
+                                <label class="text-slate-300">Head / Legendary Hats & Helmets:</label>
+                                <select id="avatar-hat-select" onchange="updateAvatarPreviewFromSelect()" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-lg">
                                     <option value="bacon">Classic Bacon Hair (Pal Hair)</option>
-                                    <option value="noob">Noob Blue Cap</option>
-                                    <option value="dominus">Dominus Crown</option>
+                                    <option value="valkyrie">Valkyrie Helm of Glory</option>
+                                    <option value="dominus">Dominus Empyreus Hood</option>
+                                    <option value="clockwork">Clockwork Gold Headphones</option>
+                                    <option value="bc_crown">Builder's Club Imperial Crown</option>
+                                    <option value="noob">Noob Blue Snapback Cap</option>
+                                    <option value="tophat">Gentleman's Top Hat</option>
                                     <option value="none">Bare Head (No Hat)</option>
                                 </select>
                             </div>
 
                             <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 space-y-2">
-                                <label class="text-slate-300">Legs / Pants Color:</label>
-                                <div class="flex gap-2 flex-wrap">
-                                    <button onclick="setLegColor(0x02b700)" class="w-8 h-8 rounded-full bg-green-600 border-2 border-white"></button>
-                                    <button onclick="setLegColor(0x1e3a8a)" class="w-8 h-8 rounded-full bg-blue-900 border-2 border-white"></button>
-                                    <button onclick="setLegColor(0x111827)" class="w-8 h-8 rounded-full bg-gray-900 border-2 border-white"></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 4: FRIENDS SYSTEM -->
-            <div id="tab-friends" class="hidden space-y-4">
-                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-lg space-y-4">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                        <h1 class="text-lg font-black text-white">Friends & Online Multiplayer Lobby</h1>
-                        <div class="flex gap-2">
-                            <input type="text" id="add-friend-input" placeholder="Friend Username..." class="bg-slate-800 border border-slate-700 text-white text-xs px-3 py-2 rounded-lg font-bold focus:outline-none">
-                            <button onclick="sendFriendRequest()" class="btn-retro-green text-xs font-bold px-3 py-2 rounded-lg">+ Add Friend</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="border border-slate-800 rounded-xl p-4 bg-slate-950/50 space-y-2">
-                            <h3 class="font-bold text-xs text-blue-400 uppercase">My Friends</h3>
-                            <div id="friends-list-container" class="space-y-2 max-h-60 overflow-y-auto"></div>
-                        </div>
-
-                 
+                                <label class="text-slate-300">Face Glasses & Shades:</label>
+                                <select id="avatar-face-select" onchange="updateAvatarPreviewFromSelect()" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-lg">
+                                    <option value="none">No Glasses</option>
+                                    <option value="shades">Clockwork Black Sunglasses</option>
+          

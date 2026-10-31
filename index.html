@@ -1,1 +1,457 @@
-obyxa
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Obyxa - 3D Parkour Arena</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0f172a;
+            color: #fff;
+        }
+        #ui-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px;
+            z-index: 10;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .title-box {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .title-box h1 {
+            font-size: 20px;
+            color: #38bdf8;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        .stats {
+            display: flex;
+            gap: 10px;
+        }
+        .stat-badge {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 700;
+            font-size: 14px;
+            color: #facc15;
+        }
+        .controls-hint {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 300px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+        #controls-mobile {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        #joystick-base {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            pointer-events: auto;
+            touch-action: none;
+            display: none;
+        }
+        #joystick-stick {
+            position: absolute;
+            top: 35px;
+            left: 35px;
+            width: 50px;
+            height: 50px;
+            background: #38bdf8;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+        }
+        #jump-btn {
+            position: absolute;
+            bottom: 40px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: rgba(56, 189, 248, 0.8);
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            color: #0f172a;
+            pointer-events: auto;
+            touch-action: none;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+        }
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div id="ui-layer">
+        <div class="header">
+            <div class="title-box">
+                <h1>OBYXA</h1>
+            </div>
+            <div class="stats">
+                <div class="stat-badge" id="score-display">⭐ Skor: 0</div>
+            </div>
+        </div>
+
+        <div class="controls-hint">
+            <b>🎮 Kontroller:</b><br>
+            • Yön Tuşları / WASD: Hareket<br>
+            • Boşluk (Space): Zıplama<br>
+            • Fare Sağ Tık + Sürükle: Kamera Açısı
+        </div>
+    </div>
+
+    <div id="controls-mobile">
+        <div id="joystick-base">
+            <div id="joystick-stick"></div>
+        </div>
+        <div id="jump-btn">ZIPLA</div>
+    </div>
+
+    <script>
+        // --- 1. SAHNE / MODELLER VE IŞIKLANDIRMA ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0f172a);
+        scene.fog = new THREE.FogExp2(0x0f172a, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // Işıklar
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(20, 40, 20);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 150;
+        const d = 40;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        scene.add(dirLight);
+
+        // --- 2. OYUNCU (KARAKTER) YAPISI ---
+        const playerGroup = new THREE.Group();
+        
+        // Karakter Gövdesi
+        const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 1.2, 16);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.3 });
+        const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+        bodyMesh.position.y = 0.6;
+        bodyMesh.castShadow = true;
+        playerGroup.add(bodyMesh);
+
+        // Karakter Kafası
+        const headGeo = new THREE.SphereGeometry(0.35, 16, 16);
+        const headMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2 });
+        const headMesh = new THREE.Mesh(headGeo, headMat);
+        headMesh.position.y = 1.4;
+        headMesh.castShadow = true;
+        playerGroup.add(headMesh);
+
+        scene.add(playerGroup);
+
+        // --- 3. HARİTA (PLATFORMLAR VE ELMASLAR) ---
+        const platforms = [];
+        const collectibles = [];
+        let score = 0;
+
+        function createLevel() {
+            // Başlangıç Platformu
+            createPlatform(0, 0, 0, 8, 1, 8, 0x334155);
+
+            // Parkour Yolu
+            const colors = [0xf43f5e, 0x8b5cf6, 0x10b981, 0xf59e0b, 0x06b6d4];
+            let currentPos = { x: 0, y: 0, z: -6 };
+
+            for (let i = 0; i < 25; i++) {
+                const w = 3 + Math.random() * 2;
+                const d = 3 + Math.random() * 2;
+                const color = colors[i % colors.length];
+
+                createPlatform(currentPos.x, currentPos.y, currentPos.z, w, 0.8, d, color);
+                
+                // Elmas Ekle
+                createGem(currentPos.x, currentPos.y + 1.5, currentPos.z);
+
+                currentPos.x += (Math.random() - 0.5) * 6;
+                currentPos.y += (Math.random() - 0.2) * 1.5;
+                currentPos.z -= 6 + Math.random() * 2;
+            }
+        }
+
+        function createPlatform(x, y, z, w, h, d, color) {
+            const geo = new THREE.BoxGeometry(w, h, d);
+            const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.4 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, y, z);
+            mesh.receiveShadow = true;
+            mesh.castShadow = true;
+            scene.add(mesh);
+
+            platforms.push({
+                mesh: mesh,
+                size: { w, h, d }
+            });
+        }
+
+        function createGem(x, y, z) {
+            const geo = new THREE.OctahedronGeometry(0.35);
+            const mat = new THREE.MeshStandardMaterial({ 
+                color: 0xfacc15, 
+                emissive: 0xeab308, 
+                emissiveIntensity: 0.5,
+                roughness: 0.1 
+            });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, y, z);
+            scene.add(mesh);
+
+            collectibles.push({ mesh: mesh, active: true });
+        }
+
+        createLevel();
+
+        // --- 4. FİZİK VE HAREKET ---
+        const playerState = {
+            pos: new THREE.Vector3(0, 3, 0),
+            vel: new THREE.Vector3(0, 0, 0),
+            onGround: false,
+            speed: 0.12,
+            jumpForce: 0.22,
+            gravity: 0.009
+        };
+
+        const keys = {};
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        // --- 5. MOBİL KONTROLLER ---
+        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isMobile) {
+            document.getElementById('joystick-base').style.display = 'block';
+            document.getElementById('jump-btn').style.display = 'flex';
+        }
+
+        let touchMove = { x: 0, y: 0 };
+        const joyBase = document.getElementById('joystick-base');
+        const joyStick = document.getElementById('joystick-stick');
+
+        joyBase.addEventListener('touchstart', e => { e.preventDefault(); }, { passive: false });
+        joyBase.addEventListener('touchmove', e => {
+            const touch = e.touches[0];
+            const rect = joyBase.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            let dx = touch.clientX - centerX;
+            let dy = touch.clientY - centerY;
+            const dist = Math.hypot(dx, dy);
+            const maxDist = 35;
+
+            if (dist > maxDist) {
+                dx = (dx / dist) * maxDist;
+                dy = (dy / dist) * maxDist;
+            }
+
+            joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
+            touchMove.x = dx / maxDist;
+            touchMove.y = dy / maxDist;
+            e.preventDefault();
+        }, { passive: false });
+
+        const resetJoy = () => {
+            joyStick.style.transform = `translate(0px, 0px)`;
+            touchMove.x = 0;
+            touchMove.y = 0;
+        };
+        joyBase.addEventListener('touchend', resetJoy);
+        joyBase.addEventListener('touchcancel', resetJoy);
+
+        document.getElementById('jump-btn').addEventListener('touchstart', e => {
+            if (playerState.onGround) {
+                playerState.vel.y = playerState.jumpForce;
+                playerState.onGround = false;
+            }
+            e.preventDefault();
+        }, { passive: false });
+
+        // --- 6. KAMERA KONTROLÜ (MOUSE) ---
+        let cameraAngleX = 0;
+        let cameraAngleY = 0.3;
+        let isMouseDown = false;
+
+        window.addEventListener('mousedown', e => { if (e.button === 2) isMouseDown = true; });
+        window.addEventListener('mouseup', e => { if (e.button === 2) isMouseDown = false; });
+        window.addEventListener('contextmenu', e => e.preventDefault());
+        window.addEventListener('mousemove', e => {
+            if (isMouseDown) {
+                cameraAngleX -= e.movementX * 0.005;
+                cameraAngleY = Math.max(0.1, Math.min(1.2, cameraAngleY + e.movementY * 0.005));
+            }
+        });
+
+        // --- 7. OYUN DÖNGÜSÜ ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            let moveX = 0;
+            let moveZ = 0;
+
+            if (keys['KeyW'] || keys['ArrowUp']) moveZ -= 1;
+            if (keys['KeyS'] || keys['ArrowDown']) moveZ += 1;
+            if (keys['KeyA'] || keys['ArrowLeft']) moveX -= 1;
+            if (keys['KeyD'] || keys['ArrowRight']) moveX += 1;
+
+            if (touchMove.x !== 0 || touchMove.y !== 0) {
+                moveX = touchMove.x;
+                moveZ = touchMove.y;
+            }
+
+            if (keys['Space'] && playerState.onGround) {
+                playerState.vel.y = playerState.jumpForce;
+                playerState.onGround = false;
+            }
+
+            const forward = new THREE.Vector3(Math.sin(cameraAngleX), 0, Math.cos(cameraAngleX)).negate();
+            const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
+
+            const inputDir = new THREE.Vector3()
+                .addScaledVector(right, moveX)
+                .addScaledVector(forward, -moveZ);
+
+            if (inputDir.lengthSq() > 0) {
+                inputDir.normalize();
+                playerState.pos.x += inputDir.x * playerState.speed;
+                playerState.pos.z += inputDir.z * playerState.speed;
+
+                const targetRotation = Math.atan2(inputDir.x, inputDir.z);
+                playerGroup.rotation.y = targetRotation;
+            }
+
+            playerState.vel.y -= playerState.gravity;
+            playerState.pos.y += playerState.vel.y;
+
+            playerState.onGround = false;
+            const playerRadius = 0.4;
+
+            platforms.forEach(p => {
+                const b = p.mesh.position;
+                const halfW = p.size.w / 2;
+                const halfH = p.size.h / 2;
+                const halfD = p.size.d / 2;
+
+                if (playerState.pos.x + playerRadius > b.x - halfW &&
+                    playerState.pos.x - playerRadius < b.x + halfW &&
+                    playerState.pos.z + playerRadius > b.z - halfD &&
+                    playerState.pos.z - playerRadius < b.z + halfD) {
+                    
+                    const topY = b.y + halfH;
+                    if (playerState.pos.y <= topY && playerState.pos.y >= topY - 0.4 && playerState.vel.y <= 0) {
+                        playerState.pos.y = topY;
+                        playerState.vel.y = 0;
+                        playerState.onGround = true;
+                    }
+                }
+            });
+
+            if (playerState.pos.y < -15) {
+                playerState.pos.set(0, 4, 0);
+                playerState.vel.set(0, 0, 0);
+            }
+
+            playerGroup.position.copy(playerState.pos);
+
+            collectibles.forEach(c => {
+                if (c.active) {
+                    c.mesh.rotation.y += 0.03;
+                    c.mesh.position.y += Math.sin(Date.now() * 0.003) * 0.002;
+
+                    if (playerGroup.position.distanceTo(c.mesh.position) < 1.0) {
+                        c.active = false;
+                        scene.remove(c.mesh);
+                        score += 10;
+                        document.getElementById('score-display').innerText = '⭐ Skor: ' + score;
+                    }
+                }
+            });
+
+            const camDist = 9;
+            camera.position.x = playerState.pos.x + Math.sin(cameraAngleX) * camDist * Math.cos(cameraAngleY);
+            camera.position.y = playerState.pos.y + Math.sin(cameraAngleY) * camDist + 1;
+            camera.position.z = playerState.pos.z + Math.cos(cameraAngleX) * camDist * Math.cos(cameraAngleY);
+            camera.lookAt(playerState.pos.x, playerState.pos.y + 1, playerState.pos.z);
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
+

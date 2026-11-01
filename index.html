@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>obyxa001 - Retro 3D Studio</title>
+    <title>obyxa001 - Retro 3D Studio & Park</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,9 +21,12 @@
 
     <header class="roblox-header text-white h-16 flex items-center justify-between px-4 sticky top-0 z-40">
         <div class="flex items-center space-x-3">
-            <span class="font-bold text-sm">obyxa001 - Retro 3D Studio</span>
+            <span class="font-bold text-sm">obyxa001 - Retro 3D Studio & Park</span>
         </div>
         <div class="flex items-center space-x-2">
+            <button onclick="toggleAvatarEditor()" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded text-xs font-bold cursor-pointer flex items-center gap-1">
+                <i class="fa-solid fa-user-gear"></i> Avatar
+            </button>
             <button onclick="toggleSettings()" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-bold cursor-pointer flex items-center gap-1">
                 <i class="fa-solid fa-gear"></i> Settings
             </button>
@@ -33,13 +36,41 @@
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-4">
         <div class="roblox-card p-4 rounded-lg shadow-sm flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black text-blue-600">3D Simulator & Game Worlds</h1>
-                <p class="text-xs text-gray-500">Choose a game mode: Muscle, Speed, Football or Racing!</p>
+                <h1 class="text-xl font-black text-blue-600">3D Simulator, Park & Sports Complex</h1>
+                <p class="text-xs text-gray-500">Explore trees, playground slides, cars, and workout equipment!</p>
             </div>
         </div>
 
         <div id="tab-games" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
     </main>
+
+    <!-- AVATAR EDITOR MODAL -->
+    <div id="avatar-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white rounded-lg max-w-sm w-full p-4 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-sm">👤 Character Customizer</h3>
+                <button onclick="toggleAvatarEditor()" class="text-red-600 font-bold cursor-pointer">✕</button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold mb-1">Jacket Color</label>
+                    <input type="color" id="custom-jacket" value="#1a1a1a" onchange="updateAvatarStyle()" class="w-full h-8 rounded cursor-pointer">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Inner Shirt Color</label>
+                    <input type="color" id="custom-shirt" value="#0066ff" onchange="updateAvatarStyle()" class="w-full h-8 rounded cursor-pointer">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Hair Style</label>
+                    <select id="custom-hair" onchange="updateAvatarStyle()" class="w-full p-2 border rounded">
+                        <option value="bacon">Classic 2014 Bacon Hair</option>
+                        <option value="spiky">Spiky Hair</option>
+                        <option value="bald">Bald</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- SETTINGS MODAL -->
     <div id="settings-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-center items-center p-4">
@@ -54,16 +85,6 @@
                     <select id="setting-lang" class="w-full p-2 border rounded">
                         <option value="en" selected>English</option>
                         <option value="tr">Türkçe</option>
-                        <option value="de">Deutsch</option>
-                        <option value="es">Español</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-bold mb-1">FPS Limit</label>
-                    <select id="setting-fps" class="w-full p-2 border rounded">
-                        <option value="60">60 FPS (Recommended)</option>
-                        <option value="30">30 FPS (Battery Saver)</option>
-                        <option value="max">Unlimited FPS</option>
                     </select>
                 </div>
             </div>
@@ -74,7 +95,7 @@
     <div id="game-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col">
         <div class="roblox-header p-3 flex justify-between items-center text-white z-30">
             <div>
-                <span id="active-game-title" class="font-bold text-sm">3D Game</span>
+                <span id="active-game-title" class="font-bold text-sm">3D World</span>
                 <span id="stat-display" class="ml-4 text-xs bg-black/40 px-2 py-1 rounded text-yellow-300 font-bold">Score: 10</span>
             </div>
             <button onclick="closeGame()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold cursor-pointer">✕ Exit</button>
@@ -83,35 +104,35 @@
         <div id="canvas-container" class="relative flex-1 w-full h-full overflow-hidden">
             <div id="joystick-base"><div id="joystick-stick"></div></div>
             <div class="absolute bottom-6 right-6 z-30">
-                <button onclick="triggerAction()" class="bg-gradient-to-r from-yellow-400 to-amber-600 text-black font-black px-6 py-4 rounded-full shadow-2xl border-4 border-white text-sm cursor-pointer">🔥 TRAIN / KICK</button>
+                <button onclick="triggerAction()" class="bg-gradient-to-r from-yellow-400 to-amber-600 text-black font-black px-6 py-4 rounded-full shadow-2xl border-4 border-white text-sm cursor-pointer">🔥 TRAIN / INTERACT</button>
             </div>
         </div>
     </div>
 
     <script>
         const gamesList = [
+            { id: 'park', title: '🛝 Park & Sports Area', desc: 'Trees, playground slide, dumbbells and workout zone!', color: 'from-green-500 to-emerald-700', statName: 'Fitness' },
             { id: 'muscle', title: '💪 Muscle Legends 3D', desc: 'Lift weights, gain muscle, become a giant Bacon!', color: 'from-orange-500 to-red-600', statName: 'Muscle Power' },
             { id: 'speed', title: '⚡ Speed Run 3D', desc: 'Run fast, boost your speed and break records!', color: 'from-amber-400 to-yellow-600', statName: 'Speed' },
-            { id: 'football', title: '⚽ Football 2014', desc: 'Kick the ball, score goals in the 3D stadium!', color: 'from-green-500 to-emerald-700', statName: 'Goals' },
-            { id: 'racing', title: '🏎️ Retro Street Racing 3D', desc: 'Drive a retro block car and dodge obstacles!', color: 'from-blue-500 to-indigo-600', statName: 'Race Score' }
+            { id: 'racing', title: '🏎️ City Racing & Cars', desc: 'Drive block cars, race around the park!', color: 'from-blue-500 to-indigo-600', statName: 'Race Score' }
         ];
 
         let currentGame = null, playerStat = 10, scene, camera, renderer, player, animId;
         let moveX = 0, moveZ = 0, walkCycle = 0, leftArm, rightArm, leftLeg, rightLeg;
+        let bodyMesh, innerShirtMesh;
 
         function renderGames() {
             document.getElementById('tab-games').innerHTML = gamesList.map(g => `
                 <div class="roblox-card p-4 rounded-lg shadow cursor-pointer space-y-3" onclick='openGame(${JSON.stringify(g)})'>
                     <div class="h-32 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-lg text-center p-2">${g.title}</div>
                     <p class="text-xs text-gray-500">${g.desc}</p>
-                    <button class="w-full btn-green py-2 rounded text-xs">PLAY GAME</button>
+                    <button class="w-full btn-green py-2 rounded text-xs">ENTER WORLD</button>
                 </div>
             `).join('');
         }
 
-        function toggleSettings() {
-            document.getElementById('settings-modal').classList.toggle('hidden');
-        }
+        function toggleSettings() { document.getElementById('settings-modal').classList.toggle('hidden'); }
+        function toggleAvatarEditor() { document.getElementById('avatar-modal').classList.toggle('hidden'); }
 
         function openGame(game) {
             currentGame = game;
@@ -145,7 +166,7 @@
             scene.background = new THREE.Color(0x87ceeb);
 
             camera = new THREE.PerspectiveCamera(60, w/h, 0.1, 1000);
-            camera.position.set(0, 6, 12);
+            camera.position.set(0, 6, 14);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(w, h);
@@ -153,100 +174,23 @@
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.8));
             const light = new THREE.DirectionalLight(0xffffff, 0.7);
-            light.position.set(10, 20, 10);
+            light.position.set(15, 25, 15);
             scene.add(light);
 
-            const floorColor = currentGame.id === 'football' ? 0x2e7d32 : 0x339933;
-            const floor = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshStandardMaterial({ color: floorColor }));
+            // Zemin
+            const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshStandardMaterial({ color: 0x3b8d29 }));
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            // DETAYLI YÜKSEK KALİTELİ BACON HAIR MODELİ
-            player = new THREE.Group();
-            
-            // Ceket ve Mavi Tişört
-            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.6), new THREE.MeshStandardMaterial({ color: 0x1a1a1a }));
-            body.position.y = 2.1;
-            player.add(body);
+            // DEKORASYONLAR: AĞAÇLAR, ARABALAR, PARK VE SPOR ALANI
+            createTrees();
+            createParkSlide();
+            createCars();
+            createSportsArea();
 
-            const innerShirt = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.25, 0.62), new THREE.MeshStandardMaterial({ color: 0x0066ff }));
-            innerShirt.position.y = 2.1;
-            player.add(innerShirt);
+            // BACON HAIR KARAKTERİ
+            createPlayerCharacter();
 
-            // Kafa ve Beyaz Yüz
-            const head = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-            head.position.y = 3.22;
-            player.add(head);
-
-            // BACON HAIR (Görseldeki İkonik Katmanlı Saç)[span_3](start_span)[span_3](end_span)
-            const hairGroup = new THREE.Group();
-            const hairMat = new THREE.MeshStandardMaterial({ color: 0x7a3d11 });
-
-            // Saç Tabanı
-            const hairBase = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.3, 0.95), hairMat);
-            hairBase.position.set(0, 3.65, 0);
-            hairGroup.add(hairBase);
-
-            // Sol ve Sağ Ön Perçemler
-            const strandLeft = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.55, 0.3), hairMat);
-            strandLeft.position.set(-0.25, 3.4, 0.42);
-            strandLeft.rotation.z = 0.15;
-            hairGroup.add(strandLeft);
-
-            const strandRight = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.65, 0.3), hairMat);
-            strandRight.position.set(0.2, 3.35, 0.42);
-            strandRight.rotation.z = -0.2;
-            hairGroup.add(strandRight);
-
-            const strandMiddle = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.45, 0.3), hairMat);
-            strandMiddle.position.set(0.02, 3.48, 0.45);
-            hairGroup.add(strandMiddle);
-
-            player.add(hairGroup);
-
-            // Kollar (Siyah Ceket + Beyaz Eller)
-            const armMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
-            const handMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-            const legMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
-
-            leftArm = new THREE.Group();
-            const lArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), armMat);
-            lArmMesh.position.y = -0.2;
-            const lHand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
-            lHand.position.y = -0.8;
-            leftArm.add(lArmMesh, lHand);
-            leftArm.position.set(-0.95, 2.6, 0);
-            player.add(leftArm);
-
-            rightArm = new THREE.Group();
-            const rArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), armMat);
-            rArmMesh.position.y = -0.2;
-            const rHand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
-            rHand.position.y = -0.8;
-            rightArm.add(rArmMesh, rHand);
-            rightArm.position.set(0.95, 2.6, 0);
-            player.add(rightArm);
-
-            // Bacaklar ve Ayakkabılar
-            leftLeg = new THREE.Group();
-            const lLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), legMat);
-            lLegMesh.position.y = -0.3;
-            const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
-            lShoe.position.y = -0.8;
-            leftLeg.add(lLegMesh, lShoe);
-            leftLeg.position.set(-0.35, 1.4, 0);
-            player.add(leftLeg);
-
-            rightLeg = new THREE.Group();
-            const rLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), legMat);
-            rLegMesh.position.y = -0.3;
-            const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
-            rShoe.position.y = -0.8;
-            rightLeg.add(rLegMesh, rShoe);
-            rightLeg.position.set(0.35, 1.4, 0);
-            player.add(rightLeg);
-
-            scene.add(player);
             setupJoystick();
 
             function animate() {
@@ -273,6 +217,144 @@
             animate();
         }
 
+        // Ağaçlar Oluşturma
+        function createTrees() {
+            const positions = [[-15, -15], [15, -20], [-20, 10], [22, 15], [-10, 25]];
+            positions.forEach(pos => {
+                const tree = new THREE.Group();
+                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3), new THREE.MeshStandardMaterial({ color: 0x5c4033 }));
+                trunk.position.y = 1.5;
+                const leaves = new THREE.Mesh(new THREE.ConeGeometry(2, 4, 6), new THREE.MeshStandardMaterial({ color: 0x1e5c1e }));
+                leaves.position.y = 4;
+                tree.add(trunk, leaves);
+                tree.position.set(pos[0], 0, pos[1]);
+                scene.add(tree);
+            });
+        }
+
+        // Kaydıraklı Çocuk Parkı
+        function createParkSlide() {
+            const park = new THREE.Group();
+            const platform = new THREE.Mesh(new THREE.BoxGeometry(3, 0.3, 3), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
+            platform.position.set(-8, 3, -8);
+            
+            const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 3), new THREE.MeshStandardMaterial({ color: 0x4b5563 }));
+            pillar.position.set(-8, 1.5, -8);
+
+            const slide = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.2, 5), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
+            slide.position.set(-8, 1.5, -5.5);
+            slide.rotation.x = Math.PI / 6;
+
+            park.add(platform, pillar, slide);
+            scene.add(park);
+        }
+
+        // Arabalar
+        function createCars() {
+            const car = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1, 4), new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
+            body.position.y = 0.8;
+            const cabin = new THREE.Mesh(new THREE.BoxGeometry(2, 0.8, 2), new THREE.MeshStandardMaterial({ color: 0x111111 }));
+            cabin.position.set(0, 1.6, -0.3);
+            car.add(body, cabin);
+            car.position.set(10, 0, -5);
+            scene.add(car);
+        }
+
+        // Spor Alanı ve Aletler (Dambıl & Barfiks)
+        function createSportsArea() {
+            const gym = new THREE.Group();
+            const bench = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 2.5), new THREE.MeshStandardMaterial({ color: 0x1f2937 }));
+            bench.position.set(8, 0.3, 8);
+
+            const dumbbell = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 1.5), new THREE.MeshStandardMaterial({ color: 0x111111 }));
+            dumbbell.rotation.z = Math.PI / 2;
+            dumbbell.position.set(8, 0.7, 8);
+
+            gym.add(bench, dumbbell);
+            scene.add(gym);
+        }
+
+        function createPlayerCharacter() {
+            player = new THREE.Group();
+            
+            const jColor = document.getElementById('custom-jacket').value;
+            const sColor = document.getElementById('custom-shirt').value;
+
+            bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.6), new THREE.MeshStandardMaterial({ color: jColor }));
+            bodyMesh.position.y = 2.1;
+            player.add(bodyMesh);
+
+            innerShirtMesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.25, 0.62), new THREE.MeshStandardMaterial({ color: sColor }));
+            innerShirtMesh.position.y = 2.1;
+            player.add(innerShirtMesh);
+
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+            head.position.y = 3.22;
+            player.add(head);
+
+            // BACON HAIR
+            const hairGroup = new THREE.Group();
+            const hairMat = new THREE.MeshStandardMaterial({ color: 0x7a3d11 });
+            const hairBase = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.3, 0.95), hairMat);
+            hairBase.position.set(0, 3.65, 0);
+            const strandLeft = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.55, 0.3), hairMat);
+            strandLeft.position.set(-0.25, 3.4, 0.42);
+            const strandRight = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.65, 0.3), hairMat);
+            strandRight.position.set(0.2, 3.35, 0.42);
+            hairGroup.add(hairBase, strandLeft, strandRight);
+            player.add(hairGroup);
+
+            const armMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
+            const handMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+            const legMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+
+            leftArm = new THREE.Group();
+            const lArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), armMat);
+            lArmMesh.position.y = -0.2;
+            const lHand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
+            lHand.position.y = -0.8;
+            leftArm.add(lArmMesh, lHand);
+            leftArm.position.set(-0.95, 2.6, 0);
+            player.add(leftArm);
+
+            rightArm = new THREE.Group();
+            const rArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), armMat);
+            rArmMesh.position.y = -0.2;
+            const rHand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
+            rHand.position.y = -0.8;
+            rightArm.add(rArmMesh, rHand);
+            rightArm.position.set(0.95, 2.6, 0);
+            player.add(rightArm);
+
+            leftLeg = new THREE.Group();
+            const lLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), legMat);
+            lLegMesh.position.y = -0.3;
+            const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
+            lShoe.position.y = -0.8;
+            leftLeg.add(lLegMesh, lShoe);
+            leftLeg.position.set(-0.35, 1.4, 0);
+            player.add(leftLeg);
+
+            rightLeg = new THREE.Group();
+            const rLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), legMat);
+            rLegMesh.position.y = -0.3;
+            const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
+            rShoe.position.y = -0.8;
+            rightLeg.add(rLegMesh, rShoe);
+            rightLeg.position.set(0.35, 1.4, 0);
+            player.add(rightLeg);
+
+            scene.add(player);
+        }
+
+        function updateAvatarStyle() {
+            if(bodyMesh && innerShirtMesh) {
+                bodyMesh.material.color.set(document.getElementById('custom-jacket').value);
+                innerShirtMesh.material.color.set(document.getElementById('custom-shirt').value);
+            }
+        }
+
         function setupJoystick() {
             const base = document.getElementById('joystick-base');
             const stick = document.getElementById('joystick-stick');
@@ -288,50 +370,25 @@
                 const touches = e.changedTouches || [e];
                 for (let i = 0; i < touches.length; i++) {
                     const t = touches[i];
-                    if (t.identifier === touchId || touchId === 'mouse') {
-                        updateJoystick(t);
-                    }
+                    if (t.identifier === touchId || touchId === 'mouse') updateJoystick(t);
                 }
             };
 
-            const handleEnd = (e) => {
-                moveX = 0;
-                moveZ = 0;
-                touchId = null;
+            const handleEnd = () => {
+                moveX = 0; moveZ = 0; touchId = null;
                 stick.style.transform = `translate(0px, 0px)`;
             };
 
             base.addEventListener('touchstart', handleStart, {passive: false});
             window.addEventListener('touchmove', handleMove, {passive: false});
             window.addEventListener('touchend', handleEnd);
-            window.addEventListener('touchcancel', handleEnd);
-
             base.addEventListener('mousedown', handleStart);
             window.addEventListener('mousemove', handleMove);
             window.addEventListener('mouseup', handleEnd);
 
             function updateJoystick(t) {
                 const rect = base.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-
-                let x = t.clientX - centerX;
-                let y = t.clientY - centerY;
-                let dist = Math.sqrt(x*x + y*y);
-                let maxDist = 40;
-
-                if (dist > maxDist) {
-                    x = (x / dist) * maxDist;
-                    y = (y / dist) * maxDist;
-                }
-
-                stick.style.transform = `translate(${x}px, ${y}px)`;
-                moveX = x / maxDist;
-                moveZ = y / maxDist;
-            }
-        }
-
-        window.onload = renderGames;
-    </script>
-</body>
-</html>
+                let x = t.clientX - (rect.left + rect.width / 2);
+                let y = t.clientY - (rect.top + rect.height / 2);
+                let dist = Math.sqrt(x*x + y*y), maxDist = 40;
+   

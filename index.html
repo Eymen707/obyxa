@@ -1,416 +1,424 @@
-```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Obyxa - Classic Roblox Experience (2008-2014)</title>
-    <!-- GitHub Pages HTTPS Compatible CDN Libraries -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>OBYXA - Think. Create. Play.</title>
+  <!-- Three.js Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+    body { font-family: Verdana, sans-serif; background-color: #e3e3e3; color: #333; overflow-x: hidden; }
     
-    <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            touch-action: manipulation;
-        }
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #002244;
-        }
+    /* Header */
+    header { background: linear-gradient(to bottom, #0055b3, #003380); color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #001f4d; }
+    .logo { font-size: 26px; font-weight: bold; font-family: 'Arial Black', sans-serif; letter-spacing: 1px; color: #fff; text-shadow: 2px 2px #000; }
+    .motto { font-size: 11px; color: #ffd700; font-style: italic; }
 
-        /* Classic Retro Roblox Styling */
-        .retro-header {
-            background: linear-gradient(180deg, #0055b3 0%, #003366 100%);
-            border-bottom: 3px solid #001a33;
-        }
-        .btn-retro {
-            background: linear-gradient(180deg, #ffffff 0%, #cccccc 100%);
-            border: 2px solid #555;
-            box-shadow: inset 1px 1px 0px #fff, inset -1px -1px 0px #888;
-            color: #000;
-            font-weight: bold;
-        }
-        .btn-retro:active {
-            background: #aaa;
-        }
-        .btn-play {
-            background: linear-gradient(180deg, #00cc00 0%, #008800 100%);
-            border: 2px solid #003300;
-            color: white;
-            text-shadow: 1px 1px 2px black;
-        }
-        .btn-play:active {
-            background: #006600;
-        }
-        
-        #touchUI {
-            touch-action: none;
-        }
-    </style>
+    /* Navigasyon */
+    nav { background: #1a539a; display: flex; overflow-x: auto; border-bottom: 2px solid #0f3460; }
+    nav button { background: none; border: none; color: white; padding: 10px 15px; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    nav button.active { background: #e3e3e3; color: #003380; border-radius: 5px 5px 0 0; }
+
+    /* İçerik Alanı */
+    .container { padding: 12px; max-width: 900px; margin: 0 auto; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* Oyun Listesi Grid */
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .game-card { background: white; border: 1px solid #ccc; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
+    .game-card:hover { border-color: #0055b3; background: #f0f8ff; }
+    .game-thumb { width: 100%; height: 90px; background: #888; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; }
+
+    /* Katalog */
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+    .item-card { background: white; border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 11px; border-radius: 4px; }
+    .item-card button { background: #28a745; color: white; border: none; padding: 4px 8px; margin-top: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-weight: bold; }
+
+    /* 3D Oyun Tuvali ve Kontroller */
+    #game-container { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; }
+    #canvas3d { width: 100%; height: 100%; display: block; }
+    
+    /* Mobil Kontroller */
+    .mobile-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+    .exit-btn { position: absolute; top: 12px; left: 12px; background: rgba(220,53,69,0.85); color: white; border: none; padding: 8px 14px; font-weight: bold; border-radius: 4px; pointer-events: auto; z-index: 10001; }
+    
+    /* Sanal Joystick */
+    #joystick-zone { position: absolute; bottom: 20px; left: 20px; width: 120px; height: 120px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; pointer-events: auto; touch-action: none; }
+    #joystick-knob { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: rgba(255,255,255,0.6); border-radius: 50%; }
+    
+    /* Zıplama Butonu */
+    #jump-btn { position: absolute; bottom: 30px; right: 25px; width: 75px; height: 75px; background: rgba(255,255,255,0.3); border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; color: white; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: manipulation; }
+    #jump-btn:active { background: rgba(255,255,255,0.6); }
+
+    /* Masaüstü İpucu */
+    .controls-hint { position: absolute; top: 12px; right: 12px; color: white; background: rgba(0,0,0,0.5); padding: 6px 10px; border-radius: 4px; font-size: 11px; }
+  </style>
 </head>
-<body class="flex flex-col h-full w-full">
+<body>
 
-    <!-- TOP HEADER -->
-    <header class="retro-header text-white px-3 py-2 flex justify-between items-center z-10 shrink-0">
-        <div class="flex items-center gap-3">
-            <h1 class="text-2xl font-black text-yellow-300 tracking-wider">OBYXA</h1>
-            <div class="hidden sm:flex gap-1 text-xs font-bold">
-                <button onclick="showTab('games')" class="px-3 py-1 bg-blue-800 rounded border border-blue-400">Games</button>
-                <button onclick="showTab('catalog')" class="px-3 py-1 bg-blue-900 rounded border border-blue-500">Catalog</button>
-                <button onclick="showTab('avatar')" class="px-3 py-1 bg-blue-900 rounded border border-blue-500">Avatar</button>
-                <button onclick="showTab('videos')" class="px-3 py-1 bg-blue-900 rounded border border-blue-500">Videos</button>
-            </div>
+  <header>
+    <div>
+      <div class="logo">OBYXA</div>
+      <div class="motto">Think. Create. Play.</div>
+    </div>
+  </header>
+
+  <nav>
+    <button class="active" onclick="switchTab('games', this)">Oyunlar</button>
+    <button onclick="switchTab('catalog', this)">Katalog</button>
+    <button onclick="switchTab('profile', this)">Karakterim</button>
+  </nav>
+
+  <div class="container">
+    <!-- Oyunlar Sayfası -->
+    <div id="games" class="page active">
+      <h3 style="margin-bottom:10px; font-size:15px;">Popüler Oyunlar</h3>
+      <div class="game-grid">
+        <div class="game-card" onclick="startGame('obby')">
+          <div class="game-thumb" style="background:#2e7d32;">PARKUR</div>
+          <b>Classic Obby</b>
+          <div style="font-size:10px; color:#666;">Engelleri aş ve hedefe ulaş!</div>
         </div>
-        <div class="flex items-center gap-2">
-            <!-- Mode indicator & Switcher -->
-            <button onclick="toggleEngineMode()" id="modeBtn" class="bg-yellow-400 text-black font-bold text-xs px-2 py-1 rounded shadow border border-yellow-200">
-                Mode: Obyxa001 (Mobile 2008)
-            </button>
-            <!-- Language Selector -->
-            <select id="langSelect" onchange="setLanguage(this.value)" class="bg-blue-950 text-white font-bold text-xs p-1 rounded border border-blue-400">
-                <option value="en">English</option>
-                <option value="tr">Türkçe</option>
-                <option value="es">Español</option>
-                <option value="de">Deutsch</option>
-            </select>
+        <div class="game-card" onclick="startGame('race')">
+          <div class="game-thumb" style="background:#c62828;">YARIŞ</div>
+          <b>Speed Racer</b>
+          <div style="font-size:10px; color:#666;">Altın halkaları topla!</div>
         </div>
-    </header>
-
-    <!-- MOBILE SUB NAV -->
-    <nav class="sm:hidden bg-blue-950 text-white flex justify-around py-1.5 border-b border-blue-800 text-xs font-bold shrink-0">
-        <button onclick="showTab('games')" class="px-2 py-1">Games</button>
-        <button onclick="showTab('catalog')" class="px-2 py-1">Catalog</button>
-        <button onclick="showTab('avatar')" class="px-2 py-1">Avatar</button>
-        <button onclick="showTab('videos')" class="px-2 py-1">Videos</button>
-    </nav>
-
-    <!-- MAIN WEB CONTENT AREA -->
-    <main class="flex-1 overflow-y-auto bg-gray-200 p-4" id="mainContent">
-
-        <!-- GAMES TAB -->
-        <section id="tab-games" class="max-w-6xl mx-auto">
-            <h2 class="text-lg font-bold text-blue-900 border-b-2 border-blue-900 pb-1 mb-3" id="lbl-games">Popular Games</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="gamesGrid">
-                <!-- Game cards rendered via JS -->
-            </div>
-        </section>
-
-        <!-- CATALOG TAB -->
-        <section id="tab-catalog" class="max-w-6xl mx-auto hidden">
-            <h2 class="text-lg font-bold text-blue-900 border-b-2 border-blue-900 pb-1 mb-3" id="lbl-catalog">Catalog Items</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="catalogGrid">
-                <!-- Catalog cards rendered via JS -->
-            </div>
-        </section>
-
-        <!-- AVATAR TAB -->
-        <section id="tab-avatar" class="max-w-4xl mx-auto hidden">
-            <h2 class="text-lg font-bold text-blue-900 border-b-2 border-blue-900 pb-1 mb-3" id="lbl-avatar">Avatar Customizer</h2>
-            <div class="bg-white p-4 rounded border grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="h-64 bg-slate-300 rounded relative overflow-hidden flex items-center justify-center border" id="avatarStudio">
-                    <!-- 3D Avatar Preview Canvas -->
-                </div>
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-bold mb-1" id="lbl-base">Base Character:</label>
-                        <div class="flex gap-2">
-                            <button onclick="changeAvatarBase('noob')" class="btn-retro flex-1 py-1.5 text-xs">Classic Noob</button>
-                            <button onclick="changeAvatarBase('bacon')" class="btn-retro flex-1 py-2 text-xs">Bacon Guy</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold mb-1" id="lbl-hat">Hat / Accessory:</label>
-                        <select onchange="changeAvatarHat(this.value)" class="w-full border p-1.5 rounded text-xs">
-                            <option value="none">None</option>
-                            <option value="visor">ROBLOX Red Visor</option>
-                            <option value="helm">Viking Helm</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIDEOS TAB -->
-        <section id="tab-videos" class="max-w-4xl mx-auto hidden">
-            <h2 class="text-lg font-bold text-blue-900 border-b-2 border-blue-900 pb-1 mb-3" id="lbl-videos">Classic Roblox Trailers</h2>
-            <div class="aspect-video bg-black rounded overflow-hidden shadow">
-                <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/5AuMJeJv2Vw" title="Trailer" frameborder="0" allowfullscreen></iframe>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- 3D GAMEPLAY OVERLAY -->
-    <div id="gameView" class="fixed inset-0 z-50 bg-black hidden flex-col">
-        <!-- Game Top Bar -->
-        <div class="bg-slate-900/90 text-white px-4 py-2 flex justify-between items-center z-10 border-b border-slate-700">
-            <div class="flex items-center gap-3">
-                <button onclick="exit3DGame()" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-xs font-bold">
-                    <i class="fa-solid fa-arrow-left"></i> Leave Game
-                </button>
-                <span id="gameTitleDisplay" class="font-bold text-yellow-400 text-sm">Game Title</span>
-            </div>
-            <div id="gameStatsDisplay" class="text-xs font-mono bg-slate-800 px-3 py-1 rounded border border-slate-600 text-green-400">
-                Score: 0
-            </div>
+        <div class="game-card" onclick="startGame('zombie')">
+          <div class="game-thumb" style="background:#37474f;">HAYATTA KALMA</div>
+          <b>Zombie Arena</b>
+          <div style="font-size:10px; color:#666;">Zombilerden kaç!</div>
         </div>
-
-        <!-- 3D Canvas Container -->
-        <div id="canvas3D" class="flex-1 w-full h-full relative"></div>
-
-        <!-- MOBILE TOUCH CONTROLS OVERLAY -->
-        <div id="touchUI" class="absolute inset-0 pointer-events-none z-20 flex justify-between p-6 items-end">
-            <!-- Left Virtual Joystick -->
-            <div id="joystickBase" class="w-32 h-32 bg-white/20 rounded-full border-2 border-white/40 relative pointer-events-auto flex items-center justify-center">
-                <div id="joystickStick" class="w-12 h-12 bg-white/70 rounded-full border border-white absolute shadow"></div>
-            </div>
-
-            <!-- Right Jump & Action Buttons -->
-            <div class="flex flex-col gap-3 pointer-events-auto items-end">
-                <button id="btnAction" onclick="doGameAction()" class="w-14 h-14 bg-yellow-500 text-white rounded-full font-bold text-xs shadow-lg border-2 border-yellow-200 hidden items-center justify-center">
-                    HIT
-                </button>
-                <button id="btnJump" onclick="doGameJump()" class="w-16 h-16 bg-blue-600 text-white rounded-full font-bold text-sm shadow-lg border-2 border-blue-200 flex items-center justify-center active:bg-blue-800">
-                    JUMP
-                </button>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script>
-        // --- TRANSLATIONS ---
-        const translations = {
-            en: { games: "Popular Games", catalog: "Catalog Items", avatar: "Avatar Customizer", videos: "Classic Trailers", base: "Base Character:", hat: "Hat / Accessory:" },
-            tr: { games: "Popüler Oyunlar", catalog: "Katalog Eşyaları", avatar: "Karakter Özelleştirme", videos: "Klasik Videolar", base: "Karakter Tipi:", hat: "Şapka / Aksesuar:" },
-            es: { games: "Juegos Populares", catalog: "Catálogo", avatar: "Personalizar Avatar", videos: "Trailers Clásicos", base: "Base Personaje:", hat: "Sombrero:" },
-            de: { games: "Beliebte Spiele", catalog: "Katalog", avatar: "Avatar Anpassen", videos: "Klassische Trailer", base: "Charakter Basis:", hat: "Hut:" }
-        };
+    <!-- Katalog Sayfası -->
+    <div id="catalog" class="page">
+      <h3 style="margin-bottom:10px; font-size:15px;">Aksesuarlar</h3>
+      <div class="catalog-grid">
+        <div class="item-card">
+          <div style="font-size:24px;">👑</div>
+          <b>Kral Tacı</b>
+          <button onclick="equipHat('crown')">Giy / Çıkar</button>
+        </div>
+        <div class="item-card">
+          <div style="font-size:24px;">🎩</div>
+          <b>Silindir Şapka</b>
+          <button onclick="equipHat('tophat')">Giy / Çıkar</button>
+        </div>
+        <div class="item-card">
+          <div style="font-size:24px;">🧢</div>
+          <b>Mavi Şapka</b>
+          <button onclick="equipHat('cap')">Giy / Çıkar</button>
+        </div>
+      </div>
+    </div>
 
-        let currentMode = '001'; // '001' (Mobile 2008) or 'pc' (Desktop 2014)
+    <!-- Profil Sayfası -->
+    <div id="profile" class="page">
+      <h3 style="margin-bottom:10px; font-size:15px;">Karakter Özelleştirme</h3>
+      <p style="font-size:12px; margin-bottom:10px;">Giyilen Aksesuar: <b id="equipped-text">Yok</b></p>
+      <div style="background:#fff; padding:15px; border-radius:4px; border:1px solid #ccc; text-align:center;">
+        <div style="width:70px; height:70px; background:#ffd700; margin:0 auto 5px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:30px;">🙂</div>
+        <b>Karakteriniz Hazır!</b>
+      </div>
+    </div>
+  </div>
 
-        // --- GAME LIST ---
-        const gamesList = [
-            { id: 'parkour', title: 'Mega Obby Parkour 2008', creator: 'Builderman', plays: '150K' },
-            { id: 'racing', title: 'Blocky Speed Racer 2014', creator: 'Clockwork', plays: '95K' },
-            { id: 'soccer', title: 'Retro Football Arena', creator: 'Shedletsky', plays: '62K' },
-            { id: 'muscle', title: 'Muscle Simulator 2008', creator: 'Telamon', plays: '230K' },
-            { id: 'speed', title: 'Speed Runner Sim', creator: 'SonicFan08', plays: '110K' },
-            { id: 'jump', title: 'Cloud Jump Simulator', creator: 'SkyHigh', plays: '80K' },
-            { id: 'sword', title: 'Classic Sword Fight Arena', creator: 'RobloxMaster', plays: '340K' }
-        ];
+  <!-- 3D OYUN EKRANI -->
+  <div id="game-container">
+    <canvas id="canvas3d"></canvas>
+    <div class="mobile-ui">
+      <button class="exit-btn" onclick="exitGame()">✕ Çıkış</button>
+      <div class="controls-hint">W,A,S,D / Joystick: Hareket | Space / Zıpla: Atla</div>
+      <div id="joystick-zone"><div id="joystick-knob"></div></div>
+      <div id="jump-btn">ZIPLA</div>
+    </div>
+  </div>
 
-        // --- CATALOG LIST ---
-        const catalogList = [
-            { name: 'Red Visor', price: 'R$ 15' },
-            { name: 'Viking Helm', price: 'R$ 50' },
-            { name: 'Ninja Mask', price: 'R$ 100' },
-            { name: 'Classic Sword', price: 'R$ 250' }
-        ];
+  <script>
+    // --- SEKME YÖNETİMİ ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
 
-        // --- NAVIGATION & UI ---
-        function setLanguage(lang) {
-            const t = translations[lang] || translations.en;
-            document.getElementById('lbl-games').innerText = t.games;
-            document.getElementById('lbl-catalog').innerText = t.catalog;
-            document.getElementById('lbl-avatar').innerText = t.avatar;
-            document.getElementById('lbl-videos').innerText = t.videos;
-            document.getElementById('lbl-base').innerText = t.base;
-            document.getElementById('lbl-hat').innerText = t.hat;
+    let currentHat = 'none';
+    function equipHat(hat) {
+      currentHat = (currentHat === hat) ? 'none' : hat;
+      document.getElementById('equipped-text').innerText = currentHat === 'none' ? 'Yok' : hat.toUpperCase();
+      alert(currentHat === 'none' ? 'Aksesuar çıkarıldı.' : hat + ' giyildi!');
+    }
+
+    // --- THREE.JS OYUN MOTORU ---
+    let scene, camera, renderer, player, hatMesh;
+    let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+    let velocityY = 0, isGrounded = true;
+    let touchMoveX = 0, touchMoveY = 0;
+    let currentGameType = '';
+    let gameObjects = [];
+    let animationFrameId;
+
+    function startGame(type) {
+      currentGameType = type;
+      document.getElementById('game-container').style.display = 'block';
+      init3D();
+    }
+
+    function exitGame() {
+      document.getElementById('game-container').style.display = 'none';
+      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      if(renderer) renderer.dispose();
+      gameObjects = [];
+    }
+
+    function init3D() {
+      const container = document.getElementById('game-container');
+      
+      // Scene setup
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x87ceeb);
+
+      // Camera
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+      // Renderer
+      const canvas = document.getElementById('canvas3d');
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(20, 40, 20);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+
+      // Player Creation (Noob Avatar)
+      player = new THREE.Group();
+      
+      // Head
+      const headMat = new THREE.MeshLambertMaterial({ color: 0xffd700 });
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), headMat);
+      head.position.y = 1.4;
+      player.add(head);
+
+      // Torso
+      const torsoMat = new THREE.MeshLambertMaterial({ color: 0x0055b3 });
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 0.5), torsoMat);
+      torso.position.y = 0.4;
+      player.add(torso);
+
+      // Legs
+      const legMat = new THREE.MeshLambertMaterial({ color: 0x4caf50 });
+      const leg1 = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1, 0.45), legMat);
+      leg1.position.set(-0.25, -0.7, 0);
+      const leg2 = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1, 0.45), legMat);
+      leg2.position.set(0.25, -0.7, 0);
+      player.add(leg1);
+      player.add(leg2);
+
+      // Hat
+      if (currentHat !== 'none') {
+        const hatGeo = currentHat === 'crown' ? new THREE.CylinderGeometry(0.5, 0.4, 0.3, 6) : new THREE.CylinderGeometry(0.4, 0.4, 0.5, 8);
+        const hatMat = new THREE.MeshLambertMaterial({ color: currentHat === 'crown' ? 0xffd700 : 0x111111 });
+        hatMesh = new THREE.Mesh(hatGeo, hatMat);
+        hatMesh.position.y = 1.9;
+        player.add(hatMesh);
+      }
+
+      player.position.set(0, 2, 0);
+      scene.add(player);
+
+      // Build Map Based on Game Type
+      buildMap(currentGameType);
+
+      // Controls Setup
+      setupEvents();
+
+      // Loop
+      animate();
+    }
+
+    function buildMap(type) {
+      gameObjects = [];
+
+      if (type === 'obby') {
+        // Obby Platforms
+        for (let i = 0; i < 10; i++) {
+          const plat = new THREE.Mesh(
+            new THREE.BoxGeometry(3, 0.5, 3),
+            new THREE.MeshLambertMaterial({ color: i % 2 === 0 ? 0xff9800 : 0xe91e63 })
+          );
+          plat.position.set(0, i * 1.2, -i * 5);
+          scene.add(plat);
+          gameObjects.push(plat);
+        }
+        // Base ground
+        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), new THREE.MeshLambertMaterial({ color: 0x76ff03 }));
+        ground.position.set(0, -0.5, 0);
+        scene.add(ground);
+        gameObjects.push(ground);
+
+      } else if (type === 'race') {
+        // Track
+        const track = new THREE.Mesh(new THREE.BoxGeometry(12, 0.2, 100), new THREE.MeshLambertMaterial({ color: 0x333333 }));
+        track.position.set(0, 0, -45);
+        scene.add(track);
+        gameObjects.push(track);
+
+        // Rings
+        for(let i=1; i<=5; i++) {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(2, 0.2, 8, 16), new THREE.MeshBasicMaterial({ color: 0xffd700 }));
+          ring.position.set(0, 2, -i * 18);
+          scene.add(ring);
         }
 
-        function toggleEngineMode() {
-            currentMode = currentMode === '001' ? 'pc' : '001';
-            const btn = document.getElementById('modeBtn');
-            btn.innerText = currentMode === '001' ? 'Mode: Obyxa001 (Mobile 2008)' : 'Mode: Obyxa (PC 2014)';
+      } else if (type === 'zombie') {
+        scene.background = new THREE.Color(0x111122);
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshLambertMaterial({ color: 0x223322 }));
+        ground.rotation.x = -Math.PI / 2;
+        scene.add(ground);
+        gameObjects.push(ground);
+
+        // Simple Zombies
+        for(let i=0; i<5; i++) {
+          const zomb = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), new THREE.MeshLambertMaterial({ color: 0x2e7d32 }));
+          zomb.position.set((Math.random()-0.5)*30, 1, -Math.random()*30);
+          scene.add(zomb);
         }
+      }
+    }
 
-        function showTab(tabId) {
-            ['games', 'catalog', 'avatar', 'videos'].forEach(id => {
-                document.getElementById(`tab-${id}`).classList.add('hidden');
-            });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-        }
+    // --- KONTROL EVENTLERİ ---
+    function setupEvents() {
+      // Keyboard
+      window.onkeydown = (e) => {
+        if(e.code === 'KeyW' || e.code === 'ArrowUp') moveForward = true;
+        if(e.code === 'KeyS' || e.code === 'ArrowDown') moveBackward = true;
+        if(e.code === 'KeyA' || e.code === 'ArrowLeft') moveLeft = true;
+        if(e.code === 'KeyD' || e.code === 'ArrowRight') moveRight = true;
+        if(e.code === 'Space') jump();
+      };
+      window.onkeyup = (e) => {
+        if(e.code === 'KeyW' || e.code === 'ArrowUp') moveForward = false;
+        if(e.code === 'KeyS' || e.code === 'ArrowDown') moveBackward = false;
+        if(e.code === 'KeyA' || e.code === 'ArrowLeft') moveLeft = false;
+        if(e.code === 'KeyD' || e.code === 'ArrowRight') moveRight = false;
+      };
 
-        function renderUI() {
-            // Render Games
-            const gGrid = document.getElementById('gamesGrid');
-            gGrid.innerHTML = gamesList.map(g => `
-                <div class="bg-white border-2 border-gray-300 p-3 rounded shadow hover:border-blue-500">
-                    <div class="h-28 bg-slate-800 rounded mb-2 flex items-center justify-center text-yellow-400 font-bold text-center text-xs p-2">
-                        ${g.title}
-                    </div>
-                    <div class="font-bold text-xs text-blue-900 truncate">${g.title}</div>
-                    <div class="text-[10px] text-gray-500">By ${g.creator}</div>
-                    <div class="text-[10px] text-green-600 font-bold mt-1">${g.plays} Plays</div>
-                    <button onclick="start3DGame('${g.id}')" class="w-full mt-2 btn-play py-1 rounded text-xs font-bold">PLAY</button>
-                </div>
-            `).join('');
+      // Touch Joystick
+      const zone = document.getElementById('joystick-zone');
+      const knob = document.getElementById('joystick-knob');
+      let touchId = null;
 
-            // Render Catalog
-            const cGrid = document.getElementById('catalogGrid');
-            cGrid.innerHTML = catalogList.map(c => `
-                <div class="bg-white border p-2 rounded text-center shadow-sm">
-                    <div class="h-16 bg-gray-100 rounded mb-1 flex items-center justify-center text-[10px] text-gray-400 font-bold">
-                        ${c.name}
-                    </div>
-                    <div class="font-bold text-[11px] truncate">${c.name}</div>
-                    <div class="text-[10px] text-yellow-600 font-bold">${c.price}</div>
-                </div>
-            `).join('');
-        }
+      zone.ontouchstart = (e) => {
+        const touch = e.changedTouches[0];
+        touchId = touch.identifier;
+      };
 
-        // --- 3D ENGINE & GAMEPLAY ---
-        let scene, camera, renderer, animationFrameId;
-        let player, playerVel = new THREE.Vector3(0, 0, 0);
-        let leftArm, rightArm, leftLeg, rightLeg, headMesh;
-        let groundPlatforms = [];
-        let currentGameId = null;
-        let isGrounded = false;
-        let moveVector = { x: 0, z: 0 };
-        let keyState = {};
-        let animTime = 0;
-
-        // Camera control variables
-        let cameraAngleX = 0;
-        let cameraAngleY = 0.3;
-        let touchStartX = 0, touchStartY = 0;
-
-        function start3DGame(gameId) {
-            currentGameId = gameId;
-            const gameObj = gamesList.find(g => g.id === gameId);
+      zone.ontouchmove = (e) => {
+        for(let touch of e.changedTouches) {
+          if(touch.identifier === touchId) {
+            const rect = zone.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
             
-            document.getElementById('gameTitleDisplay').innerText = gameObj.title;
-            document.getElementById('gameView').classList.remove('hidden');
-            document.getElementById('gameView').classList.add('flex');
+            let dx = touch.clientX - centerX;
+            let dy = touch.clientY - centerY;
+            const dist = Math.min(Math.hypot(dx, dy), 40);
+            const angle = Math.atan2(dy, dx);
 
-            const touchUI = document.getElementById('touchUI');
-            if (currentMode === '001') {
-                touchUI.classList.remove('hidden');
-            } else {
-                touchUI.classList.add('hidden');
-            }
+            knob.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
 
-            const btnAction = document.getElementById('btnAction');
-            if (gameId === 'muscle' || gameId === 'sword') {
-                btnAction.classList.remove('hidden');
-                btnAction.classList.add('flex');
-                btnAction.innerText = gameId === 'muscle' ? 'LIFT' : 'SLASH';
-            } else {
-                btnAction.classList.add('hidden');
-                btnAction.classList.remove('flex');
-            }
-
-            init3DScene();
+            touchMoveX = (Math.cos(angle) * dist) / 40;
+            touchMoveY = (Math.sin(angle) * dist) / 40;
+          }
         }
+      };
 
-        function exit3DGame() {
-            document.getElementById('gameView').classList.add('hidden');
-            document.getElementById('gameView').classList.remove('flex');
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            if (renderer) {
-                renderer.dispose();
-                document.getElementById('canvas3D').innerHTML = '';
-            }
-        }
+      zone.ontouchend = zone.ontouchcancel = (e) => {
+        knob.style.transform = 'translate(0px, 0px)';
+        touchMoveX = 0;
+        touchMoveY = 0;
+      };
 
-        function init3DScene() {
-            const container = document.getElementById('canvas3D');
-            container.innerHTML = '';
+      // Jump Button
+      const jumpBtn = document.getElementById('jump-btn');
+      jumpBtn.ontouchstart = (e) => { e.preventDefault(); jump(); };
+      jumpBtn.onclick = jump;
+    }
 
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87ceeb);
+    function jump() {
+      if (isGrounded) {
+        velocityY = 0.22;
+        isGrounded = false;
+      }
+    }
 
-            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+    // --- GAME LOOP ---
+    function animate() {
+      animationFrameId = requestAnimationFrame(animate);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
+      // Movement Logic
+      let speed = 0.12;
+      let moveX = 0;
+      let moveZ = 0;
 
-            const light = new THREE.DirectionalLight(0xffffff, 1.2);
-            light.position.set(20, 40, 20);
-            scene.add(light);
-            scene.add(new THREE.AmbientLight(0x777777));
+      if (moveForward) moveZ -= speed;
+      if (moveBackward) moveZ += speed;
+      if (moveLeft) moveX -= speed;
+      if (moveRight) moveX += speed;
 
-            groundPlatforms = [];
+      // Touch Joystick controls
+      if (Math.abs(touchMoveX) > 0.1 || Math.abs(touchMoveY) > 0.1) {
+        moveX = touchMoveX * speed;
+        moveZ = touchMoveY * speed;
+      }
 
-            // Base Ground Floor
-            const mainFloorGeo = new THREE.BoxGeometry(200, 2, 200);
-            const mainFloorMat = new THREE.MeshLambertMaterial({ color: 0x33aa33 });
-            const mainFloor = new THREE.Mesh(mainFloorGeo, mainFloorMat);
-            mainFloor.position.set(0, -1, 0);
-            scene.add(mainFloor);
-            groundPlatforms.push(mainFloor);
+      player.position.x += moveX;
+      player.position.z += moveZ;
 
-            // CREATE CHARACTER (CLASSIC R6 MODEL WITH SEPARATE LIMBS FOR ANIMATION)
-            player = new THREE.Group();
+      // Gravity & Jumping
+      player.position.y += velocityY;
+      velocityY -= 0.01; // Gravity
 
-            const headGeo = new THREE.BoxGeometry(0.7, 0.7, 0.7);
-            const torsoGeo = new THREE.BoxGeometry(0.8, 0.8, 0.4);
-            const limbGeo = new THREE.BoxGeometry(0.35, 0.8, 0.35);
+      // Simple Ground Collision
+      if (player.position.y <= 1.2) {
+        player.position.y = 1.2;
+        velocityY = 0;
+        isGrounded = true;
+      }
 
-            const yellowMat = new THREE.MeshLambertMaterial({ color: 0xffcc00 });
-            const blueMat = new THREE.MeshLambertMaterial({ color: 0x0000ff });
-            const greenMat = new THREE.MeshLambertMaterial({ color: 0x008800 });
+      // Respawn if fall
+      if (player.position.y < -10) {
+        player.position.set(0, 3, 0);
+        velocityY = 0;
+      }
 
-            // Torso (Center)
-            const torso = new THREE.Mesh(torsoGeo, blueMat);
-            torso.position.y = 0.8;
-            player.add(torso);
+      // Camera Follow
+      camera.position.x = player.position.x;
+      camera.position.y = player.position.y + 4;
+      camera.position.z = player.position.z + 8;
+      camera.lookAt(player.position.x, player.position.y + 1, player.position.z);
 
-            // Head
-            headMesh = new THREE.Mesh(headGeo, yellowMat);
-            headMesh.position.y = 1.55;
-            player.add(headMesh);
+      renderer.render(scene, camera);
+    }
 
-            // Left Arm
-            leftArm = new THREE.Mesh(limbGeo, yellowMat);
-            leftArm.position.set(-0.6, 0.8, 0);
-            player.add(leftArm);
-
-            // Right Arm
-            rightArm = new THREE.Mesh(limbGeo, yellowMat);
-            rightArm.position.set(0.6, 0.8, 0);
-            player.add(rightArm);
-
-            // Left Leg
-            leftLeg = new THREE.Mesh(limbGeo, greenMat);
-            leftLeg.position.set(-0.22, 0.0, 0);
-            player.add(leftLeg);
-
-            // Right Leg
-            rightLeg = new THREE.Mesh(limbGeo, greenMat);
-            rightLeg.position.set(0.22, 0.0, 0);
-            player.add(rightLeg);
-
-            // Spawn player safely above ground
-            player.position.set(0, 5, 0);
-            scene.add(player);
-
-            // RICH LEVEL DESIGNS ACCORDING TO SELECTED MINI-GAME
-            if (currentGameId === 'parkour') {
-                // Obby Stages & Hazards
-                for (let i = 0; i < 20; i++) {
-                    const pad = new THREE.Mesh(
-                        new THREE.BoxGeometry(5, 0.8, 5),
-                        new THREE.MeshLambertMaterial({ color: i % 2 === 0 ? 0xff0000 : 0xffff00 })
-                    );
-                    pad.position.set(Math.sin(i) * 6, i * 2, -i * 8 - 10);
-                    scene.add(pad);
-                    groundPlatforms.push(pad);
-
-                    // Add floating spinning coins
-                    const coin = new THREE.Mesh(
-                        new THREE.CylinderGeometry(0.5, 0.5, 0.1, 12),
-                        new THREE.MeshBasicMaterial({ color: 0xffd700 })
-                    );
-     
+    // Resize Handle
+    window.onresize = () => {
+      if(renderer && camera) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+    };
+  </script>
+</body>
+</html>

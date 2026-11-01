@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>obyxa001 - Retro Roblox 2014 & 3D Simulator Studio</title>
+    <title>obyxa001 - Retro 3D Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -92,7 +92,7 @@
         const gamesList = [
             { id: 'muscle', title: '💪 Muscle Legends 3D', desc: 'Lift weights, gain muscle, become a giant Bacon!', color: 'from-orange-500 to-red-600', statName: 'Muscle Power' },
             { id: 'speed', title: '⚡ Speed Run 3D', desc: 'Run fast, boost your speed and break records!', color: 'from-amber-400 to-yellow-600', statName: 'Speed' },
-            { id: 'football', title: '⚽ Roblox Football 2014', desc: 'Kick the ball, score goals in the 3D stadium!', color: 'from-green-500 to-emerald-700', statName: 'Goals' },
+            { id: 'football', title: '⚽ Football 2014', desc: 'Kick the ball, score goals in the 3D stadium!', color: 'from-green-500 to-emerald-700', statName: 'Goals' },
             { id: 'racing', title: '🏎️ Retro Street Racing 3D', desc: 'Drive a retro block car and dodge obstacles!', color: 'from-blue-500 to-indigo-600', statName: 'Race Score' }
         ];
 
@@ -151,8 +151,8 @@
             renderer.setSize(w, h);
             container.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            const light = new THREE.DirectionalLight(0xffffff, 0.6);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            const light = new THREE.DirectionalLight(0xffffff, 0.7);
             light.position.set(10, 20, 10);
             scene.add(light);
 
@@ -161,33 +161,53 @@
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            // 2014 BACON HAIR CHARACTER MODEL (Black Jacket, Blue Shirt, White Hands)[span_1](start_span)[span_1](end_span)
+            // DETAYLI YÜKSEK KALİTELİ BACON HAIR MODELİ
             player = new THREE.Group();
             
-            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.6), new THREE.MeshStandardMaterial({ color: 0x111111 }));
+            // Ceket ve Mavi Tişört
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.6), new THREE.MeshStandardMaterial({ color: 0x1a1a1a }));
             body.position.y = 2.1;
             player.add(body);
 
-            const innerShirt = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.2, 0.62), new THREE.MeshStandardMaterial({ color: 0x0055ff }));
+            const innerShirt = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.25, 0.62), new THREE.MeshStandardMaterial({ color: 0x0066ff }));
             innerShirt.position.y = 2.1;
             player.add(innerShirt);
 
-            const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: 0xf5f5f5 }));
-            head.position.y = 3.2;
+            // Kafa ve Beyaz Yüz
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+            head.position.y = 3.22;
             player.add(head);
 
-            const hair = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.35, 0.95), new THREE.MeshStandardMaterial({ color: 0x8b4513 }));
-            hair.position.set(0, 3.65, 0);
-            player.add(hair);
+            // BACON HAIR (Görseldeki İkonik Katmanlı Saç)[span_3](start_span)[span_3](end_span)
+            const hairGroup = new THREE.Group();
+            const hairMat = new THREE.MeshStandardMaterial({ color: 0x7a3d11 });
 
-            const hairTuft = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.4), new THREE.MeshStandardMaterial({ color: 0x8b4513 }));
-            hairTuft.position.set(0, 3.4, 0.45);
-            player.add(hairTuft);
+            // Saç Tabanı
+            const hairBase = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.3, 0.95), hairMat);
+            hairBase.position.set(0, 3.65, 0);
+            hairGroup.add(hairBase);
 
-            const armMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+            // Sol ve Sağ Ön Perçemler
+            const strandLeft = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.55, 0.3), hairMat);
+            strandLeft.position.set(-0.25, 3.4, 0.42);
+            strandLeft.rotation.z = 0.15;
+            hairGroup.add(strandLeft);
+
+            const strandRight = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.65, 0.3), hairMat);
+            strandRight.position.set(0.2, 3.35, 0.42);
+            strandRight.rotation.z = -0.2;
+            hairGroup.add(strandRight);
+
+            const strandMiddle = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.45, 0.3), hairMat);
+            strandMiddle.position.set(0.02, 3.48, 0.45);
+            hairGroup.add(strandMiddle);
+
+            player.add(hairGroup);
+
+            // Kollar (Siyah Ceket + Beyaz Eller)
+            const armMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
             const handMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
             const legMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
-            const shoeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
             leftArm = new THREE.Group();
             const lArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), armMat);
@@ -207,10 +227,11 @@
             rightArm.position.set(0.95, 2.6, 0);
             player.add(rightArm);
 
+            // Bacaklar ve Ayakkabılar
             leftLeg = new THREE.Group();
             const lLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), legMat);
             lLegMesh.position.y = -0.3;
-            const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), shoeMat);
+            const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
             lShoe.position.y = -0.8;
             leftLeg.add(lLegMesh, lShoe);
             leftLeg.position.set(-0.35, 1.4, 0);
@@ -219,7 +240,7 @@
             rightLeg = new THREE.Group();
             const rLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), legMat);
             rLegMesh.position.y = -0.3;
-            const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), shoeMat);
+            const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
             rShoe.position.y = -0.8;
             rightLeg.add(rLegMesh, rShoe);
             rightLeg.position.set(0.35, 1.4, 0);

@@ -17,15 +17,15 @@
     nav button { background: none; border: none; color: white; padding: 10px 16px; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap; }
     nav button.active { background: #e3e3e3; color: #003380; border-radius: 5px 5px 0 0; }
 
-    .container { padding: 15px; max-width: 950px; margin: 0 auto; }
+    .container { padding: 15px; max-width: 950px; margin: 0 auto; height: calc(100vh - 90px); overflow-y: auto; }
     .page { display: none; }
     .page.active { display: block; }
 
     .section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #003380; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
-    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding-bottom: 20px; }
     .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .game-card:hover { border-color: #0055b3; background: #f4f8ff; }
-    .game-thumb { width: 100%; height: 100px; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 13px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
+    .game-thumb { width: 100%; height: 90px; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
     .game-title { font-weight: bold; font-size: 12px; color: #003380; margin-bottom: 2px; }
     .game-info { font-size: 10px; color: #666; }
 
@@ -47,7 +47,6 @@
     #workout-btn { position: absolute; top: 75px; left: 15px; background: #ff8f00; color: white; border: 3px solid #ff6f00; padding: 12px 20px; font-weight: bold; border-radius: 8px; pointer-events: auto; cursor: pointer; font-size: 14px; display: none; z-index: 10002; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
     #workout-btn:active { transform: scale(0.95); background: #ffa000; }
 
-    /* ERGONOMİK YUKARI TAŞINMIŞ VE DOKUNMATİK FIX EDİLMİŞ JOYSTICK & JUMP */
     #joystick-zone { position: absolute; bottom: 80px; left: 40px; width: 130px; height: 130px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; pointer-events: auto; touch-action: none; }
     #joystick-knob { position: absolute; top: 37px; left: 37px; width: 56px; height: 56px; background: rgba(255,255,255,0.9); border-radius: 50%; pointer-events: none; touch-action: none; }
 
@@ -72,8 +71,13 @@
 
   <div class="container">
     <div id="games" class="page active">
-      <div class="section-title">Popular Simulators & Games</div>
+      <div class="section-title">Featured OBYXA Games (Top 6)</div>
       <div class="game-grid">
+        <div class="game-card" onclick="startGame('wing')">
+          <div class="game-thumb" style="background: linear-gradient(135deg, #00acc1, #00838f);">🪽 WING & JUMP SIM</div>
+          <div class="game-title">Jump & Fly Simulator</div>
+          <div class="game-info">Buy wings & jump high!</div>
+        </div>
         <div class="game-card" onclick="startGame('muscle')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #e65100, #ffb300);">💪 MUSCLE SIMULATOR</div>
           <div class="game-title">Muscle Legends Pro</div>
@@ -94,12 +98,22 @@
           <div class="game-title">Cash Tycoon Sim</div>
           <div class="game-info">Collect rich rewards!</div>
         </div>
+        <div class="game-card" onclick="startGame('zombie')">
+          <div class="game-thumb" style="background: linear-gradient(135deg, #37474f, #78909c);">🧟 SURVIVAL ARENA</div>
+          <div class="game-title">Zombie Ocean Rescue</div>
+          <div class="game-info">76 players online</div>
+        </div>
       </div>
     </div>
 
     <div id="catalog" class="page">
-      <div class="section-title">Avatar Catalog Gear</div>
+      <div class="section-title">Avatar Catalog Gear & Wings</div>
       <div class="catalog-grid">
+        <div class="item-card">
+          <div style="font-size:32px;">🪽</div>
+          <b>Angel Wings</b>
+          <button onclick="equipHat('wings')">Equip Wings</button>
+        </div>
         <div class="item-card">
           <div style="font-size:32px;">👑</div>
           <b>Golden Crown</b>
@@ -109,11 +123,6 @@
           <div style="font-size:32px;">🎩</div>
           <b>Top Hat</b>
           <button onclick="equipHat('tophat')">Equip Hat</button>
-        </div>
-        <div class="item-card">
-          <div style="font-size:32px;">🥽</div>
-          <b>Night Vision</b>
-          <button onclick="equipHat('goggles')">Equip Hat</button>
         </div>
         <div class="item-card">
           <div style="font-size:32px;">🥷</div>
@@ -132,7 +141,7 @@
           <div id="btn-noob" class="char-select selected" onclick="setCharType('noob')">Classic Noob</div>
           <div id="btn-bacon" class="char-select" onclick="setCharType('bacon')">Bacon Hair</div>
         </div>
-        <p style="font-size:12px; color:#555; margin-top:15px;">Equipped Hat: <span id="current-hat-label" style="font-weight:bold; color:#0055b3;">None</span></p>
+        <p style="font-size:12px; color:#555; margin-top:15px;">Equipped Gear: <span id="current-hat-label" style="font-weight:bold; color:#0055b3;">None</span></p>
       </div>
     </div>
   </div>
@@ -152,6 +161,7 @@
     let selectedChar = 'noob';
     let activeHat = 'none';
     let musclePower = 1;
+    let jumpPower = 0.24;
 
     function switchTab(tabId, btn) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -170,7 +180,8 @@
     function equipHat(hatName) {
       activeHat = (activeHat === hatName) ? 'none' : hatName;
       document.getElementById('current-hat-label').innerText = activeHat.toUpperCase();
-      alert(activeHat === 'none' ? 'Hat removed.' : hatName.toUpperCase() + ' equipped!');
+      if(hatName === 'wings') jumpPower = 0.42; // Kanat takınca çok yüksek zıplama
+      alert(activeHat === 'none' ? 'Gear removed.' : hatName.toUpperCase() + ' equipped! Jump power increased!');
     }
 
     function trainMuscle() {
@@ -224,10 +235,18 @@
 
       player = new THREE.Group();
       
+      // Kafa ve Klasik Gülen Yüz (Smile Face)
       const headMat = new THREE.MeshLambertMaterial({ color: 0xffd700 });
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), headMat);
       head.position.y = 1.4;
-      player.add(head);
+      
+      // Yüz Detayı (Gözler ve Gülümseme)
+      const eyeGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+      const faceMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const leftEye = new THREE.Mesh(eyeGeo, faceMat); leftEye.position.set(-0.2, 1.5, 0.41);
+      const rightEye = new THREE.Mesh(eyeGeo, faceMat); rightEye.position.set(0.2, 1.5, 0.41);
+      const smile = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.08, 0.1), faceMat); smile.position.set(0, 1.25, 0.41);
+      player.add(head); player.add(leftEye); player.add(rightEye); player.add(smile);
 
       if (selectedChar === 'bacon') {
         const hairMat = new THREE.MeshLambertMaterial({ color: 0x8b4513 });
@@ -243,27 +262,21 @@
 
       const legGeo = new THREE.BoxGeometry(0.45, 1, 0.45);
       const legMat = new THREE.MeshLambertMaterial({ color: selectedChar === 'bacon' ? 0x333333 : 0x85b42c });
-      leftLeg = new THREE.Mesh(legGeo, legMat);
-      leftLeg.position.set(-0.25, -0.7, 0);
-      rightLeg = new THREE.Mesh(legGeo, legMat);
-      rightLeg.position.set(0.25, -0.7, 0);
-      player.add(leftLeg);
-      player.add(rightLeg);
+      leftLeg = new THREE.Mesh(legGeo, legMat); leftLeg.position.set(-0.25, -0.7, 0);
+      rightLeg = new THREE.Mesh(legGeo, legMat); rightLeg.position.set(0.25, -0.7, 0);
+      player.add(leftLeg); player.add(rightLeg);
 
       const armGeo = new THREE.BoxGeometry(0.4, 1, 0.4);
       const armMat = new THREE.MeshLambertMaterial({ color: selectedChar === 'bacon' ? 0xffffff : 0xffd700 });
-      leftArmMesh = new THREE.Mesh(armGeo, armMat);
-      leftArmMesh.position.set(-0.7, 0.4, 0);
-      rightArmMesh = new THREE.Mesh(armGeo, armMat);
-      rightArmMesh.position.set(0.7, 0.4, 0);
-      player.add(leftArmMesh);
-      player.add(rightArmMesh);
+      leftArmMesh = new THREE.Mesh(armGeo, armMat); leftArmMesh.position.set(-0.7, 0.4, 0);
+      rightArmMesh = new THREE.Mesh(armGeo, armMat); rightArmMesh.position.set(0.7, 0.4, 0);
+      player.add(leftArmMesh); player.add(rightArmMesh);
 
       if(activeHat !== 'none') {
-        let hatGeo = activeHat === 'crown' ? new THREE.CylinderGeometry(0.5, 0.4, 0.3, 6) : new THREE.BoxGeometry(0.8, 0.3, 0.8);
-        let hatMat = new THREE.MeshLambertMaterial({ color: activeHat === 'crown' ? 0xffd700 : 0x222222 });
+        let hatGeo = activeHat === 'wings' ? new THREE.BoxGeometry(1.4, 0.6, 0.2) : (activeHat === 'crown' ? new THREE.CylinderGeometry(0.5, 0.4, 0.3, 6) : new THREE.BoxGeometry(0.8, 0.3, 0.8));
+        let hatMat = new THREE.MeshLambertMaterial({ color: activeHat === 'wings' ? 0xffffff : (activeHat === 'crown' ? 0xffd700 : 0x222222) });
         hatMesh = new THREE.Mesh(hatGeo, hatMat);
-        hatMesh.position.y = selectedChar === 'bacon' ? 2.1 : 1.95;
+        hatMesh.position.set(0, activeHat === 'wings' ? 0.6 : 1.95, activeHat === 'wings' ? -0.3 : 0);
         player.add(hatMesh);
       }
 
@@ -276,6 +289,10 @@
           createPlatform(0, i * 1.4, -i * 5.5, 4, 0.8, 4, i % 2 === 0 ? 0xd32f2f : 0xfbc02d);
         }
         createPlatform(0, 18.5, -70, 10, 1, 10, 0x00acc1);
+      } else if(type === 'wing') {
+        createPlatform(0, 0, 0, 30, 1, 30, 0x00838f);
+        createPlatform(0, 6, -15, 8, 1, 8, 0x00acc1);
+        createPlatform(0, 14, -30, 6, 1, 6, 0x26c6da);
       } else if(type === 'speed') {
         createPlatform(0, 0, -40, 12, 1, 120, 0x222222);
       } else {
@@ -319,10 +336,7 @@
       const zone = document.getElementById('joystick-zone');
       const knob = document.getElementById('joystick-knob');
       
-      zone.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-      }, { passive: false });
-
+      zone.addEventListener('touchstart', (e) => { e.preventDefault(); }, { passive: false });
       zone.addEventListener('touchmove', (e) => {
         e.preventDefault();
         const touch = e.targetTouches[0];
@@ -340,20 +354,16 @@
       zone.addEventListener('touchend', (e) => {
         e.preventDefault();
         knob.style.transform = 'translate(0px, 0px)';
-        touchMoveX = 0;
-        touchMoveY = 0;
+        touchMoveX = 0; touchMoveY = 0;
       }, { passive: false });
 
       const jumpBtn = document.getElementById('jump-btn');
-      jumpBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        jump();
-      }, { passive: false });
+      jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); }, { passive: false });
     }
 
     function jump() {
       if(isGrounded) {
-        velocityY = 0.24;
+        velocityY = jumpPower;
         isGrounded = false;
       }
     }
@@ -381,53 +391,4 @@
 
         animTime += 0.35;
         leftLeg.rotation.x = Math.sin(animTime) * 0.75;
-        rightLeg.rotation.x = -Math.sin(animTime) * 0.75;
-        leftArmMesh.rotation.x = -Math.sin(animTime) * 0.75;
-        rightArmMesh.rotation.x = Math.sin(animTime) * 0.75;
-      } else {
-        leftLeg.rotation.x = 0;
-        rightLeg.rotation.x = 0;
-        leftArmMesh.rotation.x = 0;
-        rightArmMesh.rotation.x = 0;
-      }
-
-      player.position.y += velocityY;
-      velocityY += gravity;
-
-      isGrounded = false;
-      const playerRadius = 0.4;
-      const playerFeet = player.position.y - 1.2;
-
-      for (let p of platforms) {
-        if (player.position.x + playerRadius > p.minX &&
-            player.position.x - playerRadius < p.maxX &&
-            player.position.z + playerRadius > p.minZ &&
-            player.position.z - playerRadius < p.maxZ) {
-          
-          if (playerFeet <= p.maxY && playerFeet >= p.maxY - 0.45 && velocityY <= 0) {
-            player.position.y = p.maxY + 1.2;
-            velocityY = 0;
-            isGrounded = true;
-            break;
-          }
-        }
-      }
-
-      if (player.position.y < -20) {
-        player.position.set(0, 4, 0);
-        velocityY = 0;
-      }
-
-      camera.position.x = player.position.x;
-      camera.position.y = player.position.y + 3.8;
-      camera.position.z = player.position.z + 8;
-      camera.lookAt(player.position.x, player.position.y + 0.8, player.position.z);
-
-      renderer.render(scene, camera);
-    }
-
-    window.onresize = () => {
-      if(renderer && camera) {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, wi
+  

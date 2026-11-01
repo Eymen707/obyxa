@@ -31,6 +31,11 @@
     .game-title { font-weight: bold; font-size: 12px; color: #003380; margin-bottom: 2px; }
     .game-info { font-size: 10px; color: #666; }
 
+    /* Catalog & Character */
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .item-card { background: white; border: 1px solid #ccc; padding: 10px; text-align: center; border-radius: 4px; font-size: 12px; }
+    .item-card button { background: #28a745; color: white; border: none; padding: 6px 12px; margin-top: 8px; border-radius: 3px; cursor: pointer; font-weight: bold; width: 100%; }
+
     /* 3D Game Screen */
     #game-container { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; }
     #canvas3d { width: 100%; height: 100%; display: block; }
@@ -39,12 +44,12 @@
     .exit-btn { position: absolute; top: 15px; left: 15px; background: rgba(220,53,69,0.9); color: white; border: none; padding: 10px 18px; font-weight: bold; border-radius: 6px; pointer-events: auto; cursor: pointer; font-size: 13px; z-index: 10001; }
     .controls-hint { position: absolute; top: 15px; right: 15px; color: white; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 6px; font-size: 11px; text-align: right; }
 
-    /* Ergonomic Floating Joystick */
-    #joystick-zone { position: absolute; bottom: 35px; left: 35px; width: 130px; height: 130px; background: rgba(255,255,255,0.18); border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; pointer-events: auto; touch-action: none; }
-    #joystick-knob { position: absolute; top: 37px; left: 37px; width: 56px; height: 56px; background: rgba(255,255,255,0.75); border-radius: 50%; pointer-events: none; }
+    /* OPTIMIZED ERGONOMIC MOBILE JOYSTICK (Yukarı Taşındı) */
+    #joystick-zone { position: absolute; bottom: 60px; left: 35px; width: 130px; height: 130px; background: rgba(255,255,255,0.22); border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; pointer-events: auto; touch-action: none; }
+    #joystick-knob { position: absolute; top: 37px; left: 37px; width: 56px; height: 56px; background: rgba(255,255,255,0.85); border-radius: 50%; pointer-events: none; }
 
-    /* Jump Button */
-    #jump-btn { position: absolute; bottom: 40px; right: 35px; width: 85px; height: 85px; background: rgba(0, 85, 179, 0.65); border: 3px solid rgba(255,255,255,0.8); border-radius: 50%; color: white; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: manipulation; }
+    /* JUMP BUTTON (Sağ Başparmak Hizası) */
+    #jump-btn { position: absolute; bottom: 65px; right: 35px; width: 85px; height: 85px; background: rgba(0, 85, 179, 0.7); border: 3px solid rgba(255,255,255,0.9); border-radius: 50%; color: white; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: manipulation; }
     #jump-btn:active { background: rgba(0, 85, 179, 0.95); transform: scale(0.95); }
   </style>
 </head>
@@ -64,51 +69,72 @@
   </nav>
 
   <div class="container">
+    <!-- Games Page -->
     <div id="games" class="page active">
-      <div class="section-title">Most Popular (Now)</div>
+      <div class="section-title">Most Popular & Simulators</div>
       <div class="game-grid">
+        <div class="game-card" onclick="startGame('cash')">
+          <div class="game-thumb" style="background: linear-gradient(135deg, #f57f17, #ffee58);">💵 CASH SIMULATOR</div>
+          <div class="game-title">Cash Tycoon Sim</div>
+          <div class="game-info">Collect dollar blocks!</div>
+        </div>
+        <div class="game-card" onclick="startGame('speed')">
+          <div class="game-thumb" style="background: linear-gradient(135deg, #c62828, #ef5350);">⚡ SPEED SIMULATOR</div>
+          <div class="game-title">Speed Runner Pro</div>
+          <div class="game-info">Run fast & get energy!</div>
+        </div>
         <div class="game-card" onclick="startGame('obby')">
-          <div class="game-thumb" style="background: linear-gradient(135deg, #2e7d32, #66bb6a);">OBBY PARKOUR</div>
+          <div class="game-thumb" style="background: linear-gradient(135deg, #2e7d32, #66bb6a);">🧱 OBBY PARKOUR</div>
           <div class="game-title">Escape Subspace!</div>
           <div class="game-info">142 players online</div>
         </div>
-        <div class="game-card" onclick="startGame('race')">
-          <div class="game-thumb" style="background: linear-gradient(135deg, #c62828, #ef5350);">SPEED RACER</div>
-          <div class="game-title">Plane Wars 2 Arena</div>
-          <div class="game-info">98 players online</div>
-        </div>
         <div class="game-card" onclick="startGame('zombie')">
-          <div class="game-thumb" style="background: linear-gradient(135deg, #37474f, #78909c);">SURVIVAL</div>
+          <div class="game-thumb" style="background: linear-gradient(135deg, #37474f, #78909c);">🧟 SURVIVAL</div>
           <div class="game-title">Zombie Ocean Rescue</div>
           <div class="game-info">76 players online</div>
-        </div>
-        <div class="game-card" onclick="startGame('battle')">
-          <div class="game-thumb" style="background: linear-gradient(135deg, #1565c0, #42a5f5);">COMBAT</div>
-          <div class="game-title">Halo's Greatest Battle</div>
-          <div class="game-info">210 players online</div>
         </div>
       </div>
     </div>
 
+    <!-- Catalog Page (Giyilebilir Eşyalar) -->
     <div id="catalog" class="page">
-      <div class="section-title">Catalog Gear</div>
-      <p style="font-size:12px; color:#555;">Browse items and customize your OBYXA avatar.</p>
+      <div class="section-title">Avatar Catalog Gear</div>
+      <div class="catalog-grid">
+        <div class="item-card">
+          <div style="font-size:32px;">👑</div>
+          <b>Golden Crown</b>
+          <button onclick="equipHat('crown')">Equip Hat</button>
+        </div>
+        <div class="item-card">
+          <div style="font-size:32px;">🎩</div>
+          <b>Top Hat</b>
+          <button onclick="equipHat('tophat')">Equip Hat</button>
+        </div>
+        <div class="item-card">
+          <div style="font-size:32px;">🧢</div>
+          <b>ROBLOX Visor</b>
+          <button onclick="equipHat('visor')">Equip Hat</button>
+        </div>
+      </div>
     </div>
 
+    <!-- Profile Page -->
     <div id="profile" class="page">
       <div class="section-title">Character Customizer</div>
       <div style="background:#fff; padding:20px; border-radius:4px; border:1px solid #ccc; text-align:center;">
         <div style="width:80px; height:80px; background:#ffd700; margin:0 auto 10px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:36px; border:2px solid #333;">🙂</div>
-        <b style="font-size:15px; color:#003380;">Classic Noob</b>
+        <b style="font-size:15px; color:#003380;">Classic Noob Builder</b>
+        <p style="font-size:12px; color:#555; margin-top:5px;">Equipped Hat: <span id="current-hat-label" style="font-weight:bold; color:#0055b3;">None</span></p>
       </div>
     </div>
   </div>
 
+  <!-- 3D GAME SCREEN -->
   <div id="game-container">
     <canvas id="canvas3d"></canvas>
     <div class="mobile-ui">
       <button class="exit-btn" onclick="exitGame()">✕ Exit Game</button>
-      <div class="controls-hint">PC: W,A,S,D + Space<br>Mobile: Joystick & Jump</div>
+      <div class="controls-hint">PC: W,A,S,D + Space<br>Mobile: Left Joystick & Jump</div>
       <div id="joystick-zone"><div id="joystick-knob"></div></div>
       <div id="jump-btn">JUMP</div>
     </div>
@@ -122,7 +148,14 @@
       btn.classList.add('active');
     }
 
-    let scene, camera, renderer, player;
+    let activeHat = 'none';
+    function equipHat(hatName) {
+      activeHat = (activeHat === hatName) ? 'none' : hatName;
+      document.getElementById('current-hat-label').innerText = activeHat.toUpperCase();
+      alert(activeHat === 'none' ? 'Hat removed.' : hatName.toUpperCase() + ' equipped to your character!');
+    }
+
+    let scene, camera, renderer, player, hatMesh;
     let leftLeg, rightLeg, leftArm, rightArm;
     let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
     let velocityY = 0, gravity = -0.012, isGrounded = false;
@@ -130,8 +163,10 @@
     let platforms = [];
     let animTime = 0;
     let animFrame;
+    let gameType = '';
 
     function startGame(type) {
+      gameType = type;
       document.getElementById('game-container').style.display = 'block';
       init3D(type);
     }
@@ -144,7 +179,7 @@
     function init3D(type) {
       platforms = [];
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(type === 'zombie' || type === 'battle' ? 0x111122 : 0x87ceeb);
+      scene.background = new THREE.Color(type === 'zombie' ? 0x111122 : 0x87ceeb);
 
       camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
       
@@ -157,22 +192,22 @@
       scene.add(light);
       scene.add(new THREE.AmbientLight(0x777777));
 
-      // 100% KLASİK ROBLOX NOOB AVATARI (Sarı Kafa, Mavi Gövde, Yeşil Bacaklar)[span_1](start_span)[span_1](end_span)
+      // KLASİK NOOB AVATARI[span_0](start_span)[span_0](end_span)
       player = new THREE.Group();
       
-      // Sarı Kafa (Head)
+      // Kafa
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshLambertMaterial({ color: 0xffd700 }));
       head.position.y = 1.4;
       player.add(head);
 
-      // Mavi Gövde (Torso)
+      // Gövde
       const torso = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 0.5), new THREE.MeshLambertMaterial({ color: 0x0055b3 }));
       torso.position.y = 0.4;
       player.add(torso);
 
-      // Yeşil Bacaklar (Legs)
+      // Bacaklar
       const legGeo = new THREE.BoxGeometry(0.45, 1, 0.45);
-      const legMat = new THREE.MeshLambertMaterial({ color: 0x85b42c }); // Klasik Noob yeşili
+      const legMat = new THREE.MeshLambertMaterial({ color: 0x85b42c });
       leftLeg = new THREE.Mesh(legGeo, legMat);
       leftLeg.position.set(-0.25, -0.7, 0);
       rightLeg = new THREE.Mesh(legGeo, legMat);
@@ -180,7 +215,7 @@
       player.add(leftLeg);
       player.add(rightLeg);
 
-      // Sarı Kollar (Arms)
+      // Kollar
       const armGeo = new THREE.BoxGeometry(0.4, 1, 0.4);
       const armMat = new THREE.MeshLambertMaterial({ color: 0xffd700 });
       leftArm = new THREE.Mesh(armGeo, armMat);
@@ -190,22 +225,37 @@
       player.add(leftArm);
       player.add(rightArm);
 
+      // KATALOG EŞYASI (ŞAPKA) EKLEME
+      if(activeHat !== 'none') {
+        let hatGeo = activeHat === 'crown' ? new THREE.CylinderGeometry(0.5, 0.4, 0.3, 6) : new THREE.BoxGeometry(0.8, 0.3, 0.8);
+        let hatMat = new THREE.MeshLambertMaterial({ color: activeHat === 'crown' ? 0xffd700 : (activeHat === 'visor' ? 0x0055b3 : 0x111111) });
+        hatMesh = new THREE.Mesh(hatGeo, hatMat);
+        hatMesh.position.y = 1.95;
+        player.add(hatMesh);
+      }
+
       player.position.set(0, 3, 0);
       scene.add(player);
 
-      // MAP GENERATOR
+      // OYUN DÜNYALARI (MAPS)
       if(type === 'obby') {
         createPlatform(0, 0, 0, 10, 1, 10, 0x2e7d32);
         for(let i = 1; i <= 12; i++) {
           createPlatform(0, i * 1.4, -i * 5.5, 4, 0.8, 4, i % 2 === 0 ? 0xd32f2f : 0xfbc02d);
         }
         createPlatform(0, 18.5, -70, 10, 1, 10, 0x00acc1);
-      } else if(type === 'race') {
-        createPlatform(0, 0, -40, 14, 1, 100, 0x333333);
+      } else if(type === 'cash') {
+        // Cash Simulator Arena
+        createPlatform(0, 0, 0, 40, 1, 40, 0x1b5e20);
+        createPlatform(0, 1, -10, 6, 0.5, 6, 0xffd700); // Para Kasası
+        createPlatform(-12, 1, -15, 4, 2, 4, 0x795548);
+        createPlatform(12, 1, -15, 4, 2, 4, 0x795548);
+      } else if(type === 'speed') {
+        // Speed Simulator Racetrack
+        createPlatform(0, 0, -40, 12, 1, 120, 0x222222);
       } else {
-        createPlatform(0, 0, 0, 50, 1, 50, 0x1b5e20);
+        createPlatform(0, 0, 0, 40, 1, 40, 0x1b5e20);
         createPlatform(10, 1, -10, 4, 2, 4, 0x795548);
-        createPlatform(-10, 1, -20, 6, 2, 4, 0x795548);
       }
 
       setupControls();
@@ -282,7 +332,8 @@
     function animate() {
       animFrame = requestAnimationFrame(animate);
 
-      let speed = 0.14;
+      // Speed Simulator daha hızlı hareket sağlar
+      let speed = (gameType === 'speed') ? 0.22 : 0.14;
       let dx = 0, dz = 0;
 
       if (moveForward) dz -= speed;
@@ -295,7 +346,6 @@
         dz = touchMoveY * speed;
       }
 
-      // Hareket ve Doğal Yürüyüş Animasyonu (Klasik Sallanma)
       if (dx !== 0 || dz !== 0) {
         player.position.x += dx;
         player.position.z += dz;
@@ -313,7 +363,6 @@
         rightArm.rotation.x = 0;
       }
 
-      // Fizik ve Yerçekimi
       player.position.y += velocityY;
       velocityY += gravity;
 

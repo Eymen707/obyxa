@@ -1,381 +1,416 @@
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>obyxa001 - Retro 3D Studio & Park</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Obyxa - Classic Roblox Experience (2008-2014)</title>
+    <!-- GitHub Pages HTTPS Compatible CDN Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <style>
-        * { touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { font-family: Arial, sans-serif; background-color: #e3e3e3; margin: 0; padding: 0; }
-        .roblox-header { background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%); border-bottom: 2px solid #00367d; }
-        .roblox-card { background-color: #ffffff; border: 1px solid #c3c3c3; }
-        .btn-green { background: linear-gradient(180deg, #02b700 0%, #008200 100%); border: 1px solid #004d00; color: white; font-weight: bold; }
-        #joystick-base { position: absolute; bottom: 40px; left: 40px; width: 120px; height: 120px; background: rgba(0,0,0,0.4); border: 3px solid rgba(255,255,255,0.7); border-radius: 50%; z-index: 100; }
-        #joystick-stick { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%); border-radius: 50%; pointer-events: none; }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: manipulation;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #002244;
+        }
+
+        /* Classic Retro Roblox Styling */
+        .retro-header {
+            background: linear-gradient(180deg, #0055b3 0%, #003366 100%);
+            border-bottom: 3px solid #001a33;
+        }
+        .btn-retro {
+            background: linear-gradient(180deg, #ffffff 0%, #cccccc 100%);
+            border: 2px solid #555;
+            box-shadow: inset 1px 1px 0px #fff, inset -1px -1px 0px #888;
+            color: #000;
+            font-weight: bold;
+        }
+        .btn-retro:active {
+            background: #aaa;
+        }
+        .btn-play {
+            background: linear-gradient(180deg, #00cc00 0%, #008800 100%);
+            border: 2px solid #003300;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+        }
+        .btn-play:active {
+            background: #006600;
+        }
+        
+        #touchUI {
+            touch-action: none;
+        }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col h-full w-full">
 
-    <header class="roblox-header text-white h-16 flex items-center justify-between px-4 sticky top-0 z-40">
-        <div class="flex items-center space-x-3">
-            <span class="font-bold text-sm">obyxa001 - Retro 3D Studio & Park</span>
+    <!-- TOP HEADER -->
+    <header class="retro-header text-white px-3 py-2 flex justify-between items-center z-10 shrink-0">
+        <div class="flex items-center gap-3">
+            <h1 class="text-2xl font-black text-yellow-300 tracking-wider">OBYXA</h1>
+            <div class="hidden sm:flex gap-1 text-xs font-bold">
+                <button onclick="showTab('games')" class="px-3 py-1 bg-blue-800 rounded border border-blue-400">Games</button>
+                <button onclick="showTab('catalog')" class="px-3 py-1 bg-blue-900 rounded border border-blue-500">Catalog</button>
+                <button onclick="showTab('avatar')" class="px-3 py-1 bg-blue-900 rounded border border-blue-500">Avatar</button>
+                <button onclick="showTab('videos')" class="px-3 py-1 bg-blue-900 rounded border border-blue-500">Videos</button>
+            </div>
         </div>
-        <div class="flex items-center space-x-2">
-            <button onclick="toggleAvatarEditor()" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded text-xs font-bold cursor-pointer flex items-center gap-1">
-                <i class="fa-solid fa-user-gear"></i> Avatar
+        <div class="flex items-center gap-2">
+            <!-- Mode indicator & Switcher -->
+            <button onclick="toggleEngineMode()" id="modeBtn" class="bg-yellow-400 text-black font-bold text-xs px-2 py-1 rounded shadow border border-yellow-200">
+                Mode: Obyxa001 (Mobile 2008)
             </button>
-            <button onclick="toggleSettings()" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-bold cursor-pointer flex items-center gap-1">
-                <i class="fa-solid fa-gear"></i> Settings
-            </button>
+            <!-- Language Selector -->
+            <select id="langSelect" onchange="setLanguage(this.value)" class="bg-blue-950 text-white font-bold text-xs p-1 rounded border border-blue-400">
+                <option value="en">English</option>
+                <option value="tr">Türkçe</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+            </select>
         </div>
     </header>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-4">
-        <div class="roblox-card p-4 rounded-lg shadow-sm flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-black text-blue-600">3D Simulator, Park & Sports Complex</h1>
-                <p class="text-xs text-gray-500">Explore trees, playground slides, cars, and workout equipment!</p>
-            </div>
-        </div>
+    <!-- MOBILE SUB NAV -->
+    <nav class="sm:hidden bg-blue-950 text-white flex justify-around py-1.5 border-b border-blue-800 text-xs font-bold shrink-0">
+        <button onclick="showTab('games')" class="px-2 py-1">Games</button>
+        <button onclick="showTab('catalog')" class="px-2 py-1">Catalog</button>
+        <button onclick="showTab('avatar')" class="px-2 py-1">Avatar</button>
+        <button onclick="showTab('videos')" class="px-2 py-1">Videos</button>
+    </nav>
 
-        <!-- OYUN KARTLARI DÜZGÜN YERLEŞTİRİLDİ -->
-        <div id="tab-games" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    <!-- MAIN WEB CONTENT AREA -->
+    <main class="flex-1 overflow-y-auto bg-gray-200 p-4" id="mainContent">
+
+        <!-- GAMES TAB -->
+        <section id="tab-games" class="max-w-6xl mx-auto">
+            <h2 class="text-lg font-bold text-blue-900 border-b-2 border-blue-900 pb-1 mb-3" id="lbl-games">Popular Games</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="gamesGrid">
+                <!-- Game cards rendered via JS -->
+            </div>
+        </section>
+
+        <!-- CATALOG TAB -->
+        <section id="tab-catalog" class="max-w-6xl mx-auto hidden">
+            <h2 class="text-lg font-bold text-blue-900 border-b-2 border-blue-900 pb-1 mb-3" id="lbl-catalog">Catalog Items</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="catalogGrid">
+                <!-- Catalog cards rendered via JS -->
+            </div>
+        </section>
+
+        <!-- AVATAR TAB -->
+        <section id="tab-avatar" class="max-w-4xl mx-auto hidden">
+            <h2 class="text-lg font-bold text-blue-900 border-b-2 border-blue-900 pb-1 mb-3" id="lbl-avatar">Avatar Customizer</h2>
+            <div class="bg-white p-4 rounded border grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="h-64 bg-slate-300 rounded relative overflow-hidden flex items-center justify-center border" id="avatarStudio">
+                    <!-- 3D Avatar Preview Canvas -->
+                </div>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold mb-1" id="lbl-base">Base Character:</label>
+                        <div class="flex gap-2">
+                            <button onclick="changeAvatarBase('noob')" class="btn-retro flex-1 py-1.5 text-xs">Classic Noob</button>
+                            <button onclick="changeAvatarBase('bacon')" class="btn-retro flex-1 py-2 text-xs">Bacon Guy</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1" id="lbl-hat">Hat / Accessory:</label>
+                        <select onchange="changeAvatarHat(this.value)" class="w-full border p-1.5 rounded text-xs">
+                            <option value="none">None</option>
+                            <option value="visor">ROBLOX Red Visor</option>
+                            <option value="helm">Viking Helm</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIDEOS TAB -->
+        <section id="tab-videos" class="max-w-4xl mx-auto hidden">
+            <h2 class="text-lg font-bold text-blue-900 border-b-2 border-blue-900 pb-1 mb-3" id="lbl-videos">Classic Roblox Trailers</h2>
+            <div class="aspect-video bg-black rounded overflow-hidden shadow">
+                <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/5AuMJeJv2Vw" title="Trailer" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </section>
+
     </main>
 
-    <!-- AVATAR EDITOR MODAL -->
-    <div id="avatar-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-white rounded-lg max-w-sm w-full p-4 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-sm">👤 Character Customizer</h3>
-                <button onclick="toggleAvatarEditor()" class="text-red-600 font-bold cursor-pointer">✕</button>
+    <!-- 3D GAMEPLAY OVERLAY -->
+    <div id="gameView" class="fixed inset-0 z-50 bg-black hidden flex-col">
+        <!-- Game Top Bar -->
+        <div class="bg-slate-900/90 text-white px-4 py-2 flex justify-between items-center z-10 border-b border-slate-700">
+            <div class="flex items-center gap-3">
+                <button onclick="exit3DGame()" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-xs font-bold">
+                    <i class="fa-solid fa-arrow-left"></i> Leave Game
+                </button>
+                <span id="gameTitleDisplay" class="font-bold text-yellow-400 text-sm">Game Title</span>
             </div>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold mb-1">Jacket Color</label>
-                    <input type="color" id="custom-jacket" value="#1a1a1a" onchange="updateAvatarStyle()" class="w-full h-8 rounded cursor-pointer">
-                </div>
-                <div>
-                    <label class="block font-bold mb-1">Inner Shirt Color</label>
-                    <input type="color" id="custom-shirt" value="#0066ff" onchange="updateAvatarStyle()" class="w-full h-8 rounded cursor-pointer">
-                </div>
+            <div id="gameStatsDisplay" class="text-xs font-mono bg-slate-800 px-3 py-1 rounded border border-slate-600 text-green-400">
+                Score: 0
             </div>
         </div>
-    </div>
 
-    <!-- SETTINGS MODAL -->
-    <div id="settings-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-white rounded-lg max-w-sm w-full p-4 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-sm">⚙️ Settings</h3>
-                <button onclick="toggleSettings()" class="text-red-600 font-bold cursor-pointer">✕</button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold mb-1">Language</label>
-                    <select id="setting-lang" class="w-full p-2 border rounded">
-                        <option value="en" selected>English</option>
-                        <option value="tr">Türkçe</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
+        <!-- 3D Canvas Container -->
+        <div id="canvas3D" class="flex-1 w-full h-full relative"></div>
 
-    <!-- GAME MODAL -->
-    <div id="game-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col">
-        <div class="roblox-header p-3 flex justify-between items-center text-white z-30">
-            <div>
-                <span id="active-game-title" class="font-bold text-sm">3D World</span>
-                <span id="stat-display" class="ml-4 text-xs bg-black/40 px-2 py-1 rounded text-yellow-300 font-bold">Score: 10</span>
+        <!-- MOBILE TOUCH CONTROLS OVERLAY -->
+        <div id="touchUI" class="absolute inset-0 pointer-events-none z-20 flex justify-between p-6 items-end">
+            <!-- Left Virtual Joystick -->
+            <div id="joystickBase" class="w-32 h-32 bg-white/20 rounded-full border-2 border-white/40 relative pointer-events-auto flex items-center justify-center">
+                <div id="joystickStick" class="w-12 h-12 bg-white/70 rounded-full border border-white absolute shadow"></div>
             </div>
-            <button onclick="closeGame()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold cursor-pointer">✕ Exit</button>
-        </div>
-        
-        <div id="canvas-container" class="relative flex-1 w-full h-full overflow-hidden">
-            <div id="joystick-base"><div id="joystick-stick"></div></div>
-            <div class="absolute bottom-6 right-6 z-30">
-                <button onclick="triggerAction()" class="bg-gradient-to-r from-yellow-400 to-amber-600 text-black font-black px-6 py-4 rounded-full shadow-2xl border-4 border-white text-sm cursor-pointer">🔥 TRAIN / INTERACT</button>
+
+            <!-- Right Jump & Action Buttons -->
+            <div class="flex flex-col gap-3 pointer-events-auto items-end">
+                <button id="btnAction" onclick="doGameAction()" class="w-14 h-14 bg-yellow-500 text-white rounded-full font-bold text-xs shadow-lg border-2 border-yellow-200 hidden items-center justify-center">
+                    HIT
+                </button>
+                <button id="btnJump" onclick="doGameJump()" class="w-16 h-16 bg-blue-600 text-white rounded-full font-bold text-sm shadow-lg border-2 border-blue-200 flex items-center justify-center active:bg-blue-800">
+                    JUMP
+                </button>
             </div>
         </div>
     </div>
 
     <script>
+        // --- TRANSLATIONS ---
+        const translations = {
+            en: { games: "Popular Games", catalog: "Catalog Items", avatar: "Avatar Customizer", videos: "Classic Trailers", base: "Base Character:", hat: "Hat / Accessory:" },
+            tr: { games: "Popüler Oyunlar", catalog: "Katalog Eşyaları", avatar: "Karakter Özelleştirme", videos: "Klasik Videolar", base: "Karakter Tipi:", hat: "Şapka / Aksesuar:" },
+            es: { games: "Juegos Populares", catalog: "Catálogo", avatar: "Personalizar Avatar", videos: "Trailers Clásicos", base: "Base Personaje:", hat: "Sombrero:" },
+            de: { games: "Beliebte Spiele", catalog: "Katalog", avatar: "Avatar Anpassen", videos: "Klassische Trailer", base: "Charakter Basis:", hat: "Hut:" }
+        };
+
+        let currentMode = '001'; // '001' (Mobile 2008) or 'pc' (Desktop 2014)
+
+        // --- GAME LIST ---
         const gamesList = [
-            { id: 'park', title: '🛝 Park & Sports Area', desc: 'Trees, playground slide, dumbbells and workout zone!', color: 'from-green-500 to-emerald-700', statName: 'Fitness' },
-            { id: 'muscle', title: '💪 Muscle Legends 3D', desc: 'Lift weights, gain muscle, become a giant Bacon!', color: 'from-orange-500 to-red-600', statName: 'Muscle Power' },
-            { id: 'speed', title: '⚡ Speed Run 3D', desc: 'Run fast, boost your speed and break records!', color: 'from-amber-400 to-yellow-600', statName: 'Speed' },
-            { id: 'racing', title: '🏎️ City Racing & Cars', desc: 'Drive block cars, race around the park!', color: 'from-blue-500 to-indigo-600', statName: 'Race Score' }
+            { id: 'parkour', title: 'Mega Obby Parkour 2008', creator: 'Builderman', plays: '150K' },
+            { id: 'racing', title: 'Blocky Speed Racer 2014', creator: 'Clockwork', plays: '95K' },
+            { id: 'soccer', title: 'Retro Football Arena', creator: 'Shedletsky', plays: '62K' },
+            { id: 'muscle', title: 'Muscle Simulator 2008', creator: 'Telamon', plays: '230K' },
+            { id: 'speed', title: 'Speed Runner Sim', creator: 'SonicFan08', plays: '110K' },
+            { id: 'jump', title: 'Cloud Jump Simulator', creator: 'SkyHigh', plays: '80K' },
+            { id: 'sword', title: 'Classic Sword Fight Arena', creator: 'RobloxMaster', plays: '340K' }
         ];
 
-        let currentGame = null, playerStat = 10, scene, camera, renderer, player, animId;
-        let moveX = 0, moveZ = 0, walkCycle = 0, leftArm, rightArm, leftLeg, rightLeg;
-        let bodyMesh, innerShirtMesh;
+        // --- CATALOG LIST ---
+        const catalogList = [
+            { name: 'Red Visor', price: 'R$ 15' },
+            { name: 'Viking Helm', price: 'R$ 50' },
+            { name: 'Ninja Mask', price: 'R$ 100' },
+            { name: 'Classic Sword', price: 'R$ 250' }
+        ];
 
-        function renderGames() {
-            const container = document.getElementById('tab-games');
-            container.innerHTML = gamesList.map(g => `
-                <div class="roblox-card p-4 rounded-lg shadow cursor-pointer space-y-3" onclick='openGame(${JSON.stringify(g)})'>
-                    <div class="h-32 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-lg text-center p-2">${g.title}</div>
-                    <p class="text-xs text-gray-500">${g.desc}</p>
-                    <button class="w-full btn-green py-2 rounded text-xs">ENTER WORLD</button>
+        // --- NAVIGATION & UI ---
+        function setLanguage(lang) {
+            const t = translations[lang] || translations.en;
+            document.getElementById('lbl-games').innerText = t.games;
+            document.getElementById('lbl-catalog').innerText = t.catalog;
+            document.getElementById('lbl-avatar').innerText = t.avatar;
+            document.getElementById('lbl-videos').innerText = t.videos;
+            document.getElementById('lbl-base').innerText = t.base;
+            document.getElementById('lbl-hat').innerText = t.hat;
+        }
+
+        function toggleEngineMode() {
+            currentMode = currentMode === '001' ? 'pc' : '001';
+            const btn = document.getElementById('modeBtn');
+            btn.innerText = currentMode === '001' ? 'Mode: Obyxa001 (Mobile 2008)' : 'Mode: Obyxa (PC 2014)';
+        }
+
+        function showTab(tabId) {
+            ['games', 'catalog', 'avatar', 'videos'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+        }
+
+        function renderUI() {
+            // Render Games
+            const gGrid = document.getElementById('gamesGrid');
+            gGrid.innerHTML = gamesList.map(g => `
+                <div class="bg-white border-2 border-gray-300 p-3 rounded shadow hover:border-blue-500">
+                    <div class="h-28 bg-slate-800 rounded mb-2 flex items-center justify-center text-yellow-400 font-bold text-center text-xs p-2">
+                        ${g.title}
+                    </div>
+                    <div class="font-bold text-xs text-blue-900 truncate">${g.title}</div>
+                    <div class="text-[10px] text-gray-500">By ${g.creator}</div>
+                    <div class="text-[10px] text-green-600 font-bold mt-1">${g.plays} Plays</div>
+                    <button onclick="start3DGame('${g.id}')" class="w-full mt-2 btn-play py-1 rounded text-xs font-bold">PLAY</button>
+                </div>
+            `).join('');
+
+            // Render Catalog
+            const cGrid = document.getElementById('catalogGrid');
+            cGrid.innerHTML = catalogList.map(c => `
+                <div class="bg-white border p-2 rounded text-center shadow-sm">
+                    <div class="h-16 bg-gray-100 rounded mb-1 flex items-center justify-center text-[10px] text-gray-400 font-bold">
+                        ${c.name}
+                    </div>
+                    <div class="font-bold text-[11px] truncate">${c.name}</div>
+                    <div class="text-[10px] text-yellow-600 font-bold">${c.price}</div>
                 </div>
             `).join('');
         }
 
-        function toggleSettings() { document.getElementById('settings-modal').classList.toggle('hidden'); }
-        function toggleAvatarEditor() { document.getElementById('avatar-modal').classList.toggle('hidden'); }
+        // --- 3D ENGINE & GAMEPLAY ---
+        let scene, camera, renderer, animationFrameId;
+        let player, playerVel = new THREE.Vector3(0, 0, 0);
+        let leftArm, rightArm, leftLeg, rightLeg, headMesh;
+        let groundPlatforms = [];
+        let currentGameId = null;
+        let isGrounded = false;
+        let moveVector = { x: 0, z: 0 };
+        let keyState = {};
+        let animTime = 0;
 
-        function openGame(game) {
-            currentGame = game;
-            playerStat = 10;
-            document.getElementById('active-game-title').innerText = game.title;
-            document.getElementById('stat-display').innerText = `${game.statName}: 10`;
-            document.getElementById('game-modal').classList.remove('hidden');
-            setTimeout(init3D, 150);
+        // Camera control variables
+        let cameraAngleX = 0;
+        let cameraAngleY = 0.3;
+        let touchStartX = 0, touchStartY = 0;
+
+        function start3DGame(gameId) {
+            currentGameId = gameId;
+            const gameObj = gamesList.find(g => g.id === gameId);
+            
+            document.getElementById('gameTitleDisplay').innerText = gameObj.title;
+            document.getElementById('gameView').classList.remove('hidden');
+            document.getElementById('gameView').classList.add('flex');
+
+            const touchUI = document.getElementById('touchUI');
+            if (currentMode === '001') {
+                touchUI.classList.remove('hidden');
+            } else {
+                touchUI.classList.add('hidden');
+            }
+
+            const btnAction = document.getElementById('btnAction');
+            if (gameId === 'muscle' || gameId === 'sword') {
+                btnAction.classList.remove('hidden');
+                btnAction.classList.add('flex');
+                btnAction.innerText = gameId === 'muscle' ? 'LIFT' : 'SLASH';
+            } else {
+                btnAction.classList.add('hidden');
+                btnAction.classList.remove('flex');
+            }
+
+            init3DScene();
         }
 
-        function closeGame() {
-            document.getElementById('game-modal').classList.add('hidden');
-            if(animId) cancelAnimationFrame(animId);
-            const c = document.querySelector('#canvas-container canvas');
-            if(c) c.remove();
-        }
-
-        function triggerAction() {
-            playerStat += 5;
-            document.getElementById('stat-display').innerText = `${currentGame.statName}: ${playerStat}`;
-            if(player && currentGame.id === 'muscle') {
-                let s = 1 + (playerStat / 100);
-                player.scale.set(s, s, s);
+        function exit3DGame() {
+            document.getElementById('gameView').classList.add('hidden');
+            document.getElementById('gameView').classList.remove('flex');
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            if (renderer) {
+                renderer.dispose();
+                document.getElementById('canvas3D').innerHTML = '';
             }
         }
 
-        function init3D() {
-            const container = document.getElementById('canvas-container');
-            const w = container.clientWidth, h = container.clientHeight;
+        function init3DScene() {
+            const container = document.getElementById('canvas3D');
+            container.innerHTML = '';
+
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x87ceeb);
 
-            camera = new THREE.PerspectiveCamera(60, w/h, 0.1, 1000);
-            camera.position.set(0, 6, 14);
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(w, h);
+            renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-            const light = new THREE.DirectionalLight(0xffffff, 0.7);
-            light.position.set(15, 25, 15);
+            const light = new THREE.DirectionalLight(0xffffff, 1.2);
+            light.position.set(20, 40, 20);
             scene.add(light);
+            scene.add(new THREE.AmbientLight(0x777777));
 
-            const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshStandardMaterial({ color: 0x3b8d29 }));
-            floor.rotation.x = -Math.PI / 2;
-            scene.add(floor);
+            groundPlatforms = [];
 
-            createTrees();
-            createParkSlide();
-            createCars();
-            createSportsArea();
-            createPlayerCharacter();
-            setupJoystick();
+            // Base Ground Floor
+            const mainFloorGeo = new THREE.BoxGeometry(200, 2, 200);
+            const mainFloorMat = new THREE.MeshLambertMaterial({ color: 0x33aa33 });
+            const mainFloor = new THREE.Mesh(mainFloorGeo, mainFloorMat);
+            mainFloor.position.set(0, -1, 0);
+            scene.add(mainFloor);
+            groundPlatforms.push(mainFloor);
 
-            function animate() {
-                animId = requestAnimationFrame(animate);
-                if(moveX !== 0 || moveZ !== 0) {
-                    player.position.x += moveX * 0.2;
-                    player.position.z += moveZ * 0.2;
-                    player.rotation.y = Math.atan2(moveX, moveZ);
-
-                    walkCycle += 0.25;
-                    leftArm.rotation.x = Math.sin(walkCycle) * 0.7;
-                    rightArm.rotation.x = -Math.sin(walkCycle) * 0.7;
-                    leftLeg.rotation.x = -Math.sin(walkCycle) * 0.7;
-                    rightLeg.rotation.x = Math.sin(walkCycle) * 0.7;
-                } else {
-                    leftArm.rotation.x = 0; rightArm.rotation.x = 0;
-                    leftLeg.rotation.x = 0; rightLeg.rotation.x = 0;
-                }
-                camera.position.x = player.position.x;
-                camera.position.z = player.position.z + 12;
-                camera.lookAt(player.position.x, player.position.y + 1, player.position.z);
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-
-        function createTrees() {
-            const positions = [[-15, -15], [15, -20], [-20, 10], [22, 15], [-10, 25]];
-            positions.forEach(pos => {
-                const tree = new THREE.Group();
-                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3), new THREE.MeshStandardMaterial({ color: 0x5c4033 }));
-                trunk.position.y = 1.5;
-                const leaves = new THREE.Mesh(new THREE.ConeGeometry(2, 4, 6), new THREE.MeshStandardMaterial({ color: 0x1e5c1e }));
-                leaves.position.y = 4;
-                tree.add(trunk, leaves);
-                tree.position.set(pos[0], 0, pos[1]);
-                scene.add(tree);
-            });
-        }
-
-        function createParkSlide() {
-            const park = new THREE.Group();
-            const platform = new THREE.Mesh(new THREE.BoxGeometry(3, 0.3, 3), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
-            platform.position.set(-8, 3, -8);
-            const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 3), new THREE.MeshStandardMaterial({ color: 0x4b5563 }));
-            pillar.position.set(-8, 1.5, -8);
-            const slide = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.2, 5), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
-            slide.position.set(-8, 1.5, -5.5);
-            slide.rotation.x = Math.PI / 6;
-            park.add(platform, pillar, slide);
-            scene.add(park);
-        }
-
-        function createCars() {
-            const car = new THREE.Group();
-            const body = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1, 4), new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
-            body.position.y = 0.8;
-            const cabin = new THREE.Mesh(new THREE.BoxGeometry(2, 0.8, 2), new THREE.MeshStandardMaterial({ color: 0x111111 }));
-            cabin.position.set(0, 1.6, -0.3);
-            car.add(body, cabin);
-            car.position.set(10, 0, -5);
-            scene.add(car);
-        }
-
-        function createSportsArea() {
-            const gym = new THREE.Group();
-            const bench = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 2.5), new THREE.MeshStandardMaterial({ color: 0x1f2937 }));
-            bench.position.set(8, 0.3, 8);
-            const dumbbell = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 1.5), new THREE.MeshStandardMaterial({ color: 0x111111 }));
-            dumbbell.rotation.z = Math.PI / 2;
-            dumbbell.position.set(8, 0.7, 8);
-            gym.add(bench, dumbbell);
-            scene.add(gym);
-        }
-
-        function createPlayerCharacter() {
+            // CREATE CHARACTER (CLASSIC R6 MODEL WITH SEPARATE LIMBS FOR ANIMATION)
             player = new THREE.Group();
-            const jColor = document.getElementById('custom-jacket').value;
-            const sColor = document.getElementById('custom-shirt').value;
 
-            bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.6), new THREE.MeshStandardMaterial({ color: jColor }));
-            bodyMesh.position.y = 2.1;
-            player.add(bodyMesh);
+            const headGeo = new THREE.BoxGeometry(0.7, 0.7, 0.7);
+            const torsoGeo = new THREE.BoxGeometry(0.8, 0.8, 0.4);
+            const limbGeo = new THREE.BoxGeometry(0.35, 0.8, 0.35);
 
-            innerShirtMesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.25, 0.62), new THREE.MeshStandardMaterial({ color: sColor }));
-            innerShirtMesh.position.y = 2.1;
-            player.add(innerShirtMesh);
+            const yellowMat = new THREE.MeshLambertMaterial({ color: 0xffcc00 });
+            const blueMat = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+            const greenMat = new THREE.MeshLambertMaterial({ color: 0x008800 });
 
-            const head = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-            head.position.y = 3.22;
-            player.add(head);
+            // Torso (Center)
+            const torso = new THREE.Mesh(torsoGeo, blueMat);
+            torso.position.y = 0.8;
+            player.add(torso);
 
-            const hairGroup = new THREE.Group();
-            const hairMat = new THREE.MeshStandardMaterial({ color: 0x7a3d11 });
-            const hairBase = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.3, 0.95), hairMat);
-            hairBase.position.set(0, 3.65, 0);
-            const strandLeft = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.55, 0.3), hairMat);
-            strandLeft.position.set(-0.25, 3.4, 0.42);
-            const strandRight = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.65, 0.3), hairMat);
-            strandRight.position.set(0.2, 3.35, 0.42);
-            hairGroup.add(hairBase, strandLeft, strandRight);
-            player.add(hairGroup);
+            // Head
+            headMesh = new THREE.Mesh(headGeo, yellowMat);
+            headMesh.position.y = 1.55;
+            player.add(headMesh);
 
-            const armMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
-            const handMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-            const legMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
-
-            leftArm = new THREE.Group();
-            const lArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), armMat);
-            lArmMesh.position.y = -0.2;
-            const lHand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
-            lHand.position.y = -0.8;
-            leftArm.add(lArmMesh, lHand);
-            leftArm.position.set(-0.95, 2.6, 0);
+            // Left Arm
+            leftArm = new THREE.Mesh(limbGeo, yellowMat);
+            leftArm.position.set(-0.6, 0.8, 0);
             player.add(leftArm);
 
-            rightArm = new THREE.Group();
-            const rArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), armMat);
-            rArmMesh.position.y = -0.2;
-            const rHand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
-            rHand.position.y = -0.8;
-            rightArm.add(rArmMesh, rHand);
-            rightArm.position.set(0.95, 2.6, 0);
+            // Right Arm
+            rightArm = new THREE.Mesh(limbGeo, yellowMat);
+            rightArm.position.set(0.6, 0.8, 0);
             player.add(rightArm);
 
-            leftLeg = new THREE.Group();
-            const lLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), legMat);
-            lLegMesh.position.y = -0.3;
-            const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
-            lShoe.position.y = -0.8;
-            leftLeg.add(lLegMesh, lShoe);
-            leftLeg.position.set(-0.35, 1.4, 0);
+            // Left Leg
+            leftLeg = new THREE.Mesh(limbGeo, greenMat);
+            leftLeg.position.set(-0.22, 0.0, 0);
             player.add(leftLeg);
 
-            rightLeg = new THREE.Group();
-            const rLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), legMat);
-            rLegMesh.position.y = -0.3;
-            const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.5), handMat);
-            rShoe.position.y = -0.8;
-            rightLeg.add(rLegMesh, rShoe);
-            rightLeg.position.set(0.35, 1.4, 0);
+            // Right Leg
+            rightLeg = new THREE.Mesh(limbGeo, greenMat);
+            rightLeg.position.set(0.22, 0.0, 0);
             player.add(rightLeg);
 
+            // Spawn player safely above ground
+            player.position.set(0, 5, 0);
             scene.add(player);
-        }
 
-        function updateAvatarStyle() {
-            if(bodyMesh && innerShirtMesh) {
-                bodyMesh.material.color.set(document.getElementById('custom-jacket').value);
-                innerShirtMesh.material.color.set(document.getElementById('custom-shirt').value);
-            }
-        }
+            // RICH LEVEL DESIGNS ACCORDING TO SELECTED MINI-GAME
+            if (currentGameId === 'parkour') {
+                // Obby Stages & Hazards
+                for (let i = 0; i < 20; i++) {
+                    const pad = new THREE.Mesh(
+                        new THREE.BoxGeometry(5, 0.8, 5),
+                        new THREE.MeshLambertMaterial({ color: i % 2 === 0 ? 0xff0000 : 0xffff00 })
+                    );
+                    pad.position.set(Math.sin(i) * 6, i * 2, -i * 8 - 10);
+                    scene.add(pad);
+                    groundPlatforms.push(pad);
 
-        function setupJoystick() {
-            const base = document.getElementById('joystick-base');
-            const stick = document.getElementById('joystick-stick');
-            let touchId = null;
-
-            const handleStart = (e) => {
-                const t = e.changedTouches ? e.changedTouches[0] : e;
-                touchId = t.identifier !== undefined ? t.identifier : 'mouse';
-                updateJoystick(t);
-            };
-
-            const handleMove = (e) => {
-                const touches = e.changedTouches || [e];
-                for (let i = 0; i < touches.length; i++) {
-                    const t = touches[i];
-                    if (t.identifier === touchId || touchId === 'mouse') updateJoystick(t);
-                }
-            };
-
-            const handleEnd = () => {
-                moveX = 0; moveZ = 0; touchId = null;
-                stick.style.transform = `translate(0px, 0px)`;
-            };
-
-            base.addEventListener('touchstart', handleStart, {passive: false});
-            window.addEventListener('touchmove', handleMove, {passive: false});
-            window.addEventListener('touchend', handleEnd);
-            base.addEventListener('mousedown', handleStart);
-            window.addEventListener('mousemove', handleMove);
-            window.addEventListener('mouseup', handleEnd);
-
-            function updateJoystick(t) {
-                const rect = base.getBoundingClientRect();
-                let x = t.clientX - (rect.left + rect.width / 2);
-                let y = t.clientY - (rect.top + rect.height / 2);
-                let dist = Math.sqrt(x*x + y*y), maxDist = 40;
-                if (dist > maxDist) { x = (x / dist) * maxDist; y = (y / dist) * maxDist; }
-                stick.style.transform = `translate(${x}px, ${y}px)`;
-                moveX = x / maxDist; moveZ = y / maxDist;
-            }
-        }
-
-        window.onload = renderGames;
-    </script>
-</body>
-</html>
+                    // Add floating spinning coins
+                    const coin = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.5, 0.5, 0.1, 12),
+                        new THREE.MeshBasicMaterial({ color: 0xffd700 })
+                    );
+     

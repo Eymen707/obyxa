@@ -17,17 +17,19 @@
     nav button { background: none; border: none; color: white; padding: 10px 16px; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap; }
     nav button.active { background: #e3e3e3; color: #003380; border-radius: 5px 5px 0 0; }
 
-    .container { padding: 15px; max-width: 950px; margin: 0 auto; height: calc(100vh - 90px); overflow-y: auto; }
+    .container { padding: 15px; max-width: 950px; margin: 0 auto; height: calc(100vh - 90px); overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
     .page { display: none; }
     .page.active { display: block; }
 
     .section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #003380; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
-    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding-bottom: 20px; }
-    .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .game-card:hover { border-color: #0055b3; background: #f4f8ff; }
-    .game-thumb { width: 100%; height: 90px; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
-    .game-title { font-weight: bold; font-size: 12px; color: #003380; margin-bottom: 2px; }
-    .game-info { font-size: 10px; color: #666; }
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding-bottom: 30px; }
+    
+    /* Mobil Dokunma Garantili Kart Yapısı */
+    .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); touch-action: manipulation; }
+    .game-card:active { background: #e3f2fd; border-color: #0055b3; }
+    .game-thumb { width: 100%; height: 90px; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); pointer-events: none; }
+    .game-title { font-weight: bold; font-size: 12px; color: #003380; margin-bottom: 2px; pointer-events: none; }
+    .game-info { font-size: 10px; color: #666; pointer-events: none; }
 
     .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
     .item-card { background: white; border: 1px solid #ccc; padding: 10px; text-align: center; border-radius: 4px; font-size: 12px; }
@@ -47,10 +49,11 @@
     #workout-btn { position: absolute; top: 75px; left: 15px; background: #ff8f00; color: white; border: 3px solid #ff6f00; padding: 12px 20px; font-weight: bold; border-radius: 8px; pointer-events: auto; cursor: pointer; font-size: 14px; display: none; z-index: 10002; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
     #workout-btn:active { transform: scale(0.95); background: #ffa000; }
 
-    #joystick-zone { position: absolute; bottom: 80px; left: 40px; width: 130px; height: 130px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; pointer-events: auto; touch-action: none; }
+    /* MOBİL JOYSTICK & ZIPLAMA (YUKARI TAŞINDI) */
+    #joystick-zone { position: absolute; bottom: 90px; left: 35px; width: 130px; height: 130px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; pointer-events: auto; touch-action: none; }
     #joystick-knob { position: absolute; top: 37px; left: 37px; width: 56px; height: 56px; background: rgba(255,255,255,0.9); border-radius: 50%; pointer-events: none; touch-action: none; }
 
-    #jump-btn { position: absolute; bottom: 90px; right: 40px; width: 85px; height: 85px; background: rgba(0, 85, 179, 0.8); border: 3px solid rgba(255,255,255,0.95); border-radius: 50%; color: white; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+    #jump-btn { position: absolute; bottom: 100px; right: 35px; width: 85px; height: 85px; background: rgba(0, 85, 179, 0.85); border: 3px solid rgba(255,255,255,0.95); border-radius: 50%; color: white; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
     #jump-btn:active { background: rgba(0, 85, 179, 1); transform: scale(0.95); }
   </style>
 </head>
@@ -73,32 +76,32 @@
     <div id="games" class="page active">
       <div class="section-title">Featured OBYXA Games (Top 6)</div>
       <div class="game-grid">
-        <div class="game-card" onclick="startGame('wing')">
+        <div class="game-card" data-game="wing">
           <div class="game-thumb" style="background: linear-gradient(135deg, #00acc1, #00838f);">🪽 WING & JUMP SIM</div>
           <div class="game-title">Jump & Fly Simulator</div>
           <div class="game-info">Buy wings & jump high!</div>
         </div>
-        <div class="game-card" onclick="startGame('muscle')">
+        <div class="game-card" data-game="muscle">
           <div class="game-thumb" style="background: linear-gradient(135deg, #e65100, #ffb300);">💪 MUSCLE SIMULATOR</div>
           <div class="game-title">Muscle Legends Pro</div>
           <div class="game-info">Lift weights & grow huge!</div>
         </div>
-        <div class="game-card" onclick="startGame('speed')">
+        <div class="game-card" data-game="speed">
           <div class="game-thumb" style="background: linear-gradient(135deg, #c62828, #ef5350);">⚡ SPEED SIMULATOR</div>
           <div class="game-title">Speed Runner Sim</div>
           <div class="game-info">Run fast across tracks!</div>
         </div>
-        <div class="game-card" onclick="startGame('obby')">
+        <div class="game-card" data-game="obby">
           <div class="game-thumb" style="background: linear-gradient(135deg, #2e7d32, #66bb6a);">🧱 OBBY PARKOUR</div>
           <div class="game-title">Escape Subspace!</div>
           <div class="game-info">142 players online</div>
         </div>
-        <div class="game-card" onclick="startGame('cash')">
+        <div class="game-card" data-game="cash">
           <div class="game-thumb" style="background: linear-gradient(135deg, #1565c0, #42a5f5);">💵 CASH SIMULATOR</div>
           <div class="game-title">Cash Tycoon Sim</div>
           <div class="game-info">Collect rich rewards!</div>
         </div>
-        <div class="game-card" onclick="startGame('zombie')">
+        <div class="game-card" data-game="zombie">
           <div class="game-thumb" style="background: linear-gradient(135deg, #37474f, #78909c);">🧟 SURVIVAL ARENA</div>
           <div class="game-title">Zombie Ocean Rescue</div>
           <div class="game-info">76 players online</div>
@@ -180,8 +183,8 @@
     function equipHat(hatName) {
       activeHat = (activeHat === hatName) ? 'none' : hatName;
       document.getElementById('current-hat-label').innerText = activeHat.toUpperCase();
-      if(hatName === 'wings') jumpPower = 0.42; // Kanat takınca çok yüksek zıplama
-      alert(activeHat === 'none' ? 'Gear removed.' : hatName.toUpperCase() + ' equipped! Jump power increased!');
+      if(hatName === 'wings') jumpPower = 0.45;
+      alert(activeHat === 'none' ? 'Gear removed.' : hatName.toUpperCase() + ' equipped!');
     }
 
     function trainMuscle() {
@@ -193,6 +196,19 @@
       }
       document.getElementById('workout-btn').innerText = `💪 TRAIN MUSCLE (Power: ${musclePower.toFixed(1)})`;
     }
+
+    // Mobil ve PC Oyuna Giriş Tetikleyicileri
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.game-card').forEach(card => {
+        const gameName = card.getAttribute('data-game');
+        const triggerStart = (e) => {
+          e.preventDefault();
+          startGame(gameName);
+        };
+        card.addEventListener('click', triggerStart);
+        card.addEventListener('touchend', triggerStart);
+      });
+    });
 
     let scene, camera, renderer, player, torsoMesh, leftArmMesh, rightArmMesh, leftLeg, rightLeg, hatMesh;
     let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
@@ -235,12 +251,12 @@
 
       player = new THREE.Group();
       
-      // Kafa ve Klasik Gülen Yüz (Smile Face)
+      // Kafa
       const headMat = new THREE.MeshLambertMaterial({ color: 0xffd700 });
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), headMat);
       head.position.y = 1.4;
       
-      // Yüz Detayı (Gözler ve Gülümseme)
+      // Klasik Gülen Yüz Detayı (Gözler ve Smile)
       const eyeGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
       const faceMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
       const leftEye = new THREE.Mesh(eyeGeo, faceMat); leftEye.position.set(-0.2, 1.5, 0.41);
@@ -371,24 +387,4 @@
     function animate() {
       animFrame = requestAnimationFrame(animate);
 
-      let speed = (currentGameType === 'speed') ? 0.22 : 0.14;
-      let dx = 0, dz = 0;
-
-      if (moveForward) dz -= speed;
-      if (moveBackward) dz += speed;
-      if (moveLeft) dx -= speed;
-      if (moveRight) dx += speed;
-
-      if (Math.abs(touchMoveX) > 0.1 || Math.abs(touchMoveY) > 0.1) {
-        dx = touchMoveX * speed;
-        dz = touchMoveY * speed;
-      }
-
-      if (dx !== 0 || dz !== 0) {
-        player.position.x += dx;
-        player.position.z += dz;
-        player.rotation.y = Math.atan2(dx, dz);
-
-        animTime += 0.35;
-        leftLeg.rotation.x = Math.sin(animTime) * 0.75;
-  
+      let speed = (currentGameType 

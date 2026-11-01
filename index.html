@@ -17,14 +17,14 @@
     nav button { background: none; border: none; color: white; padding: 10px 16px; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap; }
     nav button.active { background: #e3e3e3; color: #003380; border-radius: 5px 5px 0 0; }
 
-    .container { padding: 15px; max-width: 950px; margin: 0 auto; height: calc(100vh - 90px); overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+    .container { padding: 15px; max-width: 950px; margin: 0 auto; height: calc(100vh - 90px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .page { display: none; }
     .page.active { display: block; }
 
     .section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #003380; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
     .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding-bottom: 30px; }
     
-    .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); touch-action: manipulation; }
+    .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .game-card:active { background: #e3f2fd; border-color: #0055b3; }
     .game-thumb { width: 100%; height: 90px; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); pointer-events: none; }
     .game-title { font-weight: bold; font-size: 12px; color: #003380; margin-bottom: 2px; pointer-events: none; }
@@ -47,7 +47,7 @@
 
     #workout-btn { position: absolute; top: 75px; left: 15px; background: #ff8f00; color: white; border: 3px solid #ff6f00; padding: 12px 20px; font-weight: bold; border-radius: 8px; pointer-events: auto; cursor: pointer; font-size: 14px; display: none; z-index: 10002; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
 
-    /* Mobil Kontroller */
+    /* Joystick & Zıpla */
     #joystick-zone { position: absolute; bottom: 90px; left: 35px; width: 130px; height: 130px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; pointer-events: auto; touch-action: none; }
     #joystick-knob { position: absolute; top: 37px; left: 37px; width: 56px; height: 56px; background: rgba(255,255,255,0.9); border-radius: 50%; pointer-events: none; touch-action: none; }
 
@@ -64,41 +64,41 @@
   </header>
 
   <nav>
-    <button class="active" id="nav-games">Games</button>
-    <button id="nav-catalog">Catalog</button>
-    <button id="nav-profile">My Character</button>
+    <button class="active" onclick="switchTab('games', this)">Games</button>
+    <button onclick="switchTab('catalog', this)">Catalog</button>
+    <button onclick="switchTab('profile', this)">My Character</button>
   </nav>
 
   <div class="container">
     <div id="games" class="page active">
       <div class="section-title">Featured OBYXA Games (Top 6)</div>
       <div class="game-grid">
-        <div class="game-card" data-game="wing">
+        <div class="game-card" onclick="window.loadGame('wing')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #00acc1, #00838f);">🪽 WING & JUMP SIM</div>
           <div class="game-title">Jump & Fly Simulator</div>
           <div class="game-info">Buy wings & jump high!</div>
         </div>
-        <div class="game-card" data-game="muscle">
+        <div class="game-card" onclick="window.loadGame('muscle')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #e65100, #ffb300);">💪 MUSCLE SIMULATOR</div>
           <div class="game-title">Muscle Legends Pro</div>
           <div class="game-info">Lift weights & grow huge!</div>
         </div>
-        <div class="game-card" data-game="speed">
+        <div class="game-card" onclick="window.loadGame('speed')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #c62828, #ef5350);">⚡ SPEED SIMULATOR</div>
           <div class="game-title">Speed Runner Sim</div>
           <div class="game-info">Run fast across tracks!</div>
         </div>
-        <div class="game-card" data-game="obby">
+        <div class="game-card" onclick="window.loadGame('obby')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #2e7d32, #66bb6a);">🧱 OBBY PARKOUR</div>
           <div class="game-title">Escape Subspace!</div>
           <div class="game-info">142 players online</div>
         </div>
-        <div class="game-card" data-game="cash">
+        <div class="game-card" onclick="window.loadGame('cash')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #1565c0, #42a5f5);">💵 CASH SIMULATOR</div>
           <div class="game-title">Cash Tycoon Sim</div>
           <div class="game-info">Collect rich rewards!</div>
         </div>
-        <div class="game-card" data-game="zombie">
+        <div class="game-card" onclick="window.loadGame('zombie')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #37474f, #78909c);">🧟 SURVIVAL ARENA</div>
           <div class="game-title">Zombie Ocean Rescue</div>
           <div class="game-info">76 players online</div>
@@ -112,22 +112,22 @@
         <div class="item-card">
           <div style="font-size:32px;">🪽</div>
           <b>Angel Wings</b>
-          <button id="btn-hat-wings">Equip Wings</button>
+          <button onclick="equipHat('wings')">Equip Wings</button>
         </div>
         <div class="item-card">
           <div style="font-size:32px;">👑</div>
           <b>Golden Crown</b>
-          <button id="btn-hat-crown">Equip Hat</button>
+          <button onclick="equipHat('crown')">Equip Hat</button>
         </div>
         <div class="item-card">
           <div style="font-size:32px;">🎩</div>
           <b>Top Hat</b>
-          <button id="btn-hat-tophat">Equip Hat</button>
+          <button onclick="equipHat('tophat')">Equip Hat</button>
         </div>
         <div class="item-card">
           <div style="font-size:32px;">🥷</div>
           <b>Ninja Mask</b>
-          <button id="btn-hat-ninja">Equip Hat</button>
+          <button onclick="equipHat('ninja')">Equip Hat</button>
         </div>
       </div>
     </div>
@@ -138,8 +138,8 @@
         <div style="width:80px; height:80px; background:#ffd700; margin:0 auto 10px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:36px; border:2px solid #333;">🙂</div>
         <b style="font-size:15px; color:#003380;">Choose Your Avatar Style:</b><br><br>
         <div>
-          <div id="btn-noob" class="char-select selected">Classic Noob</div>
-          <div id="btn-bacon" class="char-select">Bacon Hair</div>
+          <div id="btn-noob" class="char-select selected" onclick="setCharType('noob')">Classic Noob</div>
+          <div id="btn-bacon" class="char-select" onclick="setCharType('bacon')">Bacon Hair</div>
         </div>
         <p style="font-size:12px; color:#555; margin-top:15px;">Equipped Gear: <span id="current-hat-label" style="font-weight:bold; color:#0055b3;">None</span></p>
       </div>
@@ -149,8 +149,8 @@
   <div id="game-container">
     <canvas id="canvas3d"></canvas>
     <div class="mobile-ui">
-      <button class="exit-btn" id="exit-game-btn">✕ Exit Game</button>
-      <button id="workout-btn">💪 TRAIN MUSCLE (+1)</button>
+      <button class="exit-btn" onclick="exitGame()">✕ Exit Game</button>
+      <button id="workout-btn" onclick="trainMuscle()">💪 TRAIN MUSCLE (+1)</button>
       <div class="controls-hint">PC: W,A,S,D + Space<br>Mobile: Joystick & Jump</div>
       <div id="joystick-zone"><div id="joystick-knob"></div></div>
       <div id="jump-btn">JUMP</div>
@@ -194,39 +194,6 @@
       document.getElementById('workout-btn').innerText = `💪 TRAIN MUSCLE (Power: ${musclePower.toFixed(1)})`;
     }
 
-    // EVENT LISTENERS (GitHub Pages Tıklama Düzeltmesi)
-    document.addEventListener('DOMContentLoaded', () => {
-      // Navigasyon
-      document.getElementById('nav-games').addEventListener('click', function() { switchTab('games', this); });
-      document.getElementById('nav-catalog').addEventListener('click', function() { switchTab('catalog', this); });
-      document.getElementById('nav-profile').addEventListener('click', function() { switchTab('profile', this); });
-
-      // Karakter Seçimi
-      document.getElementById('btn-noob').addEventListener('click', () => setCharType('noob'));
-      document.getElementById('btn-bacon').addEventListener('click', () => setCharType('bacon'));
-
-      // Şapka / Ekipman
-      document.getElementById('btn-hat-wings').addEventListener('click', () => equipHat('wings'));
-      document.getElementById('btn-hat-crown').addEventListener('click', () => equipHat('crown'));
-      document.getElementById('btn-hat-tophat').addEventListener('click', () => equipHat('tophat'));
-      document.getElementById('btn-hat-ninja').addEventListener('click', () => equipHat('ninja'));
-
-      // Çıkış ve Antrenman Butonları
-      document.getElementById('exit-game-btn').addEventListener('click', exitGame);
-      document.getElementById('workout-btn').addEventListener('click', trainMuscle);
-
-      // Oyun Kartı Tıklamaları (Dokunmatik + Pointer Fix)
-      document.querySelectorAll('.game-card').forEach(card => {
-        const gameType = card.getAttribute('data-game');
-        const launchGame = (e) => {
-          e.preventDefault();
-          startGame(gameType);
-        };
-        card.addEventListener('pointerdown', launchGame);
-        card.addEventListener('click', launchGame);
-      });
-    });
-
     let scene, camera, renderer, player, torsoMesh, leftArmMesh, rightArmMesh, leftLeg, rightLeg, hatMesh;
     let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
     let velocityY = 0, gravity = -0.012, isGrounded = false;
@@ -236,7 +203,7 @@
     let animFrame;
     let currentGameType = '';
 
-    function startGame(type) {
+    window.loadGame = function(type) {
       currentGameType = type;
       musclePower = 1;
       document.getElementById('workout-btn').style.display = (type === 'muscle') ? 'block' : 'none';
@@ -268,12 +235,11 @@
 
       player = new THREE.Group();
       
-      // Kafa
+      // Kafa ve Gülen Yüz
       const headMat = new THREE.MeshLambertMaterial({ color: 0xffd700 });
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), headMat);
       head.position.y = 1.4;
       
-      // Gülen Yüz (Smile Face)
       const eyeGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
       const faceMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
       const leftEye = new THREE.Mesh(eyeGeo, faceMat); leftEye.position.set(-0.2, 1.5, 0.41);
@@ -377,4 +343,53 @@
         const dx = touch.clientX - (rect.left + rect.width / 2);
         const dy = touch.clientY - (rect.top + rect.height / 2);
         const dist = Math.min(Math.hypot(dx, dy), 42);
-        const angle = Mat
+        const angle = Math.atan2(dy, dx);
+
+        knob.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+        touchMoveX = (Math.cos(angle) * dist) / 42;
+        touchMoveY = (Math.sin(angle) * dist) / 42;
+      }, { passive: false });
+
+      zone.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        knob.style.transform = 'translate(0px, 0px)';
+        touchMoveX = 0; touchMoveY = 0;
+      }, { passive: false });
+
+      const jumpBtn = document.getElementById('jump-btn');
+      jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); }, { passive: false });
+      jumpBtn.onclick = jump;
+    }
+
+    function jump() {
+      if(isGrounded) {
+        velocityY = jumpPower;
+        isGrounded = false;
+      }
+    }
+
+    function animate() {
+      animFrame = requestAnimationFrame(animate);
+
+      let speed = (currentGameType === 'speed') ? 0.22 : 0.14;
+      let dx = 0, dz = 0;
+
+      if (moveForward) dz -= speed;
+      if (moveBackward) dz += speed;
+      if (moveLeft) dx -= speed;
+      if (moveRight) dx += speed;
+
+      if (Math.abs(touchMoveX) > 0.1 || Math.abs(touchMoveY) > 0.1) {
+        dx = touchMoveX * speed;
+        dz = touchMoveY * speed;
+      }
+
+      if (dx !== 0 || dz !== 0) {
+        player.position.x += dx;
+        player.position.z += dz;
+        player.rotation.y = Math.atan2(dx, dz);
+
+        animTime += 0.35;
+        leftLeg.rotation.x = Math.sin(animTime) * 0.75;
+        rightLeg.rotation.x = -Math.sin(animTime) * 0.75;
+        l

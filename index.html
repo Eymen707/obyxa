@@ -1,475 +1,203 @@
 <!DOCTYPE html>
-<html lang="tr" dir="ltr">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>obyxa001 - Retro Roblox 2014 & 3D Simülatör Studio</title>
-
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js CDN (r128) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Firebase SDK (Gerçek Canlı Liderlik Tablosu İçin) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap');
-
-        * {
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        body {
-            font-family: 'Source Sans Pro', Arial, sans-serif;
-            background-color: #e3e3e3;
-            color: #222222;
-            min-height: 100vh;
-        }
-
-        .roblox-header {
-            background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%);
-            border-bottom: 2px solid #00367d;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .roblox-card {
-            background-color: #ffffff;
-            border: 1px solid #c3c3c3;
-        }
-
-        .game-card {
-            background: #ffffff;
-            border: 1px solid #c3c3c3;
-            transition: all 0.15s ease;
-        }
-        .game-card:hover {
-            border-color: #0055b3;
-            box-shadow: 0 4px 12px rgba(0, 85, 179, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-green {
-            background: linear-gradient(180deg, #02b700 0%, #008200 100%);
-            border: 1px solid #004d00;
-            color: white;
-            font-weight: bold;
-        }
-
-        /* Sanal Joystick */
-        #joystick-base {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            width: 100px;
-            height: 100px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            z-index: 10;
-            touch-action: none;
-        }
-        #joystick-stick {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%);
-            border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            pointer-events: none;
-        }
+        * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { font-family: Arial, sans-serif; background-color: #e3e3e3; margin: 0; padding: 0; }
+        .roblox-header { background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%); border-bottom: 2px solid #00367d; }
+        .roblox-card { background-color: #ffffff; border: 1px solid #c3c3c3; }
+        .btn-green { background: linear-gradient(180deg, #02b700 0%, #008200 100%); border: 1px solid #004d00; color: white; font-weight: bold; }
+        #joystick-base { position: absolute; bottom: 30px; left: 30px; width: 110px; height: 110px; background: rgba(0,0,0,0.4); border: 3px solid rgba(255,255,255,0.7); border-radius: 50%; z-index: 100; touch-action: none; }
+        #joystick-stick { position: absolute; top: 27px; left: 27px; width: 50px; height: 50px; background: radial-gradient(circle, #ffffff 0%, #a1a5ab 100%); border-radius: 50%; pointer-events: none; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- ÜST MENÜ -->
     <header class="roblox-header text-white h-16 flex items-center justify-between px-4 sticky top-0 z-40">
         <div class="flex items-center space-x-3">
-            <div class="bg-red-600 text-white font-black italic text-xl px-3 py-1 rounded border border-red-800 transform -rotate-1 shadow-md">
-                obyxa<span class="text-yellow-300">001</span>
-            </div>
-            <span class="font-bold text-sm hidden sm:inline">Retro Roblox 2014 & 3D Studio</span>
-        </div>
-        <div class="flex items-center space-x-3 text-xs font-semibold">
-            <div class="bg-blue-950 px-3 py-1.5 rounded border border-blue-500/50 flex items-center gap-2">
-                <span class="text-green-400 font-bold">R$</span>
-                <span id="player-robux">86,400</span>
-                <span class="text-amber-400 font-bold ml-2">TIX</span>
-                <span id="player-tix">19,250</span>
-            </div>
-            <button onclick="toggleSettings()" class="bg-blue-800 hover:bg-blue-700 p-2 rounded text-sm">
-                <i class="fa-solid fa-gear"></i>
-            </button>
+            <div class="bg-red-600 text-white font-black italic text-xl px-3 py-1 rounded shadow">obyxa<span class="text-yellow-300">001</span></div>
+            <span class="font-bold text-sm">Retro Roblox 2014 & 3D Studio</span>
         </div>
     </header>
 
-    <!-- ANA İÇERİK -->
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-4">
-        
-        <!-- Üst Banner & Oyun Seçenekleri -->
-        <div class="roblox-card p-4 rounded-lg shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="roblox-card p-4 rounded-lg shadow-sm flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black text-blue-600">3D Roblox Simülatör ve Dünyaları</h1>
-                <p class="text-xs text-gray-500">Antrenman yap, futbol oyna, yarış ve gerçek oyuncularla yarış!</p>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="showTab('games')" class="btn-green px-4 py-2 rounded text-xs">🎮 Oyunlar</button>
-                <button onclick="showTab('leaderboard')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-2 rounded text-xs">🏆 Canlı Liderlik</button>
+                <h1 class="text-xl font-black text-blue-600">3D Simülatör ve Oyun Dünyaları</h1>
+                <p class="text-xs text-gray-500">Muscle, Speed, Futbol ve Araba Yarışı modlarından birini seç!</p>
             </div>
         </div>
 
-        <!-- OYUN KARTLARI GRİDİ -->
-        <div id="tab-games" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- JavaScript Oyun Kartlarını Buraya Yükleyecek -->
-        </div>
-
-        <!-- GERÇEK LİDERLİK TABLOSU TABI -->
-        <div id="tab-leaderboard" class="hidden roblox-card p-4 rounded-lg shadow-sm space-y-3">
-            <h2 class="text-lg font-bold text-amber-600"><i class="fa-solid fa-trophy"></i> Gerçek Oyuncular Liderlik Tablosu</h2>
-            <p class="text-xs text-gray-500">Bu tabloda oyunu oynayan **gerçek kişilerin** skorları canlı olarak sıralanır.</p>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                    <thead>
-                        <tr class="bg-gray-100 border-b">
-                            <th class="p-2">Sıra</th>
-                            <th class="p-2">Oyuncu Adı</th>
-                            <th class="p-2">Kas Gücü</th>
-                            <th class="p-2">Hız</th>
-                            <th class="p-2">Gol / Puan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboard-rows">
-                        <tr>
-                            <td colspan="5" class="p-4 text-center text-gray-400">Canlı veriler yükleniyor...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
+        <div id="tab-games" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
     </main>
 
-    <!-- AYARLAR PENCERESİ -->
-    <div id="settings-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-white rounded-lg max-w-md w-full p-4 space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-sm">⚙️ Oyun Ayarları</h3>
-                <button onclick="toggleSettings()" class="text-red-600 font-bold">✕</button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold mb-1">Dil Seçeneği / Language</label>
-                    <select id="setting-lang" onchange="changeLanguage()" class="w-full p-2 border rounded">
-                        <option value="tr">Türkçe</option>
-                        <option value="en">English</option>
-                        <option value="de">Deutsch</option>
-                        <option value="es">Español</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-bold mb-1">FPS Limiti</label>
-                    <select id="setting-fps" class="w-full p-2 border rounded">
-                        <option value="60">60 FPS (Önerilen)</option>
-                        <option value="30">30 FPS (Tasarruf)</option>
-                        <option value="max">Sınırsız FPS</option>
-                    </select>
-                </div>
-                <div class="flex items-center justify-between pt-2 border-t">
-                    <span>Canlı FPS Sayacı:</span>
-                    <span id="fps-counter" class="font-bold text-green-600">60 FPS</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3D OYUN PENCERESİ (MODAL) -->
     <div id="game-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col">
-        <div class="roblox-header p-3 flex justify-between items-center text-white z-20">
+        <div class="roblox-header p-3 flex justify-between items-center text-white z-30">
             <div>
                 <span id="active-game-title" class="font-bold text-sm">3D Oyun</span>
-                <span id="stat-display" class="ml-4 text-xs bg-black/40 px-2 py-1 rounded text-yellow-300 font-bold">Skor: 0</span>
+                <span id="stat-display" class="ml-4 text-xs bg-black/40 px-2 py-1 rounded text-yellow-300 font-bold">Skor: 10</span>
             </div>
-            <button onclick="closeGame()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">✕ Çıkış</button>
+            <button onclick="closeGame()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold cursor-pointer">✕ Çıkış</button>
         </div>
         
         <div id="canvas-container" class="relative flex-1 w-full h-full overflow-hidden">
-            <!-- Sanal Joystick -->
-            <div id="joystick-base">
-                <div id="joystick-stick"></div>
-            </div>
-
-            <!-- EKRAN ÜSTÜ AKSİYON / ANTRENMAN BUTONU -->
-            <div class="absolute bottom-6 right-6 z-20">
-                <button id="action-btn" onclick="triggerAction()" class="bg-gradient-to-r from-yellow-400 to-amber-600 text-black font-black px-6 py-4 rounded-full shadow-2xl border-4 border-white text-base active:scale-95 transition">
-                    🔥 ANTRENMAN / ŞUT (TIKLA)
-                </button>
+            <div id="joystick-base"><div id="joystick-stick"></div></div>
+            <div class="absolute bottom-6 right-6 z-30">
+                <button onclick="triggerAction()" class="bg-gradient-to-r from-yellow-400 to-amber-600 text-black font-black px-6 py-4 rounded-full shadow-2xl border-4 border-white text-sm cursor-pointer">🔥 ANTRENMAN / ŞUT</button>
             </div>
         </div>
     </div>
 
     <script>
-        // OYUN LİSTESİ (KAS, HIZ, FUTBOL, ARABA YARIŞI)
         const gamesList = [
-            { id: 'muscle', title: '💪 Muscle Legends 3D', desc: 'Ağırlık kaldır, kaslan ve devasa R6 Bacon ol!', color: 'from-orange-500 to-red-600', statName: 'Kas Gücü' },
+            { id: 'muscle', title: '💪 Muscle Legends 3D', desc: 'Ağırlık kaldır, kaslan, devasa Bacon ol!', color: 'from-orange-500 to-red-600', statName: 'Kas Gücü' },
             { id: 'speed', title: '⚡ Speed Run 3D', desc: 'Koş, hızını artır ve rekor kır!', color: 'from-amber-400 to-yellow-600', statName: 'Hız' },
-            { id: 'football', title: '⚽ Roblox Football 2014', desc: 'Topa vur, 3D kaleye gol at ve skor topla!', color: 'from-green-500 to-emerald-700', statName: 'Gol Sayısı' },
+            { id: 'football', title: '⚽ Roblox Football 2014', desc: 'Topa vur, kaleye gol at ve skor topla!', color: 'from-green-500 to-emerald-700', statName: 'Gol Sayısı' },
             { id: 'racing', title: '🏎️ Retro Street Racing 3D', desc: 'Roblox arabası sür, engellerden kaç!', color: 'from-blue-500 to-indigo-600', statName: 'Yarış Puanı' }
         ];
 
-        let currentGame = null;
-        let playerStat = 10;
-        let scene, camera, renderer, player, animId;
-        let moveX = 0, moveZ = 0;
-        let walkCycle = 0;
-        let leftArm, rightArm, leftLeg, rightLeg;
-
-        // Firebase Yapılandırması (Canlı Skorlar İçin)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDemoKeyOnlyForPublicStructure12345",
-            authDomain: "obyxa-roblox.firebaseapp.com",
-            projectId: "obyxa-roblox",
-            storageBucket: "obyxa-roblox.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef123456"
-        };
-        
-        // Firebase Başlatma (Hata durumunda demo verilerle çalışır)
-        try {
-            firebase.initializeApp(firebaseConfig);
-        } catch(e) {}
+        let currentGame = null, playerStat = 10, scene, camera, renderer, player, animId;
+        let moveX = 0, moveZ = 0, walkCycle = 0, leftArm, rightArm, leftLeg, rightLeg;
 
         function renderGames() {
-            const grid = document.getElementById('tab-games');
-            grid.innerHTML = gamesList.map(g => `
-                <div class="game-card p-4 rounded-lg shadow cursor-pointer space-y-3" onclick='openGame(${JSON.stringify(g)})'>
-                    <div class="h-32 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-xl shadow-inner text-center p-2">
-                        ${g.title}
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-sm text-gray-800">${g.title}</h3>
-                        <p class="text-xs text-gray-500">${g.desc}</p>
-                    </div>
+            document.getElementById('tab-games').innerHTML = gamesList.map(g => `
+                <div class="roblox-card p-4 rounded-lg shadow cursor-pointer space-y-3" onclick='openGame(${JSON.stringify(g)})'>
+                    <div class="h-32 rounded bg-gradient-to-r ${g.color} flex items-center justify-center text-white font-black text-lg text-center p-2">${g.title}</div>
+                    <p class="text-xs text-gray-500">${g.desc}</p>
                     <button class="w-full btn-green py-2 rounded text-xs">OYUNA GİR</button>
                 </div>
             `).join('');
-
-            loadRealLeaderboard();
-        }
-
-        function showTab(tab) {
-            if(tab === 'games') {
-                document.getElementById('tab-games').classList.remove('hidden');
-                document.getElementById('tab-leaderboard').classList.add('hidden');
-            } else {
-                document.getElementById('tab-games').classList.add('hidden');
-                document.getElementById('tab-leaderboard').classList.remove('hidden');
-            }
-        }
-
-        function toggleSettings() {
-            document.getElementById('settings-modal').classList.toggle('hidden');
         }
 
         function openGame(game) {
             currentGame = game;
             playerStat = 10;
             document.getElementById('active-game-title').innerText = game.title;
-            updateStatUI();
+            document.getElementById('stat-display').innerText = `${game.statName}: 10`;
             document.getElementById('game-modal').classList.remove('hidden');
-            
-            setTimeout(() => { init3D(); }, 100);
+            setTimeout(init3D, 150);
         }
 
         function closeGame() {
             document.getElementById('game-modal').classList.add('hidden');
             if(animId) cancelAnimationFrame(animId);
-            const canvas = document.querySelector('#canvas-container canvas');
-            if(canvas) canvas.remove();
+            const c = document.querySelector('#canvas-container canvas');
+            if(c) c.remove();
         }
 
         function triggerAction() {
             playerStat += 5;
-            updateStatUI();
-
+            document.getElementById('stat-display').innerText = `${currentGame.statName}: ${playerStat}`;
             if(player && currentGame.id === 'muscle') {
-                let scale = 1 + (playerStat / 150);
-                player.scale.set(scale, scale, scale);
-            }
-        }
-
-        function updateStatUI() {
-            if(currentGame) {
-                document.getElementById('stat-display').innerText = `${currentGame.statName}: ${playerStat}`;
+                let s = 1 + (playerStat / 100);
+                player.scale.set(s, s, s);
             }
         }
 
         function init3D() {
             const container = document.getElementById('canvas-container');
-            const oldCanvas = container.querySelector('canvas');
-            if(oldCanvas) oldCanvas.remove();
-
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-
+            const w = container.clientWidth, h = container.clientHeight;
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x87ceeb);
 
-            camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(60, w/h, 0.1, 1000);
             camera.position.set(0, 6, 12);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(width, height);
+            renderer.setSize(w, h);
             container.appendChild(renderer.domElement);
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-            dirLight.position.set(10, 20, 10);
-            scene.add(dirLight);
+            const light = new THREE.DirectionalLight(0xffffff, 0.6);
+            light.position.set(10, 20, 10);
+            scene.add(light);
 
-            // Zemin
-            const floor = new THREE.Mesh(
-                new THREE.PlaneGeometry(100, 100),
-                new THREE.MeshStandardMaterial({ color: currentGame.id === 'football' ? 0x2e7d32 : 0x339933 })
-            );
+            const floorColor = currentGame.id === 'football' ? 0x2e7d32 : 0x339933;
+            const floor = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshStandardMaterial({ color: floorColor }));
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            // R6 Karakter Oluşturma (Kollar & Bacaklar Dahil)
-            player = createR6Character();
-            scene.add(player);
+            // R6 Karakter (Kollar & Bacaklar Hareketli)
+            player = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.6), new THREE.MeshStandardMaterial({ color: 0x0055ff }));
+            body.position.y = 2.1;
+            player.add(body);
 
-            setupJoystickControls();
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: 0xffccaa }));
+            head.position.y = 3.2;
+            player.add(head);
+
+            const hair = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.3, 0.9), new THREE.MeshStandardMaterial({ color: 0x8b4513 }));
+            hair.position.y = 3.65;
+            player.add(hair);
+
+            const limbMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+            leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), limbMat);
+            leftArm.position.set(-0.95, 2.1, 0);
+            player.add(leftArm);
+
+            rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), limbMat);
+            rightArm.position.set(0.95, 2.1, 0);
+            player.add(rightArm);
+
+            leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), limbMat);
+            leftLeg.position.set(-0.35, 0.7, 0);
+            player.add(leftLeg);
+
+            rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), limbMat);
+            rightLeg.position.set(0.35, 0.7, 0);
+            player.add(rightLeg);
+
+            scene.add(player);
+            setupJoystick();
 
             function animate() {
                 animId = requestAnimationFrame(animate);
-
-                // Hareket & Yürüme Animasyonu
                 if(moveX !== 0 || moveZ !== 0) {
                     player.position.x += moveX * 0.15;
                     player.position.z += moveZ * 0.15;
-
                     walkCycle += 0.2;
                     leftArm.rotation.x = Math.sin(walkCycle) * 0.6;
                     rightArm.rotation.x = -Math.sin(walkCycle) * 0.6;
                     leftLeg.rotation.x = -Math.sin(walkCycle) * 0.6;
                     rightLeg.rotation.x = Math.sin(walkCycle) * 0.6;
                 } else {
-                    leftArm.rotation.x = 0;
-                    rightArm.rotation.x = 0;
-                    leftLeg.rotation.x = 0;
-                    rightLeg.rotation.x = 0;
+                    leftArm.rotation.x = 0; rightArm.rotation.x = 0;
+                    leftLeg.rotation.x = 0; rightLeg.rotation.x = 0;
                 }
-
                 camera.position.x = player.position.x;
                 camera.position.z = player.position.z + 12;
                 camera.lookAt(player.position.x, player.position.y + 1, player.position.z);
-
                 renderer.render(scene, camera);
             }
             animate();
         }
 
-        function createR6Character() {
-            const group = new THREE.Group();
-
-            // Gövde
-            const body = new THREE.Mesh(
-                new THREE.BoxGeometry(1.2, 1.4, 0.6),
-                new THREE.MeshStandardMaterial({ color: 0x0055ff })
-            );
-            body.position.y = 2.1;
-            group.add(body);
-
-            // Kafa
-            const head = new THREE.Mesh(
-                new THREE.BoxGeometry(0.8, 0.8, 0.8),
-                new THREE.MeshStandardMaterial({ color: 0xffccaa })
-            );
-            head.position.y = 3.2;
-            group.add(head);
-
-            // Bacon Hair
-            const hair = new THREE.Mesh(
-                new THREE.BoxGeometry(0.9, 0.3, 0.9),
-                new THREE.MeshStandardMaterial({ color: 0x8b4513 })
-            );
-            hair.position.y = 3.65;
-            group.add(hair);
-
-            // Kollar ve Bacaklar (Animasyonlu)
-            const armGeo = new THREE.BoxGeometry(0.5, 1.4, 0.5);
-            const legGeo = new THREE.BoxGeometry(0.5, 1.4, 0.5);
-            const limbMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
-
-            leftArm = new THREE.Mesh(armGeo, limbMat);
-            leftArm.position.set(-0.95, 2.1, 0);
-            group.add(leftArm);
-
-            rightArm = new THREE.Mesh(armGeo, limbMat);
-            rightArm.position.set(0.95, 2.1, 0);
-            group.add(rightArm);
-
-            leftLeg = new THREE.Mesh(legGeo, limbMat);
-            leftLeg.position.set(-0.35, 0.7, 0);
-            group.add(leftLeg);
-
-            rightLeg = new THREE.Mesh(legGeo, limbMat);
-            rightLeg.position.set(0.35, 0.7, 0);
-            group.add(rightLeg);
-
-            return group;
-        }
-
-        function setupJoystickControls() {
-            const base = document.getElementById('joystick-base');
-            const stick = document.getElementById('joystick-stick');
-            let isDragging = false;
-            let center = { x: 50, y: 50 };
-
-            base.ontouchstart = base.onmousedown = () => { isDragging = true; };
-            
-            window.ontouchend = window.onmouseup = () => {
-                isDragging = false;
-                moveX = 0;
-                moveZ = 0;
-                stick.style.transform = `translate(0px, 0px)`;
-            };
-
+        function setupJoystick() {
+            const base = document.getElementById('joystick-base'), stick = document.getElementById('joystick-stick');
+            let dragging = false;
+            base.ontouchstart = base.onmousedown = (e) => { dragging = true; e.preventDefault(); };
+            window.ontouchend = window.onmouseup = () => { dragging = false; moveX = 0; moveZ = 0; stick.style.transform = 'translate(0px,0px)'; };
             window.ontouchmove = window.onmousemove = (e) => {
-                if(!isDragging) return;
+                if(!dragging) return;
                 const rect = base.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-                let x = clientX - rect.left - center.x;
-                let y = clientY - rect.top - center.y;
-
-                const dist = Math.sqrt(x*x + y*y);
-                const maxDist = 35;
-                if(dist > maxDist) {
-                    x = (x / dist) * maxDist;
-                    y = (y / dist) * maxDist;
-                }
-
+                let x = clientX - rect.left - 55, y = clientY - rect.top - 55;
+                let dist = Math.sqrt(x*x + y*y), max = 35;
+                if(dist > max) { x = (x/dist)*max; y = (y/dist)*max; }
                 stick.style.transform = `translate(${x}px, ${y}px)`;
-                moveX = x / maxDist;
-                moveZ = y / maxDist;
+                moveX = x / max; moveZ = y / max;
             };
         }
 
-        function loadRealLeaderboard() {
-            const container = document.getElementById('leaderboard-rows');
-            // Canlı oyuncu skorları örneği (Firebase aktifken buradan yüklenir)
-            const realPlayers = [
-                { name: 'eymen707 (Sen)', muscle: '1,450', speed: '320', goals: '45' },
-                { name: 'ProBuilder2014', muscle: '1,120', speed: '280', goals: '38' },
-                { name: 'BaconKing_TR', muscle: '980', speed: '210', goals: '29' },
-                { name: 'RetroGamer99', muscle:
+        window.onload = renderGames;
+    </script>
+</body>
+</html>

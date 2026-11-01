@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>obyxa001 - Retro Roblox 2014 3D Simulator Studio</title>
+    <title>obyxa001 - Retro Roblox 2014 & 3D Simulator Studio</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;0,900;1,700&display=swap');
 
         * {
             touch-action: manipulation;
@@ -24,15 +24,15 @@
 
         body {
             font-family: 'Source Sans Pro', Arial, sans-serif;
-            background-color: #e2e8f0;
-            color: #1e293b;
+            background-color: #cbd5e1;
+            color: #0f172a;
             min-height: 100vh;
             overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
         }
 
         .dark-mode {
-            background-color: #0f172a !important;
+            background-color: #0b0f19 !important;
             color: #f8fafc !important;
         }
 
@@ -42,17 +42,17 @@
             color: #f8fafc !important;
         }
 
-        /* Retro Roblox 2014 Gradient Header */
+        /* Retro Roblox 2014 Header Gradient */
         .roblox-header {
             background: linear-gradient(180deg, #0074e8 0%, #004fb0 100%);
             border-bottom: 3px solid #00367d;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
         }
 
         .roblox-card {
             background-color: #ffffff;
-            border: 1px solid #cbd5e1;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #94a3b8;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
 
         .game-card {
@@ -62,7 +62,7 @@
         }
         .game-card:hover {
             border-color: #0055b3;
-            box-shadow: 0 6px 16px rgba(0, 85, 179, 0.25);
+            box-shadow: 0 8px 20px rgba(0, 85, 179, 0.3);
             transform: translateY(-3px);
         }
 
@@ -70,53 +70,53 @@
             background: linear-gradient(180deg, #02b700 0%, #008200 100%);
             border: 1px solid #004d00;
             color: white;
-            text-shadow: 0px -1px 0px rgba(0,0,0,0.5);
+            text-shadow: 0px -1px 0px rgba(0,0,0,0.6);
             font-weight: 800;
         }
         .btn-retro-green:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
         }
 
         /* Virtual Touch Joystick */
         #joystick-base {
             position: absolute;
-            bottom: 25px;
-            left: 25px;
-            width: 110px;
-            height: 110px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 3px solid rgba(255, 255, 255, 0.8);
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.85);
             border-radius: 50%;
             z-index: 30;
             touch-action: none;
             backdrop-filter: blur(4px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         #joystick-stick {
             position: absolute;
-            top: 30px;
-            left: 30px;
+            top: 35px;
+            left: 35px;
             width: 50px;
             height: 50px;
             background: radial-gradient(circle, #ffffff 0%, #94a3b8 100%);
             border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.7);
             pointer-events: none;
         }
 
-        /* Custom Scrollbars */
         ::-webkit-scrollbar {
             width: 6px;
         }
         ::-webkit-scrollbar-thumb {
-            background: #94a3b8;
+            background: #64748b;
             border-radius: 4px;
         }
     </style>
 </head>
 <body id="app-body" class="flex flex-col min-h-screen">
 
-    <!-- TOP HEADER -->
+    <!-- TOP NAV HEADER -->
     <header class="roblox-header text-white h-16 flex items-center justify-between px-3 sm:px-6 sticky top-0 z-40">
         <div class="flex items-center space-x-3">
             <button onclick="toggleMobileSidebar()" class="md:hidden text-white text-2xl pr-1">
@@ -136,17 +136,17 @@
 
         <div class="flex items-center space-x-2">
             <!-- Settings Modal Button -->
-            <button onclick="toggleSettingsModal()" class="bg-blue-900 border border-blue-400/50 hover:bg-blue-800 text-white px-2.5 py-1.5 rounded text-xs font-bold transition flex items-center shadow">
+            <button onclick="toggleSettingsModal()" class="bg-blue-950 border border-blue-400/50 hover:bg-blue-800 text-white px-2.5 py-1.5 rounded text-xs font-bold transition flex items-center shadow">
                 <i class="fa-solid fa-gear text-sm sm:mr-1"></i> <span class="hidden sm:inline" id="btn-settings-label">Settings</span>
             </button>
 
             <!-- Theme Toggle -->
-            <button onclick="toggleTheme()" class="bg-blue-900 border border-blue-400/50 hover:bg-blue-800 text-yellow-300 px-2.5 py-1.5 rounded text-xs font-bold transition shadow">
+            <button onclick="toggleTheme()" class="bg-blue-950 border border-blue-400/50 hover:bg-blue-800 text-yellow-300 px-2.5 py-1.5 rounded text-xs font-bold transition shadow">
                 <i id="theme-icon" class="fa-solid fa-moon"></i>
             </button>
 
-            <!-- Currencies -->
-            <div class="flex items-center space-x-2 text-xs font-black bg-blue-950/80 px-3 py-1.5 rounded-lg border border-blue-400/40">
+            <!-- Currency Counter -->
+            <div class="flex items-center space-x-2 text-xs font-black bg-blue-950/90 px-3 py-1.5 rounded-lg border border-blue-400/40 shadow">
                 <span class="text-green-400">R$</span>
                 <span id="user-robux">86,400</span>
                 <span class="text-amber-400 ml-1">TIX</span>
@@ -184,7 +184,7 @@
             </div>
 
             <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Dynamically populated games -->
+                <!-- Dynamically Populated Game Cards -->
             </div>
         </div>
 
@@ -207,7 +207,7 @@
 
                     <!-- Customization Controls -->
                     <div class="space-y-4 text-xs font-bold">
-                        <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
                             <label class="block text-slate-600 dark:text-slate-300" id="label-shirt">Shirt Color (Gövde Rengi):</label>
                             <div class="flex items-center gap-3">
                                 <input type="color" id="color-shirt" value="#0055ff" onchange="updateAvatarColors()" class="w-10 h-10 rounded cursor-pointer border-0">
@@ -215,7 +215,7 @@
                             </div>
                         </div>
 
-                        <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
                             <label class="block text-slate-600 dark:text-slate-300" id="label-pants">Pants Color (Bacak Rengi):</label>
                             <div class="flex items-center gap-3">
                                 <input type="color" id="color-pants" value="#1e293b" onchange="updateAvatarColors()" class="w-10 h-10 rounded cursor-pointer border-0">
@@ -223,7 +223,7 @@
                             </div>
                         </div>
 
-                        <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
                             <label class="block text-slate-600 dark:text-slate-300" id="label-skin">Skin Tone (Ten Rengi):</label>
                             <div class="flex items-center gap-3">
                                 <input type="color" id="color-skin" value="#ffccaa" onchange="updateAvatarColors()" class="w-10 h-10 rounded cursor-pointer border-0">
@@ -231,7 +231,7 @@
                             </div>
                         </div>
 
-                        <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
                             <label class="block text-slate-600 dark:text-slate-300" id="label-hair">Hair Color (Saç Rengi):</label>
                             <div class="flex items-center gap-3">
                                 <input type="color" id="color-hair" value="#8b4513" onchange="updateAvatarColors()" class="w-10 h-10 rounded cursor-pointer border-0">
@@ -261,8 +261,8 @@
         <div class="roblox-header p-3 flex justify-between items-center text-white z-20">
             <div class="flex items-center gap-3">
                 <span id="active-game-title" class="font-extrabold text-sm sm:text-base">Muscle Legends 3D</span>
-                <span id="game-stat-badge" class="bg-black/40 border border-yellow-400/50 text-yellow-300 text-xs font-black px-2.5 py-1 rounded-full">
-                    💪 Kas Gücü: <span id="stat-value">0</span>
+                <span id="game-stat-badge" class="bg-black/50 border border-yellow-400/50 text-yellow-300 text-xs font-black px-3 py-1 rounded-full shadow">
+                    <span id="stat-label">Stat</span>: <span id="stat-value">0</span>
                 </span>
             </div>
             <button onclick="closeGameModal()" class="bg-red-600 hover:bg-red-700 text-white font-black px-4 py-1.5 rounded-lg text-xs shadow transition">
@@ -272,18 +272,23 @@
 
         <!-- Game Render Canvas Container -->
         <div id="game-canvas-container" class="relative flex-1 w-full h-full overflow-hidden bg-sky-300">
-            <!-- Virtual Joystick -->
+            <!-- Touch Joystick Base -->
             <div id="joystick-base">
                 <div id="joystick-stick"></div>
             </div>
 
-            <!-- FPS Overlay counter -->
-            <div id="fps-overlay" class="absolute top-3 left-3 bg-black/60 text-green-400 font-mono text-xs px-2.5 py-1 rounded backdrop-blur-sm pointer-events-none z-10">
+            <!-- Realtime FPS Overlay -->
+            <div id="fps-overlay" class="absolute top-3 left-3 bg-black/60 text-green-400 font-mono text-xs px-2.5 py-1 rounded-md backdrop-blur-sm pointer-events-none z-10 border border-white/10">
                 FPS: <span id="fps-count">60</span>
             </div>
 
-            <!-- Interaction Prompt / Workout Button -->
-            <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end gap-2">
+            <!-- Jump & Workout Buttons -->
+            <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end gap-3">
+                <!-- Jump Button -->
+                <button onclick="triggerJump()" class="w-14 h-14 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-full shadow-2xl border-2 border-white flex items-center justify-center text-xl active:scale-90 transition">
+                    🚀
+                </button>
+                <!-- Workout Button -->
                 <button id="btn-interact" onclick="triggerWorkout()" class="btn-retro-green px-6 py-3.5 rounded-2xl shadow-2xl text-sm sm:text-base flex items-center gap-2 border-2 border-white transform active:scale-95 transition">
                     <span id="interact-icon">💪</span> <span id="interact-text">KAS YAP (ANTRENMAN)</span>
                 </button>
@@ -339,10 +344,10 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT ENGINE -->
     <script>
         /* ==========================================================================
-           I18N MULTI-LANGUAGE TRANSLATIONS
+           1. MULTI-LANGUAGE TRANSLATION SYSTEM
            ========================================================================== */
         const translations = {
             tr: {
@@ -351,13 +356,4 @@
                 nav_friends: "Arkadaşlar",
                 btn_settings: "Ayarlar",
                 title_simulators: "⚡ 3D Roblox Simülatör Dünyaları",
-                sub_simulators: "İstediğin dünyayı seç, spora başla ve 3D Bacon Hair karakterini geliştir!",
-                title_avatar: "👕 3D R6 Karakter Özelleştirme",
-                title_friends: "👥 Arkadaş Listesi & Oyuncular",
-                btn_exit: "Çıkış",
-                workout_btn: "KAS YAP (ANTRENMAN)",
-                speed_btn: "KOŞU BANDI (HIZLAN)",
-                sword_btn: "KILIÇ SALLA (GÜÇLEN)",
-                label_shirt: "Gövde / Tişört Rengi:",
-                label_pants: "Bacak / Pantolon Rengi:",
-   
+                sub_simulators: "İstediğin dünyayı seç, spo

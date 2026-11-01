@@ -24,7 +24,7 @@
     .section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #003380; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
     .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding-bottom: 30px; }
     
-    /* Mobil Dokunma Garantili Kart Yapısı */
+    /* Mobil Tıklama Odaklı Kart Stili */
     .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); touch-action: manipulation; }
     .game-card:active { background: #e3f2fd; border-color: #0055b3; }
     .game-thumb { width: 100%; height: 90px; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); pointer-events: none; }
@@ -38,7 +38,7 @@
     .char-select { display: inline-block; padding: 8px 12px; margin: 5px; background: #ddd; border: 2px solid #999; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 12px; }
     .char-select.selected { background: #0055b3; color: white; border-color: #001f4d; }
 
-    /* 3D Game Screen */
+    /* 3D Oyun Ekranı */
     #game-container { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; touch-action: none; }
     #canvas3d { width: 100%; height: 100%; display: block; touch-action: none; }
     
@@ -47,14 +47,12 @@
     .controls-hint { position: absolute; top: 15px; right: 15px; color: white; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 6px; font-size: 11px; text-align: right; }
 
     #workout-btn { position: absolute; top: 75px; left: 15px; background: #ff8f00; color: white; border: 3px solid #ff6f00; padding: 12px 20px; font-weight: bold; border-radius: 8px; pointer-events: auto; cursor: pointer; font-size: 14px; display: none; z-index: 10002; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-    #workout-btn:active { transform: scale(0.95); background: #ffa000; }
 
-    /* MOBİL JOYSTICK & ZIPLAMA (YUKARI TAŞINDI) */
+    /* Ergonomik Joystick ve Zıplama Butonu */
     #joystick-zone { position: absolute; bottom: 90px; left: 35px; width: 130px; height: 130px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; pointer-events: auto; touch-action: none; }
     #joystick-knob { position: absolute; top: 37px; left: 37px; width: 56px; height: 56px; background: rgba(255,255,255,0.9); border-radius: 50%; pointer-events: none; touch-action: none; }
 
     #jump-btn { position: absolute; bottom: 100px; right: 35px; width: 85px; height: 85px; background: rgba(0, 85, 179, 0.85); border: 3px solid rgba(255,255,255,0.95); border-radius: 50%; color: white; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-    #jump-btn:active { background: rgba(0, 85, 179, 1); transform: scale(0.95); }
   </style>
 </head>
 <body>
@@ -76,32 +74,32 @@
     <div id="games" class="page active">
       <div class="section-title">Featured OBYXA Games (Top 6)</div>
       <div class="game-grid">
-        <div class="game-card" data-game="wing">
+        <div class="game-card" onclick="startGame('wing')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #00acc1, #00838f);">🪽 WING & JUMP SIM</div>
           <div class="game-title">Jump & Fly Simulator</div>
           <div class="game-info">Buy wings & jump high!</div>
         </div>
-        <div class="game-card" data-game="muscle">
+        <div class="game-card" onclick="startGame('muscle')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #e65100, #ffb300);">💪 MUSCLE SIMULATOR</div>
           <div class="game-title">Muscle Legends Pro</div>
           <div class="game-info">Lift weights & grow huge!</div>
         </div>
-        <div class="game-card" data-game="speed">
+        <div class="game-card" onclick="startGame('speed')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #c62828, #ef5350);">⚡ SPEED SIMULATOR</div>
           <div class="game-title">Speed Runner Sim</div>
           <div class="game-info">Run fast across tracks!</div>
         </div>
-        <div class="game-card" data-game="obby">
+        <div class="game-card" onclick="startGame('obby')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #2e7d32, #66bb6a);">🧱 OBBY PARKOUR</div>
           <div class="game-title">Escape Subspace!</div>
           <div class="game-info">142 players online</div>
         </div>
-        <div class="game-card" data-game="cash">
+        <div class="game-card" onclick="startGame('cash')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #1565c0, #42a5f5);">💵 CASH SIMULATOR</div>
           <div class="game-title">Cash Tycoon Sim</div>
           <div class="game-info">Collect rich rewards!</div>
         </div>
-        <div class="game-card" data-game="zombie">
+        <div class="game-card" onclick="startGame('zombie')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #37474f, #78909c);">🧟 SURVIVAL ARENA</div>
           <div class="game-title">Zombie Ocean Rescue</div>
           <div class="game-info">76 players online</div>
@@ -197,19 +195,6 @@
       document.getElementById('workout-btn').innerText = `💪 TRAIN MUSCLE (Power: ${musclePower.toFixed(1)})`;
     }
 
-    // Mobil ve PC Oyuna Giriş Tetikleyicileri
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.game-card').forEach(card => {
-        const gameName = card.getAttribute('data-game');
-        const triggerStart = (e) => {
-          e.preventDefault();
-          startGame(gameName);
-        };
-        card.addEventListener('click', triggerStart);
-        card.addEventListener('touchend', triggerStart);
-      });
-    });
-
     let scene, camera, renderer, player, torsoMesh, leftArmMesh, rightArmMesh, leftLeg, rightLeg, hatMesh;
     let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
     let velocityY = 0, gravity = -0.012, isGrounded = false;
@@ -256,7 +241,7 @@
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), headMat);
       head.position.y = 1.4;
       
-      // Klasik Gülen Yüz Detayı (Gözler ve Smile)
+      // Gülen Yüz (Smile Face)
       const eyeGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
       const faceMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
       const leftEye = new THREE.Mesh(eyeGeo, faceMat); leftEye.position.set(-0.2, 1.5, 0.41);
@@ -375,6 +360,7 @@
 
       const jumpBtn = document.getElementById('jump-btn');
       jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); }, { passive: false });
+      jumpBtn.onclick = jump;
     }
 
     function jump() {
@@ -387,4 +373,23 @@
     function animate() {
       animFrame = requestAnimationFrame(animate);
 
-      let speed = (currentGameType 
+      let speed = (currentGameType === 'speed') ? 0.22 : 0.14;
+      let dx = 0, dz = 0;
+
+      if (moveForward) dz -= speed;
+      if (moveBackward) dz += speed;
+      if (moveLeft) dx -= speed;
+      if (moveRight) dx += speed;
+
+      if (Math.abs(touchMoveX) > 0.1 || Math.abs(touchMoveY) > 0.1) {
+        dx = touchMoveX * speed;
+        dz = touchMoveY * speed;
+      }
+
+      if (dx !== 0 || dz !== 0) {
+        player.position.x += dx;
+        player.position.z += dz;
+        player.rotation.y = Math.atan2(dx, dz);
+
+        animTime += 0.35;
+        leftLeg.rotation.x = Math.sin

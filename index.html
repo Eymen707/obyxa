@@ -1,43 +1,59 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>OBYXA - Classic Roblox Style</title>
+  <title>OBYXA - Think. Create. Play.</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
-    body { font-family: Verdana, sans-serif; background: #e3e3e3; color: #333; overflow: hidden; }
+    body { font-family: Verdana, Arial, sans-serif; background-color: #e3e3e3; color: #333; overflow-x: hidden; }
     
-    header { background: linear-gradient(to bottom, #0055b3, #003380); color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #001f4d; }
-    .logo { font-size: 24px; font-weight: bold; font-family: 'Arial Black', sans-serif; text-shadow: 2px 2px #000; }
+    /* Classic 2007 Roblox Header */
+    header { background: linear-gradient(to bottom, #0055b3, #003380); color: white; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #001f4d; }
+    .logo { font-size: 28px; font-weight: bold; font-family: 'Arial Black', sans-serif; letter-spacing: 1px; color: #fff; text-shadow: 2px 2px #000; }
     .motto { font-size: 11px; color: #ffd700; font-style: italic; }
 
-    nav { background: #1a539a; display: flex; border-bottom: 2px solid #0f3460; }
-    nav button { background: none; border: none; color: white; padding: 10px 15px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    /* Navigation Bar */
+    nav { background: #1a539a; display: flex; overflow-x: auto; border-bottom: 2px solid #0f3460; padding: 0 10px; }
+    nav button { background: none; border: none; color: white; padding: 10px 16px; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap; }
     nav button.active { background: #e3e3e3; color: #003380; border-radius: 5px 5px 0 0; }
 
-    .container { padding: 12px; max-width: 900px; margin: 0 auto; }
+    /* Container & Pages */
+    .container { padding: 15px; max-width: 950px; margin: 0 auto; }
     .page { display: none; }
     .page.active { display: block; }
 
-    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-    .game-card { background: white; border: 1px solid #ccc; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; }
-    .game-thumb { width: 100%; height: 80px; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; margin-bottom: 6px; }
+    /* Rich Game Grid */
+    .section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #003380; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.1s; }
+    .game-card:hover { border-color: #0055b3; background: #f4f8ff; }
+    .game-thumb { width: 100%; height: 100px; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 13px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
+    .game-title { font-weight: bold; font-size: 12px; color: #003380; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .game-info { font-size: 10px; color: #666; }
 
-    /* 3D Canvas & UI */
+    /* Catalog & Profile */
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+    .item-card { background: white; border: 1px solid #ccc; padding: 10px; text-align: center; font-size: 11px; border-radius: 4px; }
+    .item-card button { background: #28a745; color: white; border: none; padding: 6px 10px; margin-top: 8px; border-radius: 3px; cursor: pointer; width: 100%; font-weight: bold; }
+
+    /* 3D Game Screen */
     #game-container { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; }
     #canvas3d { width: 100%; height: 100%; display: block; }
     
+    /* Ergonomic Mobile & Desktop UI */
     .mobile-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-    .exit-btn { position: absolute; top: 12px; left: 12px; background: rgba(220,53,69,0.9); color: white; border: none; padding: 10px 16px; font-weight: bold; border-radius: 5px; pointer-events: auto; z-index: 10001; }
+    .exit-btn { position: absolute; top: 15px; left: 15px; background: rgba(220,53,69,0.9); color: white; border: none; padding: 10px 18px; font-weight: bold; border-radius: 6px; pointer-events: auto; z-index: 10001; cursor: pointer; font-size: 13px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+    .controls-hint { position: absolute; top: 15px; right: 15px; color: white; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 6px; font-size: 11px; text-align: right; }
 
-    /* Touch Controls */
-    #joystick-zone { position: absolute; bottom: 25px; left: 25px; width: 110px; height: 110px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; pointer-events: auto; touch-action: none; }
-    #joystick-knob { position: absolute; top: 30px; left: 30px; width: 50px; height: 50px; background: rgba(255,255,255,0.7); border-radius: 50%; pointer-events: none; }
-    
-    #jump-btn { position: absolute; bottom: 35px; right: 25px; width: 75px; height: 75px; background: rgba(255,255,255,0.35); border: 3px solid rgba(255,255,255,0.7); border-radius: 50%; color: white; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: manipulation; }
-    #jump-btn:active { background: rgba(255,255,255,0.7); }
+    /* Ergonomic Floating Joystick (Left Side) */
+    #joystick-zone { position: absolute; bottom: 30px; left: 30px; width: 130px; height: 130px; background: rgba(255,255,255,0.18); border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; pointer-events: auto; touch-action: none; }
+    #joystick-knob { position: absolute; top: 37px; left: 37px; width: 56px; height: 56px; background: rgba(255,255,255,0.75); border-radius: 50%; pointer-events: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+    /* Ergonomic Jump Button (Right Side) */
+    #jump-btn { position: absolute; bottom: 35px; right: 35px; width: 85px; height: 85px; background: rgba(0, 85, 179, 0.6); border: 3px solid rgba(255,255,255,0.8); border-radius: 50%; color: white; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: manipulation; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    #jump-btn:active { background: rgba(0, 85, 179, 0.9); transform: scale(0.95); }
   </style>
 </head>
 <body>
@@ -50,40 +66,90 @@
   </header>
 
   <nav>
-    <button class="active" onclick="switchTab('games', this)">Oyunlar</button>
-    <button onclick="switchTab('catalog', this)">Katalog</button>
+    <button class="active" onclick="switchTab('games', this)">Games</button>
+    <button onclick="switchTab('catalog', this)">Catalog</button>
+    <button onclick="switchTab('profile', this)">My Character</button>
   </nav>
 
   <div class="container">
+    <!-- Games Page -->
     <div id="games" class="page active">
-      <h3 style="margin-bottom:10px;">Popüler Oyunlar</h3>
+      <div class="section-title">Most Popular (Now)</div>
       <div class="game-grid">
         <div class="game-card" onclick="startGame('obby')">
-          <div class="game-thumb" style="background:#2e7d32;">PARKUR</div>
-          <b>Classic Obby</b>
+          <div class="game-thumb" style="background: linear-gradient(135deg, #2e7d32, #66bb6a);">OBBY PARKOUR</div>
+          <div class="game-title">Escape Subspace!</div>
+          <div class="game-info">142 players online</div>
         </div>
         <div class="game-card" onclick="startGame('race')">
-          <div class="game-thumb" style="background:#c62828;">YARIŞ</div>
-          <b>Speed Race</b>
+          <div class="game-thumb" style="background: linear-gradient(135deg, #c62828, #ef5350);">SPEED RACER</div>
+          <div class="game-title">Plane Wars 2 Arena</div>
+          <div class="game-info">98 players online</div>
         </div>
         <div class="game-card" onclick="startGame('zombie')">
-          <div class="game-thumb" style="background:#37474f;">HAYATTA KALMA</div>
-          <b>Zombie Block</b>
+          <div class="game-thumb" style="background: linear-gradient(135deg, #37474f, #78909c);">SURVIVAL</div>
+          <div class="game-title">Zombie Ocean Rescue</div>
+          <div class="game-info">76 players online</div>
+        </div>
+        <div class="game-card" onclick="startGame('battle')">
+          <div class="game-thumb" style="background: linear-gradient(135deg, #1565c0, #42a5f5);">COMBAT</div>
+          <div class="game-title">Halo's Greatest Battle</div>
+          <div class="game-info">210 players online</div>
+        </div>
+        <div class="game-card" onclick="startGame('ship')">
+          <div class="game-thumb" style="background: linear-gradient(135deg, #f57f17, #ffee58);">ADVENTURE</div>
+          <div class="game-title">Tippy Ship in Poison</div>
+          <div class="game-info">54 players online</div>
+        </div>
+        <div class="game-card" onclick="startGame('sandbox')">
+          <div class="game-thumb" style="background: linear-gradient(135deg, #6a1b9a, #ab47bc);">BUILDING</div>
+          <div class="game-title">Build a Stone Empire</div>
+          <div class="game-info">115 players online</div>
         </div>
       </div>
     </div>
 
+    <!-- Catalog Page -->
     <div id="catalog" class="page">
-      <p style="padding:10px;">Şapkalar Oyun İçi Kullanılabilir!</p>
+      <div class="section-title">Featured Hats & Gear</div>
+      <div class="catalog-grid">
+        <div class="item-card">
+          <div style="font-size:28px;">👑</div>
+          <b>Golden Crown</b>
+          <button onclick="alert('Crown equipped to your character!')">Get Item</button>
+        </div>
+        <div class="item-card">
+          <div style="font-size:28px;">🎩</div>
+          <b>Top Hat</b>
+          <button onclick="alert('Top Hat equipped!')">Get Item</button>
+        </div>
+        <div class="item-card">
+          <div style="font-size:28px;">🕶️</div>
+          <b>Shades</b>
+          <button onclick="alert('Shades equipped!')">Get Item</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profile" class="page">
+      <div class="section-title">Character Customizer</div>
+      <div style="background:#fff; padding:20px; border-radius:4px; border:1px solid #ccc; text-align:center;">
+        <div style="width:80px; height:80px; background:#ffd700; margin:0 auto 10px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:36px; border:2px solid #333;">🙂</div>
+        <b style="font-size:15px; color:#003380;">Noob Builder</b>
+        <p style="font-size:12px; color:#666; margin-top:5px;">Status: Online & Ready to Play!</p>
+      </div>
     </div>
   </div>
 
+  <!-- 3D GAME SCREEN -->
   <div id="game-container">
     <canvas id="canvas3d"></canvas>
     <div class="mobile-ui">
-      <button class="exit-btn" onclick="exitGame()">← Çıkış</button>
+      <button class="exit-btn" onclick="exitGame()">✕ Exit Game</button>
+      <div class="controls-hint">PC: W,A,S,D / Arrows + Space<br>Mobile: Use Left Joystick & Jump</div>
       <div id="joystick-zone"><div id="joystick-knob"></div></div>
-      <div id="jump-btn">ZIPLA</div>
+      <div id="jump-btn">JUMP</div>
     </div>
   </div>
 
@@ -117,7 +183,7 @@
     function init3D(type) {
       platforms = [];
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x87ceeb);
+      scene.background = new THREE.Color(type === 'zombie' || type === 'battle' ? 0x111122 : 0x87ceeb);
 
       camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
       
@@ -125,26 +191,26 @@
       renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
 
-      // Işıklandırma
+      // Lights
       const light = new THREE.DirectionalLight(0xffffff, 1);
-      light.position.set(10, 20, 10);
+      light.position.set(20, 40, 20);
       scene.add(light);
-      scene.add(new THREE.AmbientLight(0x666666));
+      scene.add(new THREE.AmbientLight(0x777777));
 
-      // AVATAR OLUŞTURMA (Noob)
+      // NOOB AVATAR CREATION
       player = new THREE.Group();
       
-      // Baş
+      // Head
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshLambertMaterial({ color: 0xffd700 }));
       head.position.y = 1.4;
       player.add(head);
 
-      // Gövde
+      // Torso
       const torso = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 0.5), new THREE.MeshLambertMaterial({ color: 0x0055b3 }));
       torso.position.y = 0.4;
       player.add(torso);
 
-      // Bacaklar
+      // Legs
       const legGeo = new THREE.BoxGeometry(0.45, 1, 0.45);
       const legMat = new THREE.MeshLambertMaterial({ color: 0x4caf50 });
       leftLeg = new THREE.Mesh(legGeo, legMat);
@@ -154,7 +220,7 @@
       player.add(leftLeg);
       player.add(rightLeg);
 
-      // Kollar
+      // Arms
       const armGeo = new THREE.BoxGeometry(0.4, 1, 0.4);
       const armMat = new THREE.MeshLambertMaterial({ color: 0xffd700 });
       leftArm = new THREE.Mesh(armGeo, armMat);
@@ -167,17 +233,20 @@
       player.position.set(0, 3, 0);
       scene.add(player);
 
-      // MAP YAPISI VE FİZİK BLOKLARI
-      if(type === 'obby') {
-        createPlatform(0, 0, 0, 8, 1, 8, 0x00ff00); // Başlangıç
-        for(let i = 1; i <= 8; i++) {
-          createPlatform(0, i * 1.5, -i * 6, 4, 0.8, 4, i % 2 === 0 ? 0xff0000 : 0xffff00);
+      // GENERATE MAP BASED ON GAME TYPE
+      if(type === 'obby' || type === 'ship') {
+        createPlatform(0, 0, 0, 10, 1, 10, 0x2e7d32);
+        for(let i = 1; i <= 12; i++) {
+          createPlatform(0, i * 1.4, -i * 5.5, 4, 0.8, 4, i % 2 === 0 ? 0xd32f2f : 0xfbc02d);
         }
-        createPlatform(0, 14, -54, 10, 1, 10, 0x00ffff); // Bitiş
-      } else if(type === 'race') {
-        createPlatform(0, 0, -50, 12, 1, 120, 0x333333);
+        createPlatform(0, 18.5, -70, 10, 1, 10, 0x00acc1);
+      } else if(type === 'race' || type === 'sandbox') {
+        createPlatform(0, 0, -40, 14, 1, 100, 0x333333);
       } else {
-        createPlatform(0, 0, 0, 40, 1, 40, 0x225522);
+        createPlatform(0, 0, 0, 50, 1, 50, 0x1b5e20);
+        // Obstacles / Walls
+        createPlatform(10, 1, -10, 4, 2, 4, 0x795548);
+        createPlatform(-10, 1, -20, 6, 2, 4, 0x795548);
       }
 
       setupControls();
@@ -191,17 +260,15 @@
       mesh.position.set(x, y, z);
       scene.add(mesh);
       
-      // Çarpışma Bounding Box Verisi
       platforms.push({
         minX: x - w / 2, maxX: x + w / 2,
         minY: y - h / 2, maxY: y + h / 2,
-        minZ: z - d / 2, maxZ: z + d / 2,
-        mesh: mesh
+        minZ: z - d / 2, maxZ: z + d / 2
       });
     }
 
     function setupControls() {
-      // Klavye
+      // Keyboard Events
       window.onkeydown = (e) => {
         if(e.code === 'KeyW' || e.code === 'ArrowUp') moveForward = true;
         if(e.code === 'KeyS' || e.code === 'ArrowDown') moveBackward = true;
@@ -216,7 +283,7 @@
         if(e.code === 'KeyD' || e.code === 'ArrowRight') moveRight = false;
       };
 
-      // Mobil Joystick
+      // Ergonomic Mobile Touch Joystick
       const zone = document.getElementById('joystick-zone');
       const knob = document.getElementById('joystick-knob');
       let touchId = null;
@@ -231,12 +298,12 @@
             const rect = zone.getBoundingClientRect();
             const dx = touch.clientX - (rect.left + rect.width / 2);
             const dy = touch.clientY - (rect.top + rect.height / 2);
-            const dist = Math.min(Math.hypot(dx, dy), 35);
+            const dist = Math.min(Math.hypot(dx, dy), 42);
             const angle = Math.atan2(dy, dx);
 
             knob.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
-            touchMoveX = (Math.cos(angle) * dist) / 35;
-            touchMoveY = (Math.sin(angle) * dist) / 35;
+            touchMoveX = (Math.cos(angle) * dist) / 42;
+            touchMoveY = (Math.sin(angle) * dist) / 42;
           }
         }
       };
@@ -247,7 +314,7 @@
         touchMoveY = 0;
       };
 
-      // Mobil Zıpla
+      // Jump Button
       const jumpBtn = document.getElementById('jump-btn');
       jumpBtn.ontouchstart = (e) => { e.preventDefault(); jump(); };
       jumpBtn.onclick = jump;
@@ -255,7 +322,7 @@
 
     function jump() {
       if(isGrounded) {
-        velocityY = 0.23;
+        velocityY = 0.24;
         isGrounded = false;
       }
     }
@@ -263,7 +330,6 @@
     function animate() {
       animFrame = requestAnimationFrame(animate);
 
-      // Hareket Vektörleri
       let speed = 0.14;
       let dx = 0, dz = 0;
 
@@ -277,44 +343,40 @@
         dz = touchMoveY * speed;
       }
 
-      // X ve Z Hareket Ve Dönüş Yönü
+      // Movement & 360 Rotation
       if (dx !== 0 || dz !== 0) {
         player.position.x += dx;
         player.position.z += dz;
         player.rotation.y = Math.atan2(dx, dz);
 
-        // Yürüme Animasyonu
-        animTime += 0.25;
-        leftLeg.rotation.x = Math.sin(animTime) * 0.6;
-        rightLeg.rotation.x = -Math.sin(animTime) * 0.6;
-        leftArm.rotation.x = -Math.sin(animTime) * 0.6;
-        rightArm.rotation.x = Math.sin(animTime) * 0.6;
+        // Walking Animation
+        animTime += 0.3;
+        leftLeg.rotation.x = Math.sin(animTime) * 0.7;
+        rightLeg.rotation.x = -Math.sin(animTime) * 0.7;
+        leftArm.rotation.x = -Math.sin(animTime) * 0.7;
+        rightArm.rotation.x = Math.sin(animTime) * 0.7;
       } else {
-        // Durma Duruşu
         leftLeg.rotation.x = 0;
         rightLeg.rotation.x = 0;
         leftArm.rotation.x = 0;
         rightArm.rotation.x = 0;
       }
 
-      // Y-Aksis Fizik (Ağırlık ve Zıplama)
+      // Gravity & Physics
       player.position.y += velocityY;
       velocityY += gravity;
 
-      // KATI BLOK ÇARPIŞMA KONTROLÜ (Solid Collision)
       isGrounded = false;
       const playerRadius = 0.4;
       const playerFeet = player.position.y - 1.2;
 
       for (let p of platforms) {
-        // AABB Çarpışma Testi
         if (player.position.x + playerRadius > p.minX &&
             player.position.x - playerRadius < p.maxX &&
             player.position.z + playerRadius > p.minZ &&
             player.position.z - playerRadius < p.maxZ) {
           
-          // Ayak zemine değiyor mu?
-          if (playerFeet <= p.maxY && playerFeet >= p.maxY - 0.4 && velocityY <= 0) {
+          if (playerFeet <= p.maxY && playerFeet >= p.maxY - 0.45 && velocityY <= 0) {
             player.position.y = p.maxY + 1.2;
             velocityY = 0;
             isGrounded = true;
@@ -323,16 +385,16 @@
         }
       }
 
-      // Düşme Kontrolü (Respawn)
-      if (player.position.y < -15) {
+      // Fall / Respawn
+      if (player.position.y < -20) {
         player.position.set(0, 4, 0);
         velocityY = 0;
       }
 
-      // Kamera Takibi
+      // Smooth Camera Follow
       camera.position.x = player.position.x;
-      camera.position.y = player.position.y + 3.5;
-      camera.position.z = player.position.z + 7.5;
+      camera.position.y = player.position.y + 3.8;
+      camera.position.z = player.position.z + 8;
       camera.lookAt(player.position.x, player.position.y + 0.8, player.position.z);
 
       renderer.render(scene, camera);

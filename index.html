@@ -24,8 +24,9 @@
     .section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #003380; border-bottom: 2px solid #ccc; padding-bottom: 4px; }
     .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding-bottom: 30px; }
     
-    .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .game-card:active { background: #e3f2fd; border-color: #0055b3; }
+    /* BUTONA ÇEVRİLDİ - MOBİLDE %100 ÇALIŞIR */
+    .game-card { background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 100%; font-family: inherit; }
+    .game-card:active { background: #e3f2fd; border-color: #0055b3; transform: scale(0.98); }
     .game-thumb { width: 100%; height: 90px; border-radius: 3px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); pointer-events: none; }
     .game-title { font-weight: bold; font-size: 12px; color: #003380; margin-bottom: 2px; pointer-events: none; }
     .game-info { font-size: 10px; color: #666; pointer-events: none; }
@@ -73,36 +74,36 @@
     <div id="games" class="page active">
       <div class="section-title">Featured OBYXA Games (Top 6)</div>
       <div class="game-grid">
-        <div class="game-card" onclick="window.loadGame('wing')">
+        <button class="game-card" onclick="window.loadGame('wing')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #00acc1, #00838f);">🪽 WING & JUMP SIM</div>
           <div class="game-title">Jump & Fly Simulator</div>
           <div class="game-info">Buy wings & jump high!</div>
-        </div>
-        <div class="game-card" onclick="window.loadGame('muscle')">
+        </button>
+        <button class="game-card" onclick="window.loadGame('muscle')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #e65100, #ffb300);">💪 MUSCLE SIMULATOR</div>
           <div class="game-title">Muscle Legends Pro</div>
           <div class="game-info">Lift weights & grow huge!</div>
-        </div>
-        <div class="game-card" onclick="window.loadGame('speed')">
+        </button>
+        <button class="game-card" onclick="window.loadGame('speed')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #c62828, #ef5350);">⚡ SPEED SIMULATOR</div>
           <div class="game-title">Speed Runner Sim</div>
           <div class="game-info">Run fast across tracks!</div>
-        </div>
-        <div class="game-card" onclick="window.loadGame('obby')">
+        </button>
+        <button class="game-card" onclick="window.loadGame('obby')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #2e7d32, #66bb6a);">🧱 OBBY PARKOUR</div>
           <div class="game-title">Escape Subspace!</div>
           <div class="game-info">142 players online</div>
-        </div>
-        <div class="game-card" onclick="window.loadGame('cash')">
+        </button>
+        <button class="game-card" onclick="window.loadGame('cash')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #1565c0, #42a5f5);">💵 CASH SIMULATOR</div>
           <div class="game-title">Cash Tycoon Sim</div>
           <div class="game-info">Collect rich rewards!</div>
-        </div>
-        <div class="game-card" onclick="window.loadGame('zombie')">
+        </button>
+        <button class="game-card" onclick="window.loadGame('zombie')">
           <div class="game-thumb" style="background: linear-gradient(135deg, #37474f, #78909c);">🧟 SURVIVAL ARENA</div>
           <div class="game-title">Zombie Ocean Rescue</div>
           <div class="game-info">76 players online</div>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -235,7 +236,6 @@
 
       player = new THREE.Group();
       
-      // Kafa ve Gülen Yüz
       const headMat = new THREE.MeshLambertMaterial({ color: 0xffd700 });
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), headMat);
       head.position.y = 1.4;
@@ -390,6 +390,4 @@
         player.rotation.y = Math.atan2(dx, dz);
 
         animTime += 0.35;
-        leftLeg.rotation.x = Math.sin(animTime) * 0.75;
-        rightLeg.rotation.x = -Math.sin(animTime) * 0.75;
-        l
+      

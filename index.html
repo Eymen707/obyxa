@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OBYXA - Classic Retro Gaming Platform</title>
+    <title>OBYXA - Classic Retro Platform</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
@@ -11,7 +11,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #eef2f5; }
 
-        /* Site Navigation Header */
+        /* Site Header */
         #site-header {
             position: absolute; top: 0; left: 0; right: 0; height: 55px;
             background: linear-gradient(to bottom, #0055b3 0%, #003366 100%);
@@ -19,7 +19,7 @@
             padding: 0 15px; z-index: 50; color: white;
         }
 
-        /* Classic Retro Logo Style (White fill, Red thick border like in reference photo) */
+        /* OBYXA Retro Styled Logo */
         .obx-logo {
             font-family: 'Fredoka One', 'Arial Black', sans-serif;
             font-size: 28px;
@@ -34,7 +34,7 @@
         .nav-menu span { cursor: pointer; padding: 6px 10px; border-radius: 3px; background: rgba(255,255,255,0.1); white-space: nowrap; }
         .nav-menu span:hover, .nav-menu span.active { background: #ffffff; color: #003366; }
 
-        /* Page Layouts */
+        /* Web Pages Area */
         #web-pages {
             position: absolute; top: 55px; left: 0; right: 0; bottom: 0;
             background: #f0f4f8; z-index: 40; overflow-y: auto; padding: 20px;
@@ -54,16 +54,14 @@
         }
         .game-thumb-title { font-size: 13px; font-weight: bold; color: #0055b3; margin-top: 8px; }
 
-        /* Avatar Editor & Profile */
         .profile-card { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
         .pfp-box { width: 90px; height: 90px; background: #ffcc00; border: 3px solid #003366; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; }
 
-        /* Settings & Language Options */
         .option-group { margin-bottom: 15px; }
         .option-group label { display: block; font-weight: bold; font-size: 13px; color: #333; margin-bottom: 5px; }
         .option-group select, .option-group input { padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px; }
 
-        /* In-Game Elements */
+        /* 3D Engine Elements */
         #game-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10; display: none; }
         #in-game-hud {
             position: absolute; top: 65px; right: 15px; z-index: 20; display: none;
@@ -91,7 +89,6 @@
 </head>
 <body>
 
-    <!-- Site Header with Custom Retro Style Logo -->
     <div id="site-header">
         <div class="obx-logo">OBYXA</div>
         <div class="nav-menu">
@@ -103,9 +100,7 @@
         <div style="font-size: 12px; font-weight: bold;">Coins: <span id="coins" style="color:#ffcc00;">250</span></div>
     </div>
 
-    <!-- Web Pages Area -->
     <div id="web-pages">
-        <!-- Games Section -->
         <div id="page-games" class="page-section active">
             <div class="page-title">Featured Obyxa Games</div>
             <div class="games-grid">
@@ -116,7 +111,6 @@
             </div>
         </div>
 
-        <!-- Avatar Editor Section -->
         <div id="page-avatar" class="page-section">
             <div class="page-title">Avatar Customizer</div>
             <p style="font-size: 13px; color: #555; margin-bottom: 15px;">Customize your classic 3D character style and colors.</p>
@@ -130,7 +124,6 @@
             </div>
         </div>
 
-        <!-- User Profile Section -->
         <div id="page-profile" class="page-section">
             <div class="page-title">User Profile</div>
             <div class="profile-card">
@@ -151,7 +144,6 @@
             </div>
         </div>
 
-        <!-- Settings & Languages Section -->
         <div id="page-settings" class="page-section">
             <div class="page-title">Settings & Preferences</div>
             <div class="option-group">
@@ -171,12 +163,10 @@
         </div>
     </div>
 
-    <!-- 3D Gameplay Elements -->
     <button id="exit-btn" onclick="exitGame()">Exit to Website</button>
     <div id="in-game-hud">Stage: <span id="stage-txt">1</span> / 30</div>
     <div id="game-container"></div>
 
-    <!-- Mobile Touch Controls -->
     <div id="joystick-base" class="touch-btn">
         <div id="joystick-knob"></div>
     </div>
@@ -190,7 +180,6 @@
             event.target.classList.add('active');
         }
 
-        // --- THREE.JS 3D ENGINE ---
         const container = document.getElementById('game-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87ceeb);
@@ -206,7 +195,7 @@
         dirLight.position.set(20, 40, 20);
         scene.add(dirLight);
 
-        // Character Mesh Setup
+        // Character Setup
         const playerGroup = new THREE.Group();
         scene.add(playerGroup);
 
@@ -244,13 +233,11 @@
             platforms.forEach(p => scene.remove(p));
             platforms.length = 0;
 
-            // Spawn Platform
             const spawn = new THREE.Mesh(new THREE.BoxGeometry(14, 2, 14), new THREE.MeshLambertMaterial({ color: 0x808080 }));
             spawn.position.set(0, -1, 0);
             scene.add(spawn);
             platforms.push(spawn);
 
-            // Extended 30-Stage Course Generator
             let zPos = -14;
             const colors = [0x00aaff, 0xffcc00, 0x00ffcc, 0xaa00ff, 0xff9900];
 
@@ -344,19 +331,19 @@
             playerState.x += ix * playerState.speed;
             playerState.z += iz * playerState.speed;
 
-            playerState.vy -= 0.016; // Gravity
+            playerState.vy -= 0.016;
             playerState.y += playerState.vy;
             playerState.onGround = false;
 
-            // Perfect Collision Control (Prevents leg clipping)
+            // Absolute Floor Collision Handling (Prevents Bounding Box Clipping)
             platforms.forEach(p => {
                 const box = new THREE.Box3().setFromObject(p);
                 if (
                     playerState.x >= box.min.x - 0.75 && playerState.x <= box.max.x + 0.75 &&
                     playerState.z >= box.min.z - 0.75 && playerState.z <= box.max.z + 0.75
                 ) {
-                    if (playerState.y >= box.max.y - 0.4 && playerState.y <= box.max.y + 1.4 && playerState.vy <= 0) {
-                        playerState.y = box.max.y + 1.4;
+                    if (playerState.y >= box.max.y - 0.2 && playerState.y <= box.max.y + 1.6 && playerState.vy <= 0) {
+                        playerState.y = box.max.y + 1.45; // Locks feet to upper surface
                         playerState.vy = 0;
                         playerState.onGround = true;
                     }
@@ -365,9 +352,9 @@
 
             if (playerState.y < -15) { playerState.x = 0; playerState.y = 4; playerState.z = 0; playerState.vy = 0; }
 
-            playerGroup.position.set(playerState.x, playerState.y - 1.4, playerState.z);
+            playerGroup.position.set(playerState.x, playerState.y - 1.45, playerState.z);
 
-            // Movement Animation
+            // Limb Animation Loop
             if (Math.abs(ix) > 0.1 || Math.abs(iz) > 0.1) {
                 const t = Date.now() * 0.012;
                 leftLeg.rotation.x = Math.sin(t) * 0.7;

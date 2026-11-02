@@ -2,383 +2,337 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OBYXA - Classic Retro Platform</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBYXA - Virtual Playworld & Retro Sandbox</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
-        body, html { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #eef2f5; }
-
-        /* Site Header */
-        #site-header {
-            position: absolute; top: 0; left: 0; right: 0; height: 55px;
-            background: linear-gradient(to bottom, #0055b3 0%, #003366 100%);
-            border-bottom: 3px solid #001f3f; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 15px; z-index: 50; color: white;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { background-color: #e5e5e5; color: #111; }
+        
+        /* Top Navigation Bar (Classic 2007 Blue Gradient) */
+        .navbar {
+            background: linear-gradient(to bottom, #1c4d8a, #0c2b54);
+            border-bottom: 3px solid #081d38;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            flex-wrap: wrap;
         }
-
-        /* OBYXA Retro Styled Logo */
-        .obx-logo {
-            font-family: 'Fredoka One', 'Arial Black', sans-serif;
-            font-size: 28px;
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        /* Classic Red Outlined Bubble Font Style */
+        .obyxa-logo {
+            font-size: 38px;
+            font-weight: 900;
+            font-style: italic;
+            color: white;
+            text-shadow: 
+                -2px -2px 0 #cc0000,  
+                 2px -2px 0 #cc0000,
+                -2px  2px 0 #cc0000,
+                 2px  2px 0 #cc0000,
+                 0px 3px 0px #990000;
+            letter-spacing: -2px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 14px;
+        }
+        .nav-links a {
             color: #ffffff;
-            -webkit-text-stroke: 2.5px #e52424;
-            text-shadow: 2px 2px 0px #800000;
-            letter-spacing: 1px;
-            transform: skewX(-5deg);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-links a:hover { text-decoration: underline; }
+
+        /* Language Switcher */
+        .lang-select {
+            background: #ffffff;
+            color: #0c2b54;
+            border: 1px solid #ccc;
+            padding: 3px 6px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
-        .nav-menu { display: flex; gap: 8px; font-size: 12px; font-weight: bold; overflow-x: auto; }
-        .nav-menu span { cursor: pointer; padding: 6px 10px; border-radius: 3px; background: rgba(255,255,255,0.1); white-space: nowrap; }
-        .nav-menu span:hover, .nav-menu span.active { background: #ffffff; color: #003366; }
+        /* Sub Navigation / Action Bar */
+        .sub-nav {
+            background: #dcdcdc;
+            border-bottom: 1px solid #b5b5b5;
+            padding: 6px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: bold;
+        }
 
-        /* Web Pages Area */
-        #web-pages {
-            position: absolute; top: 55px; left: 0; right: 0; bottom: 0;
-            background: #f0f4f8; z-index: 40; overflow-y: auto; padding: 20px;
+        /* Main Container */
+        .container {
+            max-width: 960px;
+            margin: 15px auto;
+            background: #ffffff;
+            border: 1px solid #b5b5b5;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .page-section { display: none; max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 6px; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .page-section.active { display: block; }
-        .page-title { font-size: 20px; font-weight: bold; color: #003366; margin-bottom: 15px; border-bottom: 2px solid #0055b3; padding-bottom: 6px; }
 
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .game-thumb-card {
-            background: #fff; border: 1px solid #b5b5b5; padding: 10px; border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; text-align: center;
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(to right, #0c2b54, #1c4d8a);
+            color: white;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .game-thumb-img {
-            width: 100%; height: 110px; background: linear-gradient(135deg, #00aaff, #0044aa);
-            display: flex; align-items: center; justify-content: center; font-size: 40px; border-radius: 4px; color: white;
+        .hero-text h1 { font-size: 24px; margin-bottom: 5px; }
+        .hero-text p { font-size: 14px; opacity: 0.9; }
+        
+        .play-btn {
+            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+            color: white;
+            border: 2px solid #1B5E20;
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #1b5e20;
         }
-        .game-thumb-title { font-size: 13px; font-weight: bold; color: #0055b3; margin-top: 8px; }
+        .play-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1b5e20; }
 
-        .profile-card { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
-        .pfp-box { width: 90px; height: 90px; background: #ffcc00; border: 3px solid #003366; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; }
+        /* Sections */
+        h2.section-title {
+            font-size: 18px;
+            border-bottom: 2px solid #0c2b54;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            color: #0c2b54;
+        }
 
-        .option-group { margin-bottom: 15px; }
-        .option-group label { display: block; font-weight: bold; font-size: 13px; color: #333; margin-bottom: 5px; }
-        .option-group select, .option-group input { padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px; }
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .game-card {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+        }
+        .game-thumb {
+            width: 100%;
+            height: 110px;
+            background: #222;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 12px;
+            margin-bottom: 8px;
+            background-size: cover;
+        }
+        .game-title { font-size: 13px; font-weight: bold; color: #0044cc; margin-bottom: 4px; }
+        .game-stats { font-size: 11px; color: #666; }
 
-        /* 3D Engine Elements */
-        #game-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10; display: none; }
-        #in-game-hud {
-            position: absolute; top: 65px; right: 15px; z-index: 20; display: none;
-            background: rgba(0,0,0,0.7); color: white; padding: 8px 14px; border-radius: 5px; font-size: 14px; font-weight: bold;
+        /* Footer */
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
         }
-        .touch-btn { position: absolute; z-index: 25; display: none; touch-action: none; }
-        #joystick-base {
-            bottom: 30px; left: 30px; width: 120px; height: 120px;
-            background: rgba(255,255,255,0.25); border: 3px solid rgba(255,255,255,0.5); border-radius: 50%;
+
+        /* Modal Simulator */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
         }
-        #joystick-knob {
-            position: absolute; top: 35px; left: 35px; width: 50px; height: 50px;
-            background: rgba(255,255,255,0.8); border-radius: 50%; border: 2px solid #fff; pointer-events: none;
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border: 3px solid #0c2b54;
+            width: 350px;
+            text-align: center;
+            border-radius: 6px;
         }
-        #jump-btn {
-            bottom: 35px; right: 30px; width: 80px; height: 80px;
-            background: rgba(255,255,255,0.35); border: 3px solid rgba(255,255,255,0.8); border-radius: 50%;
-            color: white; font-weight: bold; font-size: 16px; display: none; align-items: center; justify-content: center; text-shadow: 1px 1px #000;
-        }
-        #exit-btn {
-            position: absolute; top: 15px; left: 15px; z-index: 30; display: none;
-            background: #cc0000; color: white; border: 2px solid #990000; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer;
+        .modal-content h3 { color: #0c2b54; margin-bottom: 10px; }
+        .modal-content p { font-size: 13px; margin-bottom: 15px; }
+        .close-btn {
+            background: #cc0000;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
-    <div id="site-header">
-        <div class="obx-logo">OBYXA</div>
-        <div class="nav-menu">
-            <span class="active" onclick="switchPage('games')">Games</span>
-            <span onclick="switchPage('avatar')">Avatar</span>
-            <span onclick="switchPage('profile')">Profile</span>
-            <span onclick="switchPage('settings')">Settings</span>
+    <!-- Top Navigation -->
+    <div class="navbar">
+        <div class="logo-area">
+            <div class="obyxa-logo">OBYXA</div>
         </div>
-        <div style="font-size: 12px; font-weight: bold;">Coins: <span id="coins" style="color:#ffcc00;">250</span></div>
-    </div>
-
-    <div id="web-pages">
-        <div id="page-games" class="page-section active">
-            <div class="page-title">Featured Obyxa Games</div>
-            <div class="games-grid">
-                <div class="game-thumb-card" onclick="launchGame()">
-                    <div class="game-thumb-img">🏃‍♂️</div>
-                    <div class="game-thumb-title">Mega Long Obby Parkour (30 Stages)</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-avatar" class="page-section">
-            <div class="page-title">Avatar Customizer</div>
-            <p style="font-size: 13px; color: #555; margin-bottom: 15px;">Customize your classic 3D character style and colors.</p>
-            <div class="option-group">
-                <label>Body Color Style</label>
-                <select id="avatar-style">
-                    <option>Classic Noob (Yellow / Blue / Green)</option>
-                    <option>Retro Knight</option>
-                    <option>Cool Casual</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="page-profile" class="page-section">
-            <div class="page-title">User Profile</div>
-            <div class="profile-card">
-                <div class="pfp-box" id="pfp-display">🙂</div>
-                <div>
-                    <h3 id="profile-name" style="color: #003366;">Player123</h3>
-                    <p style="font-size: 12px; color: #666; margin-top: 4px;">Status: Online in Obyxa</p>
-                </div>
-            </div>
-            <div class="option-group">
-                <label>Choose Profile Picture (PFP)</label>
-                <select onchange="document.getElementById('pfp-display').innerText = this.value">
-                    <option>🙂</option>
-                    <option>😎</option>
-                    <option>🤠</option>
-                    <option>🤖</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="page-settings" class="page-section">
-            <div class="page-title">Settings & Preferences</div>
-            <div class="option-group">
-                <label>Language / Dil Seçimi</label>
-                <select id="lang-select">
-                    <option value="en">English (US)</option>
-                    <option value="tr">Türkçe</option>
-                </select>
-            </div>
-            <div class="option-group">
-                <label>Graphics Quality</label>
-                <select>
-                    <option>High (Smooth 3D)</option>
-                    <option>Medium</option>
-                </select>
-            </div>
+        <div class="nav-links">
+            <a href="#" id="nav-games">Games</a>
+            <a href="#" id="nav-catalog">Catalog</a>
+            <a href="#" id="nav-people">People</a>
+            <a href="#" id="nav-forum">Forum</a>
+            <select class="lang-select" id="langSwitch" onchange="changeLanguage()">
+                <option value="en">English (EN)</option>
+                <option value="tr">Türkçe (TR)</option>
+            </select>
         </div>
     </div>
 
-    <button id="exit-btn" onclick="exitGame()">Exit to Website</button>
-    <div id="in-game-hud">Stage: <span id="stage-txt">1</span> / 30</div>
-    <div id="game-container"></div>
-
-    <div id="joystick-base" class="touch-btn">
-        <div id="joystick-knob"></div>
+    <!-- Sub Navigation -->
+    <div class="sub-nav">
+        <span id="sub-welcome">Welcome to OBYXA – The Retro 2007 Sandbox Universe!</span>
+        <span><a href="#" style="color:#0044cc;" id="nav-login">Login</a> | <a href="#" style="color:#0044cc;" id="nav-signup">Sign Up</a></span>
     </div>
-    <div id="jump-btn" class="touch-btn">JUMP</div>
+
+    <!-- Main Content Area -->
+    <div class="container">
+        
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-text">
+                <h1 id="hero-title">Build, Play, and Socialize!</h1>
+                <p id="hero-desc">Experience the classic blocky era of multiplayer creativity with OBYXA.</p>
+            </div>
+            <button class="play-btn" onclick="openLauncher()" id="hero-btn">PLAY NOW</button>
+        </div>
+
+        <!-- Popular Games Section -->
+        <h2 class="section-title" id="sec-games">Popular OBYXA Games</h2>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-thumb" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">Noob Classic Obby</div>
+                <div class="game-title">Natural Disaster Survival</div>
+                <div class="game-stats">👤 142 Playing</div>
+            </div>
+            <div class="game-card">
+                <div class="game-thumb" style="background: linear-gradient(135deg, #11998e, #38ef7d);">Work at a Pizza Place</div>
+                <div class="game-title">Work at a Pizza Place</div>
+                <div class="game-stats">👤 98 Playing</div>
+            </div>
+            <div class="game-card">
+                <div class="game-thumb" style="background: linear-gradient(135deg, #fc4a1a, #f7b733);">Crossroads Classic</div>
+                <div class="game-title">Crossroads (1v1)</div>
+                <div class="game-stats">👤 64 Playing</div>
+            </div>
+            <div class="game-card">
+                <div class="game-thumb" style="background: linear-gradient(135deg, #833ab4, #fd1d1d);">Sword Fight Arena</div>
+                <div class="game-title">SFOTH Classic</div>
+                <div class="game-stats">👤 45 Playing</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Launcher Simulation Modal -->
+    <div class="modal" id="launcherModal">
+        <div class="modal-content">
+            <h3 id="modal-h">OBYXA Client Launcher</h3>
+            <p id="modal-p">Launching OBYXA 2007 multiplayer engine environment...</p>
+            <button class="close-btn" onclick="closeLauncher()" id="modal-close">Close</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        OBYXA Corporation. Inspired by classic 2007 multi-user virtual environments. Not affiliated with Roblox Corp.
+    </div>
 
     <script>
-        function switchPage(pageId) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-menu span').forEach(s => s.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        const container = document.getElementById('game-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
-        scene.fog = new THREE.FogExp2(0x87ceeb, 0.012);
-
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
-
-        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(20, 40, 20);
-        scene.add(dirLight);
-
-        // Character Setup
-        const playerGroup = new THREE.Group();
-        scene.add(playerGroup);
-
-        const matYellow = new THREE.MeshLambertMaterial({ color: 0xffcc00 });
-        const matBlue = new THREE.MeshLambertMaterial({ color: 0x0055b3 });
-        const matGreen = new THREE.MeshLambertMaterial({ color: 0x8bc34a });
-
-        const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), matYellow);
-        head.position.y = 2.1;
-        playerGroup.add(head);
-
-        const torso = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 0.8), matBlue);
-        torso.position.y = 0.8;
-        playerGroup.add(torso);
-
-        const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.5, 0.7), matYellow);
-        leftArm.position.set(-1.25, 0.8, 0);
-        playerGroup.add(leftArm);
-
-        const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.5, 0.7), matYellow);
-        rightArm.position.set(1.25, 0.8, 0);
-        playerGroup.add(rightArm);
-
-        const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.5, 0.75), matGreen);
-        leftLeg.position.set(-0.42, -0.65, 0);
-        playerGroup.add(leftLeg);
-
-        const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.5, 0.75), matGreen);
-        rightLeg.position.set(0.42, -0.65, 0);
-        playerGroup.add(rightLeg);
-
-        const platforms = [];
-
-        function createLongObbyMap() {
-            platforms.forEach(p => scene.remove(p));
-            platforms.length = 0;
-
-            const spawn = new THREE.Mesh(new THREE.BoxGeometry(14, 2, 14), new THREE.MeshLambertMaterial({ color: 0x808080 }));
-            spawn.position.set(0, -1, 0);
-            scene.add(spawn);
-            platforms.push(spawn);
-
-            let zPos = -14;
-            const colors = [0x00aaff, 0xffcc00, 0x00ffcc, 0xaa00ff, 0xff9900];
-
-            for (let i = 0; i < 30; i++) {
-                let block = new THREE.Mesh(
-                    new THREE.BoxGeometry(5.5, 1.5, 5.5),
-                    new THREE.MeshLambertMaterial({ color: colors[i % colors.length] })
-                );
-                let xOffset = Math.sin(i * 0.8) * 5;
-                block.position.set(xOffset, (i * 0.4), zPos);
-                scene.add(block);
-                platforms.push(block);
-                zPos -= 8.5;
+        // Multi-language Dictionary
+        const translations = {
+            en: {
+                navGames: "Games",
+                navCatalog: "Catalog",
+                navPeople: "People",
+                navForum: "Forum",
+                navLogin: "Login",
+                navSignup: "Sign Up",
+                subWelcome: "Welcome to OBYXA – The Retro 2007 Sandbox Universe!",
+                heroTitle: "Build, Play, and Socialize!",
+                heroDesc: "Experience the classic blocky era of multiplayer creativity with OBYXA.",
+                heroBtn: "PLAY NOW",
+                secGames: "Popular OBYXA Games",
+                modalH: "OBYXA Client Launcher",
+                modalP: "Initializing OBYXA 2007 multiplayer environment...",
+                modalClose: "Close"
+            },
+            tr: {
+                navGames: "Oyunlar",
+                navCatalog: "Katalog",
+                navPeople: "Kullanıcılar",
+                navForum: "Forum",
+                navLogin: "Giriş Yap",
+                navSignup: "Kayıt Ol",
+                subWelcome: "OBYXA'ya Hoş Geldiniz – Retro 2007 Sandbox Evreni!",
+                heroTitle: "İnşa Et, Oyna ve Sosyalleş!",
+                heroDesc: "OBYXA ile klasik bloklu çok oyunculu yaratıcılık çağını yeniden yaşayın.",
+                heroBtn: "HEMEN OYNA",
+                secGames: "Popüler OBYXA Oyunları",
+                modalH: "OBYXA İstemci Başlatıcı",
+                modalP: "OBYXA 2007 çok oyunculu ortamı başlatılıyor...",
+                modalClose: "Kapat"
             }
+        };
+
+        function changeLanguage() {
+            const lang = document.getElementById("langSwitch").value;
+            const t = translations[lang];
+
+            document.getElementById("nav-games").innerText = t.navGames;
+            document.getElementById("nav-catalog").innerText = t.navCatalog;
+            document.getElementById("nav-people").innerText = t.navPeople;
+            document.getElementById("nav-forum").innerText = t.navForum;
+            document.getElementById("nav-login").innerText = t.navLogin;
+            document.getElementById("nav-signup").innerText = t.navSignup;
+            document.getElementById("sub-welcome").innerText = t.subWelcome;
+            document.getElementById("hero-title").innerText = t.heroTitle;
+            document.getElementById("hero-desc").innerText = t.heroDesc;
+            document.getElementById("hero-btn").innerText = t.heroBtn;
+            document.getElementById("sec-games").innerText = t.secGames;
+            document.getElementById("modal-h").innerText = t.modalH;
+            document.getElementById("modal-p").innerText = t.modalP;
+            document.getElementById("modal-close").innerText = t.modalClose;
         }
 
-        const playerState = { x: 0, y: 3, z: 0, vy: 0, onGround: false, speed: 0.16, jumpForce: 0.3 };
-        let gameActive = false;
-        const moveDir = { x: 0, z: 0 };
-        const keys = {};
-
-        function launchGame() {
-            document.getElementById('site-header').style.display = 'none';
-            document.getElementById('web-pages').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
-            document.getElementById('in-game-hud').style.display = 'block';
-            document.getElementById('exit-btn').style.display = 'block';
-            document.getElementById('joystick-base').style.display = 'block';
-            document.getElementById('jump-btn').style.display = 'flex';
-
-            playerState.x = 0; playerState.y = 4; playerState.z = 0; playerState.vy = 0;
-            createLongObbyMap();
-            gameActive = true;
+        function openLauncher() {
+            document.getElementById("launcherModal").style.display = "flex";
         }
 
-        function exitGame() {
-            gameActive = false;
-            document.getElementById('game-container').style.display = 'none';
-            document.getElementById('in-game-hud').style.display = 'none';
-            document.getElementById('exit-btn').style.display = 'none';
-            document.getElementById('joystick-base').style.display = 'none';
-            document.getElementById('jump-btn').style.display = 'none';
-            document.getElementById('site-header').style.display = 'flex';
-            document.getElementById('web-pages').style.display = 'block';
+        function closeLauncher() {
+            document.getElementById("launcherModal").style.display = "none";
         }
-
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
-
-        const joystickBase = document.getElementById('joystick-base');
-        const joystickKnob = document.getElementById('joystick-knob');
-
-        joystickBase.addEventListener('touchstart', handleTouch, {passive:false});
-        joystickBase.addEventListener('touchmove', handleTouch, {passive:false});
-        joystickBase.addEventListener('touchend', () => {
-            moveDir.x = 0; moveDir.z = 0;
-            joystickKnob.style.transform = `translate(0px, 0px)`;
-        });
-
-        function handleTouch(e) {
-            e.preventDefault();
-            const t = e.touches[0];
-            const rect = joystickBase.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-            let dx = t.clientX - cx, dy = t.clientY - cy;
-            const dist = Math.hypot(dx, dy), max = 35;
-            if (dist > max) { dx = (dx/dist)*max; dy = (dy/dist)*max; }
-            joystickKnob.style.transform = `translate(${dx}px, ${dy}px)`;
-            moveDir.x = dx / max; moveDir.z = dy / max;
-        }
-
-        function doJump() {
-            if (playerState.onGround) {
-                playerState.vy = playerState.jumpForce;
-                playerState.onGround = false;
-            }
-        }
-        document.getElementById('jump-btn').addEventListener('touchstart', e => { e.preventDefault(); doJump(); });
-
-        function animate() {
-            requestAnimationFrame(animate);
-            if (!gameActive) return;
-
-            let ix = moveDir.x, iz = moveDir.z;
-            if (keys['KeyW'] || keys['ArrowUp']) iz = -1;
-            if (keys['KeyS'] || keys['ArrowDown']) iz = 1;
-            if (keys['KeyA'] || keys['ArrowLeft']) ix = -1;
-            if (keys['KeyD'] || keys['ArrowRight']) ix = 1;
-            if (keys['Space']) doJump();
-
-            playerState.x += ix * playerState.speed;
-            playerState.z += iz * playerState.speed;
-
-            playerState.vy -= 0.016;
-            playerState.y += playerState.vy;
-            playerState.onGround = false;
-
-            // Absolute Floor Collision Handling (Prevents Bounding Box Clipping)
-            platforms.forEach(p => {
-                const box = new THREE.Box3().setFromObject(p);
-                if (
-                    playerState.x >= box.min.x - 0.75 && playerState.x <= box.max.x + 0.75 &&
-                    playerState.z >= box.min.z - 0.75 && playerState.z <= box.max.z + 0.75
-                ) {
-                    if (playerState.y >= box.max.y - 0.2 && playerState.y <= box.max.y + 1.6 && playerState.vy <= 0) {
-                        playerState.y = box.max.y + 1.45; // Locks feet to upper surface
-                        playerState.vy = 0;
-                        playerState.onGround = true;
-                    }
-                }
-            });
-
-            if (playerState.y < -15) { playerState.x = 0; playerState.y = 4; playerState.z = 0; playerState.vy = 0; }
-
-            playerGroup.position.set(playerState.x, playerState.y - 1.45, playerState.z);
-
-            // Limb Animation Loop
-            if (Math.abs(ix) > 0.1 || Math.abs(iz) > 0.1) {
-                const t = Date.now() * 0.012;
-                leftLeg.rotation.x = Math.sin(t) * 0.7;
-                rightLeg.rotation.x = -Math.sin(t) * 0.7;
-                leftArm.rotation.x = -Math.sin(t) * 0.7;
-                rightArm.rotation.x = Math.sin(t) * 0.7;
-            } else {
-                leftLeg.rotation.x = 0; rightLeg.rotation.x = 0;
-                leftArm.rotation.x = 0; rightArm.rotation.x = 0;
-            }
-
-            camera.position.set(playerState.x, playerState.y + 5, playerState.z + 12);
-            camera.lookAt(playerState.x, playerState.y, playerState.z);
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
     </script>
 </body>
 </html>

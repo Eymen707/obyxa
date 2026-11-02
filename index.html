@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Obyxa - Classic Roblox 2008</title>
+    <title>OBYXA - Classic Retro Game</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
@@ -15,7 +15,7 @@
             border-bottom: 3px solid #001f3f; display: flex; align-items: center; justify-content: space-between;
             padding: 0 15px; z-index: 50; color: white;
         }
-        .roblox-logo { font-size: 26px; font-weight: 900; color: #ffcc00; text-shadow: 2px 2px #000; font-style: italic; }
+        .obx-logo { font-size: 26px; font-weight: 900; color: #ffcc00; text-shadow: 2px 2px #000; font-style: italic; }
         .nav-menu { display: flex; gap: 10px; font-size: 13px; font-weight: bold; }
         .nav-menu span { cursor: pointer; padding: 5px 8px; border-radius: 3px; }
         .nav-menu span:hover { background: rgba(255,255,255,0.2); }
@@ -64,12 +64,12 @@
 <body>
 
     <div id="site-header">
-        <div class="roblox-logo">ROBLOX</div>
+        <div class="obx-logo">OBYXA</div>
         <div class="nav-menu">
             <span onclick="switchTab('games')">Games</span>
             <span onclick="switchTab('catalog')">Catalog</span>
         </div>
-        <div style="font-size: 12px; font-weight: bold;">R$ Coins: <span id="coins" style="color:#ffcc00;">100</span></div>
+        <div style="font-size: 12px; font-weight: bold;">Coins: <span id="coins" style="color:#ffcc00;">100</span></div>
     </div>
 
     <div id="web-pages">
@@ -78,7 +78,7 @@
             <div class="games-grid">
                 <div class="game-thumb-card" onclick="launchGame()">
                     <div class="game-thumb-img" style="background: linear-gradient(135deg, #ff7700, #ffcc00);">🏃‍♂️</div>
-                    <div class="game-thumb-title">Classic Obby Parkour v1</div>
+                    <div class="game-thumb-title">Obyxa Parkour v1</div>
                 </div>
             </div>
         </div>
@@ -118,7 +118,7 @@
         dirLight.position.set(20, 40, 20);
         scene.add(dirLight);
 
-        // Noob Character
+        // Obyxa Noob Character with Limbs for Animation
         const playerGroup = new THREE.Group();
         scene.add(playerGroup);
 
@@ -150,33 +150,28 @@
         rightLeg.position.set(0.42, -0.65, 0);
         playerGroup.add(rightLeg);
 
-        // Maps & Platforms
         const platforms = [];
-        const lavaBlocks = [];
 
         function createMap() {
             platforms.forEach(p => scene.remove(p));
-            lavaBlocks.forEach(l => scene.remove(l));
             platforms.length = 0;
-            lavaBlocks.length = 0;
 
-            // Spawn
+            // Spawn Platform
             const spawn = new THREE.Mesh(new THREE.BoxGeometry(14, 2, 14), new THREE.MeshLambertMaterial({ color: 0x808080 }));
             spawn.position.set(0, -1, 0);
             scene.add(spawn);
             platforms.push(spawn);
 
             let zPos = -14;
-            for (let i = 0; i < 8; i++) {
-                let isLava = (i === 2 || i === 5);
+            for (let i = 0; i < 10; i++) {
+                // Kırmızı bloklar artık zararsız normal platform yapıldı, böylece değince yanıp sinir bozmaz!
                 let block = new THREE.Mesh(
                     new THREE.BoxGeometry(5, 1.5, 5),
-                    new THREE.MeshLambertMaterial({ color: isLava ? 0xff2200 : 0x00aaff })
+                    new THREE.MeshLambertMaterial({ color: i % 2 === 0 ? 0x00aaff : 0xff3300 })
                 );
-                block.position.set(i % 2 === 0 ? 3 : -3, (i * 0.8), zPos);
+                block.position.set(i % 2 === 0 ? 3 : -3, (i * 0.6), zPos);
                 scene.add(block);
-                if (isLava) lavaBlocks.push(block);
-                else platforms.push(block);
+                platforms.push(block);
                 zPos -= 9;
             }
         }
@@ -262,16 +257,14 @@
             playerState.y += playerState.vy;
             playerState.onGround = false;
 
-            // Gelişmiş Çarpışma (Collision) Kontrolü
+            // Çarpışma ve Üzerinde Durma Kontrolü
             platforms.forEach(p => {
                 const box = new THREE.Box3().setFromObject(p);
-                // Karakterin ayak altı ve merkez sınırları
                 if (
-                    playerState.x >= box.min.x - 0.6 && playerState.x <= box.max.x + 0.6 &&
-                    playerState.z >= box.min.z - 0.6 && playerState.z <= box.max.z + 0.6
+                    playerState.x >= box.min.x - 0.7 && playerState.x <= box.max.x + 0.7 &&
+                    playerState.z >= box.min.z - 0.7 && playerState.z <= box.max.z + 0.7
                 ) {
-                    // Üstüne basma kontrolü
-                    if (playerState.y >= box.max.y - 0.5 && playerState.y <= box.max.y + 1.2 && playerState.vy <= 0) {
+                    if (playerState.y >= box.max.y - 0.6 && playerState.y <= box.max.y + 1.2 && playerState.vy <= 0) {
                         playerState.y = box.max.y;
                         playerState.vy = 0;
                         playerState.onGround = true;
@@ -279,21 +272,21 @@
                 }
             });
 
-            // Lav Kontrolü
-            lavaBlocks.forEach(l => {
-                const box = new THREE.Box3().setFromObject(l);
-                if (
-                    playerState.x >= box.min.x - 0.5 && playerState.x <= box.max.x + 0.5 &&
-                    playerState.z >= box.min.z - 0.5 && playerState.z <= box.max.z + 0.5 &&
-                    playerState.y <= box.max.y + 0.5 && playerState.y >= box.min.y - 0.5
-                ) {
-                    playerState.x = 0; playerState.y = 4; playerState.z = 0; playerState.vy = 0;
-                }
-            });
-
             if (playerState.y < -15) { playerState.x = 0; playerState.y = 4; playerState.z = 0; playerState.vy = 0; }
 
             playerGroup.position.set(playerState.x, playerState.y, playerState.z);
+
+            // Yürürken Kol ve Bacak Sallanma Animasyonu
+            if (Math.abs(ix) > 0.1 || Math.abs(iz) > 0.1) {
+                const t = Date.now() * 0.012;
+                leftLeg.rotation.x = Math.sin(t) * 0.7;
+                rightLeg.rotation.x = -Math.sin(t) * 0.7;
+                leftArm.rotation.x = -Math.sin(t) * 0.7;
+                rightArm.rotation.x = Math.sin(t) * 0.7;
+            } else {
+                leftLeg.rotation.x = 0; rightLeg.rotation.x = 0;
+                leftArm.rotation.x = 0; rightArm.rotation.x = 0;
+            }
 
             camera.position.set(playerState.x, playerState.y + 6, playerState.z + 12);
             camera.lookAt(playerState.x, playerState.y + 1, playerState.z);

@@ -4,67 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Obyxa - Classic Roblox 2008</title>
-    <!-- Stable Embedded 3D Engine -->
-    <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+    <!-- Three.js Engine Embedded via CDN with Fallback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; overflow: hidden; font-family: 'Verdana', sans-serif; background: #e3e3e3; }
         
         #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
 
-        /* Classic 2008 Roblox Header Styling */
+        /* Classic 2008 Roblox Header */
         .roblox-header {
             position: absolute; top: 0; left: 0; right: 0; height: 45px;
             background: linear-gradient(to bottom, #0055b3 0%, #003366 100%);
-            border-b: 3px solid #002244; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 10px; z-index: 20; color: white;
+            border-bottom: 3px solid #002244; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 12px; z-index: 20; color: white;
         }
         .logo-text { font-weight: 900; font-size: 22px; color: #ffcc00; text-shadow: 2px 2px #000; letter-spacing: 1px; }
         .nav-tabs { display: flex; gap: 5px; }
         .nav-tab {
             background: #004488; border: 1px solid #66a3ff; border-bottom: none;
-            color: white; padding: 5px 10px; font-size: 12px; font-weight: bold; border-radius: 4px 4px 0 0; cursor: pointer;
+            color: white; padding: 5px 12px; font-size: 12px; font-weight: bold; border-radius: 4px 4px 0 0; cursor: pointer;
         }
         .nav-tab.active { background: #ffffff; color: #003366; }
 
-        /* Game Launcher Overlay (Retro Website Style) */
+        /* Retro Website Overlay */
         #menu-overlay {
             position: absolute; top: 45px; left: 0; width: 100%; height: calc(100% - 45px);
-            background: #e6e6e6; z-index: 30; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; align-items: center;
+            background: #e6e6e6; z-index: 30; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center;
         }
         .games-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;
-            width: 100%; max-width: 800px; margin-top: 10px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px;
+            width: 100%; max-width: 800px; margin-top: 15px;
         }
         .game-card {
-            background: white; border: 2px solid #a6a6a6; border-radius: 4px; padding: 8px; text-align: center;
-            box-shadow: 2px 2px 4px rgba(0,0,0,0.1); cursor: pointer;
+            background: white; border: 2px solid #a6a6a6; border-radius: 4px; padding: 10px; text-align: center;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.15); cursor: pointer;
         }
-        .game-thumb { width: 100%; height: 80px; background: #87ceeb; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .game-thumb { width: 100%; height: 90px; background: #87ceeb; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 36px; }
         .play-btn {
             background: linear-gradient(to bottom, #00cc00 0%, #008800 100%); border: 1px solid #004400;
-            color: white; font-weight: bold; padding: 6px; width: 100%; margin-top: 6px; border-radius: 3px; font-size: 12px;
+            color: white; font-weight: bold; padding: 8px; width: 100%; margin-top: 8px; border-radius: 3px; font-size: 13px; cursor: pointer;
         }
 
-        /* Fixed Touch Controls for Mobile */
-        .touch-zone {
-            position: absolute; z-index: 25; touch-action: none;
-        }
+        /* Fixed Touch Controls */
+        .touch-zone { position: absolute; z-index: 25; touch-action: none; }
         #dpad-zone {
-            bottom: 20px; left: 20px; width: 120px; height: 120px;
-            background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 50%;
+            bottom: 25px; left: 25px; width: 120px; height: 120px;
+            background: rgba(255, 255, 255, 0.3); border: 3px solid rgba(255, 255, 255, 0.6); border-radius: 50%;
         }
         #dpad-knob {
             position: absolute; top: 35px; left: 35px; width: 50px; height: 50px;
-            background: rgba(255, 255, 255, 0.75); border-radius: 50%; border: 2px solid #fff; pointer-events: none;
+            background: rgba(255, 255, 255, 0.85); border-radius: 50%; border: 2px solid #fff; pointer-events: none;
         }
         #jump-button {
-            bottom: 30px; right: 25px; width: 75px; height: 75px;
-            background: rgba(255, 255, 255, 0.35); border: 3px solid rgba(255, 255, 255, 0.8);
-            border-radius: 50%; color: white; font-weight: bold; font-size: 16px;
+            bottom: 35px; right: 25px; width: 80px; height: 80px;
+            background: rgba(255, 255, 255, 0.4); border: 3px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%; color: white; font-weight: bold; font-size: 18px;
             display: flex; align-items: center; justify-content: center; text-shadow: 1px 1px 2px #000;
         }
-        #jump-button:active { background: rgba(255, 255, 255, 0.7); }
     </style>
 </head>
 <body>
@@ -74,19 +71,19 @@
         <div class="logo-text">OBYXA</div>
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="openMenu()">Games</button>
-            <button class="nav-tab" onclick="alert('Catalog: Earn coins by playing Obby!')">Catalog</button>
+            <button class="nav-tab" onclick="alert('Catalog feature coming soon!')">Catalog</button>
         </div>
-        <div style="font-size: 12px; font-weight: bold;">R$ Coins: <span id="coin-txt" style="color:#ffcc00;">0</span></div>
+        <div style="font-size: 13px; font-weight: bold;">R$ Coins: <span id="coin-txt" style="color:#ffcc00;">0</span></div>
     </div>
 
-    <!-- Retro Games Page Overlay -->
+    <!-- Retro Website Overlay -->
     <div id="menu-overlay">
-        <h2 style="color: #003366; font-size: 18px; margin-bottom: 5px;">Most Popular Games (Now)</h2>
+        <h2 style="color: #003366; font-size: 20px; margin-bottom: 5px;">Most Popular Games (Now)</h2>
         <div class="games-grid">
             <div class="game-card">
                 <div class="game-thumb">🏃‍♂️</div>
-                <div style="font-size: 12px; font-weight: bold; margin-top: 4px;">Classic 2008 Obby</div>
-                <div style="font-size: 10px; color: #666;">5 Stages Obby Parkour</div>
+                <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">Classic 2008 Obby</div>
+                <div style="font-size: 11px; color: #666; margin-top: 2px;">5 Stages Parkour</div>
                 <button class="play-btn" onclick="startGame()">PLAY NOW</button>
             </div>
         </div>
@@ -95,18 +92,22 @@
     <!-- 3D Canvas -->
     <div id="canvas-container"></div>
 
-    <!-- On-Screen Mobile Touch Controls -->
+    <!-- Mobile Touch Controls -->
     <div id="dpad-zone" class="touch-zone">
         <div id="dpad-knob"></div>
     </div>
     <div id="jump-button" class="touch-zone">JUMP</div>
 
     <script>
-        // --- 3D THREE.JS WORLD SETUP ---
+        // Check if Three.js loaded properly
+        if (typeof THREE === 'undefined') {
+            alert('Three.js failed to load. Please check your internet connection.');
+        }
+
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87ceeb);
-        scene.fog = new THREE.FogExp2(0x87ceeb, 0.015);
+        scene.fog = new THREE.FogExp2(0x87ceeb, 0.012);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -114,14 +115,14 @@
         renderer.shadowMap.enabled = true;
         container.appendChild(renderer.domElement);
 
-        // Lights
-        const light = new THREE.DirectionalLight(0xffffff, 0.9);
-        light.position.set(20, 40, 20);
+        // Lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1.0);
+        light.position.set(30, 50, 30);
         light.castShadow = true;
         scene.add(light);
-        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+        scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 
-        // --- REAL NOOB AVATAR CREATION ---
+        // --- 3D NOOB CHARACTER ---
         const playerGroup = new THREE.Group();
         scene.add(playerGroup);
 
@@ -132,9 +133,10 @@
         // Head
         const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), matYellow);
         head.position.y = 2.1;
+        head.castShadow = true;
         playerGroup.add(head);
 
-        // Face (Eyes + Mouth)
+        // Face
         const canvasFace = document.createElement('canvas');
         canvasFace.width = 64; canvasFace.height = 64;
         const ctxF = canvasFace.getContext('2d');
@@ -149,74 +151,82 @@
         // Torso & Limbs
         const torso = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 0.8), matBlue);
         torso.position.y = 0.8;
+        torso.castShadow = true;
         playerGroup.add(torso);
 
         const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.5, 0.7), matYellow);
         leftArm.position.set(-1.25, 0.8, 0);
+        leftArm.castShadow = true;
         playerGroup.add(leftArm);
 
         const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.5, 0.7), matYellow);
         rightArm.position.set(1.25, 0.8, 0);
+        rightArm.castShadow = true;
         playerGroup.add(rightArm);
 
         const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.5, 0.75), matGreen);
         leftLeg.position.set(-0.42, -0.65, 0);
+        leftLeg.castShadow = true;
         playerGroup.add(leftLeg);
 
         const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.5, 0.75), matGreen);
         rightLeg.position.set(0.42, -0.65, 0);
+        rightLeg.castShadow = true;
         playerGroup.add(rightLeg);
 
-        // --- LEVEL PLATFORMS & OBBY MAP ---
+        // --- 3D MAP ---
         const platforms = [];
         const lavaBlocks = [];
 
         function buildMap() {
-            // Baseplate Spawn
+            // Spawn Baseplate
             const spawn = new THREE.Mesh(
-                new THREE.BoxGeometry(12, 2, 12),
-                new THREE.MeshLambertMaterial({ color: 0xa0a0a0 })
+                new THREE.BoxGeometry(14, 2, 14),
+                new THREE.MeshLambertMaterial({ color: 0x999999 })
             );
             spawn.position.set(0, 0, 0);
+            spawn.receiveShadow = true;
             scene.add(spawn);
             platforms.push(spawn);
 
-            // Obby Course Blocks
-            let currentZ = -12;
-            for (let i = 0; i < 8; i++) {
-                const isLava = (i === 3 || i === 6);
+            // Obby Course
+            let currentZ = -14;
+            for (let i = 0; i < 10; i++) {
+                const isLava = (i === 3 || i === 7);
                 const block = new THREE.Mesh(
-                    new THREE.BoxGeometry(5, 1.2, 5),
-                    new THREE.MeshLambertMaterial({ color: isLava ? 0xff2200 : 0x00ccff })
+                    new THREE.BoxGeometry(6, 1.2, 6),
+                    new THREE.MeshLambertMaterial({ color: isLava ? 0xff2200 : (i % 2 === 0 ? 0x00ccff : 0xffcc00) })
                 );
-                block.position.set((i % 2 === 0 ? 3 : -3), i * 1.8, currentZ);
+                block.position.set((i % 2 === 0 ? 4 : -4), i * 1.8, currentZ);
+                block.receiveShadow = true;
+                block.castShadow = true;
                 scene.add(block);
                 
                 if (isLava) lavaBlocks.push(block);
                 else platforms.push(block);
 
-                currentZ -= 10;
+                currentZ -= 12;
             }
         }
         buildMap();
 
-        // --- PHYSICS & PLAYER STATE ---
+        // --- PLAYER PHYSICS & STATE ---
         const playerState = {
             x: 0, y: 3, z: 0,
             vy: 0,
             onGround: false,
-            speed: 0.16,
-            jumpForce: 0.32
+            speed: 0.18,
+            jumpForce: 0.35
         };
 
-        // --- TOUCH & KEYBOARD CONTROLS ---
+        // --- TOUCH & KEYBOARD INPUT ---
         const moveDir = { x: 0, z: 0 };
         const keys = {};
 
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
 
-        // Mobile Touch Joystick Handling
+        // Mobile Touch Joystick
         const dpadZone = document.getElementById('dpad-zone');
         const dpadKnob = document.getElementById('dpad-knob');
 
@@ -261,11 +271,10 @@
         jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); performJump(); });
         jumpBtn.addEventListener('mousedown', performJump);
 
-        // --- MAIN GAME LOOP ---
+        // --- GAME LOOP ---
         function animate() {
             requestAnimationFrame(animate);
 
-            // Compute Directions
             let inputX = moveDir.x;
             let inputZ = moveDir.z;
 
@@ -275,20 +284,20 @@
             if (keys['KeyD'] || keys['ArrowRight']) inputX = 1;
             if (keys['Space']) performJump();
 
-            // Player Position Updates
+            // Player Position
             playerState.x += inputX * playerState.speed;
             playerState.z += inputZ * playerState.speed;
 
             // Gravity & Collision
-            playerState.vy -= 0.018;
+            playerState.vy -= 0.02;
             playerState.y += playerState.vy;
 
             playerState.onGround = false;
 
-            // Floor Platform Check
+            // Platforms Collision
             platforms.forEach(p => {
                 const bx = p.position.x, by = p.position.y, bz = p.position.z;
-                if (Math.abs(playerState.x - bx) < 3.2 && Math.abs(playerState.z - bz) < 3.2) {
+                if (Math.abs(playerState.x - bx) < 3.5 && Math.abs(playerState.z - bz) < 3.5) {
                     if (playerState.y <= by + 1.2 && playerState.y >= by - 0.5 && playerState.vy <= 0) {
                         playerState.y = by + 1.2;
                         playerState.vy = 0;
@@ -299,22 +308,22 @@
 
             // Lava Collision (Respawn)
             lavaBlocks.forEach(l => {
-                if (Math.abs(playerState.x - l.position.x) < 3 && Math.abs(playerState.z - l.position.z) < 3) {
+                if (Math.abs(playerState.x - l.position.x) < 3.2 && Math.abs(playerState.z - l.position.z) < 3.2) {
                     if (Math.abs(playerState.y - l.position.y) < 1.5) {
-                        playerState.x = 0; playerState.y = 4; playerState.z = 0; // Respawn
+                        playerState.x = 0; playerState.y = 4; playerState.z = 0;
                     }
                 }
             });
 
-            // Void Fall Check
+            // Fall Check
             if (playerState.y < -15) {
                 playerState.x = 0; playerState.y = 4; playerState.z = 0;
             }
 
-            // Sync Mesh
+            // Sync Character Position
             playerGroup.position.set(playerState.x, playerState.y, playerState.z);
 
-            // Arm/Leg Animation while moving
+            // Walking Animation
             if (Math.abs(inputX) > 0.1 || Math.abs(inputZ) > 0.1) {
                 const t = Date.now() * 0.01;
                 leftLeg.rotation.x = Math.sin(t) * 0.6;
@@ -324,8 +333,8 @@
             }
 
             // Smooth Camera Follow
-            camera.position.set(playerState.x, playerState.y + 6, playerState.z + 12);
-            camera.lookAt(playerState.x, playerState.y + 1, playerState.z);
+            camera.position.set(playerState.x, playerState.y + 6, playerState.z + 14);
+            camera.lookAt(playerState.x, playerState.y + 1.5, playerState.z);
 
             renderer.render(scene, camera);
         }

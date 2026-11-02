@@ -3,35 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ROBLOX - Classic 2008 Web Experience</title>
+    <title>Obyxa - Classic Roblox 2008</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #fff; }
 
-        /* Classic Roblox Web Header */
         #site-header {
             position: absolute; top: 0; left: 0; right: 0; height: 50px;
             background: linear-gradient(to bottom, #0055b3 0%, #003366 100%);
             border-bottom: 3px solid #001f3f; display: flex; align-items: center; justify-content: space-between;
             padding: 0 15px; z-index: 50; color: white;
         }
-        .roblox-logo { font-size: 26px; font-weight: 900; color: #ffcc00; text-shadow: 2px 2px #000; letter-spacing: 1px; font-style: italic; }
+        .roblox-logo { font-size: 26px; font-weight: 900; color: #ffcc00; text-shadow: 2px 2px #000; font-style: italic; }
         .nav-menu { display: flex; gap: 10px; font-size: 13px; font-weight: bold; }
         .nav-menu span { cursor: pointer; padding: 5px 8px; border-radius: 3px; }
         .nav-menu span:hover { background: rgba(255,255,255,0.2); }
 
-        /* Website Pages Container */
         #web-pages {
             position: absolute; top: 50px; left: 0; right: 0; bottom: 0;
             background: #f0f0f0; z-index: 40; overflow-y: auto; padding: 15px;
         }
         .page-title { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 12px; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
-        
-        /* Games List Grid (Like Screenshot) */
-        .games-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px;
-        }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .game-thumb-card {
             background: white; border: 1px solid #b5b5b5; padding: 8px; border-radius: 3px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; text-align: center;
@@ -40,22 +34,14 @@
             width: 100%; height: 100px; background: #222; display: flex; align-items: center; justify-content: center;
             font-size: 32px; border-radius: 2px; color: white;
         }
-        .game-thumb-title { font-size: 12px; font-weight: bold; color: #0055b3; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .game-thumb-players { font-size: 10px; color: #666; margin-top: 2px; }
+        .game-thumb-title { font-size: 12px; font-weight: bold; color: #0055b3; margin-top: 6px; }
 
-        /* 3D Game Canvas Container */
-        #game-container {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10; display: none;
-        }
-
-        /* In-Game UI & Mobile Controls */
+        #game-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10; display: none; }
         #in-game-hud {
             position: absolute; top: 60px; right: 15px; z-index: 20; display: none;
             background: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 5px; font-size: 13px; font-weight: bold;
         }
-        .touch-btn {
-            position: absolute; z-index: 25; display: none; touch-action: none;
-        }
+        .touch-btn { position: absolute; z-index: 25; display: none; touch-action: none; }
         #joystick-base {
             bottom: 30px; left: 30px; width: 120px; height: 120px;
             background: rgba(255,255,255,0.25); border: 3px solid rgba(255,255,255,0.5); border-radius: 50%;
@@ -77,73 +63,46 @@
 </head>
 <body>
 
-    <!-- Classic 2008 Web Header -->
     <div id="site-header">
         <div class="roblox-logo">ROBLOX</div>
         <div class="nav-menu">
             <span onclick="switchTab('games')">Games</span>
             <span onclick="switchTab('catalog')">Catalog</span>
-            <span onclick="switchTab('profile')">My ROBLOX</span>
         </div>
         <div style="font-size: 12px; font-weight: bold;">R$ Coins: <span id="coins" style="color:#ffcc00;">100</span></div>
     </div>
 
-    <!-- Web Pages View -->
     <div id="web-pages">
         <div id="tab-games">
             <div class="page-title">Games - Most Popular (Now)</div>
             <div class="games-grid">
-                <!-- Game 1: Classic Obby -->
-                <div class="game-thumb-card" onclick="launchGame('obby')">
+                <div class="game-thumb-card" onclick="launchGame()">
                     <div class="game-thumb-img" style="background: linear-gradient(135deg, #ff7700, #ffcc00);">🏃‍♂️</div>
                     <div class="game-thumb-title">Classic Obby Parkour v1</div>
-                    <div class="game-thumb-players">42 players online</div>
-                </div>
-                <!-- Game 2: Build Arena -->
-                <div class="game-thumb-card" onclick="launchGame('build')">
-                    <div class="game-thumb-img" style="background: linear-gradient(135deg, #00aaff, #0044aa);">🧱</div>
-                    <div class="game-thumb-title">Build a Baseplate World</div>
-                    <div class="game-thumb-players">19 players online</div>
                 </div>
             </div>
         </div>
         <div id="tab-catalog" style="display: none;">
-            <div class="page-title">Catalog - Featured Hats</div>
-            <p style="font-size: 13px; color: #556; margin-bottom: 10px;">Buy classic gear using your ROBUX coins!</p>
-            <div class="games-grid">
-                <div class="game-thumb-card">
-                    <div class="game-thumb-img" style="background: #333;">🎩</div>
-                    <div class="game-thumb-title">Classy Top Hat</div>
-                    <div class="game-thumb-players" style="color: #008800; font-weight: bold;">R$ 25</div>
-                </div>
-            </div>
-        </div>
-        <div id="tab-profile" style="display: none;">
-            <div class="page-title">My Character Profile</div>
-            <p style="font-size: 13px; color: #556;">Customize your classic 2008 Noob avatar here.</p>
+            <div class="page-title">Catalog</div>
+            <p style="font-size: 13px; color: #556;">Coming soon!</p>
         </div>
     </div>
 
-    <!-- In-Game Elements -->
     <button id="exit-btn" onclick="exitGame()">Exit to Website</button>
-    <div id="in-game-hud">Stage: <span id="stage-txt">1</span> / 3</div>
+    <div id="in-game-hud">Stage: <span id="stage-txt">1</span></div>
     <div id="game-container"></div>
 
-    <!-- Mobile Touch Controls -->
     <div id="joystick-base" class="touch-btn">
         <div id="joystick-knob"></div>
     </div>
     <div id="jump-btn" class="touch-btn">JUMP</div>
 
     <script>
-        // Web Tabs Navigation
         function switchTab(tabName) {
             document.getElementById('tab-games').style.display = tabName === 'games' ? 'block' : 'none';
             document.getElementById('tab-catalog').style.display = tabName === 'catalog' ? 'block' : 'none';
-            document.getElementById('tab-profile').style.display = tabName === 'profile' ? 'block' : 'none';
         }
 
-        // --- 3D THREE.JS GAME ENGINE ---
         const container = document.getElementById('game-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87ceeb);
@@ -152,17 +111,14 @@
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
         container.appendChild(renderer.domElement);
 
-        // Lighting
-        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
         dirLight.position.set(20, 40, 20);
-        dirLight.castShadow = true;
         scene.add(dirLight);
 
-        // --- NOOB CHARACTER ---
+        // Noob Character
         const playerGroup = new THREE.Group();
         scene.add(playerGroup);
 
@@ -194,46 +150,43 @@
         rightLeg.position.set(0.42, -0.65, 0);
         playerGroup.add(rightLeg);
 
-        // --- LEVEL MAP ---
+        // Maps & Platforms
         const platforms = [];
         const lavaBlocks = [];
 
-        function createObbyMap() {
-            // Clear old blocks
+        function createMap() {
             platforms.forEach(p => scene.remove(p));
             lavaBlocks.forEach(l => scene.remove(l));
             platforms.length = 0;
             lavaBlocks.length = 0;
 
-            // Spawn baseplate
-            const spawn = new THREE.Mesh(new THREE.BoxGeometry(12, 2, 12), new THREE.MeshLambertMaterial({ color: 0x808080 }));
-            spawn.position.set(0, 0, 0);
+            // Spawn
+            const spawn = new THREE.Mesh(new THREE.BoxGeometry(14, 2, 14), new THREE.MeshLambertMaterial({ color: 0x808080 }));
+            spawn.position.set(0, -1, 0);
             scene.add(spawn);
             platforms.push(spawn);
 
-            // Obby blocks
-            let zPos = -12;
-            for (let i = 0; i < 6; i++) {
-                let isLava = (i === 2 || i === 4);
+            let zPos = -14;
+            for (let i = 0; i < 8; i++) {
+                let isLava = (i === 2 || i === 5);
                 let block = new THREE.Mesh(
-                    new THREE.BoxGeometry(5, 1.2, 5),
+                    new THREE.BoxGeometry(5, 1.5, 5),
                     new THREE.MeshLambertMaterial({ color: isLava ? 0xff2200 : 0x00aaff })
                 );
-                block.position.set(i % 2 === 0 ? 3 : -3, i * 1.6, zPos);
+                block.position.set(i % 2 === 0 ? 3 : -3, (i * 0.8), zPos);
                 scene.add(block);
                 if (isLava) lavaBlocks.push(block);
                 else platforms.push(block);
-                zPos -= 10;
+                zPos -= 9;
             }
         }
 
-        // --- GAME LAUNCHER & CONTROLS ---
-        const playerState = { x: 0, y: 3, z: 0, vy: 0, onGround: false, speed: 0.16, jumpForce: 0.32 };
+        const playerState = { x: 0, y: 3, z: 0, vy: 0, onGround: false, speed: 0.15, jumpForce: 0.28 };
         let gameActive = false;
         const moveDir = { x: 0, z: 0 };
         const keys = {};
 
-        function launchGame(mode) {
+        function launchGame() {
             document.getElementById('site-header').style.display = 'none';
             document.getElementById('web-pages').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
@@ -242,8 +195,8 @@
             document.getElementById('joystick-base').style.display = 'block';
             document.getElementById('jump-btn').style.display = 'flex';
 
-            playerState.x = 0; playerState.y = 4; playerState.z = 0;
-            createObbyMap();
+            playerState.x = 0; playerState.y = 4; playerState.z = 0; playerState.vy = 0;
+            createMap();
             gameActive = true;
         }
 
@@ -258,7 +211,6 @@
             document.getElementById('web-pages').style.display = 'block';
         }
 
-        // Input Handlers
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
 
@@ -276,8 +228,7 @@
             e.preventDefault();
             const t = e.touches[0];
             const rect = joystickBase.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
+            const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
             let dx = t.clientX - cx, dy = t.clientY - cy;
             const dist = Math.hypot(dx, dy), max = 35;
             if (dist > max) { dx = (dx/dist)*max; dy = (dy/dist)*max; }
@@ -293,7 +244,6 @@
         }
         document.getElementById('jump-btn').addEventListener('touchstart', e => { e.preventDefault(); doJump(); });
 
-        // --- MAIN LOOP ---
         function animate() {
             requestAnimationFrame(animate);
             if (!gameActive) return;
@@ -308,30 +258,40 @@
             playerState.x += ix * playerState.speed;
             playerState.z += iz * playerState.speed;
 
-            playerState.vy -= 0.02;
+            playerState.vy -= 0.015; // Yerçekimi
             playerState.y += playerState.vy;
             playerState.onGround = false;
 
+            // Gelişmiş Çarpışma (Collision) Kontrolü
             platforms.forEach(p => {
-                let bx = p.position.x, by = p.position.y, bz = p.position.z;
-                if (Math.abs(playerState.x - bx) < 3.2 && Math.abs(playerState.z - bz) < 3.2) {
-                    if (playerState.y <= by + 1.2 && playerState.y >= by - 0.5 && playerState.vy <= 0) {
-                        playerState.y = by + 1.2;
+                const box = new THREE.Box3().setFromObject(p);
+                // Karakterin ayak altı ve merkez sınırları
+                if (
+                    playerState.x >= box.min.x - 0.6 && playerState.x <= box.max.x + 0.6 &&
+                    playerState.z >= box.min.z - 0.6 && playerState.z <= box.max.z + 0.6
+                ) {
+                    // Üstüne basma kontrolü
+                    if (playerState.y >= box.max.y - 0.5 && playerState.y <= box.max.y + 1.2 && playerState.vy <= 0) {
+                        playerState.y = box.max.y;
                         playerState.vy = 0;
                         playerState.onGround = true;
                     }
                 }
             });
 
+            // Lav Kontrolü
             lavaBlocks.forEach(l => {
-                if (Math.abs(playerState.x - l.position.x) < 3 && Math.abs(playerState.z - l.position.z) < 3) {
-                    if (Math.abs(playerState.y - l.position.y) < 1.5) {
-                        playerState.x = 0; playerState.y = 4; playerState.z = 0;
-                    }
+                const box = new THREE.Box3().setFromObject(l);
+                if (
+                    playerState.x >= box.min.x - 0.5 && playerState.x <= box.max.x + 0.5 &&
+                    playerState.z >= box.min.z - 0.5 && playerState.z <= box.max.z + 0.5 &&
+                    playerState.y <= box.max.y + 0.5 && playerState.y >= box.min.y - 0.5
+                ) {
+                    playerState.x = 0; playerState.y = 4; playerState.z = 0; playerState.vy = 0;
                 }
             });
 
-            if (playerState.y < -15) { playerState.x = 0; playerState.y = 4; playerState.z = 0; }
+            if (playerState.y < -15) { playerState.x = 0; playerState.y = 4; playerState.z = 0; playerState.vy = 0; }
 
             playerGroup.position.set(playerState.x, playerState.y, playerState.z);
 

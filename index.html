@@ -1,361 +1,318 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Obyxa - Classic ROBLOX Experience</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Obyxa - Retro Roblox Game</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;700;800&display=swap');
-
-        * {
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #7887ff;
+            font-family: Arial, sans-serif;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: manipulation;
         }
-
-        body {
-            font-family: 'Open Sans', sans-serif;
-            overflow: hidden;
-            background-color: #111827;
+        canvas {
+            display: block;
         }
-
-        /* Classic ROBLOX Top Header Styling */
-        .roblox-topbar {
-            background: linear-gradient(180deg, #0055b3 0%, #003673 100%);
-            border-bottom: 3px solid #002247;
-        }
-
-        .roblox-btn {
-            background: linear-gradient(180deg, #4c96e1 0%, #1e5fad 100%);
-            border: 2px solid #0b3469;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-        }
-        .roblox-btn:active {
-            background: linear-gradient(180deg, #1e5fad 0%, #4c96e1 100%);
-        }
-
-        .roblox-green-btn {
-            background: linear-gradient(180deg, #00cc44 0%, #00882d 100%);
-            border: 2px solid #004d19;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-        }
-        .roblox-green-btn:active {
-            background: linear-gradient(180deg, #00882d 0%, #00cc44 100%);
-        }
-
-        .roblox-red-btn {
-            background: linear-gradient(180deg, #e53e3e 0%, #9b2c2c 100%);
-            border: 2px solid #742a2a;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-        }
-
-        /* On-Screen Touch Joystick Container */
-        #joystick-zone {
+        #ui {
             position: absolute;
-            bottom: 30px;
-            left: 30px;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            touch-action: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 40;
-        }
-
-        #joystick-knob {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.85);
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            position: absolute;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px #000;
+            z-index: 10;
             pointer-events: none;
         }
-
-        /* Action Buttons */
-        .action-btn {
-            width: 70px;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 3px solid rgba(255, 255, 255, 0.7);
+        .control-btn {
+            position: absolute;
+            bottom: 30px;
+            background: rgba(255, 255, 255, 0.4);
+            border: 3px solid white;
             border-radius: 50%;
+            color: white;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 24px;
-            z-index: 40;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            z-index: 10;
+            touch-action: none;
+            cursor: pointer;
         }
-        .action-btn:active {
+        #jump-btn {
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            font-size: 16px;
+        }
+        #joystick-base {
+            left: 30px;
+            bottom: 30px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            position: absolute;
+            z-index: 10;
+            touch-action: none;
+        }
+        #joystick-stick {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             background: rgba(255, 255, 255, 0.6);
-            transform: scale(0.95);
-        }
-
-        .roblox-panel {
-            background: rgba(10, 15, 25, 0.85);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .obyxa-title {
-            font-family: 'Fredoka One', cursive;
-            letter-spacing: 1px;
+            pointer-events: none;
         }
     </style>
 </head>
-<body class="w-full h-screen overflow-hidden select-none bg-gray-950 text-white">
+<body>
 
-    <!-- Three.js Canvas Layer -->
-    <div id="canvas-container" class="absolute inset-0 w-full h-full z-0"></div>
-
-    <!-- UI Overlay Layer -->
-    <div class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-0">
-        
-        <!-- Top Navigation Bar -->
-        <header class="roblox-topbar w-full py-2 px-3 flex items-center justify-between pointer-events-auto shadow-lg">
-            <div class="flex items-center space-x-3">
-                <div class="flex items-center space-x-1 cursor-pointer" onclick="openTab('games')">
-                    <div class="w-7 h-7 bg-red-600 border-2 border-white flex items-center justify-center font-black text-xs text-white transform -rotate-12 shadow">O</div>
-                    <span class="obyxa-title text-xl font-extrabold tracking-wider text-yellow-400 drop-shadow">OBYXA</span>
-                </div>
-
-                <nav class="hidden md:flex space-x-1 text-sm font-bold">
-                    <button onclick="openTab('games')" id="nav-games" class="px-3 py-1 rounded bg-blue-700/80 hover:bg-blue-600 transition">Games</button>
-                    <button onclick="openTab('catalog')" id="nav-catalog" class="px-3 py-1 rounded hover:bg-blue-600/50 transition">Catalog</button>
-                    <button onclick="openTab('profile')" id="nav-profile" class="px-3 py-1 rounded hover:bg-blue-600/50 transition">Profile</button>
-                </nav>
-            </div>
-
-            <!-- Stats & Currency -->
-            <div class="flex items-center space-x-3 text-xs sm:text-sm font-bold">
-                <div class="flex items-center space-x-1 bg-black/40 px-3 py-1 rounded-full border border-yellow-500/40">
-                    <span class="text-yellow-400 font-extrabold">TIX:</span>
-                    <span id="tix-count" class="text-yellow-300">100</span>
-                </div>
-
-                <div class="flex items-center space-x-1 bg-black/40 px-3 py-1 rounded-full border border-amber-500/40">
-                    <i class="fa-solid fa-coins text-amber-400"></i>
-                    <span id="coin-count" class="text-amber-200">0</span>
-                </div>
-
-                <div class="bg-blue-950/80 px-3 py-1 rounded-full border border-blue-400/30 text-blue-200 truncate">
-                    Mode: <span id="mode-name" class="text-white font-extrabold">Classic Obby</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Mobile Navigation Menu Bar -->
-        <div class="md:hidden flex justify-around bg-blue-950/90 py-1.5 border-b border-blue-800 text-xs font-bold pointer-events-auto">
-            <button onclick="openTab('games')" class="hover:text-yellow-300"><i class="fa-solid fa-gamepad mr-1"></i>Games</button>
-            <button onclick="openTab('catalog')" class="hover:text-yellow-300"><i class="fa-solid fa-store mr-1"></i>Catalog</button>
-            <button onclick="openTab('profile')" class="hover:text-yellow-300"><i class="fa-solid fa-user mr-1"></i>Avatar</button>
-        </div>
-
-        <!-- Leaderboard (Top Right Overlay) -->
-        <div id="leaderboard" class="self-end mr-3 mt-3 roblox-panel p-2.5 rounded-lg w-48 text-xs pointer-events-auto shadow-2xl border border-white/20">
-            <div class="font-extrabold text-yellow-400 border-b border-white/20 pb-1 mb-1.5 flex justify-between">
-                <span>Player</span>
-                <span id="lb-score-label">Stage</span>
-            </div>
-            <div class="flex justify-between items-center bg-blue-600/40 p-1.5 rounded font-semibold mb-1">
-                <span class="truncate w-24 text-white"><i class="fa-solid fa-user text-amber-300 mr-1"></i>Player1</span>
-                <span id="lb-score" class="text-green-400 font-bold">1</span>
-            </div>
-            <div id="enemy-score-row" class="hidden flex justify-between items-center p-1 text-red-300 bg-red-950/40 rounded">
-                <span class="truncate w-24"><i class="fa-solid fa-robot mr-1"></i>Noob Dummy</span>
-                <span id="enemy-hp">100 HP</span>
-            </div>
-        </div>
-
-        <!-- Sandbox Color Selector Toolbar -->
-        <div id="sandbox-toolbar" class="hidden self-center pointer-events-auto roblox-panel p-2 rounded-xl flex space-x-2 border border-yellow-400/50 mb-2">
-            <button onclick="setBuildColor(0xa30000)" class="w-8 h-8 rounded-md bg-red-700 border-2 border-white shadow"></button>
-            <button onclick="setBuildColor(0x0d69ab)" class="w-8 h-8 rounded-md bg-blue-600 border-2 border-white shadow"></button>
-            <button onclick="setBuildColor(0x287f54)" class="w-8 h-8 rounded-md bg-green-600 border-2 border-white shadow"></button>
-            <button onclick="setBuildColor(0xeab308)" class="w-8 h-8 rounded-md bg-yellow-500 border-2 border-white shadow"></button>
-            <button onclick="setBuildColor(0xa855f7)" class="w-8 h-8 rounded-md bg-purple-500 border-2 border-white shadow"></button>
-            <button onclick="clearSandboxBricks()" class="px-3 py-1 roblox-red-btn rounded text-xs font-bold text-white">Clear All</button>
-        </div>
-
-        <!-- Notification Message Box -->
-        <div id="msg-box" class="self-center bg-black/85 border-2 border-yellow-500 text-yellow-300 px-6 py-2 rounded-full font-bold text-sm sm:text-base opacity-0 transition-all duration-300 pointer-events-none shadow-2xl transform translate-y-4">
-            Welcome to Obyxa!
-        </div>
-
-        <!-- Bottom Controls & Reset Bar -->
-        <div class="p-4 flex justify-between items-end">
-            <!-- Desktop Controls Guide -->
-            <div class="hidden sm:block roblox-panel p-3 rounded-lg text-xs space-y-1 text-gray-300 max-w-xs">
-                <div class="font-bold text-white mb-1"><i class="fa-solid fa-keyboard mr-1"></i> Controls</div>
-                <div><span class="bg-gray-700 px-1.5 py-0.5 rounded text-white font-mono">WASD</span> : Move</div>
-                <div><span class="bg-gray-700 px-1.5 py-0.5 rounded text-white font-mono">SPACE</span> : Jump</div>
-                <div><span class="bg-gray-700 px-1.5 py-0.5 rounded text-white font-mono">F / Click</span> : Attack (Arena) / Place Block (Sandbox)</div>
-                <div><span class="bg-gray-700 px-1.5 py-0.5 rounded text-white font-mono">Mouse Drag</span> : Orbit Camera</div>
-            </div>
-
-            <!-- Reset Character Button -->
-            <div class="flex space-x-2 pointer-events-auto">
-                <button onclick="resetCharacter()" class="roblox-btn px-4 py-2 rounded text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-1">
-                    <i class="fa-solid fa-rotate-left"></i>
-                    <span>Reset</span>
-                </button>
-            </div>
-        </div>
+    <div id="ui">
+        <h2>OBYXA - Classic Obby</h2>
+        <div>Coins: <span id="coins">0</span> | Stage: <span id="stage">1</span>/3</div>
+        <div style="font-size: 12px; margin-top: 5px;">Use WASD / Arrow Keys or On-screen Joystick to Move. Space to Jump!</div>
     </div>
 
-    <!-- TOUCH CONTROLS (Mobile Joystick Overlay) -->
-    <div id="joystick-zone" class="pointer-events-auto">
-        <div id="joystick-knob"></div>
+    <div id="joystick-base">
+        <div id="joystick-stick"></div>
     </div>
+    <div id="jump-btn" class="control-btn">JUMP</div>
 
-    <!-- Touch Action Buttons (Jump & Attack/Build) -->
-    <div class="absolute bottom-8 right-8 flex flex-col space-y-3 z-40 pointer-events-auto">
-        <div id="action-btn" onclick="triggerAction()" class="action-btn bg-red-600/50 border-red-300">
-            <i id="action-btn-icon" class="fa-solid fa-hammer"></i>
-        </div>
-        <div id="jump-btn" class="action-btn">
-            <i class="fa-solid fa-arrow-up"></i>
-        </div>
-    </div>
+    <canvas id="gameCanvas"></canvas>
 
-    <!-- GAMES LOBBY MODAL -->
-    <div id="games-modal" class="hidden absolute inset-0 bg-slate-900/95 z-50 p-4 sm:p-8 overflow-y-auto pointer-events-auto">
-        <div class="max-w-4xl mx-auto space-y-6">
-            <div class="flex justify-between items-center border-b border-gray-700 pb-4">
-                <div>
-                    <h2 class="text-3xl font-black text-yellow-400 obyxa-title">OBYXA Places Selector</h2>
-                    <p class="text-xs text-gray-400">Select a place to play, fight, or build!</p>
-                </div>
-                <button onclick="closeModals()" class="roblox-green-btn px-6 py-2 rounded font-bold text-sm">Resume Game</button>
-            </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <!-- Game 1: Obby -->
-                <div class="bg-gray-800 border-2 border-blue-500 rounded-xl overflow-hidden hover:scale-105 transition duration-200 shadow-xl">
-                    <div class="h-32 bg-blue-600 flex items-center justify-center text-4xl">
-                        <i class="fa-solid fa-person-running text-white"></i>
-                    </div>
-                    <div class="p-4 space-y-2">
-                        <h3 class="font-extrabold text-lg text-white">Classic 5-Stage Obby</h3>
-                        <p class="text-xs text-gray-300">Dodge red lava blocks, jump across moving platforms, collect coins, and reach the finish!</p>
-                        <button onclick="switchMode('obby')" class="w-full roblox-green-btn py-2 rounded text-xs font-bold uppercase mt-2">Play Obby</button>
-                    </div>
-                </div>
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-                <!-- Game 2: Sandbox Free Build -->
-                <div class="bg-gray-800 border-2 border-yellow-500 rounded-xl overflow-hidden hover:scale-105 transition duration-200 shadow-xl">
-                    <div class="h-32 bg-amber-600 flex items-center justify-center text-4xl">
-                        <i class="fa-solid fa-cubes text-white"></i>
-                    </div>
-                    <div class="p-4 space-y-2">
-                        <h3 class="font-extrabold text-lg text-white">Sandbox Free Build</h3>
-                        <p class="text-xs text-gray-300">Tap or click to place colorful studs and 3D bricks freely on a giant baseplate!</p>
-                        <button onclick="switchMode('sandbox')" class="w-full roblox-green-btn py-2 rounded text-xs font-bold uppercase mt-2">Build Now</button>
-                    </div>
-                </div>
+        // Game State
+        const player = {
+            x: 100,
+            y: 300,
+            width: 35,
+            height: 50,
+            vx: 0,
+            vy: 0,
+            speed: 4,
+            jumpForce: -11,
+            grounded: false
+        };
 
-                <!-- Game 3: Sword Arena -->
-                <div class="bg-gray-800 border-2 border-red-500 rounded-xl overflow-hidden hover:scale-105 transition duration-200 shadow-xl">
-                    <div class="h-32 bg-red-700 flex items-center justify-center text-4xl">
-                        <i class="fa-solid fa-hand-back-fist text-white"></i>
-                    </div>
-                    <div class="p-4 space-y-2">
-                        <h3 class="font-extrabold text-lg text-white">Sword Arena vs AI</h3>
-                        <p class="text-xs text-gray-300">Equip your classic ROBLOX sword, battle enemy Noob Dummies, and earn extra Coins!</p>
-                        <button onclick="switchMode('arena')" class="w-full roblox-green-btn py-2 rounded text-xs font-bold uppercase mt-2">Fight Dummy</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        let coins = 0;
+        let stage = 1;
+        let cameraX = 0;
 
-    <!-- CATALOG MODAL -->
-    <div id="catalog-modal" class="hidden absolute inset-0 bg-slate-900/95 z-50 p-4 sm:p-8 overflow-y-auto pointer-events-auto">
-        <div class="max-w-4xl mx-auto space-y-6">
-            <div class="flex justify-between items-center border-b border-gray-700 pb-4">
-                <div>
-                    <h2 class="text-2xl font-black text-yellow-400">Obyxa Catalog</h2>
-                    <p class="text-xs text-gray-400">Buy and equip retro hats & accessories!</p>
-                </div>
-                <button onclick="closeModals()" class="roblox-green-btn px-6 py-2 rounded font-bold text-sm">Back To Game</button>
-            </div>
+        // Controls
+        const keys = { left: false, right: false, up: false };
+        let joystickActive = false;
+        let joystickX = 0;
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div class="bg-gray-800 border border-gray-700 rounded-lg p-3 flex flex-col items-center justify-between hover:border-yellow-500 transition">
-                    <div class="w-20 h-20 bg-yellow-400 rounded-md border-2 border-blue-500 flex items-center justify-center font-bold text-blue-900 text-xs text-center p-1">
-                        Classic Yellow
-                    </div>
-                    <div class="text-center my-2">
-                        <div class="font-bold text-sm">Classic Noob</div>
-                        <div class="text-xs text-yellow-400">Default</div>
-                    </div>
-                    <button onclick="equipHat('none')" class="w-full roblox-btn py-1 rounded text-xs font-bold">No Hat</button>
-                </div>
+        window.addEventListener('keydown', e => {
+            if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.left = true;
+            if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.right = true;
+            if (e.code === 'Space' || e.code === 'KeyW' || e.code === 'ArrowUp') jump();
+        });
 
-                <div class="bg-gray-800 border border-gray-700 rounded-lg p-3 flex flex-col items-center justify-between hover:border-yellow-500 transition">
-                    <div class="w-20 h-20 bg-red-600 rounded-md border-2 border-white flex items-center justify-center font-bold text-white text-xs text-center p-1">
-                        Red Visor
-                    </div>
-                    <div class="text-center my-2">
-                        <div class="font-bold text-sm">ROBLOX Visor</div>
-                        <div class="text-xs text-amber-300">10 Coins</div>
-                    </div>
-                    <button onclick="buyHat('visor', 10)" class="w-full roblox-btn py-1 rounded text-xs font-bold">Wear Visor</button>
-                </div>
+        window.addEventListener('keyup', e => {
+            if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.left = false;
+            if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.right = false;
+        });
 
-                <div class="bg-gray-800 border border-gray-700 rounded-lg p-3 flex flex-col items-center justify-between hover:border-yellow-500 transition">
-                    <div class="w-20 h-20 bg-gray-900 rounded-md border-2 border-red-500 flex items-center justify-center font-bold text-red-500 text-xs text-center p-1">
-                        Top Hat
-                    </div>
-                    <div class="text-center my-2">
-                        <div class="font-bold text-sm">Gentleman Top Hat</div>
-                        <div class="text-xs text-amber-300">25 Coins</div>
-                    </div>
-                    <button onclick="buyHat('tophat', 25)" class="w-full roblox-btn py-1 rounded text-xs font-bold">Wear Top Hat</button>
-                </div>
+        // Touch Joystick
+        const joystickBase = document.getElementById('joystick-base');
+        const joystickStick = document.getElementById('joystick-stick');
 
-                <div class="bg-gray-800 border border-gray-700 rounded-lg p-3 flex flex-col items-center justify-between hover:border-yellow-500 transition">
-                    <div class="w-20 h-20 bg-slate-400 rounded-md border-2 border-gray-300 flex items-center justify-center font-bold text-slate-900 text-xs text-center p-1">
-                        Knight Helmet
-                    </div>
-                    <div class="text-center my-2">
-                        <div class="font-bold text-sm">Iron Knight Helmet</div>
-                        <div class="text-xs text-amber-300">50 Coins</div>
-                    </div>
-                    <button onclick="buyHat('knight', 50)" class="w-full roblox-btn py-1 rounded text-xs font-bold">Wear Helmet</button>
-                </div>
-            </div>
-        </div>
-    </div>
+        joystickBase.addEventListener('touchstart', handleTouch, {passive: false});
+        joystickBase.addEventListener('touchmove', handleTouch, {passive: false});
+        joystickBase.addEventListener('touchend', () => {
+            joystickActive = false;
+            joystickX = 0;
+            joystickStick.style.transform = `translate(0px, 0px)`;
+        });
 
-    <!-- PROFILE MODAL -->
-    <div id="profile-modal" class="hidden absolute inset-0 bg-slate-900/95 z-50 p-6 overflow-y-auto pointer-events-auto">
-        <div class="max-w-xl mx-auto bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-700 pb-3">
-                <h2 class="text-2xl font-extrabold text-white">Player Profile</h2>
-                <button onclick="closeModals()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="w-20 h-20 bg-yellow-400 border-4 border-blue-600 rounded-lg flex items-center justify-center text-4xl text-blue-900 font-bold">
-                    <i class="fa-solid fa-user-astronaut"></i>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold text-yellow-400">Player1</h3>
-                    <p class="text-xs text-gray-400">Status: <span class="text-green-400">Online</sp
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = joystickBase.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            let dx = touch.clientX - cx;
+            dx = Math.max(-30, Math.min(30, dx));
+            joystickStick.style.transform = `translate(${dx}px, 0px)`;
+            joystickX = dx / 30;
+            joystickActive = true;
+        }
+
+        document.getElementById('jump-btn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            jump();
+        });
+        document.getElementById('jump-btn').addEventListener('click', jump);
+
+        function jump() {
+            if (player.grounded) {
+                player.vy = player.jumpForce;
+                player.grounded = false;
+            }
+        }
+
+        // Level Platforms & Obstacles
+        const platforms = [
+            { x: 0, y: 450, w: 400, h: 100, type: 'normal' },
+            { x: 450, y: 400, w: 120, h: 20, type: 'normal' },
+            { x: 620, y: 340, w: 120, h: 20, type: 'normal' },
+            { x: 800, y: 450, w: 200, h: 100, type: 'lava' }, // Lava trap
+            { x: 1050, y: 380, w: 140, h: 20, type: 'normal' },
+            { x: 1250, y: 310, w: 120, h: 20, type: 'normal' },
+            { x: 1450, y: 450, w: 300, h: 100, type: 'finish' }
+        ];
+
+        const collectibleCoins = [
+            { x: 480, y: 350, collected: false },
+            { x: 660, y: 290, collected: false },
+            { x: 1100, y: 330, collected: false }
+        ];
+
+        function respawn() {
+            player.x = 100;
+            player.y = 200;
+            player.vx = 0;
+            player.vy = 0;
+        }
+
+        // Game Loop
+        function update() {
+            // Movement logic
+            if (keys.left || (joystickActive && joystickX < -0.2)) {
+                player.vx = -player.speed;
+            } else if (keys.right || (joystickActive && joystickX > 0.2)) {
+                player.vx = player.speed;
+            } else {
+                player.vx = 0;
+            }
+
+            player.x += player.vx;
+            player.vy += 0.5; // Gravity
+            player.y += player.vy;
+
+            player.grounded = false;
+
+            // Platform collisions
+            platforms.forEach(p => {
+                if (
+                    player.x + player.width > p.x &&
+                    player.x < p.x + p.w &&
+                    player.y + player.height >= p.y &&
+                    player.y + player.height <= p.y + p.h + player.vy
+                ) {
+                    if (p.type === 'lava') {
+                        respawn();
+                    } else if (p.type === 'finish') {
+                        stage = 2;
+                        document.getElementById('stage').innerText = stage;
+                        respawn();
+                    } else {
+                        player.y = p.y - player.height;
+                        player.vy = 0;
+                        player.grounded = true;
+                    }
+                }
+            });
+
+            // Coin pickups
+            collectibleCoins.forEach(c => {
+                if (!c.collected && Math.hypot((player.x + player.width/2) - c.x, (player.y + player.height/2) - c.y) < 30) {
+                    c.collected = true;
+                    coins += 10;
+                    document.getElementById('coins').innerText = coins;
+                }
+            });
+
+            // Fall off screen
+            if (player.y > canvas.height) {
+                respawn();
+            }
+
+            // Camera follow
+            cameraX = player.x - canvas.width / 3;
+            if (cameraX < 0) cameraX = 0;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(-cameraX, 0);
+
+            // Draw Platforms
+            platforms.forEach(p => {
+                if (p.type === 'lava') {
+                    ctx.fillStyle = '#ff3300';
+                } else if (p.type === 'finish') {
+                    ctx.fillStyle = '#33cc33';
+                } else {
+                    ctx.fillStyle = '#7a7a7a';
+                }
+                ctx.fillRect(p.x, p.y, p.w, p.h);
+                
+                // Classic Roblox Studs effect
+                ctx.fillStyle = 'rgba(0,0,0,0.15)';
+                ctx.fillRect(p.x, p.y, p.w, 8);
+            });
+
+            // Draw Coins
+            collectibleCoins.forEach(c => {
+                if (!c.collected) {
+                    ctx.fillStyle = '#ffd700';
+                    ctx.beginPath();
+                    ctx.arc(c.x, c.y, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#cca100';
+                    ctx.stroke();
+                }
+            });
+
+            // Draw Classic Noob Avatar
+            // Head (Yellow)
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillRect(player.x + 2, player.y, 30, 30);
+            // Face Eyes & Smile
+            ctx.fillStyle = '#000';
+            ctx.fillRect(player.x + 8, player.y + 10, 4, 8);
+            ctx.fillRect(player.x + 22, player.y + 10, 4, 8);
+            ctx.fillRect(player.x + 12, player.y + 20, 10, 3);
+
+            // Torso (Blue)
+            ctx.fillStyle = '#0055b3';
+            ctx.fillRect(player.x + 4, player.y + 30, 26, 25);
+
+            // Legs (Green)
+            ctx.fillStyle = '#8bc34a';
+            ctx.fillRect(player.x + 6, player.y + 55, 10, 20);
+            ctx.fillRect(player.x + 18, player.y + 55, 10, 20);
+
+            ctx.restore();
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>

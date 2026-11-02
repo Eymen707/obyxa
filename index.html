@@ -77,7 +77,7 @@
             <div class="page-title">Games - Most Popular (Now)</div>
             <div class="games-grid">
                 <div class="game-thumb-card" onclick="launchGame()">
-                    <div class="game-thumb-img" style="background: linear-gradient(135deg, #ff7700, #ffcc00);">🏃‍♂️</div>
+                    <div class="game-thumb-img" style="background: linear-gradient(135deg, #00aaff, #0044aa);">🏃‍♂️</div>
                     <div class="game-thumb-title">Obyxa Parkour v1</div>
                 </div>
             </div>
@@ -118,7 +118,7 @@
         dirLight.position.set(20, 40, 20);
         scene.add(dirLight);
 
-        // Obyxa Noob Character with Limbs for Animation
+        // Obyxa Karakteri
         const playerGroup = new THREE.Group();
         scene.add(playerGroup);
 
@@ -163,16 +163,16 @@
             platforms.push(spawn);
 
             let zPos = -14;
-            for (let i = 0; i < 10; i++) {
-                // Kırmızı bloklar artık zararsız normal platform yapıldı, böylece değince yanıp sinir bozmaz!
+            for (let i = 0; i < 12; i++) {
+                // Sadece mavi ve sarı güvenli renkler kullanıldı (Kırmızı yok!)
                 let block = new THREE.Mesh(
                     new THREE.BoxGeometry(5, 1.5, 5),
-                    new THREE.MeshLambertMaterial({ color: i % 2 === 0 ? 0x00aaff : 0xff3300 })
+                    new THREE.MeshLambertMaterial({ color: i % 2 === 0 ? 0x00aaff : 0xffcc00 })
                 );
-                block.position.set(i % 2 === 0 ? 3 : -3, (i * 0.6), zPos);
+                block.position.set(i % 2 === 0 ? 3 : -3, (i * 0.5), zPos);
                 scene.add(block);
                 platforms.push(block);
-                zPos -= 9;
+                zPos -= 8;
             }
         }
 
@@ -257,14 +257,14 @@
             playerState.y += playerState.vy;
             playerState.onGround = false;
 
-            // Çarpışma ve Üzerinde Durma Kontrolü
+            // Kesin Çarpışma Kontrolü (İçinden Geçmeyi Önler)
             platforms.forEach(p => {
                 const box = new THREE.Box3().setFromObject(p);
                 if (
                     playerState.x >= box.min.x - 0.7 && playerState.x <= box.max.x + 0.7 &&
                     playerState.z >= box.min.z - 0.7 && playerState.z <= box.max.z + 0.7
                 ) {
-                    if (playerState.y >= box.max.y - 0.6 && playerState.y <= box.max.y + 1.2 && playerState.vy <= 0) {
+                    if (playerState.y >= box.max.y - 0.5 && playerState.y <= box.max.y + 1.2 && playerState.vy <= 0) {
                         playerState.y = box.max.y;
                         playerState.vy = 0;
                         playerState.onGround = true;

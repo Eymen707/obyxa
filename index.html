@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBYXA - Virtual Playworld & Retro Sandbox</title>
+    <title>OBYXA - Retro Sandbox & Playworld</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
         body { background-color: #e5e5e5; color: #111; }
         
-        /* Top Navigation Bar (Classic 2007 Blue Gradient) */
         .navbar {
             background: linear-gradient(to bottom, #1c4d8a, #0c2b54);
             border-bottom: 3px solid #081d38;
@@ -19,50 +18,21 @@
             color: white;
             flex-wrap: wrap;
         }
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        /* Classic Red Outlined Bubble Font Style */
         .obyxa-logo {
-            font-size: 38px;
+            font-size: 36px;
             font-weight: 900;
             font-style: italic;
             color: white;
-            text-shadow: 
-                -2px -2px 0 #cc0000,  
-                 2px -2px 0 #cc0000,
-                -2px  2px 0 #cc0000,
-                 2px  2px 0 #cc0000,
-                 0px 3px 0px #990000;
+            text-shadow: -2px -2px 0 #cc0000, 2px -2px 0 #cc0000, -2px 2px 0 #cc0000, 2px 2px 0 #cc0000, 0px 3px 0px #990000;
             letter-spacing: -2px;
-        }
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            font-size: 14px;
-        }
-        .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .nav-links a:hover { text-decoration: underline; }
-
-        /* Language Switcher */
-        .lang-select {
-            background: #ffffff;
-            color: #0c2b54;
-            border: 1px solid #ccc;
-            padding: 3px 6px;
-            font-weight: bold;
-            border-radius: 4px;
             cursor: pointer;
         }
+        .nav-links { display: flex; gap: 15px; align-items: center; font-size: 14px; }
+        .nav-links a { color: #ffffff; text-decoration: none; font-weight: bold; cursor: pointer; }
+        .nav-links a:hover { text-decoration: underline; }
 
-        /* Sub Navigation / Action Bar */
+        .lang-select { background: #ffffff; color: #0c2b54; border: 1px solid #ccc; padding: 3px 6px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
         .sub-nav {
             background: #dcdcdc;
             border-bottom: 1px solid #b5b5b5;
@@ -73,7 +43,6 @@
             font-weight: bold;
         }
 
-        /* Main Container */
         .container {
             max-width: 960px;
             margin: 15px auto;
@@ -81,228 +50,155 @@
             border: 1px solid #b5b5b5;
             padding: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-height: 500px;
         }
 
-        /* Hero Banner */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .hero {
             background: linear-gradient(to right, #0c2b54, #1c4d8a);
-            color: white;
-            padding: 20px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            color: white; padding: 20px; border-radius: 4px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
         }
-        .hero-text h1 { font-size: 24px; margin-bottom: 5px; }
-        .hero-text p { font-size: 14px; opacity: 0.9; }
-        
         .play-btn {
             background: linear-gradient(to bottom, #4CAF50, #2E7D32);
-            color: white;
-            border: 2px solid #1B5E20;
-            padding: 12px 25px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
+            color: white; border: 2px solid #1B5E20; padding: 12px 25px;
+            font-size: 18px; font-weight: bold; border-radius: 6px; cursor: pointer;
             box-shadow: 0 3px 0 #1b5e20;
         }
-        .play-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1b5e20; }
 
-        /* Sections */
-        h2.section-title {
-            font-size: 18px;
-            border-bottom: 2px solid #0c2b54;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-            color: #0c2b54;
+        /* Game Canvas */
+        #gameCanvas {
+            background: #87CEEB;
+            border: 3px solid #0c2b54;
+            display: block;
+            margin: 10px auto;
+            max-width: 100%;
         }
 
-        /* Games Grid */
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .game-card {
-            background: #f9f9f9;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 8px;
+        .controls-hint {
             text-align: center;
-        }
-        .game-thumb {
-            width: 100%;
-            height: 110px;
-            background: #222;
-            border: 1px solid #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
             font-size: 12px;
-            margin-bottom: 8px;
-            background-size: cover;
+            color: #555;
+            margin-top: 5px;
         }
-        .game-title { font-size: 13px; font-weight: bold; color: #0044cc; margin-bottom: 4px; }
-        .game-stats { font-size: 11px; color: #666; }
+
+        /* Catalog Grid */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px; margin-top: 15px;
+        }
+        .catalog-item {
+            border: 1px solid #ccc; padding: 10px; text-align: center; background: #fafafa; border-radius: 4px;
+        }
 
         /* Footer */
-        .footer {
-            text-align: center;
-            font-size: 11px;
-            color: #666;
-            margin-top: 20px;
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
-        }
-
-        /* Modal Simulator */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border: 3px solid #0c2b54;
-            width: 350px;
-            text-align: center;
-            border-radius: 6px;
-        }
-        .modal-content h3 { color: #0c2b54; margin-bottom: 10px; }
-        .modal-content p { font-size: 13px; margin-bottom: 15px; }
-        .close-btn {
-            background: #cc0000;
-            color: white;
-            border: none;
-            padding: 6px 15px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-        }
+        .footer { text-align: center; font-size: 11px; color: #666; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
     </style>
 </head>
 <body>
 
-    <!-- Top Navigation -->
     <div class="navbar">
-        <div class="logo-area">
-            <div class="obyxa-logo">OBYXA</div>
-        </div>
+        <div class="obyxa-logo" onclick="switchTab('games')">OBYXA</div>
         <div class="nav-links">
-            <a href="#" id="nav-games">Games</a>
-            <a href="#" id="nav-catalog">Catalog</a>
-            <a href="#" id="nav-people">People</a>
-            <a href="#" id="nav-forum">Forum</a>
+            <a onclick="switchTab('games')" id="nav-games">Games</a>
+            <a onclick="switchTab('catalog')" id="nav-catalog">Catalog</a>
+            <a onclick="switchTab('play')" id="nav-play">Play Parkour</a>
             <select class="lang-select" id="langSwitch" onchange="changeLanguage()">
-                <option value="en">English (EN)</option>
                 <option value="tr">Türkçe (TR)</option>
+                <option value="en">English (EN)</option>
             </select>
         </div>
     </div>
 
-    <!-- Sub Navigation -->
     <div class="sub-nav">
-        <span id="sub-welcome">Welcome to OBYXA – The Retro 2007 Sandbox Universe!</span>
-        <span><a href="#" style="color:#0044cc;" id="nav-login">Login</a> | <a href="#" style="color:#0044cc;" id="nav-signup">Sign Up</a></span>
+        <span id="sub-welcome">OBYXA 2007 Retro Oyun Portalı</span>
+        <span id="user-status">Misafir Oyuncu</span>
     </div>
 
-    <!-- Main Content Area -->
     <div class="container">
         
-        <!-- Hero Section -->
-        <div class="hero">
-            <div class="hero-text">
-                <h1 id="hero-title">Build, Play, and Socialize!</h1>
-                <p id="hero-desc">Experience the classic blocky era of multiplayer creativity with OBYXA.</p>
+        <!-- TAB 1: GAMES -->
+        <div id="tab-games" class="tab-content active">
+            <div class="hero">
+                <div>
+                    <h1 id="hero-title">İnşa Et, Oyna ve Sosyalleş!</h1>
+                    <p id="hero-desc">Klasik retro 2007 blok dünyasına hoş geldin.</p>
+                </div>
+                <button class="play-btn" onclick="switchTab('play')" id="hero-btn">PARKURA BAŞLA</button>
             </div>
-            <button class="play-btn" onclick="openLauncher()" id="hero-btn">PLAY NOW</button>
+            <h3 style="color:#0c2b54; margin-bottom:10px;" id="sec-games">Popüler OBYXA Modları</h3>
+            <p id="game-desc-txt">Menüden <b>Play Parkour</b> seçeneğine tıklayarak oyunu doğrudan tarayıcıda oynayabilirsin!</p>
         </div>
 
-        <!-- Popular Games Section -->
-        <h2 class="section-title" id="sec-games">Popular OBYXA Games</h2>
-        <div class="games-grid">
-            <div class="game-card">
-                <div class="game-thumb" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">Noob Classic Obby</div>
-                <div class="game-title">Natural Disaster Survival</div>
-                <div class="game-stats">👤 142 Playing</div>
+        <!-- TAB 2: CATALOG -->
+        <div id="tab-catalog" class="tab-content">
+            <h3 style="color:#0c2b54;" id="cat-title">OBYXA Kataloğu</h3>
+            <div class="catalog-grid">
+                <div class="catalog-item">
+                    <div style="font-size:30px;">🧢</div>
+                    <b>Classic Blue Visor</b>
+                    <p style="font-size:11px; color:green;">15 Bux</p>
+                </div>
+                <div class="catalog-item">
+                    <div style="font-size:30px;">👑</div>
+                    <b>Gold Crown</b>
+                    <p style="font-size:11px; color:green;">100 Bux</p>
+                </div>
+                <div class="catalog-item">
+                    <div style="font-size:30px;">⚔️</div>
+                    <b>Classic Sword</b>
+                    <p style="font-size:11px; color:green;">50 Bux</p>
+                </div>
             </div>
-            <div class="game-card">
-                <div class="game-thumb" style="background: linear-gradient(135deg, #11998e, #38ef7d);">Work at a Pizza Place</div>
-                <div class="game-title">Work at a Pizza Place</div>
-                <div class="game-stats">👤 98 Playing</div>
-            </div>
-            <div class="game-card">
-                <div class="game-thumb" style="background: linear-gradient(135deg, #fc4a1a, #f7b733);">Crossroads Classic</div>
-                <div class="game-title">Crossroads (1v1)</div>
-                <div class="game-stats">👤 64 Playing</div>
-            </div>
-            <div class="game-card">
-                <div class="game-thumb" style="background: linear-gradient(135deg, #833ab4, #fd1d1d);">Sword Fight Arena</div>
-                <div class="game-title">SFOTH Classic</div>
-                <div class="game-stats">👤 45 Playing</div>
+        </div>
+
+        <!-- TAB 3: CANVASI OYUN -->
+        <div id="tab-play" class="tab-content">
+            <h3 style="color:#0c2b54; text-align:center;" id="game-title">OBYXA Retro Obby Parkur</h3>
+            <canvas id="gameCanvas" width="600" height="300"></canvas>
+            <div class="controls-hint" id="controls-txt">
+                Kontroller: Klavye <b>Sol / Sağ Ok Tuşları</b> ile hareket et, <b>Yukarı Ok / Boşluk</b> ile zıpla. (Mobilde ekrana dokunabilirsiniz)
             </div>
         </div>
 
     </div>
 
-    <!-- Launcher Simulation Modal -->
-    <div class="modal" id="launcherModal">
-        <div class="modal-content">
-            <h3 id="modal-h">OBYXA Client Launcher</h3>
-            <p id="modal-p">Launching OBYXA 2007 multiplayer engine environment...</p>
-            <button class="close-btn" onclick="closeLauncher()" id="modal-close">Close</button>
-        </div>
-    </div>
-
-    <!-- Footer -->
     <div class="footer">
-        OBYXA Corporation. Inspired by classic 2007 multi-user virtual environments. Not affiliated with Roblox Corp.
+        OBYXA Corporation 2007 Style. GitHub Pages Uyumlu Sürüm.
     </div>
 
     <script>
-        // Multi-language Dictionary
+        // Sekme Değiştirici
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            if(tabName === 'play') {
+                initGame();
+            }
+        }
+
+        // Dil Desteği
         const translations = {
-            en: {
-                navGames: "Games",
-                navCatalog: "Catalog",
-                navPeople: "People",
-                navForum: "Forum",
-                navLogin: "Login",
-                navSignup: "Sign Up",
-                subWelcome: "Welcome to OBYXA – The Retro 2007 Sandbox Universe!",
-                heroTitle: "Build, Play, and Socialize!",
-                heroDesc: "Experience the classic blocky era of multiplayer creativity with OBYXA.",
-                heroBtn: "PLAY NOW",
-                secGames: "Popular OBYXA Games",
-                modalH: "OBYXA Client Launcher",
-                modalP: "Initializing OBYXA 2007 multiplayer environment...",
-                modalClose: "Close"
-            },
             tr: {
-                navGames: "Oyunlar",
-                navCatalog: "Katalog",
-                navPeople: "Kullanıcılar",
-                navForum: "Forum",
-                navLogin: "Giriş Yap",
-                navSignup: "Kayıt Ol",
-                subWelcome: "OBYXA'ya Hoş Geldiniz – Retro 2007 Sandbox Evreni!",
-                heroTitle: "İnşa Et, Oyna ve Sosyalleş!",
-                heroDesc: "OBYXA ile klasik bloklu çok oyunculu yaratıcılık çağını yeniden yaşayın.",
-                heroBtn: "HEMEN OYNA",
-                secGames: "Popüler OBYXA Oyunları",
-                modalH: "OBYXA İstemci Başlatıcı",
-                modalP: "OBYXA 2007 çok oyunculu ortamı başlatılıyor...",
-                modalClose: "Kapat"
+                games: "Oyunlar", catalog: "Katalog", play: "Parkur Oyna",
+                welcome: "OBYXA 2007 Retro Oyun Portalı",
+                heroTitle: "İnşa Et, Oyna ve Sosyalleş!", heroDesc: "Klasik retro 2007 blok dünyasına hoş geldin.",
+                heroBtn: "PARKURA BAŞLA", secGames: "Popüler OBYXA Modları",
+                gameDesc: "Menüden Play Parkour seçeneğine tıklayarak oyunu doğrudan tarayıcıda oynayabilirsin!",
+                catTitle: "OBYXA Kataloğu", gameTitle: "OBYXA Retro Obby Parkur",
+                controls: "Kontroller: Klavye Sol / Sağ Ok Tuşları ile hareket et, Yukarı Ok / Boşluk ile zıpla."
+            },
+            en: {
+                games: "Games", catalog: "Catalog", play: "Play Parkour",
+                welcome: "OBYXA 2007 Retro Play Universe",
+                heroTitle: "Build, Play, and Socialize!", heroDesc: "Welcome to the classic 2007 retro blocky world.",
+                heroBtn: "START PARKOUR", secGames: "Popular OBYXA Modes",
+                gameDesc: "Click Play Parkour in the menu to play directly in your browser!",
+                catTitle: "OBYXA Catalog", gameTitle: "OBYXA Retro Obby Parkour",
+                controls: "Controls: Use Left / Right Arrow keys to move, Up Arrow / Space to jump."
             }
         };
 
@@ -310,28 +206,109 @@
             const lang = document.getElementById("langSwitch").value;
             const t = translations[lang];
 
-            document.getElementById("nav-games").innerText = t.navGames;
-            document.getElementById("nav-catalog").innerText = t.navCatalog;
-            document.getElementById("nav-people").innerText = t.navPeople;
-            document.getElementById("nav-forum").innerText = t.navForum;
-            document.getElementById("nav-login").innerText = t.navLogin;
-            document.getElementById("nav-signup").innerText = t.navSignup;
-            document.getElementById("sub-welcome").innerText = t.subWelcome;
+            document.getElementById("nav-games").innerText = t.games;
+            document.getElementById("nav-catalog").innerText = t.catalog;
+            document.getElementById("nav-play").innerText = t.play;
+            document.getElementById("sub-welcome").innerText = t.welcome;
             document.getElementById("hero-title").innerText = t.heroTitle;
             document.getElementById("hero-desc").innerText = t.heroDesc;
             document.getElementById("hero-btn").innerText = t.heroBtn;
             document.getElementById("sec-games").innerText = t.secGames;
-            document.getElementById("modal-h").innerText = t.modalH;
-            document.getElementById("modal-p").innerText = t.modalP;
-            document.getElementById("modal-close").innerText = t.modalClose;
+            document.getElementById("game-desc-txt").innerText = t.gameDesc;
+            document.getElementById("cat-title").innerText = t.catTitle;
+            document.getElementById("game-title").innerText = t.gameTitle;
+            document.getElementById("controls-txt").innerText = t.controls;
         }
 
-        function openLauncher() {
-            document.getElementById("launcherModal").style.display = "flex";
+        // Mini Oyuncu ve Parkur Motoru (Canvas)
+        let canvas, ctx;
+        let player = { x: 30, y: 200, w: 20, h: 30, vx: 0, vy: 0, grounded: false };
+        let platforms = [
+            { x: 0, y: 260, w: 120, h: 40 },
+            { x: 160, y: 220, w: 80, h: 20 },
+            { x: 280, y: 180, w: 80, h: 20 },
+            { x: 400, y: 140, w: 80, h: 20 },
+            { x: 520, y: 100, w: 60, h: 20 }
+        ];
+        let keys = {};
+        let gameRunning = false;
+
+        function initGame() {
+            canvas = document.getElementById("gameCanvas");
+            ctx = canvas.getContext("2d");
+            
+            window.onkeydown = e => keys[e.key] = true;
+            window.onkeyup = e => keys[e.key] = false;
+
+            // Mobil Dokunmatik Desteği
+            canvas.ontouchstart = () => {
+                if(player.grounded) { player.vy = -9; player.grounded = false; }
+            };
+
+            if(!gameRunning) {
+                gameRunning = true;
+                requestAnimationFrame(updateGame);
+            }
         }
 
-        function closeLauncher() {
-            document.getElementById("launcherModal").style.display = "none";
+        function updateGame() {
+            if(!gameRunning) return;
+
+            // Hareket Mantığı
+            if (keys["ArrowLeft"] || keys["a"]) player.vx = -3;
+            else if (keys["ArrowRight"] || keys["d"]) player.vx = 3;
+            else player.vx = 0;
+
+            if ((keys["ArrowUp"] || keys["w"] || keys[" "]) && player.grounded) {
+                player.vy = -9;
+                player.grounded = false;
+            }
+
+            // Fizik
+            player.vy += 0.4; // Yerçekimi
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // Platform Çarpışmaları
+            player.grounded = false;
+            platforms.forEach(p => {
+                if (player.x < p.x + p.w && player.x + player.w > p.x &&
+                    player.y + player.h > p.y && player.y + player.h < p.y + p.h + player.vy) {
+                    player.grounded = true;
+                    player.vy = 0;
+                    player.y = p.y - player.h;
+                }
+            });
+
+            // Yerin Dibine Düşerse Sıfırla
+            if (player.y > 300) {
+                player.x = 30; player.y = 200; player.vy = 0;
+            }
+
+            // Çizim İşlemleri
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Platformlar (Retro Yeşil/Kahve Bloklar)
+            ctx.fillStyle = "#669900";
+            platforms.forEach(p => {
+                ctx.fillRect(p.x, p.y, p.w, p.h);
+                ctx.strokeStyle = "#333";
+                ctx.strokeRect(p.x, p.y, p.w, p.h);
+            });
+
+            // Karakter (Noob Avatar)
+            // Gövde
+            ctx.fillStyle = "#0066cc";
+            ctx.fillRect(player.x, player.y + 10, player.w, 12);
+            // Bacaklar (Sağlam zeminde basar)
+            ctx.fillStyle = "#669900";
+            ctx.fillRect(player.x, player.y + 22, player.w / 2 - 1, 8);
+            ctx.fillRect(player.x + player.w / 2 + 1, player.y + 22, player.w / 2 - 1, 8);
+            // Kafa
+            ctx.fillStyle = "#ffcc00";
+            ctx.fillRect(player.x + 3, player.y, 14, 10);
+
+            requestAnimationFrame(updateGame);
         }
     </script>
 </body>

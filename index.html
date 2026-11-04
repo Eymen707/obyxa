@@ -1,314 +1,359 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBYXA - Retro Sandbox & Playworld</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>OBYXA - Retro Playworld 2007</title>
+    <!-- Three.js (Gerçek 3D Görsel Motoru) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-        body { background-color: #e5e5e5; color: #111; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Verdana, Arial, sans-serif; user-select: none; }
+        body { background-color: #e5e5e5; color: #000; }
         
-        .navbar {
+        /* 2007 Roblox Mavi Header & İkonik Kırmızı Konturlu OBYXA Logosu */
+        .header {
             background: linear-gradient(to bottom, #1c4d8a, #0c2b54);
             border-bottom: 3px solid #081d38;
-            padding: 8px 15px;
+            padding: 8px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
-            flex-wrap: wrap;
         }
         .obyxa-logo {
-            font-size: 36px;
+            font-size: 34px;
             font-weight: 900;
             font-style: italic;
-            color: white;
-            text-shadow: -2px -2px 0 #cc0000, 2px -2px 0 #cc0000, -2px 2px 0 #cc0000, 2px 2px 0 #cc0000, 0px 3px 0px #990000;
-            letter-spacing: -2px;
-            cursor: pointer;
+            color: #ffffff;
+            -webkit-text-stroke: 1.8px #cc0000;
+            text-shadow: 2px 2px 0px #cc0000;
+            letter-spacing: -1px;
         }
-        .nav-links { display: flex; gap: 15px; align-items: center; font-size: 14px; }
-        .nav-links a { color: #ffffff; text-decoration: none; font-weight: bold; cursor: pointer; }
-        .nav-links a:hover { text-decoration: underline; }
+        .lang-switch {
+            background: #fff; border: 1px solid #777; font-size: 11px; font-weight: bold; padding: 2px 4px; border-radius: 3px;
+        }
 
-        .lang-select { background: #ffffff; color: #0c2b54; border: 1px solid #ccc; padding: 3px 6px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-
+        /* Sub Nav Links (Games, Catalog, Forum) */
         .sub-nav {
             background: #dcdcdc;
             border-bottom: 1px solid #b5b5b5;
-            padding: 6px 15px;
+            padding: 5px 10px;
             display: flex;
-            justify-content: space-between;
-            font-size: 13px;
+            gap: 15px;
+            font-size: 12px;
             font-weight: bold;
         }
+        .sub-nav a { color: #0044cc; text-decoration: none; cursor: pointer; }
+        .sub-nav a.active { color: #000; text-decoration: underline; }
 
-        .container {
-            max-width: 960px;
-            margin: 15px auto;
-            background: #ffffff;
-            border: 1px solid #b5b5b5;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-height: 500px;
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .hero {
-            background: linear-gradient(to right, #0c2b54, #1c4d8a);
-            color: white; padding: 20px; border-radius: 4px; margin-bottom: 20px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-        }
-        .play-btn {
-            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
-            color: white; border: 2px solid #1B5E20; padding: 12px 25px;
-            font-size: 18px; font-weight: bold; border-radius: 6px; cursor: pointer;
-            box-shadow: 0 3px 0 #1b5e20;
-        }
-
-        /* Game Canvas */
-        #gameCanvas {
-            background: #87CEEB;
-            border: 3px solid #0c2b54;
-            display: block;
+        /* Main Portal Area */
+        .main-container {
+            max-width: 900px;
             margin: 10px auto;
-            max-width: 100%;
+            background: #fff;
+            border: 1px solid #999;
+            padding: 10px;
         }
 
-        .controls-hint {
-            text-align: center;
-            font-size: 12px;
-            color: #555;
-            margin-top: 5px;
-        }
+        .section-tab { display: none; }
+        .section-tab.active { display: block; }
 
-        /* Catalog Grid */
-        .catalog-grid {
+        /* 2007 Oyun Kartları (Games Sayfası Dizilimi) */
+        .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px; margin-top: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
         }
-        .catalog-item {
-            border: 1px solid #ccc; padding: 10px; text-align: center; background: #fafafa; border-radius: 4px;
+        .game-card {
+            border: 1px solid #ccc; background: #f9f9f9; padding: 6px; text-align: center; border-radius: 3px;
         }
+        .game-card img-placeholder {
+            width: 100%; height: 75px; background: #333; display: block; margin-bottom: 5px; color: #fff; font-size: 10px; line-height: 75px;
+        }
+        .game-card-title { font-size: 11px; font-weight: bold; color: #0044cc; cursor: pointer; }
+        .play-btn-card { background: #4CAF50; color: #fff; border: none; padding: 4px 8px; font-size: 11px; font-weight: bold; margin-top: 5px; cursor: pointer; border-radius: 3px; }
 
-        /* Footer */
-        .footer { text-align: center; font-size: 11px; color: #666; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+        /* 3D Oyunu & Mobil Dokunmatik Kontroller */
+        #game3d-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: #000;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        #threejs-canvas { width: 100%; height: 100%; display: block; }
+
+        /* Telefondan Oynamak İçin Ekran Üstü Dokunmatik Tuşlar */
+        .mobile-controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+        .btn-group-left, .btn-group-right { display: flex; gap: 8px; pointer-events: auto; }
+        .touch-btn {
+            width: 50px; height: 50px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid #333;
+            border-radius: 50%;
+            font-size: 18px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            touch-action: manipulation;
+        }
+        .touch-btn:active { background: rgba(255, 204, 0, 0.9); }
+
+        .footer { text-align: center; font-size: 10px; color: #777; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="navbar">
-        <div class="obyxa-logo" onclick="switchTab('games')">OBYXA</div>
-        <div class="nav-links">
-            <a onclick="switchTab('games')" id="nav-games">Games</a>
-            <a onclick="switchTab('catalog')" id="nav-catalog">Catalog</a>
-            <a onclick="switchTab('play')" id="nav-play">Play Parkour</a>
-            <select class="lang-select" id="langSwitch" onchange="changeLanguage()">
-                <option value="tr">Türkçe (TR)</option>
-                <option value="en">English (EN)</option>
-            </select>
-        </div>
+    <!-- Header & Logo -->
+    <div class="header">
+        <div class="obyxa-logo" onclick="showTab('games')">OBYXA</div>
+        <select class="lang-switch" id="langSwitch" onchange="switchLanguage()">
+            <option value="tr">Türkçe (TR)</option>
+            <option value="en">English (EN)</option>
+        </select>
     </div>
 
+    <!-- Sub Nav -->
     <div class="sub-nav">
-        <span id="sub-welcome">OBYXA 2007 Retro Oyun Portalı</span>
-        <span id="user-status">Misafir Oyuncu</span>
+        <a onclick="showTab('games')" id="nav-games" class="active">Oyunlar (Games)</a>
+        <a onclick="showTab('play')" id="nav-play">3D Parkur Oyna</a>
+        <a onclick="showTab('catalog')" id="nav-catalog">Katalog</a>
     </div>
 
-    <div class="container">
+    <div class="main-container">
         
-        <!-- TAB 1: GAMES -->
-        <div id="tab-games" class="tab-content active">
-            <div class="hero">
-                <div>
-                    <h1 id="hero-title">İnşa Et, Oyna ve Sosyalleş!</h1>
-                    <p id="hero-desc">Klasik retro 2007 blok dünyasına hoş geldin.</p>
+        <!-- OYUNLAR SEKME (GAMES) -->
+        <div id="tab-games" class="section-tab active">
+            <h3 style="font-size: 14px; border-bottom: 1px solid #0044cc; padding-bottom: 3px;" id="lbl-popular">Popüler OBYXA Oyunları (Most Popular)</h3>
+            <div class="games-grid">
+                <div class="game-card">
+                    <div style="background:#1e3c72; height:70px; color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;">3D Obby</div>
+                    <div class="game-card-title">Retro Parkur 2007</div>
+                    <button class="play-btn-card" onclick="showTab('play')">OYNA</button>
                 </div>
-                <button class="play-btn" onclick="switchTab('play')" id="hero-btn">PARKURA BAŞLA</button>
-            </div>
-            <h3 style="color:#0c2b54; margin-bottom:10px;" id="sec-games">Popüler OBYXA Modları</h3>
-            <p id="game-desc-txt">Menüden <b>Play Parkour</b> seçeneğine tıklayarak oyunu doğrudan tarayıcıda oynayabilirsin!</p>
-        </div>
-
-        <!-- TAB 2: CATALOG -->
-        <div id="tab-catalog" class="tab-content">
-            <h3 style="color:#0c2b54;" id="cat-title">OBYXA Kataloğu</h3>
-            <div class="catalog-grid">
-                <div class="catalog-item">
-                    <div style="font-size:30px;">🧢</div>
-                    <b>Classic Blue Visor</b>
-                    <p style="font-size:11px; color:green;">15 Bux</p>
+                <div class="game-card">
+                    <div style="background:#11998e; height:70px; color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;">Sword Arena</div>
+                    <div class="game-card-title">SFOTH Classic</div>
+                    <button class="play-btn-card" onclick="showTab('play')">OYNA</button>
                 </div>
-                <div class="catalog-item">
-                    <div style="font-size:30px;">👑</div>
-                    <b>Gold Crown</b>
-                    <p style="font-size:11px; color:green;">100 Bux</p>
-                </div>
-                <div class="catalog-item">
-                    <div style="font-size:30px;">⚔️</div>
-                    <b>Classic Sword</b>
-                    <p style="font-size:11px; color:green;">50 Bux</p>
+                <div class="game-card">
+                    <div style="background:#fc4a1a; height:70px; color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;">Crossroads</div>
+                    <div class="game-card-title">Crossroads 1v1</div>
+                    <button class="play-btn-card" onclick="showTab('play')">OYNA</button>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 3: CANVASI OYUN -->
-        <div id="tab-play" class="tab-content">
-            <h3 style="color:#0c2b54; text-align:center;" id="game-title">OBYXA Retro Obby Parkur</h3>
-            <canvas id="gameCanvas" width="600" height="300"></canvas>
-            <div class="controls-hint" id="controls-txt">
-                Kontroller: Klavye <b>Sol / Sağ Ok Tuşları</b> ile hareket et, <b>Yukarı Ok / Boşluk</b> ile zıpla. (Mobilde ekrana dokunabilirsiniz)
+        <!-- 3D GERÇEK OYUN SEKME (PLAY) -->
+        <div id="tab-play" class="section-tab">
+            <h3 style="font-size: 14px; color: #0044cc;" id="lbl-3dtitle">3D OBYXA Obby Parkur (Telefondan Dokunmatik Oyna)</h3>
+            
+            <div id="game3d-container">
+                <div id="threejs-canvas"></div>
+                
+                <!-- Dokunmatik Kontroller (Mobil Uyumlu) -->
+                <div class="mobile-controls">
+                    <div class="btn-group-left">
+                        <div class="touch-btn" id="btn-left">◀</div>
+                        <div class="touch-btn" id="btn-right">▶</div>
+                    </div>
+                    <div class="btn-group-right">
+                        <div class="touch-btn" id="btn-jump">▲</div>
+                    </div>
+                </div>
             </div>
+            <p style="font-size: 11px; color: #555; margin-top: 5px;" id="lbl-hint">Mobilde alttaki oklara basarak karakteri yönetebilirsin. Klavyede Sol/Sağ/Boşluk Tuşları çalışır.</p>
+        </div>
+
+        <!-- KATALOG SEKME -->
+        <div id="tab-catalog" class="section-tab">
+            <h3 style="font-size: 14px;" id="lbl-cat">OBYXA Kataloğu</h3>
+            <p style="font-size: 12px; margin-top: 10px;">Şapkalar ve Eşyalar (2007 Style Catalog)</p>
         </div>
 
     </div>
 
     <div class="footer">
-        OBYXA Corporation 2007 Style. GitHub Pages Uyumlu Sürüm.
+        OBYXA 2007 Multi-User Retro Portal. Designed for Mobile & Web.
     </div>
 
     <script>
-        // Sekme Değiştirici
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        // Sekmeler Arası Geçiş
+        function showTab(tabName) {
+            document.querySelectorAll('.section-tab').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sub-nav a').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
-            if(tabName === 'play') {
-                initGame();
-            }
-        }
-
-        // Dil Desteği
-        const translations = {
-            tr: {
-                games: "Oyunlar", catalog: "Katalog", play: "Parkur Oyna",
-                welcome: "OBYXA 2007 Retro Oyun Portalı",
-                heroTitle: "İnşa Et, Oyna ve Sosyalleş!", heroDesc: "Klasik retro 2007 blok dünyasına hoş geldin.",
-                heroBtn: "PARKURA BAŞLA", secGames: "Popüler OBYXA Modları",
-                gameDesc: "Menüden Play Parkour seçeneğine tıklayarak oyunu doğrudan tarayıcıda oynayabilirsin!",
-                catTitle: "OBYXA Kataloğu", gameTitle: "OBYXA Retro Obby Parkur",
-                controls: "Kontroller: Klavye Sol / Sağ Ok Tuşları ile hareket et, Yukarı Ok / Boşluk ile zıpla."
-            },
-            en: {
-                games: "Games", catalog: "Catalog", play: "Play Parkour",
-                welcome: "OBYXA 2007 Retro Play Universe",
-                heroTitle: "Build, Play, and Socialize!", heroDesc: "Welcome to the classic 2007 retro blocky world.",
-                heroBtn: "START PARKOUR", secGames: "Popular OBYXA Modes",
-                gameDesc: "Click Play Parkour in the menu to play directly in your browser!",
-                catTitle: "OBYXA Catalog", gameTitle: "OBYXA Retro Obby Parkour",
-                controls: "Controls: Use Left / Right Arrow keys to move, Up Arrow / Space to jump."
-            }
-        };
-
-        function changeLanguage() {
-            const lang = document.getElementById("langSwitch").value;
-            const t = translations[lang];
-
-            document.getElementById("nav-games").innerText = t.games;
-            document.getElementById("nav-catalog").innerText = t.catalog;
-            document.getElementById("nav-play").innerText = t.play;
-            document.getElementById("sub-welcome").innerText = t.welcome;
-            document.getElementById("hero-title").innerText = t.heroTitle;
-            document.getElementById("hero-desc").innerText = t.heroDesc;
-            document.getElementById("hero-btn").innerText = t.heroBtn;
-            document.getElementById("sec-games").innerText = t.secGames;
-            document.getElementById("game-desc-txt").innerText = t.gameDesc;
-            document.getElementById("cat-title").innerText = t.catTitle;
-            document.getElementById("game-title").innerText = t.gameTitle;
-            document.getElementById("controls-txt").innerText = t.controls;
-        }
-
-        // Mini Oyuncu ve Parkur Motoru (Canvas)
-        let canvas, ctx;
-        let player = { x: 30, y: 200, w: 20, h: 30, vx: 0, vy: 0, grounded: false };
-        let platforms = [
-            { x: 0, y: 260, w: 120, h: 40 },
-            { x: 160, y: 220, w: 80, h: 20 },
-            { x: 280, y: 180, w: 80, h: 20 },
-            { x: 400, y: 140, w: 80, h: 20 },
-            { x: 520, y: 100, w: 60, h: 20 }
-        ];
-        let keys = {};
-        let gameRunning = false;
-
-        function initGame() {
-            canvas = document.getElementById("gameCanvas");
-            ctx = canvas.getContext("2d");
             
-            window.onkeydown = e => keys[e.key] = true;
-            window.onkeyup = e => keys[e.key] = false;
-
-            // Mobil Dokunmatik Desteği
-            canvas.ontouchstart = () => {
-                if(player.grounded) { player.vy = -9; player.grounded = false; }
-            };
-
-            if(!gameRunning) {
-                gameRunning = true;
-                requestAnimationFrame(updateGame);
+            if(tabName === 'play' && !is3DInitialized) {
+                init3DGame();
             }
         }
 
-        function updateGame() {
-            if(!gameRunning) return;
-
-            // Hareket Mantığı
-            if (keys["ArrowLeft"] || keys["a"]) player.vx = -3;
-            else if (keys["ArrowRight"] || keys["d"]) player.vx = 3;
-            else player.vx = 0;
-
-            if ((keys["ArrowUp"] || keys["w"] || keys[" "]) && player.grounded) {
-                player.vy = -9;
-                player.grounded = false;
+        // Dil Değiştirici
+        function switchLanguage() {
+            const lang = document.getElementById("langSwitch").value;
+            if(lang === 'en') {
+                document.getElementById("nav-games").innerText = "Games";
+                document.getElementById("nav-play").innerText = "Play 3D Parkour";
+                document.getElementById("nav-catalog").innerText = "Catalog";
+                document.getElementById("lbl-popular").innerText = "Most Popular OBYXA Games";
+                document.getElementById("lbl-3dtitle").innerText = "3D OBYXA Obby Parkour (Mobile Touch Enabled)";
+                document.getElementById("lbl-hint").innerText = "Use bottom arrows on mobile or Left/Right/Space keys on keyboard.";
+            } else {
+                document.getElementById("nav-games").innerText = "Oyunlar (Games)";
+                document.getElementById("nav-play").innerText = "3D Parkur Oyna";
+                document.getElementById("nav-catalog").innerText = "Katalog";
+                document.getElementById("lbl-popular").innerText = "Popüler OBYXA Oyunları (Most Popular)";
+                document.getElementById("lbl-3dtitle").innerText = "3D OBYXA Obby Parkur (Telefondan Dokunmatik Oyna)";
+                document.getElementById("lbl-hint").innerText = "Mobilde alttaki oklara basarak karakteri yönetebilirsin. Klavyede Sol/Sağ/Boşluk Tuşları çalışır.";
             }
+        }
 
-            // Fizik
-            player.vy += 0.4; // Yerçekimi
-            player.x += player.vx;
-            player.y += player.vy;
+        // --- THREE.JS GERÇEK 3D OYUN VE FİZİK MOTORU ---
+        let scene, camera, renderer;
+        let playerMesh, platforms = [];
+        let moveLeft = false, moveRight = false, jump = false;
+        let playerVelY = 0, isGrounded = false;
+        let is3DInitialized = false;
 
-            // Platform Çarpışmaları
-            player.grounded = false;
+        function init3DGame() {
+            is3DInitialized = true;
+            const container = document.getElementById('threejs-canvas');
+            
+            // Sahne ve Kamera
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87ceeb); // 2007 Gökyüzü Mavisı
+
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 5, 12);
+            camera.lookAt(0, 2, 0);
+
+            // Işıklandırma
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(5, 10, 7);
+            scene.add(light);
+            scene.add(new THREE.AmbientLight(0x666666));
+
+            // 3D NOOB Karakter Modeli (Kafa, Gövde, Bacaklar - Zemin Üstünde)
+            playerMesh = new THREE.Group();
+            
+            // Kafa (Sarı)
+            const headGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+            const headMat = new THREE.MeshLambertMaterial({ color: 0xffcc00 });
+            const head = new THREE.Mesh(headGeo, headMat);
+            head.position.y = 1.4;
+            playerMesh.add(head);
+
+            // Gövde (Mavi)
+            const torsoGeo = new THREE.BoxGeometry(1, 1.2, 0.6);
+            const torsoMat = new THREE.MeshLambertMaterial({ color: 0x0066cc });
+            const torso = new THREE.Mesh(torsoGeo, torsoMat);
+            torso.position.y = 0.4;
+            playerMesh.add(torso);
+
+            // Bacaklar (Yeşil - Tam Zemin Üstünde Durur)
+            const legGeo = new THREE.BoxGeometry(0.45, 0.8, 0.55);
+            const legMat = new THREE.MeshLambertMaterial({ color: 0x669900 });
+            const leftLeg = new THREE.Mesh(legGeo, legMat);
+            leftLeg.position.set(-0.25, -0.6, 0);
+            const rightLeg = new THREE.Mesh(legGeo, legMat);
+            rightLeg.position.set(0.25, -0.6, 0);
+            playerMesh.add(leftLeg);
+            playerMesh.add(rightLeg);
+
+            playerMesh.position.set(-6, 2, 0);
+            scene.add(playerMesh);
+
+            // 3D Blok Platformlar (Obby Parkur)
+            const platPositions = [
+                { x: -6, y: 0, w: 4 },
+                { x: -2, y: 1, w: 2.5 },
+                { x: 2, y: 2, w: 2.5 },
+                { x: 6, y: 3, w: 3 }
+            ];
+
+            platPositions.forEach(p => {
+                const geo = new THREE.BoxGeometry(p.w, 0.6, 3);
+                const mat = new THREE.MeshLambertMaterial({ color: 0x33aa33 });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(p.x, p.y, 0);
+                scene.add(mesh);
+                platforms.push({ mesh, x: p.x, y: p.y, w: p.w });
+            });
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            // Dokunmatik Tuş Olayları (Mobil İçin)
+            bindTouch('btn-left', (val) => moveLeft = val);
+            bindTouch('btn-right', (val) => moveRight = val);
+            bindTouch('btn-jump', (val) => { if(val && isGrounded) { playerVelY = 0.22; isGrounded = false; } });
+
+            // Klavye Desteği
+            window.addEventListener('keydown', e => {
+                if(e.key === 'ArrowLeft' || e.key === 'a') moveLeft = true;
+                if(e.key === 'ArrowRight' || e.key === 'd') moveRight = true;
+                if((e.key === 'ArrowUp' || e.key === ' ') && isGrounded) { playerVelY = 0.22; isGrounded = false; }
+            });
+            window.addEventListener('keyup', e => {
+                if(e.key === 'ArrowLeft' || e.key === 'a') moveLeft = false;
+                if(e.key === 'ArrowRight' || e.key === 'd') moveRight = false;
+            });
+
+            animate();
+        }
+
+        function bindTouch(id, callback) {
+            const el = document.getElementById(id);
+            el.addEventListener('touchstart', (e) => { e.preventDefault(); callback(true); });
+            el.addEventListener('touchend', (e) => { e.preventDefault(); callback(false); });
+            el.addEventListener('mousedown', () => callback(true));
+            el.addEventListener('mouseup', () => callback(false));
+        }
+
+        // Oyun Döngüsü ve Fizik
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Yatay Hareket
+            if(moveLeft) playerMesh.position.x -= 0.08;
+            if(moveRight) playerMesh.position.x += 0.08;
+
+            // Yerçekimi & Zıplama
+            playerVelY -= 0.01;
+            playerMesh.position.y += playerVelY;
+
+            // Platform Basma Kontrolü
+            isGrounded = false;
             platforms.forEach(p => {
-                if (player.x < p.x + p.w && player.x + player.w > p.x &&
-                    player.y + player.h > p.y && player.y + player.h < p.y + p.h + player.vy) {
-                    player.grounded = true;
-                    player.vy = 0;
-                    player.y = p.y - player.h;
+                if(Math.abs(playerMesh.position.x - p.x) < p.w / 2 + 0.3 &&
+                   playerMesh.position.y - 1.0 <= p.y + 0.3 && playerMesh.position.y - 1.0 >= p.y - 0.3 &&
+                   playerVelY <= 0) {
+                    playerMesh.position.y = p.y + 1.3;
+                    playerVelY = 0;
+                    isGrounded = true;
                 }
             });
 
-            // Yerin Dibine Düşerse Sıfırla
-            if (player.y > 300) {
-                player.x = 30; player.y = 200; player.vy = 0;
+            // Yerin Dibine Düşerse Yeniden Doğ
+            if(playerMesh.position.y < -5) {
+                playerMesh.position.set(-6, 3, 0);
+                playerVelY = 0;
             }
 
-            // Çizim İşlemleri
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Kamera Takibi
+            camera.position.x = playerMesh.position.x;
 
-            // Platformlar (Retro Yeşil/Kahve Bloklar)
-            ctx.fillStyle = "#669900";
-            platforms.forEach(p => {
-                ctx.fillRect(p.x, p.y, p.w, p.h);
-                ctx.strokeStyle = "#333";
-                ctx.strokeRect(p.x, p.y, p.w, p.h);
-            });
-
-            // Karakter (Noob Avatar)
-            // Gövde
-            ctx.fillStyle = "#0066cc";
-            ctx.fillRect(player.x, player.y + 10, player.w, 12);
-            // Bacaklar (Sağlam zeminde basar)
-            ctx.fillStyle = "#669900";
-            ctx.fillRect(player.x, player.y + 22, player.w / 2 - 1, 8);
-            ctx.fillRect(player.x + player.w / 2 + 1, player.y + 22, player.w / 2 - 1, 8);
-            // Kafa
-            ctx.fillStyle = "#ffcc00";
-            ctx.fillRect(player.x + 3, player.y, 14, 10);
-
-            requestAnimationFrame(updateGame);
+            renderer.render(scene, camera);
         }
     </script>
 </body>

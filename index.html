@@ -3,125 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GAMERWOST Studio & Games Hub</title>
+  <title>GAMERWOST Launcher & Games Hub</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; user-select: none; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: #07040d; font-family: 'Segoe UI', Arial, sans-serif; color: #fff; }
-    
-    /* LAUNCHER HUB & MENU */
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #07040d; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #fff; }
+
+    /* LAUNCHER & MENÜ */
     #launcher { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; background: radial-gradient(circle at center, #1b0c3a 0%, #05020a 100%); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
-    
-    .logo-container { margin: 15px 0; text-align: center; }
-    .logo-canvas { width: 120px; height: 120px; filter: drop-shadow(0 0 15px #a855f7); }
-    .badge { background: rgba(255, 170, 0, 0.2); border: 1px solid #ffaa00; color: #ffaa00; padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-top: 5px; }
-    .title { font-size: 32px; font-weight: 900; letter-spacing: 2px; background: linear-gradient(45deg, #c084fc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .credits { color: #94a3b8; font-size: 12px; margin-bottom: 20px; }
+    .logo-canvas { width: 130px; height: 130px; filter: drop-shadow(0 0 20px #a855f7); margin-top: 10px; }
+    .badge { background: rgba(255, 170, 0, 0.2); border: 1px solid #ffaa00; color: #ffaa00; padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 1px; margin: 10px 0; }
+    .title { font-size: 36px; font-weight: 900; letter-spacing: 3px; background: linear-gradient(45deg, #c084fc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .credits { color: #94a3b8; font-size: 13px; margin-bottom: 15px; }
 
-    /* GAME & STUDIO CARDS */
-    .section-title { width: 100%; max-width: 500px; text-align: left; font-size: 14px; color: #c084fc; font-weight: bold; margin: 10px 0 5px 0; text-transform: uppercase; letter-spacing: 1px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 500px; margin-bottom: 20px; }
+    .section-title { width: 100%; max-width: 480px; text-align: left; font-size: 13px; color: #c084fc; font-weight: bold; margin: 12px 0 6px 0; text-transform: uppercase; letter-spacing: 1px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 10px; }
     
-    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; text-align: center; backdrop-filter: blur(10px); cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; backdrop-filter: blur(8px); }
     .card:active { transform: scale(0.96); border-color: #38bdf8; }
-    .card-icon { font-size: 28px; margin-bottom: 5px; }
-    .card-title { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 3px; }
-    .card-desc { font-size: 10px; color: #94a3b8; }
-    .card-studio { grid-column: span 2; background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(56,189,248,0.2)); border: 1px solid #a855f7; }
+    .card-icon { font-size: 26px; margin-bottom: 4px; }
+    .card-title { font-size: 13px; font-weight: bold; color: #fff; }
+    .card-desc { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+    .card-full { grid-column: span 2; background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(56,189,248,0.25)); border: 1px solid #a855f7; }
 
-    /* 3D ENGINE DISPLAY */
-    #game-container { width: 100vw; height: 100vh; position: relative; }
-    
-    /* TOUCH CONTROLS */
+    /* OYUN İÇİ VE CANVAS */
+    #game-canvas { display: block; width: 100vw; height: 100vh; }
     .ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none; z-index: 10; }
-    #joystick-base { position: absolute; bottom: 50px; left: 30px; width: 110px; height: 110px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: auto; }
-    #joystick-stick { position: absolute; top: 30px; left: 30px; width: 50px; height: 50px; background: radial-gradient(circle, #c084fc, #6366f1); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 15px rgba(192,132,252,0.6); }
     
-    #jump-btn { position: absolute; bottom: 55px; right: 30px; width: 80px; height: 80px; background: radial-gradient(circle, #38bdf8, #0284c7); border: 3px solid #fff; border-radius: 50%; color: #fff; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; pointer-events: auto; box-shadow: 0 0 15px rgba(56,189,248,0.6); }
+    /* ÜST BAR */
+    #top-bar { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+    #mode-title { font-size: 13px; font-weight: bold; background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); }
+    #exit-btn { background: rgba(239, 68, 68, 0.85); border: none; color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; pointer-events: auto; }
+
+    /* DOKUNMATİK KONTROLLER */
+    #joystick-base { position: absolute; bottom: 35px; left: 25px; width: 110px; height: 110px; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: auto; }
+    #joystick-stick { position: absolute; top: 30px; left: 30px; width: 50px; height: 50px; background: radial-gradient(circle, #c084fc, #6366f1); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 12px rgba(192,132,252,0.6); }
+    
+    #jump-btn { position: absolute; bottom: 40px; right: 25px; width: 80px; height: 80px; background: radial-gradient(circle, #38bdf8, #0284c7); border: 3px solid #fff; border-radius: 50%; color: #fff; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; pointer-events: auto; box-shadow: 0 0 15px rgba(56,189,248,0.6); }
     #jump-btn:active { transform: scale(0.9); }
 
-    #top-bar { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
-    #mode-title { font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); }
-    #exit-btn { background: rgba(239, 68, 68, 0.8); border: none; color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; pointer-events: auto; cursor: pointer; }
-    
-    /* BUILDER STUDIO TOOLS */
-    #studio-tools { position: absolute; top: 60px; right: 15px; display: none; flex-direction: column; gap: 8px; pointer-events: auto; }
-    .tool-btn { background: rgba(0,0,0,0.6); border: 1px solid #38bdf8; color: #fff; padding: 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+    /* MULTIPLAYER CHAT KUTUSU */
+    #chat-box { position: absolute; bottom: 35px; left: 150px; right: 120px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 8px; display: flex; flex-direction: column; gap: 6px; pointer-events: auto; }
+    #chat-messages { height: 60px; overflow-y: auto; font-size: 11px; display: flex; flex-direction: column; gap: 3px; }
+    .chat-msg { background: rgba(255,255,255,0.08); padding: 3px 6px; border-radius: 4px; }
+    .chat-user { color: #38bdf8; font-weight: bold; }
+    #chat-input-group { display: flex; gap: 6px; }
+    #chat-input { flex: 1; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; outline: none; }
+    #chat-send { background: #a855f7; border: none; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+
+    /* STUDIO TOOLS */
+    #studio-tools { position: absolute; top: 55px; right: 12px; display: none; flex-direction: column; gap: 6px; pointer-events: auto; }
+    .tool-btn { background: rgba(0,0,0,0.7); border: 1px solid #38bdf8; color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-  <!-- GAMERWOST LAUNCHER -->
+  <!-- LAUNCHER HUB -->
   <div id="launcher">
-    <div class="logo-container">
-      <canvas id="menu-logo" class="logo-canvas" width="200" height="200"></canvas>
-    </div>
+    <canvas id="menu-logo" class="logo-canvas" width="200" height="200"></canvas>
     <div class="title">GAMERWOST</div>
     <div class="credits">Created by obyxa</div>
     <div class="badge">App under development</div>
 
-    <div class="section-title">GAMERWOST Studio</div>
+    <div class="section-title">GAMERWOST Studio & Multiplayer</div>
     <div class="grid">
-      <div class="card card-studio" onclick="launchEngine('studio')">
+      <div class="card card-full" onclick="startGame('studio')">
         <div class="card-icon">🛠️</div>
-        <div class="card-title">GAMERWOST Studio</div>
-        <div class="card-desc">Build & edit your own 3D world in real-time!</div>
+        <div class="card-title">GAMERWOST Studio (Build & Place)</div>
+        <div class="card-desc">Build blocks, design map & spawn items</div>
+      </div>
+      <div class="card card-full" onclick="startGame('multiplayer')">
+        <div class="card-icon">🌐</div>
+        <div class="card-title">Multiplayer Server & Live Chat</div>
+        <div class="card-desc">Play online with others & chat live</div>
       </div>
     </div>
 
-    <div class="section-title">Select Experience</div>
+    <div class="section-title">Featured Experiences</div>
     <div class="grid">
-      <div class="card" onclick="launchEngine('obby')">
+      <div class="card" onclick="startGame('obby')">
         <div class="card-icon">🏃</div>
-        <div class="card-title">Neon Parkour</div>
-        <div class="card-desc">Challenging 3D Obby Course</div>
+        <div class="card-title">Neon Obby</div>
+        <div class="card-desc">3D Platformer Parkour</div>
       </div>
-      <div class="card" onclick="launchEngine('arena')">
+      <div class="card" onclick="startGame('arena')">
         <div class="card-icon">⚔️</div>
         <div class="card-title">Battle Arena</div>
-        <div class="card-desc">Action Combat Platform</div>
-      </div>
-      <div class="card" onclick="launchEngine('race')">
-        <div class="card-icon">🏎️</div>
-        <div class="card-title">Speed Run</div>
-        <div class="card-desc">High-speed Dash Track</div>
-      </div>
-      <div class="card" onclick="launchEngine('open')">
-        <div class="card-icon">🌐</div>
-        <div class="card-title">Open World</div>
-        <div class="card-desc">Free Exploration Sandbox</div>
+        <div class="card-desc">Survival Zone</div>
       </div>
     </div>
   </div>
 
-  <!-- 3D DISPLAY CONTAINER -->
-  <div id="game-container">
-    <div class="ui-layer" id="ui-layer">
-      <div id="top-bar">
-        <div id="mode-title">GAMERWOST 3D</div>
-        <button id="exit-btn" onclick="exitToLauncher()">Exit to Menu</button>
-      </div>
+  <!-- GAME CANVAS -->
+  <canvas id="game-canvas"></canvas>
 
-      <div id="studio-tools">
-        <button class="tool-btn" onclick="spawnBlock()">+ Add Block</button>
-        <button class="tool-btn" onclick="clearStudio()">Clear All</button>
-      </div>
-
-      <div id="joystick-base"><div id="joystick-stick"></div></div>
-      <div id="jump-btn">JUMP</div>
+  <!-- GAME UI -->
+  <div class="ui-layer" id="ui-layer">
+    <div id="top-bar">
+      <div id="mode-title">GAMERWOST 3D</div>
+      <button id="exit-btn" onclick="stopGame()">Exit Menu</button>
     </div>
+
+    <div id="studio-tools">
+      <button class="tool-btn" onclick="addStudioBlock()">+ Place Block</button>
+      <button class="tool-btn" onclick="clearStudioBlocks()">Clear All</button>
+    </div>
+
+    <div id="chat-box">
+      <div id="chat-messages">
+        <div class="chat-msg"><span class="chat-user">System:</span> Welcome to GAMERWOST Multiplayer Room!</div>
+      </div>
+      <div id="chat-input-group">
+        <input type="text" id="chat-input" placeholder="Type a message..." />
+        <button id="chat-send" onclick="sendChatMessage()">Send</button>
+      </div>
+    </div>
+
+    <div id="joystick-base"><div id="joystick-stick"></div></div>
+    <div id="jump-btn">JUMP</div>
   </div>
 
 <script>
-  // --- 1. RENDER LOGO ON CANVAS ---
-  function drawLogo(canvasId) {
+  // LOGO ÇİZİMİ (ORİJİNAL G LOGOSU)
+  function drawGamerwostLogo(canvasId) {
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext('2d');
     const w = canvas.width, h = canvas.height;
-    ctx.clearRect(0,0,w,h);
+    ctx.clearRect(0, 0, w, h);
 
     const grad = ctx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, '#c084fc');
+    grad.addColorStop(0, '#a855f7');
     grad.addColorStop(0.5, '#38bdf8');
     grad.addColorStop(1, '#0284c7');
 
@@ -129,188 +139,90 @@
     ctx.beginPath(); ctx.arc(w*0.5, h*0.45, w*0.4, 0, Math.PI*2); ctx.fill();
 
     ctx.fillStyle = '#07040d';
-    ctx.beginPath(); ctx.arc(w*0.53, h*0.45, w*0.25, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.54, h*0.45, w*0.25, 0, Math.PI*2); ctx.fill();
 
     ctx.fillStyle = grad; ctx.fillRect(w*0.45, h*0.4, w*0.4, h*0.16);
 
     ctx.fillStyle = '#e9d5ff';
-    ctx.fillRect(w*0.24, h*0.41, w*0.12, h*0.04);
-    ctx.fillRect(w*0.28, h*0.37, w*0.04, h*0.12);
+    ctx.fillRect(w*0.22, h*0.41, w*0.14, h*0.04);
+    ctx.fillRect(w*0.27, h*0.36, w*0.04, h*0.14);
 
     ctx.fillStyle = '#38bdf8';
-    ctx.beginPath(); ctx.arc(w*0.72, h*0.33, w*0.03, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(w*0.77, h*0.41, w*0.03, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(w*0.72, h*0.49, w*0.03, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.72, h*0.33, w*0.035, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.78, h*0.41, w*0.035, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.72, h*0.49, w*0.035, 0, Math.PI*2); ctx.fill();
   }
-  drawLogo('menu-logo');
+  drawGamerwostLogo('menu-logo');
 
-  // --- 2. THREE.JS 3D ENGINE ---
-  let scene, camera, renderer, animId;
-  let playerGroup, playerBox;
-  let collidables = [];
-  let currentMode = 'open';
-  let moveInput = { x: 0, z: 0 };
-  let velocityY = 0, isGrounded = true;
-  let leftArm, rightArm, leftLeg, rightLeg, walkTime = 0;
+  // CANVAS & OYUN FİZİĞİ
+  const canvas = document.getElementById('game-canvas');
+  const ctx = canvas.getContext('2d');
+  let animId = null;
 
-  function initThree() {
-    const container = document.getElementById('game-container');
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0518);
-    scene.fog = new THREE.FogExp2(0x0a0518, 0.015);
-
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.appendChild(renderer.domElement);
-
-    const ambient = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambient);
-
-    const sun = new THREE.DirectionalLight(0xffffff, 1.2);
-    sun.position.set(25, 45, 20);
-    sun.castShadow = true;
-    sun.shadow.mapSize.width = 2048;
-    sun.shadow.mapSize.height = 2048;
-    scene.add(sun);
-
-    // Texture for Torso Logo
-    const logoCanvas = document.createElement('canvas');
-    logoCanvas.width = 256; logoCanvas.height = 256;
-    drawLogoCanvas(logoCanvas);
-    const logoTex = new THREE.CanvasTexture(logoCanvas);
-
-    // Character Build
-    playerGroup = new THREE.Group();
-    
-    const torsoMat = [
-      new THREE.MeshStandardMaterial({ color: 0x2b1464 }),
-      new THREE.MeshStandardMaterial({ color: 0x2b1464 }),
-      new THREE.MeshStandardMaterial({ color: 0x2b1464 }),
-      new THREE.MeshStandardMaterial({ color: 0x2b1464 }),
-      new THREE.MeshStandardMaterial({ map: logoTex }),
-      new THREE.MeshStandardMaterial({ color: 0x2b1464 })
-    ];
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.3, 0.7), torsoMat);
-    torso.position.y = 1.45; torso.castShadow = true;
-    playerGroup.add(torso);
-
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85), new THREE.MeshStandardMaterial({ color: 0xf1f5f9 }));
-    head.position.y = 2.52; head.castShadow = true;
-    playerGroup.add(head);
-
-    const capMat = new THREE.MeshStandardMaterial({ color: 0x1e4ba0 });
-    const capTop = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.25, 0.9), capMat);
-    capTop.position.set(0, 2.95, 0);
-    const capVisor = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.05, 0.35), capMat);
-    capVisor.position.set(0, 2.85, 0.5);
-    playerGroup.add(capTop, capVisor);
-
-    const cyanMat = new THREE.MeshStandardMaterial({ color: 0x1bb5a6 });
-    const purpleMat = new THREE.MeshStandardMaterial({ color: 0x2b1464 });
-
-    function makeLimb(mat) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1.1, 0.45), mat);
-      m.castShadow = true; return m;
-    }
-
-    leftArm = makeLimb(cyanMat); leftArm.position.set(-0.85, 1.35, 0);
-    rightArm = makeLimb(cyanMat); rightArm.position.set(0.85, 1.35, 0);
-    leftLeg = makeLimb(purpleMat); leftLeg.position.set(-0.35, 0.55, 0);
-    rightLeg = makeLimb(purpleMat); rightLeg.position.set(0.35, 0.55, 0);
-    playerGroup.add(leftArm, rightArm, leftLeg, rightLeg);
-
-    scene.add(playerGroup);
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 
-  function drawLogoCanvas(canvas) {
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#2b1464'; ctx.fillRect(0,0,256,256);
-    const grad = ctx.createLinearGradient(0, 0, 256, 256);
-    grad.addColorStop(0, '#c084fc'); grad.addColorStop(1, '#38bdf8');
-    ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(128, 128, 90, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#2b1464'; ctx.beginPath(); ctx.arc(140, 128, 55, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = grad; ctx.fillRect(115, 108, 90, 40);
-  }
+  // BİREBİR ORİJİNAL KARAKTER MODELİ VEYA POZİSYONU
+  let player = {
+    x: 0, y: 0, z: 0,
+    vz: 0, radius: 18,
+    isGrounded: true,
+    facing: 0
+  };
 
-  function buildEnvironment(mode) {
-    collidables = [];
-    const children = [...scene.children];
-    children.forEach(c => {
-      if(c !== playerGroup && !(c instanceof THREE.Light)) scene.remove(c);
-    });
+  let dummyPlayers = [
+    { name: 'ProGamer_99', x: 80, y: -60, color: '#ef4444' },
+    { name: 'obyxa_Fan', x: -100, y: 50, color: '#10b981' }
+  ];
 
-    // Base Floor
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(100, 2, 100), new THREE.MeshStandardMaterial({ color: 0x111827 }));
-    floor.position.y = -1; floor.receiveShadow = true;
-    scene.add(floor);
-    collidables.push(new THREE.Box3().setFromObject(floor));
+  let currentMode = 'multiplayer';
+  let moveInput = { x: 0, y: 0 };
+  let blocks = [];
 
+  function loadMap(mode) {
+    blocks = [];
     if(mode === 'obby') {
-      const colors = [0xef4444, 0x3b82f6, 0x10b981, 0xf59e0b];
-      for(let i=0; i<15; i++) {
-        const b = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), new THREE.MeshStandardMaterial({ color: colors[i%colors.length] }));
-        b.position.set((i%2===0? -3: 3), i*2 + 1, -i*6 - 5);
-        b.castShadow = true; b.receiveShadow = true;
-        scene.add(b);
-        collidables.push(new THREE.Box3().setFromObject(b));
+      const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b'];
+      for(let i=0; i<12; i++) {
+        blocks.push({ x: (i%2===0 ? -60 : 60), y: -i*90 - 100, w: 90, h: 50, color: colors[i%4] });
       }
     } else if(mode === 'arena') {
-      for(let i=0; i<10; i++) {
-        const pillar = new THREE.Mesh(new THREE.BoxGeometry(3, 8, 3), new THREE.MeshStandardMaterial({ color: 0x8b5cf6 }));
-        pillar.position.set((Math.random()-0.5)*40, 4, (Math.random()-0.5)*40);
-        pillar.castShadow = true; pillar.receiveShadow = true;
-        scene.add(pillar);
-        collidables.push(new THREE.Box3().setFromObject(pillar));
-      }
-    } else if(mode === 'race') {
-      for(let i=0; i<20; i++) {
-        const track = new THREE.Mesh(new THREE.BoxGeometry(12, 0.5, 6), new THREE.MeshStandardMaterial({ color: 0x38bdf8 }));
-        track.position.set(0, 0.2, -i*8);
-        track.receiveShadow = true;
-        scene.add(track);
+      for(let i=0; i<8; i++) {
+        blocks.push({ x: (Math.random()-0.5)*300, y: (Math.random()-0.5)*300, w: 60, h: 60, color: '#8b5cf6' });
       }
     }
   }
 
-  // --- 3. STUDIO BUILDER FUNCTIONS ---
-  function spawnBlock() {
-    const block = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3), new THREE.MeshStandardMaterial({ color: 0xc084fc }));
-    const forward = new THREE.Vector3(0, 0, -5).applyQuaternion(playerGroup.quaternion);
-    block.position.copy(playerGroup.position).add(forward);
-    block.position.y = 1.5;
-    block.castShadow = true; block.receiveShadow = true;
-    scene.add(block);
-    collidables.push(new THREE.Box3().setFromObject(block));
+  function addStudioBlock() {
+    const angle = player.facing;
+    const dist = 60;
+    const bx = player.x + Math.sin(angle) * dist - 30;
+    const by = player.y - Math.cos(angle) * dist - 30;
+    blocks.push({ x: bx, y: by, w: 60, h: 60, color: '#c084fc' });
   }
 
-  function clearStudio() {
-    buildEnvironment('studio');
+  function clearStudioBlocks() { blocks = []; }
+
+  // CHAT SİSTEMİ
+  function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if(msg !== '') {
+      const box = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'chat-msg';
+      div.innerHTML = `<span class="chat-user">You:</span> ${msg}`;
+      box.appendChild(div);
+      input.value = '';
+      box.scrollTop = box.scrollHeight;
+    }
   }
 
-  // --- 4. ENGINE CONTROLS & LIFECYCLE ---
-  function launchEngine(mode) {
-    currentMode = mode;
-    document.getElementById('launcher').style.display = 'none';
-    document.getElementById('ui-layer').style.display = 'block';
-    document.getElementById('mode-title').innerText = 'GAMERWOST: ' + mode.toUpperCase();
-    document.getElementById('studio-tools').style.display = (mode === 'studio') ? 'flex' : 'none';
-
-    if(!scene) initThree();
-    playerGroup.position.set(0, 0, 0);
-    buildEnvironment(mode);
-    animate();
-  }
-
-  function exitToLauncher() {
-    document.getElementById('launcher').style.display = 'flex';
-    document.getElementById('ui-layer').style.display = 'none';
-    cancelAnimationFrame(animId);
-  }
-
-  // TOUCH JOYSTICK
+  // TOUCH CONTROLS
   const joyBase = document.getElementById('joystick-base');
   const joyStick = document.getElementById('joystick-stick');
   let joyActive = false, joyTouchId = null, joyCenter = { x: 0, y: 0 };
@@ -333,7 +245,7 @@
     for(let t of e.changedTouches) {
       if(t.identifier === joyTouchId) {
         joyActive = false; joyStick.style.transform = 'translate(0px, 0px)';
-        moveInput = { x: 0, z: 0 };
+        moveInput = { x: 0, y: 0 };
       }
     }
   });
@@ -343,77 +255,150 @@
     let dist = Math.hypot(dx, dy), maxR = 30;
     if(dist > maxR) { dx = (dx/dist)*maxR; dy = (dy/dist)*maxR; }
     joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
-    moveInput.x = dx / maxR; moveInput.z = dy / maxR;
+    moveInput.x = dx / maxR; moveInput.y = dy / maxR;
   }
 
   document.getElementById('jump-btn').addEventListener('touchstart', (e) => {
     e.preventDefault();
-    if(isGrounded) { velocityY = 0.35; isGrounded = false; }
+    if(player.isGrounded) { player.vz = 9; player.isGrounded = false; }
   });
 
-  // COLLISION DETECTION
-  function checkCollision(targetPos) {
-    const testGroup = playerGroup.clone();
-    testGroup.position.copy(targetPos);
-    const pBox = new THREE.Box3().setFromObject(testGroup);
-
-    for(let box of collidables) {
-      if(box.intersectsBox(pBox)) return true;
+  function checkCollision(nx, ny) {
+    for(let b of blocks) {
+      if(nx + player.radius > b.x && nx - player.radius < b.x + b.w &&
+         ny + player.radius > b.y && ny - player.radius < b.y + b.h) {
+        return true;
+      }
     }
     return false;
   }
 
-  // ANIMATION & PHYSICS LOOP
-  function animate() {
-    animId = requestAnimationFrame(animate);
+  function startGame(mode) {
+    currentMode = mode;
+    document.getElementById('launcher').style.display = 'none';
+    document.getElementById('ui-layer').style.display = 'block';
+    document.getElementById('mode-title').innerText = 'GAMERWOST: ' + mode.toUpperCase();
+    document.getElementById('studio-tools').style.display = (mode === 'studio') ? 'flex' : 'none';
+    document.getElementById('chat-box').style.display = (mode === 'multiplayer') ? 'flex' : 'none';
 
-    // Gravity
-    velocityY -= 0.015;
-    let nextY = playerGroup.position.y + velocityY;
-    if(nextY <= 0) { nextY = 0; velocityY = 0; isGrounded = true; }
-    playerGroup.position.y = nextY;
-
-    // Movement & Collision
-    const speed = 0.16;
-    let nextX = playerGroup.position.x + moveInput.x * speed;
-    let nextZ = playerGroup.position.z + moveInput.z * speed;
-
-    let target = playerGroup.position.clone();
-    target.x = nextX;
-    if(!checkCollision(target)) playerGroup.position.x = nextX;
-
-    target.x = playerGroup.position.x; target.z = nextZ;
-    if(!checkCollision(target)) playerGroup.position.z = nextZ;
-
-    // Limb Animations & Orientation
-    if(moveInput.x !== 0 || moveInput.z !== 0) {
-      playerGroup.rotation.y = Math.atan2(moveInput.x, moveInput.z);
-      walkTime += 0.2;
-      leftArm.rotation.x = Math.sin(walkTime) * 0.5;
-      rightArm.rotation.x = -Math.sin(walkTime) * 0.5;
-      leftLeg.rotation.x = -Math.sin(walkTime) * 0.5;
-      rightLeg.rotation.x = Math.sin(walkTime) * 0.6;
-    } else {
-      leftArm.rotation.x = 0; rightArm.rotation.x = 0;
-      leftLeg.rotation.x = 0; rightLeg.rotation.x = 0;
-    }
-
-    // Camera Positioning
-    camera.position.x = playerGroup.position.x;
-    camera.position.y = playerGroup.position.y + 5.5;
-    camera.position.z = playerGroup.position.z + 8.5;
-    camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1.4, playerGroup.position.z);
-
-    renderer.render(scene, camera);
+    player.x = 0; player.y = 0; player.z = 0;
+    loadMap(mode);
+    gameLoop();
   }
 
-  window.addEventListener('resize', () => {
-    if(camera && renderer) {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+  function stopGame() {
+    document.getElementById('launcher').style.display = 'flex';
+    document.getElementById('ui-layer').style.display = 'none';
+    cancelAnimationFrame(animId);
+  }
+
+  // OYUN DÖNGÜSÜ & RENDER
+  let walkAnim = 0;
+
+  function updatePhysics() {
+    let speed = 4.5;
+    let nextX = player.x + moveInput.x * speed;
+    let nextY = player.y + moveInput.y * speed;
+
+    if(!checkCollision(nextX, player.y)) player.x = nextX;
+    if(!checkCollision(player.x, nextY)) player.y = nextY;
+
+    if(moveInput.x !== 0 || moveInput.y !== 0) {
+      player.facing = Math.atan2(moveInput.x, -moveInput.y);
+      walkAnim += 0.2;
+    } else {
+      walkAnim = 0;
     }
-  });
+
+    player.z += player.vz;
+    if(player.z > 0) {
+      player.vz -= 0.55;
+    } else {
+      player.z = 0; player.vz = 0; player.isGrounded = true;
+    }
+  }
+
+  function drawCharacter(cx, cy, px, py, pz, colorUpper, colorLower, isMain) {
+    const drawX = px + cx;
+    const drawY = py + cy - pz;
+
+    // Gölge
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath(); ctx.ellipse(px + cx, py + cy, 18, 9, 0, 0, Math.PI*2); ctx.fill();
+
+    // Bacaklar (Koyu Mor)
+    const legSwing = Math.sin(walkAnim) * 8;
+    ctx.fillStyle = '#1c0b40';
+    ctx.fillRect(drawX - 12, drawY + 8 + (isMain ? legSwing : 0), 10, 22);
+    ctx.fillRect(drawX + 2, drawY + 8 - (isMain ? legSwing : 0), 10, 22);
+
+    // Gövde (Mor)
+    ctx.fillStyle = '#2b1464';
+    ctx.fillRect(drawX - 16, drawY - 18, 32, 28);
+
+    // Üst Kollar (Mor) ve Alt Kollar (Turkuaz)
+    ctx.fillStyle = '#2b1464';
+    ctx.fillRect(drawX - 26, drawY - 16, 8, 12);
+    ctx.fillRect(drawX + 18, drawY - 16, 8, 12);
+    ctx.fillStyle = '#1bb5a6';
+    ctx.fillRect(drawX - 26, drawY - 4, 8, 14);
+    ctx.fillRect(drawX + 18, drawY - 4, 8, 14);
+
+    // Kafa
+    ctx.fillStyle = '#f1f5f9';
+    ctx.beginPath(); ctx.arc(drawX, drawY - 26, 11, 0, Math.PI*2); ctx.fill();
+
+    // Mavi Şapka
+    ctx.fillStyle = '#1e4ba0';
+    ctx.fillRect(drawX - 13, drawY - 37, 26, 8);
+    ctx.fillRect(drawX - 13, drawY - 31, 26, 3);
+
+    // Göğüsteki GAMERWOST G Logosu
+    ctx.fillStyle = '#a855f7';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillText('G', drawX - 4, drawY - 2);
+  }
+
+  function renderScene() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cx = canvas.width / 2 - player.x;
+    const cy = canvas.height / 2 - player.y;
+
+    // Grid Zemin
+    ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 1;
+    for(let x = -800; x <= 800; x += 60) {
+      ctx.beginPath(); ctx.moveTo(x + cx, -800 + cy); ctx.lineTo(x + cx, 800 + cy); ctx.stroke();
+    }
+    for(let y = -800; y <= 800; y += 60) {
+      ctx.beginPath(); ctx.moveTo(-800 + cx, y + cy); ctx.lineTo(800 + cx, y + cy); ctx.stroke();
+    }
+
+    // Bloklar
+    for(let b of blocks) {
+      ctx.fillStyle = b.color;
+      ctx.fillRect(b.x + cx, b.y + cy, b.w, b.h);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+      ctx.strokeRect(b.x + cx, b.y + cy, b.w, b.h);
+    }
+
+    // Diğer Oyuncular (Multiplayer)
+    if(currentMode === 'multiplayer') {
+      for(let p of dummyPlayers) {
+        drawCharacter(cx, cy, p.x, p.y, 0, p.color, '#1c0b40', false);
+        ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif';
+        ctx.fillText(p.name, p.x + cx - 20, p.y + cy - 45);
+      }
+    }
+
+    // Karakter
+    drawCharacter(cx, cy, player.x, player.y, player.z, '#2b1464', '#1c0b40', true);
+  }
+
+  function gameLoop() {
+    updatePhysics();
+    renderScene();
+    animId = requestAnimationFrame(gameLoop);
+  }
 </script>
 </body>
 </html>

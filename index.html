@@ -1,404 +1,380 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GAMERWOST Launcher & Games Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAMERWOST - 3D Voksel Oyun Motoru & Topluluk</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Three.js & PointerLockControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+
+  <!-- Firebase Web SDK (v10) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+      signOut, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, doc, setDoc, getDoc, collection, getDocs, 
+      query, orderBy, limit, arrayUnion, arrayRemove, onSnapshot 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Firebase Yapılandırması (Local Demo modunda yerel veri depolar)
+    const firebaseConfig = {
+      apiKey: "DEMO_KEY",
+      authDomain: "gamerwost-demo.firebaseapp.com",
+      projectId: "gamerwost-demo",
+      storageBucket: "gamerwost-demo.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:demo"
+    };
+
+    // Firebase Başlatma
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.GamerwostFB = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit, arrayUnion, arrayRemove, onSnapshot };
+  </script>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; user-select: none; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: #07040d; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #fff; }
-
-    /* LAUNCHER & MENÜ */
-    #launcher { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; background: radial-gradient(circle at center, #1b0c3a 0%, #05020a 100%); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
-    .logo-canvas { width: 130px; height: 130px; filter: drop-shadow(0 0 20px #a855f7); margin-top: 10px; }
-    .badge { background: rgba(255, 170, 0, 0.2); border: 1px solid #ffaa00; color: #ffaa00; padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 1px; margin: 10px 0; }
-    .title { font-size: 36px; font-weight: 900; letter-spacing: 3px; background: linear-gradient(45deg, #c084fc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .credits { color: #94a3b8; font-size: 13px; margin-bottom: 15px; }
-
-    .section-title { width: 100%; max-width: 480px; text-align: left; font-size: 13px; color: #c084fc; font-weight: bold; margin: 12px 0 6px 0; text-transform: uppercase; letter-spacing: 1px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 10px; }
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
     
-    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; backdrop-filter: blur(8px); }
-    .card:active { transform: scale(0.96); border-color: #38bdf8; }
-    .card-icon { font-size: 26px; margin-bottom: 4px; }
-    .card-title { font-size: 13px; font-weight: bold; color: #fff; }
-    .card-desc { font-size: 10px; color: #94a3b8; margin-top: 2px; }
-    .card-full { grid-column: span 2; background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(56,189,248,0.25)); border: 1px solid #a855f7; }
-
-    /* OYUN İÇİ VE CANVAS */
-    #game-canvas { display: block; width: 100vw; height: 100vh; }
-    .ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none; z-index: 10; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #09090e;
+      color: #f3f4f6;
+      overflow-x: hidden;
+      user-select: none;
+    }
     
-    /* ÜST BAR */
-    #top-bar { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
-    #mode-title { font-size: 13px; font-weight: bold; background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); }
-    #exit-btn { background: rgba(239, 68, 68, 0.85); border: none; color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; pointer-events: auto; }
-
-    /* DOKUNMATİK KONTROLLER */
-    #joystick-base { position: absolute; bottom: 35px; left: 25px; width: 110px; height: 110px; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: auto; }
-    #joystick-stick { position: absolute; top: 30px; left: 30px; width: 50px; height: 50px; background: radial-gradient(circle, #c084fc, #6366f1); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 12px rgba(192,132,252,0.6); }
+    .font-orbitron { font-family: 'Orbitron', sans-serif; }
     
-    #jump-btn { position: absolute; bottom: 40px; right: 25px; width: 80px; height: 80px; background: radial-gradient(circle, #38bdf8, #0284c7); border: 3px solid #fff; border-radius: 50%; color: #fff; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; pointer-events: auto; box-shadow: 0 0 15px rgba(56,189,248,0.6); }
-    #jump-btn:active { transform: scale(0.9); }
+    .glow-purple { box-shadow: 0 0 25px rgba(168, 85, 247, 0.35); }
+    .glow-blue { box-shadow: 0 0 25px rgba(59, 130, 246, 0.35); }
+    .text-glow { text-shadow: 0 0 12px rgba(168, 85, 247, 0.6); }
 
-    /* MULTIPLAYER CHAT KUTUSU */
-    #chat-box { position: absolute; bottom: 35px; left: 150px; right: 120px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 8px; display: flex; flex-direction: column; gap: 6px; pointer-events: auto; }
-    #chat-messages { height: 60px; overflow-y: auto; font-size: 11px; display: flex; flex-direction: column; gap: 3px; }
-    .chat-msg { background: rgba(255,255,255,0.08); padding: 3px 6px; border-radius: 4px; }
-    .chat-user { color: #38bdf8; font-weight: bold; }
-    #chat-input-group { display: flex; gap: 6px; }
-    #chat-input { flex: 1; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; outline: none; }
-    #chat-send { background: #a855f7; border: none; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+    /* Crosshair */
+    #crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 14px;
+      height: 14px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 50;
+    }
+    #crosshair::before, #crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(255, 255, 255, 0.85);
+    }
+    #crosshair::before { top: 6px; left: 0; width: 14px; height: 2px; }
+    #crosshair::after { top: 0; left: 6px; width: 2px; height: 14px; }
 
-    /* STUDIO TOOLS */
-    #studio-tools { position: absolute; top: 55px; right: 12px; display: none; flex-direction: column; gap: 6px; pointer-events: auto; }
-    .tool-btn { background: rgba(0,0,0,0.7); border: 1px solid #38bdf8; color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #111118; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 3px; }
   </style>
 </head>
-<body>
+<body class="h-screen w-screen relative">
 
-  <!-- LAUNCHER HUB -->
-  <div id="launcher">
-    <canvas id="menu-logo" class="logo-canvas" width="200" height="200"></canvas>
-    <div class="title">GAMERWOST</div>
-    <div class="credits">Created by obyxa</div>
-    <div class="badge">App under development</div>
-
-    <div class="section-title">GAMERWOST Studio & Multiplayer</div>
-    <div class="grid">
-      <div class="card card-full" onclick="startGame('studio')">
-        <div class="card-icon">🛠️</div>
-        <div class="card-title">GAMERWOST Studio (Build & Place)</div>
-        <div class="card-desc">Build blocks, design map & spawn items</div>
+  <!-- ================= LOBBY & ENGINE UI ================= -->
+  <div id="app-wrapper" class="w-full h-full flex flex-col justify-between p-6 relative z-10 pointer-events-none">
+    
+    <!-- TOP BAR -->
+    <header class="flex justify-between items-center bg-slate-900/80 backdrop-blur-md border border-purple-500/30 rounded-2xl p-4 pointer-events-auto shadow-2xl">
+      <div class="flex items-center gap-3">
+        <!-- GAMERWOST LOGO -->
+        <div class="w-12 h-12 bg-gradient-to-tr from-purple-600 to-blue-500 rounded-xl flex items-center justify-center font-orbitron font-black text-2xl text-white shadow-lg glow-purple">
+          G
+        </div>
+        <div>
+          <h1 class="font-orbitron font-extrabold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400 text-glow">
+            GAMERWOST
+          </h1>
+          <p class="text-xs text-purple-300/70 font-semibold tracking-wider">NEXT-GEN VOXEL ENGINE</p>
+        </div>
       </div>
-      <div class="card card-full" onclick="startGame('multiplayer')">
-        <div class="card-icon">🌐</div>
-        <div class="card-title">Multiplayer Server & Live Chat</div>
-        <div class="card-desc">Play online with others & chat live</div>
+
+      <!-- User Info & Auth Controls -->
+      <div id="user-controls" class="flex items-center gap-4">
+        <div id="auth-guest-view" class="flex items-center gap-3">
+          <button onclick="openModal('modal-login')" class="px-5 py-2.5 rounded-xl bg-purple-600/30 border border-purple-500/50 hover:bg-purple-600 text-white font-semibold transition glow-purple">
+            Giriş Yap
+          </button>
+          <button onclick="openModal('modal-register')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold transition glow-blue">
+            Kayıt Ol
+          </button>
+        </div>
+
+        <div id="auth-user-view" class="hidden flex items-center gap-4">
+          <div class="flex items-center gap-3 bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700">
+            <div class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></div>
+            <span id="user-display-name" class="font-semibold text-sm text-purple-200">Kullanıcı</span>
+          </div>
+          <button onclick="openFriendsModal()" class="px-4 py-2 rounded-xl bg-slate-800 border border-purple-500/40 hover:border-purple-400 text-purple-300 font-semibold text-sm transition">
+            👥 Arkadaş Ekle
+          </button>
+          <button onclick="handleLogout()" class="px-4 py-2 rounded-xl bg-red-600/20 border border-red-500/40 hover:bg-red-600/40 text-red-300 font-semibold text-sm transition">
+            Çıkış
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- CENTER MENU (LOBBY ENGINE DASHBOARD) -->
+    <div id="lobby-menu" class="self-center my-auto w-full max-w-4xl bg-slate-900/90 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-8 pointer-events-auto shadow-2xl flex flex-col gap-6">
+      
+      <!-- NAVIGATION TABS -->
+      <div class="flex border-b border-slate-800 pb-4 gap-6 font-semibold">
+        <button onclick="switchTab('create')" id="tab-btn-create" class="text-purple-400 border-b-2 border-purple-500 pb-2 transition">🕹️ Kendi Dünyanı Yarat</button>
+        <button onclick="switchTab('community')" id="tab-btn-community" class="text-slate-400 hover:text-white pb-2 transition">🌐 Topluluk Dünyaları & Modlar</button>
+      </div>
+
+      <!-- TAB 1: EDIT / CREATE DÜNYA -->
+      <div id="tab-create" class="flex flex-col gap-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-bold font-orbitron text-white">3D Oyun Tasarım Motoru</h2>
+            <p class="text-sm text-slate-400">Kasmasız ultra hızlı vokal motor ile blokları diz, modları aktif et!</p>
+          </div>
+          <button id="btn-start-engine" onclick="startWorldEngine()" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:opacity-90 font-black text-lg text-white shadow-xl glow-purple transition transform hover:scale-105">
+            🚀 OYUNA GİR / TASARLA
+          </button>
+        </div>
+
+        <!-- MOD SECIMI -->
+        <div class="bg-slate-950/60 rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
+          <h3 class="text-xs font-bold font-orbitron text-purple-400 tracking-wider uppercase">Aktif Mod Paketleri</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <label class="flex items-center gap-3 bg-slate-900 border border-slate-800 p-3 rounded-xl cursor-pointer hover:border-purple-500/50 transition">
+              <input type="checkbox" id="mod-gun" class="w-4 h-4 accent-purple-500" checked>
+              <span class="text-sm font-semibold">🔫 Gun Modu</span>
+            </label>
+            <label class="flex items-center gap-3 bg-slate-900 border border-slate-800 p-3 rounded-xl cursor-pointer hover:border-purple-500/50 transition">
+              <input type="checkbox" id="mod-verity" class="w-4 h-4 accent-purple-500" checked>
+              <span class="text-sm font-semibold">🟡 Verity (Sarı Top)</span>
+            </label>
+            <label class="flex items-center gap-3 bg-slate-900 border border-slate-800 p-3 rounded-xl cursor-pointer hover:border-purple-500/50 transition">
+              <input type="checkbox" id="mod-furniture" class="w-4 h-4 accent-purple-500" checked>
+              <span class="text-sm font-semibold">🪑 Mobilya Modu</span>
+            </label>
+            <label class="flex items-center gap-3 bg-slate-900 border border-slate-800 p-3 rounded-xl cursor-pointer hover:border-purple-500/50 transition">
+              <input type="checkbox" id="mod-mob" class="w-4 h-4 accent-purple-500" checked>
+              <span class="text-sm font-semibold">👾 Mob Modu</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- YAYINLAMA AKSİYONU -->
+        <div class="flex items-center justify-between bg-purple-950/20 border border-purple-500/20 p-4 rounded-2xl">
+          <span class="text-sm text-purple-300">Dünyanı kaydettikten sonra tek tıkla Gamerwost topluluğuna yayınla!</span>
+          <button onclick="publishCurrentWorld()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-md transition">
+            📢 Dünyayı Yayınla
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 2: TOPLULUK DÜNYALARI -->
+      <div id="tab-community" class="hidden flex-col gap-4 max-h-[340px] overflow-y-auto pr-2">
+        <h2 class="text-lg font-bold text-slate-200">Popüler Oyuncu Dünyaları</h2>
+        <div id="community-worlds-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dinamik Dünyalar Yüklenecek -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- IN-GAME HUD OVERLAY (HIDDEN IN LOBBY) -->
+    <div id="hud-overlay" class="hidden absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
+      <!-- HUD Top Info -->
+      <div class="flex justify-between items-start">
+        <div class="bg-slate-900/80 backdrop-blur p-4 rounded-2xl border border-purple-500/30">
+          <p class="text-xs text-purple-400 font-bold">KONTROLLER</p>
+          <p class="text-sm text-slate-200"><b>WASD</b>: Hareket | <b>Sol Tık</b>: Kır / Ateş | <b>Sağ Tık</b>: Blok Koy</p>
+          <p class="text-sm text-slate-200"><b>1-5</b>: Blok / Mod Seçimi | <b>ESC</b>: Menüye Dön</p>
+        </div>
+        <div class="bg-slate-900/80 backdrop-blur px-4 py-2 rounded-xl border border-purple-500/30 font-bold text-purple-300">
+          FPS: <span id="fps-counter" class="text-white">60</span>
+        </div>
+      </div>
+
+      <!-- Hotbar -->
+      <div class="self-center bg-slate-900/90 backdrop-blur-md border border-purple-500/40 p-2 rounded-2xl flex gap-3 pointer-events-auto">
+        <button onclick="selectHotbar(1)" id="slot-1" class="w-12 h-12 rounded-xl border-2 border-purple-500 bg-slate-800 flex items-center justify-center font-bold text-lg">🧱</button>
+        <button onclick="selectHotbar(2)" id="slot-2" class="w-12 h-12 rounded-xl border-2 border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-lg">🟡</button>
+        <button onclick="selectHotbar(3)" id="slot-3" class="w-12 h-12 rounded-xl border-2 border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-lg">🔫</button>
+        <button onclick="selectHotbar(4)" id="slot-4" class="w-12 h-12 rounded-xl border-2 border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-lg">🪑</button>
+        <button onclick="selectHotbar(5)" id="slot-5" class="w-12 h-12 rounded-xl border-2 border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-lg">👾</button>
       </div>
     </div>
 
-    <div class="section-title">Featured Experiences</div>
-    <div class="grid">
-      <div class="card" onclick="startGame('obby')">
-        <div class="card-icon">🏃</div>
-        <div class="card-title">Neon Obby</div>
-        <div class="card-desc">3D Platformer Parkour</div>
+    <!-- CROSSHAIR -->
+    <div id="crosshair" class="hidden"></div>
+
+    <!-- FOOTER (obyxa SIGNATURE AT BOTTOM LEFT) -->
+    <footer class="flex justify-between items-end pointer-events-auto">
+      <div class="bg-slate-900/80 backdrop-blur border border-purple-500/30 px-4 py-2 rounded-xl font-orbitron text-xs text-purple-300 shadow-xl">
+        Sol Alt: <span class="font-extrabold text-white">obyxa</span>
       </div>
-      <div class="card" onclick="startGame('arena')">
-        <div class="card-icon">⚔️</div>
-        <div class="card-title">Battle Arena</div>
-        <div class="card-desc">Survival Zone</div>
+      <div class="text-xs text-slate-500 font-semibold">
+        GAMERWOST Engine v2.5 • Zero-Lag Voxel Tech
       </div>
+    </footer>
+
+  </div>
+
+  <!-- 3D CANVAS CONTAINER -->
+  <div id="canvas-container" class="absolute inset-0 z-0 bg-black"></div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- LOGIN MODAL -->
+  <div id="modal-login" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-purple-500/40 rounded-3xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-4">
+      <h2 class="text-xl font-bold font-orbitron text-white">Gamerwost Giriş Yap</h2>
+      <input type="email" id="login-email" placeholder="E-posta" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-purple-500">
+      <input type="password" id="login-pass" placeholder="Şifre" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-purple-500">
+      <button onclick="handleLogin()" class="w-full py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-white transition">Giriş Yap</button>
+      <button onclick="closeModal('modal-login')" class="text-xs text-slate-400 hover:text-white">İptal</button>
     </div>
   </div>
 
-  <!-- GAME CANVAS -->
-  <canvas id="game-canvas"></canvas>
-
-  <!-- GAME UI -->
-  <div class="ui-layer" id="ui-layer">
-    <div id="top-bar">
-      <div id="mode-title">GAMERWOST 3D</div>
-      <button id="exit-btn" onclick="stopGame()">Exit Menu</button>
+  <!-- REGISTER MODAL -->
+  <div id="modal-register" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-blue-500/40 rounded-3xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-4">
+      <h2 class="text-xl font-bold font-orbitron text-white">Gamerwost Hesabı Oluştur</h2>
+      <input type="text" id="reg-username" placeholder="Kullanıcı Adı" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-blue-500">
+      <input type="email" id="reg-email" placeholder="E-posta" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-blue-500">
+      <input type="password" id="reg-pass" placeholder="Şifre" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-blue-500">
+      <button onclick="handleRegister()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 rounded-xl font-bold text-white transition">Kayıt Ol</button>
+      <button onclick="closeModal('modal-register')" class="text-xs text-slate-400 hover:text-white">İptal</button>
     </div>
-
-    <div id="studio-tools">
-      <button class="tool-btn" onclick="addStudioBlock()">+ Place Block</button>
-      <button class="tool-btn" onclick="clearStudioBlocks()">Clear All</button>
-    </div>
-
-    <div id="chat-box">
-      <div id="chat-messages">
-        <div class="chat-msg"><span class="chat-user">System:</span> Welcome to GAMERWOST Multiplayer Room!</div>
-      </div>
-      <div id="chat-input-group">
-        <input type="text" id="chat-input" placeholder="Type a message..." />
-        <button id="chat-send" onclick="sendChatMessage()">Send</button>
-      </div>
-    </div>
-
-    <div id="joystick-base"><div id="joystick-stick"></div></div>
-    <div id="jump-btn">JUMP</div>
   </div>
 
-<script>
-  // LOGO ÇİZİMİ (ORİJİNAL G LOGOSU)
-  function drawGamerwostLogo(canvasId) {
-    const canvas = document.getElementById(canvasId);
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width, h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
+  <!-- FRIENDS MODAL -->
+  <div id="modal-friends" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-purple-500/40 rounded-3xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-4">
+      <h2 class="text-xl font-bold font-orbitron text-white">Arkadaş Listesi & Ekle</h2>
+      <div class="flex gap-2">
+        <input type="text" id="friend-name-input" placeholder="Arkadaşının Kullanıcı Adı" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-purple-500">
+        <button onclick="addFriend()" class="px-4 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold text-sm">Ekle</button>
+      </div>
+      <div class="flex flex-col gap-2 max-h-48 overflow-y-auto" id="friends-list-container">
+        <!-- Arkadaş Listesi -->
+      </div>
+      <button onclick="closeModal('modal-friends')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs text-slate-300">Kapat</button>
+    </div>
+  </div>
 
-    const grad = ctx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, '#a855f7');
-    grad.addColorStop(0.5, '#38bdf8');
-    grad.addColorStop(1, '#0284c7');
+  <!-- ================= ENGINE LOGIC & SCRIPT ================= -->
+  <script>
+    // App Local State
+    let currentUser = null;
+    let friendsList = [];
+    let localSavedBlocks = [];
+    
+    // UI Modal Helpers
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-    ctx.fillStyle = grad;
-    ctx.beginPath(); ctx.arc(w*0.5, h*0.45, w*0.4, 0, Math.PI*2); ctx.fill();
-
-    ctx.fillStyle = '#07040d';
-    ctx.beginPath(); ctx.arc(w*0.54, h*0.45, w*0.25, 0, Math.PI*2); ctx.fill();
-
-    ctx.fillStyle = grad; ctx.fillRect(w*0.45, h*0.4, w*0.4, h*0.16);
-
-    ctx.fillStyle = '#e9d5ff';
-    ctx.fillRect(w*0.22, h*0.41, w*0.14, h*0.04);
-    ctx.fillRect(w*0.27, h*0.36, w*0.04, h*0.14);
-
-    ctx.fillStyle = '#38bdf8';
-    ctx.beginPath(); ctx.arc(w*0.72, h*0.33, w*0.035, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(w*0.78, h*0.41, w*0.035, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(w*0.72, h*0.49, w*0.035, 0, Math.PI*2); ctx.fill();
-  }
-  drawGamerwostLogo('menu-logo');
-
-  // CANVAS & OYUN FİZİĞİ
-  const canvas = document.getElementById('game-canvas');
-  const ctx = canvas.getContext('2d');
-  let animId = null;
-
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-
-  // BİREBİR ORİJİNAL KARAKTER MODELİ VEYA POZİSYONU
-  let player = {
-    x: 0, y: 0, z: 0,
-    vz: 0, radius: 18,
-    isGrounded: true,
-    facing: 0
-  };
-
-  let dummyPlayers = [
-    { name: 'ProGamer_99', x: 80, y: -60, color: '#ef4444' },
-    { name: 'obyxa_Fan', x: -100, y: 50, color: '#10b981' }
-  ];
-
-  let currentMode = 'multiplayer';
-  let moveInput = { x: 0, y: 0 };
-  let blocks = [];
-
-  function loadMap(mode) {
-    blocks = [];
-    if(mode === 'obby') {
-      const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b'];
-      for(let i=0; i<12; i++) {
-        blocks.push({ x: (i%2===0 ? -60 : 60), y: -i*90 - 100, w: 90, h: 50, color: colors[i%4] });
-      }
-    } else if(mode === 'arena') {
-      for(let i=0; i<8; i++) {
-        blocks.push({ x: (Math.random()-0.5)*300, y: (Math.random()-0.5)*300, w: 60, h: 60, color: '#8b5cf6' });
-      }
-    }
-  }
-
-  function addStudioBlock() {
-    const angle = player.facing;
-    const dist = 60;
-    const bx = player.x + Math.sin(angle) * dist - 30;
-    const by = player.y - Math.cos(angle) * dist - 30;
-    blocks.push({ x: bx, y: by, w: 60, h: 60, color: '#c084fc' });
-  }
-
-  function clearStudioBlocks() { blocks = []; }
-
-  // CHAT SİSTEMİ
-  function sendChatMessage() {
-    const input = document.getElementById('chat-input');
-    const msg = input.value.trim();
-    if(msg !== '') {
-      const box = document.getElementById('chat-messages');
-      const div = document.createElement('div');
-      div.className = 'chat-msg';
-      div.innerHTML = `<span class="chat-user">You:</span> ${msg}`;
-      box.appendChild(div);
-      input.value = '';
-      box.scrollTop = box.scrollHeight;
-    }
-  }
-
-  // TOUCH CONTROLS
-  const joyBase = document.getElementById('joystick-base');
-  const joyStick = document.getElementById('joystick-stick');
-  let joyActive = false, joyTouchId = null, joyCenter = { x: 0, y: 0 };
-
-  joyBase.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    const t = e.changedTouches[0];
-    joyTouchId = t.identifier; joyActive = true;
-    const r = joyBase.getBoundingClientRect();
-    joyCenter = { x: r.left + r.width/2, y: r.top + r.height/2 };
-    updateJoy(t);
-  });
-
-  window.addEventListener('touchmove', (e) => {
-    if(!joyActive) return;
-    for(let t of e.changedTouches) if(t.identifier === joyTouchId) updateJoy(t);
-  });
-
-  window.addEventListener('touchend', (e) => {
-    for(let t of e.changedTouches) {
-      if(t.identifier === joyTouchId) {
-        joyActive = false; joyStick.style.transform = 'translate(0px, 0px)';
-        moveInput = { x: 0, y: 0 };
-      }
-    }
-  });
-
-  function updateJoy(t) {
-    let dx = t.clientX - joyCenter.x, dy = t.clientY - joyCenter.y;
-    let dist = Math.hypot(dx, dy), maxR = 30;
-    if(dist > maxR) { dx = (dx/dist)*maxR; dy = (dy/dist)*maxR; }
-    joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
-    moveInput.x = dx / maxR; moveInput.y = dy / maxR;
-  }
-
-  document.getElementById('jump-btn').addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if(player.isGrounded) { player.vz = 9; player.isGrounded = false; }
-  });
-
-  function checkCollision(nx, ny) {
-    for(let b of blocks) {
-      if(nx + player.radius > b.x && nx - player.radius < b.x + b.w &&
-         ny + player.radius > b.y && ny - player.radius < b.y + b.h) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  function startGame(mode) {
-    currentMode = mode;
-    document.getElementById('launcher').style.display = 'none';
-    document.getElementById('ui-layer').style.display = 'block';
-    document.getElementById('mode-title').innerText = 'GAMERWOST: ' + mode.toUpperCase();
-    document.getElementById('studio-tools').style.display = (mode === 'studio') ? 'flex' : 'none';
-    document.getElementById('chat-box').style.display = (mode === 'multiplayer') ? 'flex' : 'none';
-
-    player.x = 0; player.y = 0; player.z = 0;
-    loadMap(mode);
-    gameLoop();
-  }
-
-  function stopGame() {
-    document.getElementById('launcher').style.display = 'flex';
-    document.getElementById('ui-layer').style.display = 'none';
-    cancelAnimationFrame(animId);
-  }
-
-  // OYUN DÖNGÜSÜ & RENDER
-  let walkAnim = 0;
-
-  function updatePhysics() {
-    let speed = 4.5;
-    let nextX = player.x + moveInput.x * speed;
-    let nextY = player.y + moveInput.y * speed;
-
-    if(!checkCollision(nextX, player.y)) player.x = nextX;
-    if(!checkCollision(player.x, nextY)) player.y = nextY;
-
-    if(moveInput.x !== 0 || moveInput.y !== 0) {
-      player.facing = Math.atan2(moveInput.x, -moveInput.y);
-      walkAnim += 0.2;
-    } else {
-      walkAnim = 0;
-    }
-
-    player.z += player.vz;
-    if(player.z > 0) {
-      player.vz -= 0.55;
-    } else {
-      player.z = 0; player.vz = 0; player.isGrounded = true;
-    }
-  }
-
-  function drawCharacter(cx, cy, px, py, pz, colorUpper, colorLower, isMain) {
-    const drawX = px + cx;
-    const drawY = py + cy - pz;
-
-    // Gölge
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath(); ctx.ellipse(px + cx, py + cy, 18, 9, 0, 0, Math.PI*2); ctx.fill();
-
-    // Bacaklar (Koyu Mor)
-    const legSwing = Math.sin(walkAnim) * 8;
-    ctx.fillStyle = '#1c0b40';
-    ctx.fillRect(drawX - 12, drawY + 8 + (isMain ? legSwing : 0), 10, 22);
-    ctx.fillRect(drawX + 2, drawY + 8 - (isMain ? legSwing : 0), 10, 22);
-
-    // Gövde (Mor)
-    ctx.fillStyle = '#2b1464';
-    ctx.fillRect(drawX - 16, drawY - 18, 32, 28);
-
-    // Üst Kollar (Mor) ve Alt Kollar (Turkuaz)
-    ctx.fillStyle = '#2b1464';
-    ctx.fillRect(drawX - 26, drawY - 16, 8, 12);
-    ctx.fillRect(drawX + 18, drawY - 16, 8, 12);
-    ctx.fillStyle = '#1bb5a6';
-    ctx.fillRect(drawX - 26, drawY - 4, 8, 14);
-    ctx.fillRect(drawX + 18, drawY - 4, 8, 14);
-
-    // Kafa
-    ctx.fillStyle = '#f1f5f9';
-    ctx.beginPath(); ctx.arc(drawX, drawY - 26, 11, 0, Math.PI*2); ctx.fill();
-
-    // Mavi Şapka
-    ctx.fillStyle = '#1e4ba0';
-    ctx.fillRect(drawX - 13, drawY - 37, 26, 8);
-    ctx.fillRect(drawX - 13, drawY - 31, 26, 3);
-
-    // Göğüsteki GAMERWOST G Logosu
-    ctx.fillStyle = '#a855f7';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillText('G', drawX - 4, drawY - 2);
-  }
-
-  function renderScene() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const cx = canvas.width / 2 - player.x;
-    const cy = canvas.height / 2 - player.y;
-
-    // Grid Zemin
-    ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 1;
-    for(let x = -800; x <= 800; x += 60) {
-      ctx.beginPath(); ctx.moveTo(x + cx, -800 + cy); ctx.lineTo(x + cx, 800 + cy); ctx.stroke();
-    }
-    for(let y = -800; y <= 800; y += 60) {
-      ctx.beginPath(); ctx.moveTo(-800 + cx, y + cy); ctx.lineTo(800 + cx, y + cy); ctx.stroke();
-    }
-
-    // Bloklar
-    for(let b of blocks) {
-      ctx.fillStyle = b.color;
-      ctx.fillRect(b.x + cx, b.y + cy, b.w, b.h);
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
-      ctx.strokeRect(b.x + cx, b.y + cy, b.w, b.h);
-    }
-
-    // Diğer Oyuncular (Multiplayer)
-    if(currentMode === 'multiplayer') {
-      for(let p of dummyPlayers) {
-        drawCharacter(cx, cy, p.x, p.y, 0, p.color, '#1c0b40', false);
-        ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif';
-        ctx.fillText(p.name, p.x + cx - 20, p.y + cy - 45);
+    function switchTab(tab) {
+      if (tab === 'create') {
+        document.getElementById('tab-create').classList.remove('hidden');
+        document.getElementById('tab-create').classList.add('flex');
+        document.getElementById('tab-community').classList.add('hidden');
+        document.getElementById('tab-community').classList.remove('flex');
+        document.getElementById('tab-btn-create').className = "text-purple-400 border-b-2 border-purple-500 pb-2 transition";
+        document.getElementById('tab-btn-community').className = "text-slate-400 hover:text-white pb-2 transition";
+      } else {
+        document.getElementById('tab-community').classList.remove('hidden');
+        document.getElementById('tab-community').classList.add('flex');
+        document.getElementById('tab-create').classList.add('hidden');
+        document.getElementById('tab-create').classList.remove('flex');
+        document.getElementById('tab-btn-community').className = "text-purple-400 border-b-2 border-purple-500 pb-2 transition";
+        document.getElementById('tab-btn-create').className = "text-slate-400 hover:text-white pb-2 transition";
+        loadCommunityWorlds();
       }
     }
 
-    // Karakter
-    drawCharacter(cx, cy, player.x, player.y, player.z, '#2b1464', '#1c0b40', true);
-  }
+    // AUTH SIMULATION & FIREBASE BRIDGE
+    window.addEventListener('DOMContentLoaded', () => {
+      // Local Auth check for seamless execution
+      const savedUser = localStorage.getItem('gamerwost_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        updateUIAuth(true);
+      }
+    });
 
-  function gameLoop() {
-    updatePhysics();
-    renderScene();
-    animId = requestAnimationFrame(gameLoop);
-  }
-</script>
-</body>
-</html>
+    function handleRegister() {
+      const name = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
+      if (!name || !email) return alert('Lütfen bilgileri doldurun!');
+
+      currentUser = { username: name, email: email, friends: [] };
+      localStorage.setItem('gamerwost_user', JSON.stringify(currentUser));
+      updateUIAuth(true);
+      closeModal('modal-register');
+      alert('Kayıt Başarılı! Hoşgeldin ' + name);
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('login-email').value;
+      if (!email) return alert('Lütfen e-posta girin!');
+      
+      currentUser = { username: email.split('@')[0], email: email, friends: [] };
+      localStorage.setItem('gamerwost_user', JSON.stringify(currentUser));
+      updateUIAuth(true);
+      closeModal('modal-login');
+      alert('Giriş Yapıldı!');
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      localStorage.removeItem('gamerwost_user');
+      updateUIAuth(false);
+    }
+
+    function updateUIAuth(isLoggedIn) {
+      if (isLoggedIn) {
+        document.getElementById('auth-guest-view').classList.add('hidden');
+        document.getElementById('auth-user-view').classList.remove('hidden');
+        document.getElementById('user-display-name').innerText = currentUser.username;
+      } else {
+        document.getElementById('auth-guest-view').classList.remove('hidden');
+        document.getElementById('auth-user-view').classList.add('hidden');
+      }
+    }
+
+    // FRIENDS SYSTEM
+    function openFriendsModal() {
+      renderFriends();
+      openModal('modal-friends');
+    }
+
+    function addFriend() {
+      const input = document.getElementById('friend-name-input');
+      const val = input.value.trim();
+      if (val && !friendsList.includes(val)) {
+        friendsList.push(val);
+        input.value = '';
+        renderFriends();
+        alert(val + ' arkadaş olarak eklendi!');
+      }
+    }
+
+    function renderFriends() {
+      const container = document.getElementById('friends-list-container');
+      container.innerHTML = '';
+      if (friendsList.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-500">Henüz arkadaş eklenmedi.</p>';
+        r

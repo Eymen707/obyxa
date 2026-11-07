@@ -1,360 +1,323 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>OBYXA - Retro Playworld 2007</title>
-    <!-- Three.js (Gerçek 3D Görsel Motoru) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Verdana, Arial, sans-serif; user-select: none; }
-        body { background-color: #e5e5e5; color: #000; }
-        
-        /* 2007 Roblox Mavi Header & İkonik Kırmızı Konturlu OBYXA Logosu */
-        .header {
-            background: linear-gradient(to bottom, #1c4d8a, #0c2b54);
-            border-bottom: 3px solid #081d38;
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .obyxa-logo {
-            font-size: 34px;
-            font-weight: 900;
-            font-style: italic;
-            color: #ffffff;
-            -webkit-text-stroke: 1.8px #cc0000;
-            text-shadow: 2px 2px 0px #cc0000;
-            letter-spacing: -1px;
-        }
-        .lang-switch {
-            background: #fff; border: 1px solid #777; font-size: 11px; font-weight: bold; padding: 2px 4px; border-radius: 3px;
-        }
-
-        /* Sub Nav Links (Games, Catalog, Forum) */
-        .sub-nav {
-            background: #dcdcdc;
-            border-bottom: 1px solid #b5b5b5;
-            padding: 5px 10px;
-            display: flex;
-            gap: 15px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .sub-nav a { color: #0044cc; text-decoration: none; cursor: pointer; }
-        .sub-nav a.active { color: #000; text-decoration: underline; }
-
-        /* Main Portal Area */
-        .main-container {
-            max-width: 900px;
-            margin: 10px auto;
-            background: #fff;
-            border: 1px solid #999;
-            padding: 10px;
-        }
-
-        .section-tab { display: none; }
-        .section-tab.active { display: block; }
-
-        /* 2007 Oyun Kartları (Games Sayfası Dizilimi) */
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .game-card {
-            border: 1px solid #ccc; background: #f9f9f9; padding: 6px; text-align: center; border-radius: 3px;
-        }
-        .game-card img-placeholder {
-            width: 100%; height: 75px; background: #333; display: block; margin-bottom: 5px; color: #fff; font-size: 10px; line-height: 75px;
-        }
-        .game-card-title { font-size: 11px; font-weight: bold; color: #0044cc; cursor: pointer; }
-        .play-btn-card { background: #4CAF50; color: #fff; border: none; padding: 4px 8px; font-size: 11px; font-weight: bold; margin-top: 5px; cursor: pointer; border-radius: 3px; }
-
-        /* 3D Oyunu & Mobil Dokunmatik Kontroller */
-        #game3d-container {
-            position: relative;
-            width: 100%;
-            height: 320px;
-            background: #000;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        #threejs-canvas { width: 100%; height: 100%; display: block; }
-
-        /* Telefondan Oynamak İçin Ekran Üstü Dokunmatik Tuşlar */
-        .mobile-controls {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            justify-content: space-between;
-            pointer-events: none;
-        }
-        .btn-group-left, .btn-group-right { display: flex; gap: 8px; pointer-events: auto; }
-        .touch-btn {
-            width: 50px; height: 50px;
-            background: rgba(255, 255, 255, 0.6);
-            border: 2px solid #333;
-            border-radius: 50%;
-            font-size: 18px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-            touch-action: manipulation;
-        }
-        .touch-btn:active { background: rgba(255, 204, 0, 0.9); }
-
-        .footer { text-align: center; font-size: 10px; color: #777; margin-top: 15px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>GAMERWOST 3D</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; user-select: none; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+    #game-container { width: 100vw; height: 100vh; position: relative; }
+    
+    /* Mobil Kontroller */
+    .touch-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+    #joystick-zone { position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; pointer-events: auto; }
+    #joystick-knob { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: rgba(138,43,226,0.8); border-radius: 50%; border: 2px solid #fff; }
+    #jump-btn { position: absolute; bottom: 40px; right: 30px; width: 80px; height: 80px; background: rgba(0,229,255,0.6); border: 3px solid #fff; border-radius: 50%; color: #fff; font-weight: bold; font-size: 18px; display: flex; align-items: center; justify-content: center; pointer-events: auto; box-shadow: 0 0 15px rgba(0,229,255,0.5); }
+    #jump-btn:active { transform: scale(0.9); background: rgba(0,229,255,0.9); }
+    
+    /* UI Başlık */
+    #ui-header { position: absolute; top: 15px; left: 15px; color: #fff; font-size: 20px; font-weight: bold; text-shadow: 0 0 10px #8a2be2; pointer-events: none; }
+  </style>
+  <!-- Three.js 3D Motoru -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-    <!-- Header & Logo -->
-    <div class="header">
-        <div class="obyxa-logo" onclick="showTab('games')">OBYXA</div>
-        <select class="lang-switch" id="langSwitch" onchange="switchLanguage()">
-            <option value="tr">Türkçe (TR)</option>
-            <option value="en">English (EN)</option>
-        </select>
-    </div>
+<div id="game-container">
+  <div id="ui-header">GAMERWOST 3D</div>
+  <div class="touch-ui">
+    <div id="joystick-zone"><div id="joystick-knob"></div></div>
+    <div id="jump-btn">ZILPA</div>
+  </div>
+</div>
 
-    <!-- Sub Nav -->
-    <div class="sub-nav">
-        <a onclick="showTab('games')" id="nav-games" class="active">Oyunlar (Games)</a>
-        <a onclick="showTab('play')" id="nav-play">3D Parkur Oyna</a>
-        <a onclick="showTab('catalog')" id="nav-catalog">Katalog</a>
-    </div>
+<script>
+  // --- 1. SAHNE VE KURULUM ---
+  const container = document.getElementById('game-container');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a0b2e);
+  scene.fog = new THREE.FogExp2(0x1a0b2e, 0.015);
 
-    <div class="main-container">
-        
-        <!-- OYUNLAR SEKME (GAMES) -->
-        <div id="tab-games" class="section-tab active">
-            <h3 style="font-size: 14px; border-bottom: 1px solid #0044cc; padding-bottom: 3px;" id="lbl-popular">Popüler OBYXA Oyunları (Most Popular)</h3>
-            <div class="games-grid">
-                <div class="game-card">
-                    <div style="background:#1e3c72; height:70px; color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;">3D Obby</div>
-                    <div class="game-card-title">Retro Parkur 2007</div>
-                    <button class="play-btn-card" onclick="showTab('play')">OYNA</button>
-                </div>
-                <div class="game-card">
-                    <div style="background:#11998e; height:70px; color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;">Sword Arena</div>
-                    <div class="game-card-title">SFOTH Classic</div>
-                    <button class="play-btn-card" onclick="showTab('play')">OYNA</button>
-                </div>
-                <div class="game-card">
-                    <div style="background:#fc4a1a; height:70px; color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;">Crossroads</div>
-                    <div class="game-card-title">Crossroads 1v1</div>
-                    <button class="play-btn-card" onclick="showTab('play')">OYNA</button>
-                </div>
-            </div>
-        </div>
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  container.appendChild(renderer.domElement);
 
-        <!-- 3D GERÇEK OYUN SEKME (PLAY) -->
-        <div id="tab-play" class="section-tab">
-            <h3 style="font-size: 14px; color: #0044cc;" id="lbl-3dtitle">3D OBYXA Obby Parkur (Telefondan Dokunmatik Oyna)</h3>
-            
-            <div id="game3d-container">
-                <div id="threejs-canvas"></div>
-                
-                <!-- Dokunmatik Kontroller (Mobil Uyumlu) -->
-                <div class="mobile-controls">
-                    <div class="btn-group-left">
-                        <div class="touch-btn" id="btn-left">◀</div>
-                        <div class="touch-btn" id="btn-right">▶</div>
-                    </div>
-                    <div class="btn-group-right">
-                        <div class="touch-btn" id="btn-jump">▲</div>
-                    </div>
-                </div>
-            </div>
-            <p style="font-size: 11px; color: #555; margin-top: 5px;" id="lbl-hint">Mobilde alttaki oklara basarak karakteri yönetebilirsin. Klavyede Sol/Sağ/Boşluk Tuşları çalışır.</p>
-        </div>
+  // --- 2. IŞIKLANDIRMA (KOGAMA TARZI CANLI HAVA) ---
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambientLight);
 
-        <!-- KATALOG SEKME -->
-        <div id="tab-catalog" class="section-tab">
-            <h3 style="font-size: 14px;" id="lbl-cat">OBYXA Kataloğu</h3>
-            <p style="font-size: 12px; margin-top: 10px;">Şapkalar ve Eşyalar (2007 Style Catalog)</p>
-        </div>
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(40, 60, 20);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 2048;
+  dirLight.shadow.mapSize.height = 2048;
+  dirLight.shadow.camera.near = 0.5;
+  dirLight.shadow.camera.far = 150;
+  const d = 40;
+  dirLight.shadow.camera.left = -d;
+  dirLight.shadow.camera.right = d;
+  dirLight.shadow.camera.top = d;
+  dirLight.shadow.camera.bottom = -d;
+  scene.add(dirLight);
 
-    </div>
+  // --- 3. GAMERWOST LOGO DOKUSU (CANVAS İLE BİREBİR) ---
+  function createLogoTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = '#2b1464';
+    ctx.fillRect(0, 0, 512, 512);
 
-    <div class="footer">
-        OBYXA 2007 Multi-User Retro Portal. Designed for Mobile & Web.
-    </div>
+    const grad = ctx.createLinearGradient(50, 50, 450, 450);
+    grad.addColorStop(0, '#9d4edd');
+    grad.addColorStop(0.5, '#4895ef');
+    grad.addColorStop(1, '#4cc9f0');
 
-    <script>
-        // Sekmeler Arası Geçiş
-        function showTab(tabName) {
-            document.querySelectorAll('.section-tab').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.sub-nav a').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active');
-            
-            if(tabName === 'play' && !is3DInitialized) {
-                init3DGame();
-            }
-        }
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(256, 230, 180, 0, Math.PI * 2);
+    ctx.fill();
 
-        // Dil Değiştirici
-        function switchLanguage() {
-            const lang = document.getElementById("langSwitch").value;
-            if(lang === 'en') {
-                document.getElementById("nav-games").innerText = "Games";
-                document.getElementById("nav-play").innerText = "Play 3D Parkour";
-                document.getElementById("nav-catalog").innerText = "Catalog";
-                document.getElementById("lbl-popular").innerText = "Most Popular OBYXA Games";
-                document.getElementById("lbl-3dtitle").innerText = "3D OBYXA Obby Parkour (Mobile Touch Enabled)";
-                document.getElementById("lbl-hint").innerText = "Use bottom arrows on mobile or Left/Right/Space keys on keyboard.";
-            } else {
-                document.getElementById("nav-games").innerText = "Oyunlar (Games)";
-                document.getElementById("nav-play").innerText = "3D Parkur Oyna";
-                document.getElementById("nav-catalog").innerText = "Katalog";
-                document.getElementById("lbl-popular").innerText = "Popüler OBYXA Oyunları (Most Popular)";
-                document.getElementById("lbl-3dtitle").innerText = "3D OBYXA Obby Parkur (Telefondan Dokunmatik Oyna)";
-                document.getElementById("lbl-hint").innerText = "Mobilde alttaki oklara basarak karakteri yönetebilirsin. Klavyede Sol/Sağ/Boşluk Tuşları çalışır.";
-            }
-        }
+    ctx.fillStyle = '#2b1464';
+    ctx.beginPath();
+    ctx.arc(270, 230, 110, 0, Math.PI * 2);
+    ctx.fill();
 
-        // --- THREE.JS GERÇEK 3D OYUN VE FİZİK MOTORU ---
-        let scene, camera, renderer;
-        let playerMesh, platforms = [];
-        let moveLeft = false, moveRight = false, jump = false;
-        let playerVelY = 0, isGrounded = false;
-        let is3DInitialized = false;
+    ctx.fillStyle = grad;
+    ctx.fillRect(230, 190, 180, 80);
 
-        function init3DGame() {
-            is3DInitialized = true;
-            const container = document.getElementById('threejs-canvas');
-            
-            // Sahne ve Kamera
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87ceeb); // 2007 Gökyüzü Mavisı
+    // D-Pad (+)
+    ctx.fillStyle = '#c77dff';
+    ctx.fillRect(130, 210, 50, 16);
+    ctx.fillRect(147, 193, 16, 50);
 
-            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 5, 12);
-            camera.lookAt(0, 2, 0);
+    // Tuşlar
+    ctx.fillStyle = '#4cc9f0';
+    ctx.beginPath(); ctx.arc(360, 180, 12, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(380, 210, 12, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(360, 240, 12, 0, Math.PI*2); ctx.fill();
 
-            // Işıklandırma
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(5, 10, 7);
-            scene.add(light);
-            scene.add(new THREE.AmbientLight(0x666666));
+    return new THREE.CanvasTexture(canvas);
+  }
 
-            // 3D NOOB Karakter Modeli (Kafa, Gövde, Bacaklar - Zemin Üstünde)
-            playerMesh = new THREE.Group();
-            
-            // Kafa (Sarı)
-            const headGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-            const headMat = new THREE.MeshLambertMaterial({ color: 0xffcc00 });
-            const head = new THREE.Mesh(headGeo, headMat);
-            head.position.y = 1.4;
-            playerMesh.add(head);
+  const logoTexture = createLogoTexture();
 
-            // Gövde (Mavi)
-            const torsoGeo = new THREE.BoxGeometry(1, 1.2, 0.6);
-            const torsoMat = new THREE.MeshLambertMaterial({ color: 0x0066cc });
-            const torso = new THREE.Mesh(torsoGeo, torsoMat);
-            torso.position.y = 0.4;
-            playerMesh.add(torso);
+  // --- 4. KARAKTER OLUŞTURMA (GAMERWOST BLOK MODELİ) ---
+  const playerGroup = new THREE.Group();
 
-            // Bacaklar (Yeşil - Tam Zemin Üstünde Durur)
-            const legGeo = new THREE.BoxGeometry(0.45, 0.8, 0.55);
-            const legMat = new THREE.MeshLambertMaterial({ color: 0x669900 });
-            const leftLeg = new THREE.Mesh(legGeo, legMat);
-            leftLeg.position.set(-0.25, -0.6, 0);
-            const rightLeg = new THREE.Mesh(legGeo, legMat);
-            rightLeg.position.set(0.25, -0.6, 0);
-            playerMesh.add(leftLeg);
-            playerMesh.add(rightLeg);
+  // Gövde
+  const torsoMat = [
+    new THREE.MeshStandardMaterial({ color: 0x2b1464 }),
+    new THREE.MeshStandardMaterial({ color: 0x2b1464 }),
+    new THREE.MeshStandardMaterial({ color: 0x2b1464 }),
+    new THREE.MeshStandardMaterial({ color: 0x2b1464 }),
+    new THREE.MeshStandardMaterial({ map: logoTexture }), // Ön taraf
+    new THREE.MeshStandardMaterial({ color: 0x2b1464 })
+  ];
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.4, 0.8), torsoMat);
+  torso.position.y = 1.7;
+  torso.castShadow = true;
+  playerGroup.add(torso);
 
-            playerMesh.position.set(-6, 2, 0);
-            scene.add(playerMesh);
+  // Kafa
+  const headMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.3 });
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), headMat);
+  head.position.y = 2.85;
+  head.castShadow = true;
+  playerGroup.add(head);
 
-            // 3D Blok Platformlar (Obby Parkur)
-            const platPositions = [
-                { x: -6, y: 0, w: 4 },
-                { x: -2, y: 1, w: 2.5 },
-                { x: 2, y: 2, w: 2.5 },
-                { x: 6, y: 3, w: 3 }
-            ];
+  // Şapka
+  const capMat = new THREE.MeshStandardMaterial({ color: 0x1e4ba0 });
+  const capTop = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.3, 0.95), capMat);
+  capTop.position.set(0, 3.3, 0);
+  const capVisor = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.05, 0.4), capMat);
+  capVisor.position.set(0, 3.2, 0.55);
+  playerGroup.add(capTop, capVisor);
 
-            platPositions.forEach(p => {
-                const geo = new THREE.BoxGeometry(p.w, 0.6, 3);
-                const mat = new THREE.MeshLambertMaterial({ color: 0x33aa33 });
-                const mesh = new THREE.Mesh(geo, mat);
-                mesh.position.set(p.x, p.y, 0);
-                scene.add(mesh);
-                platforms.push({ mesh, x: p.x, y: p.y, w: p.w });
-            });
+  // Kol ve Bacaklar
+  const cyanMat = new THREE.MeshStandardMaterial({ color: 0x1bb5a6 });
+  const purpleMat = new THREE.MeshStandardMaterial({ color: 0x2b1464 });
 
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
+  function createLimb(colorMat) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.3, 0.5), colorMat);
+    mesh.castShadow = true;
+    return mesh;
+  }
 
-            // Dokunmatik Tuş Olayları (Mobil İçin)
-            bindTouch('btn-left', (val) => moveLeft = val);
-            bindTouch('btn-right', (val) => moveRight = val);
-            bindTouch('btn-jump', (val) => { if(val && isGrounded) { playerVelY = 0.22; isGrounded = false; } });
+  const leftArm = createLimb(cyanMat); leftArm.position.set(-1.0, 1.6, 0);
+  const rightArm = createLimb(cyanMat); rightArm.position.set(1.0, 1.6, 0);
+  const leftLeg = createLimb(purpleMat); leftLeg.position.set(-0.4, 0.65, 0);
+  const rightLeg = createLimb(purpleMat); rightLeg.position.set(0.4, 0.65, 0);
 
-            // Klavye Desteği
-            window.addEventListener('keydown', e => {
-                if(e.key === 'ArrowLeft' || e.key === 'a') moveLeft = true;
-                if(e.key === 'ArrowRight' || e.key === 'd') moveRight = true;
-                if((e.key === 'ArrowUp' || e.key === ' ') && isGrounded) { playerVelY = 0.22; isGrounded = false; }
-            });
-            window.addEventListener('keyup', e => {
-                if(e.key === 'ArrowLeft' || e.key === 'a') moveLeft = false;
-                if(e.key === 'ArrowRight' || e.key === 'd') moveRight = false;
-            });
+  playerGroup.add(leftArm, rightArm, leftLeg, rightLeg);
+  scene.add(playerGroup);
 
-            animate();
-        }
+  // --- 5. KOGAMA TARZI HARİTA / PARKUR ---
+  const floorGeo = new THREE.BoxGeometry(60, 2, 60);
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0x100826, roughness: 0.8 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.position.y = -1;
+  floor.receiveShadow = true;
+  scene.add(floor);
 
-        function bindTouch(id, callback) {
-            const el = document.getElementById(id);
-            el.addEventListener('touchstart', (e) => { e.preventDefault(); callback(true); });
-            el.addEventListener('touchend', (e) => { e.preventDefault(); callback(false); });
-            el.addEventListener('mousedown', () => callback(true));
-            el.addEventListener('mouseup', () => callback(false));
-        }
+  // Renkli Blok Platformlar
+  const colors = [0xff0055, 0x00e5ff, 0xffbe0b, 0x8a2be2, 0x4cc9f0];
+  const platforms = [];
 
-        // Oyun Döngüsü ve Fizik
-        function animate() {
-            requestAnimationFrame(animate);
+  for(let i = 0; i < 25; i++) {
+    const w = 3 + Math.random() * 4;
+    const h = 1 + Math.random() * 6;
+    const d = 3 + Math.random() * 4;
+    const pGeo = new THREE.BoxGeometry(w, h, d);
+    const pMat = new THREE.MeshStandardMaterial({ 
+      color: colors[i % colors.length],
+      roughness: 0.3,
+      metalness: 0.1
+    });
+    const platform = new THREE.Mesh(pGeo, pMat);
+    platform.position.set(
+      (Math.random() - 0.5) * 45,
+      h / 2,
+      (Math.random() - 0.5) * 45
+    );
+    platform.receiveShadow = true;
+    platform.castShadow = true;
+    scene.add(platform);
+    platforms.push(platform);
+  }
 
-            // Yatay Hareket
-            if(moveLeft) playerMesh.position.x -= 0.08;
-            if(moveRight) playerMesh.position.x += 0.08;
+  // dev 3D GAMERWOST Logosu (Arka Planda)
+  const logoSignGeo = new THREE.BoxGeometry(12, 12, 1);
+  const logoSignMat = new THREE.MeshStandardMaterial({ map: logoTexture, roughness: 0.2 });
+  const logoSign = new THREE.Mesh(logoSignGeo, logoSignMat);
+  logoSign.position.set(0, 12, -25);
+  logoSign.castShadow = true;
+  scene.add(logoSign);
 
-            // Yerçekimi & Zıplama
-            playerVelY -= 0.01;
-            playerMesh.position.y += playerVelY;
+  // --- 6. HAREKET VE FİZİK MANTIĞI ---
+  let moveVector = { x: 0, z: 0 };
+  let velocityY = 0;
+  let isGrounded = true;
+  const speed = 0.18;
+  const gravity = -0.015;
+  const jumpForce = 0.35;
 
-            // Platform Basma Kontrolü
-            isGrounded = false;
-            platforms.forEach(p => {
-                if(Math.abs(playerMesh.position.x - p.x) < p.w / 2 + 0.3 &&
-                   playerMesh.position.y - 1.0 <= p.y + 0.3 && playerMesh.position.y - 1.0 >= p.y - 0.3 &&
-                   playerVelY <= 0) {
-                    playerMesh.position.y = p.y + 1.3;
-                    playerVelY = 0;
-                    isGrounded = true;
-                }
-            });
+  // --- 7. DOKUNMATİK JOYSICK ---
+  const joystickZone = document.getElementById('joystick-zone');
+  const joystickKnob = document.getElementById('joystick-knob');
+  let dragging = false;
+  let touchId = null;
+  let center = { x: 0, y: 0 };
 
-            // Yerin Dibine Düşerse Yeniden Doğ
-            if(playerMesh.position.y < -5) {
-                playerMesh.position.set(-6, 3, 0);
-                playerVelY = 0;
-            }
+  joystickZone.addEventListener('touchstart', (e) => {
+    const touch = e.changedTouches[0];
+    touchId = touch.identifier;
+    dragging = true;
+    const rect = joystickZone.getBoundingClientRect();
+    center = { x: rect.left + rect.width/2, y: rect.top + rect.height/2 };
+    updateJoystick(touch);
+  });
 
-            // Kamera Takibi
-            camera.position.x = playerMesh.position.x;
+  window.addEventListener('touchmove', (e) => {
+    if(!dragging) return;
+    for(let touch of e.changedTouches) {
+      if(touch.identifier === touchId) updateJoystick(touch);
+    }
+  });
 
-            renderer.render(scene, camera);
-        }
-    </script>
+  window.addEventListener('touchend', (e) => {
+    for(let touch of e.changedTouches) {
+      if(touch.identifier === touchId) {
+        dragging = false;
+        joystickKnob.style.transform = `translate(0px, 0px)`;
+        moveVector = { x: 0, z: 0 };
+      }
+    }
+  });
+
+  function updateJoystick(touch) {
+    let dx = touch.clientX - center.x;
+    let dy = touch.clientY - center.y;
+    let dist = Math.hypot(dx, dy);
+    let maxRadius = 35;
+
+    if(dist > maxRadius) {
+      dx = (dx / dist) * maxRadius;
+      dy = (dy / dist) * maxRadius;
+    }
+
+    joystickKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+    moveVector.x = dx / maxRadius;
+    moveVector.z = dy / maxRadius;
+  }
+
+  // Zıplama Butonu
+  document.getElementById('jump-btn').addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if(isGrounded) {
+      velocityY = jumpForce;
+      isGrounded = false;
+    }
+  });
+
+  // --- 8. OYUN DÖNGÜSÜ & ANIMASYON ---
+  let walkTime = 0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // Hareket & Yerçekimi
+    playerGroup.position.x += moveVector.x * speed;
+    playerGroup.position.z += moveVector.z * speed;
+
+    velocityY += gravity;
+    playerGroup.position.y += velocityY;
+
+    // Basit Zemin Kontrolü
+    if(playerGroup.position.y <= 0) {
+      playerGroup.position.y = 0;
+      velocityY = 0;
+      isGrounded = true;
+    }
+
+    // Karakter Dönüş Yönü
+    if(moveVector.x !== 0 || moveVector.z !== 0) {
+      const angle = Math.atan2(moveVector.x, moveVector.z);
+      playerGroup.rotation.y = angle;
+
+      // Yürüme Animasyonu
+      walkTime += 0.2;
+      leftArm.rotation.x = Math.sin(walkTime) * 0.6;
+      rightArm.rotation.x = -Math.sin(walkTime) * 0.6;
+      leftLeg.rotation.x = -Math.sin(walkTime) * 0.6;
+      rightLeg.rotation.x = Math.sin(walkTime) * 0.6;
+    } else {
+      leftArm.rotation.x = 0; rightArm.rotation.x = 0;
+      leftLeg.rotation.x = 0; rightLeg.rotation.x = 0;
+    }
+
+    // Kamera Takibi (Kogama / Roblox Açısı)
+    camera.position.x = playerGroup.position.x;
+    camera.position.y = playerGroup.position.y + 6;
+    camera.position.z = playerGroup.position.z + 10;
+    camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1.5, playerGroup.position.z);
+
+    renderer.render(scene, camera);
+  }
+
+  // Ekran Boyutu Değişimi
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  animate();
+</script>
 </body>
 </html>

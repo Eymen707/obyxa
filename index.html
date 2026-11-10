@@ -3,155 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GAMERWOST - Voxel Platform</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: sans-serif; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #090514; color: #fff; }
-        
-        /* ARAYÜZ STİLLERİ */
-        .screen { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; background: #0d091a; }
-        .hidden { display: none !important; }
-        .logo { font-size: 3rem; font-weight: bold; color: #a855f7; margin-bottom: 20px; text-shadow: 0 0 20px #a855f7; }
-        
-        /* MOBİL SOL ALT MARKA BİLGİSİ */
-        #watermark { position: absolute; bottom: 15px; left: 15px; font-weight: bold; font-size: 14px; color: rgba(255,255,255,0.7); z-index: 20; pointer-events: none; }
-        
-        .card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 12px; border: 1px solid #a855f7; width: 90%; max-width: 400px; text-align: center; }
-        input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; font-size: 1rem; }
-        input { background: #1a152b; color: white; border: 1px solid #4c1d95; }
-        button { background: #9333ea; color: white; font-weight: bold; cursor: pointer; }
-
-        /* DÜNYA LİSTESİ */
-        .world-list { width: 100%; max-height: 200px; overflow-y: auto; margin-top: 15px; }
-        .world-item { background: rgba(255,255,255,0.1); padding: 10px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-
-        #game-hud { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        .crosshair { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: white; border-radius: 50%; transform: translate(-50%, -50%); }
-    </style>
+    <title>GAMERWOST - Classic Roblox & Miniblox Style</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            background-color: #000;
+        }
+
+        /* Retro Roblox Header Styling */
+        .roblox-header {
+            background: linear-gradient(180deg, #1b53a0 0%, #0d346c 100%);
+            border-bottom: 3px solid #061e40;
+        }
+
+        .roblox-btn {
+            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            border: 2px solid #60a5fa;
+            box-shadow: 0 4px 0 #1e3a8a;
+            text-shadow: 1px 1px 2px #000;
+        }
+        
+        .roblox-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1e3a8a;
+        }
+
+        .roblox-green-btn {
+            background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+            border: 2px solid #4ade80;
+            box-shadow: 0 4px 0 #14532d;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .roblox-green-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #14532d;
+        }
+
+        /* Joystick Styles */
+        #joystick-container {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        #joystick-stick {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #a855f7 0%, #6b21a8 100%);
+            border: 2px solid #d8b4fe;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+        }
+
+        /* Crosshair */
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 40;
+        }
+        #crosshair::before, #crosshair::after {
+            content: '';
+            position: absolute;
+            background: white;
+            box-shadow: 0 0 2px black;
+        }
+        #crosshair::before { top: 7px; left: 0; width: 16px; height: 2px; }
+        #crosshair::after { top: 0; left: 7px; width: 2px; height: 16px; }
+
+        /* Hotbar Active Selection */
+        .hotbar-slot.active {
+            border-color: #facc15 !important;
+            transform: scale(1.1);
+            background-color: rgba(250, 204, 21, 0.2);
+        }
+
+        /* Watermark OBYXA */
+        .obx-watermark {
+            position: absolute;
+            bottom: 12px;
+            left: 15px;
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 8px rgba(168, 85, 247, 0.5);
+            letter-spacing: 2px;
+            pointer-events: none;
+            z-index: 100;
+            font-family: 'Impact', sans-serif;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-900 text-white select-none overflow-hidden">
 
-    <!-- SOL ALT YAZI -->
-    <div id="watermark">obyxa</div>
+    <!-- OBYXA Watermark Always Visible -->
+    <div class="obx-watermark">OBYXA</div>
 
-    <!-- GİRİŞ EKRANI -->
-    <div id="auth-screen" class="screen">
-        <h1 class="logo">GAMERWOST</h1>
-        <div class="card">
-            <h2>Kullanıcı Girişi</h2>
-            <input type="text" id="username" placeholder="Kullanıcı Adı">
-            <input type="password" id="password" placeholder="Şifre">
-            <button onclick="login()">Giriş Yap / Kaydol</button>
+    <!-- MAIN MENU (Old Roblox Theme) -->
+    <div id="main-menu" class="fixed inset-0 z-50 flex flex-col bg-gray-200 text-gray-800">
+        <!-- Top Roblox Header Navigation Bar -->
+        <div class="roblox-header w-full text-white px-4 py-2 flex items-center justify-between shadow-md">
+            <div class="flex items-center space-x-4">
+                <span class="font-extrabold text-2xl tracking-wider text-yellow-400 drop-shadow">GAMERWOST</span>
+                <span class="text-xs bg-blue-900 px-2 py-1 rounded text-blue-200">Think. Create. Build.</span>
+            </div>
+            <div class="hidden sm:flex space-x-3 text-sm font-bold">
+                <a href="#" class="hover:underline text-blue-100">My GAMERWOST</a>
+                <a href="#" class="hover:underline text-blue-100">Games</a>
+                <a href="#" class="hover:underline text-blue-100">Catalog</a>
+                <a href="#" class="hover:underline text-blue-100">Forum</a>
+            </div>
+            <button onclick="startGame()" class="roblox-green-btn text-white font-bold px-6 py-2 rounded-md text-lg tracking-wide transform hover:scale-105 transition">
+                PLAY NOW!
+            </button>
+        </div>
+
+        <!-- Main Banner Body -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-8 flex flex-col items-center justify-center bg-slate-100">
+            <div class="max-w-3xl w-full bg-white p-6 rounded-lg border-2 border-gray-300 shadow-xl text-center space-y-6">
+                <!-- Main Game Title Logo -->
+                <div class="relative inline-block">
+                    <h1 class="text-5xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 tracking-wider transform -rotate-1 drop-shadow-md">
+                        GAMERWOST
+                    </h1>
+                    <span class="absolute -top-3 -right-6 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-widest shadow">
+                        MINIBLOX EDITION
+                    </span>
+                </div>
+
+                <p class="text-gray-600 font-medium text-sm sm:text-base max-w-lg mx-auto">
+                    Minecraft ve Roblox tarzı blok kırma, bina yapma ve üretim macera oyununa hoş geldiniz! Kendinizi özel GAMERWOST evreninde keşfe çıkarın.
+                </p>
+
+                <!-- Avatar Preview & Play Card -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6 bg-purple-50 p-4 rounded-xl border border-purple-200">
+                    <div class="w-32 h-32 bg-purple-900 rounded-lg flex items-center justify-center border-2 border-purple-400 shadow-inner relative overflow-hidden">
+                        <!-- Custom Avatar Preview Icon -->
+                        <div class="w-20 h-24 bg-purple-700 rounded flex flex-col items-center justify-start pt-1 border border-purple-300 relative">
+                            <!-- Hat -->
+                            <div class="w-12 h-3 bg-blue-600 rounded-t-md"></div>
+                            <!-- Head -->
+                            <div class="w-8 h-8 bg-gray-200 rounded-sm my-0.5 flex justify-center items-center">
+                                <div class="text-black font-bold text-xs">:)</div>
+                            </div>
+                            <!-- Torso G logo -->
+                            <div class="w-12 h-8 bg-purple-900 border border-cyan-400 rounded-sm flex items-center justify-center font-bold text-xs text-cyan-300">
+                                G+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-left space-y-2">
+                        <h3 class="font-bold text-lg text-purple-950">Özel Karakter: GAMERWOST Player</h3>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>✔️ Mavi Şapka & Güler Yüz</li>
+                            <li>✔️ GAMERWOST Logolu Mor Kostüm</li>
+                            <li>✔️ Turkuaz Kolluklar & Koyu Alt</li>
+                        </ul>
+                        <button onclick="startGame()" class="roblox-green-btn w-full text-white font-bold py-3 px-8 rounded-lg text-xl tracking-wider mt-2">
+                            OYUNA BAŞLA (PLAY)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Controls Guide -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-gray-700 pt-2 border-t">
+                    <div class="bg-gray-50 p-2 rounded border"><strong>W, A, S, D:</strong> Hareket</div>
+                    <div class="bg-gray-50 p-2 rounded border"><strong>Sol Tık:</strong> Blok Kır</div>
+                    <div class="bg-gray-50 p-2 rounded border"><strong>Sağ Tık / Buton:</strong> Blok Koy</div>
+                    <div class="bg-gray-50 p-2 rounded border"><strong>E / Craft:</strong> Envanter</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ANA MENÜ / DÜNYA SEÇİMİ VE YAYINLAMA -->
-    <div id="menu-screen" class="screen hidden">
-        <h1 class="logo">GAMERWOST LOBİ</h1>
-        <div class="card">
-            <h3>Topluluk Dünyaları</h3>
-            <div class="world-list" id="world-list"></div>
-            <hr style="margin: 15px 0; border-color: #4c1d95;">
-            <h3>Kendi Dünyanı Oluştur & Yayınla</h3>
-            <input type="text" id="new-world-name" placeholder="Dünya Adı">
-            <button onclick="createWorld()">Dünyayı Oluştur & Yayınla</button>
+    <!-- GAME UI HUD (Visible during gameplay) -->
+    <div id="game-hud" class="hidden absolute inset-0 pointer-events-none z-30">
+        <!-- Top Title Bar -->
+        <div class="absolute top-2 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-6 py-1.5 rounded-full border border-purple-500/50 flex items-center space-x-3">
+            <span class="font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300 tracking-widest">
+                GAMERWOST
+            </span>
+        </div>
+
+        <!-- Crosshair -->
+        <div id="crosshair"></div>
+
+        <!-- Inventory / Crafting Toggle Button (Mobile Top Right) -->
+        <button id="btn-inventory" class="pointer-events-auto absolute top-3 right-3 bg-purple-700/80 hover:bg-purple-600 text-white font-bold px-4 py-2 rounded-lg border border-purple-400 shadow-lg text-sm active:scale-95 transition">
+            🎒 Envanter & Craft
+        </button>
+
+        <!-- Dynamic Touch Joystick Container -->
+        <div id="joystick-container" class="pointer-events-auto">
+            <div id="joystick-stick"></div>
+        </div>
+
+        <!-- Mobile Action Buttons (Right side) -->
+        <div class="pointer-events-auto absolute bottom-6 right-6 flex flex-col space-y-3 items-end">
+            <button id="btn-jump" class="w-16 h-16 bg-blue-600/80 border-2 border-blue-300 rounded-full text-white font-black text-lg shadow-xl active:bg-blue-500 active:scale-95 flex items-center justify-center">
+                🚀 ZIP
+            </button>
+            <div class="flex space-x-2">
+                <button id="btn-break" class="w-14 h-14 bg-red-600/80 border-2 border-red-300 rounded-full text-white font-bold text-xs shadow-xl active:bg-red-500 active:scale-95 flex items-center justify-center">
+                    ⛏️ KIR
+                </button>
+                <button id="btn-place" class="w-14 h-14 bg-green-600/80 border-2 border-green-300 rounded-full text-white font-bold text-xs shadow-xl active:bg-green-500 active:scale-95 flex items-center justify-center">
+                    🧱 KOY
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Hotbar -->
+        <div class="pointer-events-auto absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 p-1.5 rounded-xl border border-gray-600 flex space-x-2 backdrop-blur-sm">
+            <div class="hotbar-slot active w-12 h-12 bg-gray-800 border-2 border-gray-500 rounded-lg flex flex-col items-center justify-center cursor-pointer relative" data-index="0" onclick="selectHotbarSlot(0)">
+                <span class="text-xl">🟩</span>
+                <span class="text-[10px] text-gray-300 font-bold" id="count-grass">99</span>
+                <span class="absolute top-0.5 left-1 text-[9px] text-yellow-400 font-black">1</span>
+            </div>
+            <div class="hotbar-slot w-12 h-12 bg-gray-800 border-2 border-gray-500 rounded-lg flex flex-col items-center justify-center cursor-pointer relative" data-index="1" onclick="selectHotbarSlot(1)">
+                <span class="text-xl">🟫</span>
+                <span class="text-[10px] text-gray-300 font-bold" id="count-dirt">99</span>
+                <span class="absolute top-0.5 left-1 text-[9px] text-gray-400 font-black">2</span>
+            </div>
+            <div class="hotbar-slot w-12 h-12 bg-gray-800 border-2 border-gray-500 rounded-lg flex flex-col items-center justify-center cursor-pointer relative" data-index="2" onclick="selectHotbarSlot(2)">
+                <span class="text-xl">bbb</span>
+                <span class="text-[10px] text-gray-300 font-bold" id="count-stone">50</span>
+                <span class="absolute top-0.5 left-1 text-[9px] text-gray-400 font-black">3</span>
+            </div>
+            <div class="hotbar-slot w-12 h-12 bg-gray-800 border-2 border-gray-500 rounded-lg flex flex-col items-center justify-center cursor-pointer relative" data-index="3" onclick="selectHotbarSlot(3)">
+                <span class="text-xl">🪵</span>
+                <span class="text-[10px] text-gray-300 font-bold" id="count-wood">20</span>
+                <span class="absolute top-0.5 left-1 text-[9px] text-gray-400 font-black">4</span>
+            </div>
+            <div class="hotbar-slot w-12 h-12 bg-gray-800 border-2 border-gray-500 rounded-lg flex flex-col items-center justify-center cursor-pointer relative" data-index="4" onclick="selectHotbarSlot(4)">
+                <span class="text-xl">🍃</span>
+                <span class="text-[10px] text-gray-300 font-bold" id="count-leaves">30</span>
+                <span class="absolute top-0.5 left-1 text-[9px] text-gray-400 font-black">5</span>
+            </div>
         </div>
     </div>
 
-    <!-- OYUN HUD -->
-    <div id="game-hud" class="hidden">
-        <div class="crosshair"></div>
-        <button onclick="exitGame()" style="position: absolute; top: 15px; right: 15px; width: auto; pointer-events: auto; background: #ef4444;">Ayrıl</button>
+    <!-- INVENTORY & CRAFTING MODAL -->
+    <div id="crafting-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-gray-900 border-2 border-purple-500 rounded-2xl w-full max-w-md p-6 relative text-white shadow-2xl">
+            <button onclick="toggleInventory()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-xl">✕</button>
+            <h2 class="text-2xl font-black text-purple-400 mb-4 flex items-center space-x-2">
+                <span>🔨 GAMERWOST Crafting & Envanter</span>
+            </h2>
+
+            <!-- Inventory List -->
+            <div class="mb-6">
+                <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Mevcut Kaynaklar</h3>
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                    <div class="bg-gray-800 p-2 rounded flex items-center space-x-2 border border-gray-700">
+                        <span class="text-lg">🟩</span><span>Çim: <strong id="inv-grass" class="text-green-400">99</strong></span>
+                    </div>
+                    <div class="bg-gray-800 p-2 rounded flex items-center space-x-2 border border-gray-700">
+                        <span class="text-lg">🟫</span><span>Toprak: <strong id="inv-dirt" class="text-yellow-600">99</strong></span>
+                    </div>
+                    <div class="bg-gray-800 p-2 rounded flex items-center space-x-2 border border-gray-700">
+                        <span class="text-lg">bbb</span><span>Taş: <strong id="inv-stone" class="text-gray-300">50</strong></span>
+                    </div>
+                    <div class="bg-gray-800 p-2 rounded flex items-center space-x-2 border border-gray-700">
+                        <span class="text-lg">🪵</span><span>Odun: <strong id="inv-wood" class="text-amber-600">20</strong></span>
+                    </div>
+                    <div class="bg-gray-800 p-2 rounded flex items-center space-x-2 border border-gray-700">
+                        <span class="text-lg">🍃</span><span>Yaprak: <strong id="inv-leaves" class="text-emerald-400">30</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crafting Recipes -->
+            <div>
+                <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Üretim Tarifleri</h3>
+                <div class="space-y-2">
+                    <div class="bg-gray-800/80 p-3 rounded-lg border border-gray-700 flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-sm text-yellow-300">🪵 10x Odun Eklesin</div>
+                            <div class="text-[11px] text-gray-400">Gereksinim: 5x Yaprak</div>
+                        </div>
+                        <button onclick="craftItem('wood')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded text-xs active:scale-95">Üret</button>
+                    </div>
+                    <div class="bg-gray-800/80 p-3 rounded-lg border border-gray-700 flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-sm text-gray-200">bbb 10x Taş Eklesin</div>
+                            <div class="text-[11px] text-gray-400">Gereksinim: 5x Toprak</div>
+                        </div>
+                        <button onclick="craftItem('stone')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded text-xs active:scale-95">Üret</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="canvas-container" style="width:100%; height:100%;"></div>
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container" class="w-full h-full"></div>
 
+    <!-- GAME LOGIC SCRIPT -->
     <script>
-        // Örnek Veritabanı Mantığı (Local Storage)
-        let currentUser = "";
-        let worlds = JSON.parse(localStorage.getItem('gw_worlds')) || [
-            { name: "Aop Eşya Dünyası", author: "Aop", id: 1 },
-            { name: "Mega Blok Parkur", author: "GamerWost", id: 2 }
-        ];
-
-        function login() {
-            const user = document.getElementById('username').value.trim();
-            if (user) {
-                currentUser = user;
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('menu-screen').classList.remove('hidden');
-                renderWorlds();
-            }
-        }
-
-        function renderWorlds() {
-            const list = document.getElementById('world-list');
-            list.innerHTML = "";
-            worlds.forEach(w => {
-                const item = document.createElement('div');
-                item.className = "world-item";
-                item.innerHTML = `<span><b>${w.name}</b> (${w.author})</span> <button onclick="joinWorld('${w.name}')" style="width:auto; padding:5px 10px;">Katıl</button>`;
-                list.appendChild(item);
-            });
-        }
-
-        function createWorld() {
-            const name = document.getElementById('new-world-name').value.trim();
-            if (name) {
-                worlds.push({ name: name, author: currentUser, id: Date.now() });
-                localStorage.setItem('gw_worlds', JSON.stringify(worlds));
-                renderWorlds();
-                document.getElementById('new-world-name').value = "";
-            }
-        }
-
-        /* 3D MOTOR BAŞLANGICI */
+        // Global Game Variables
         let scene, camera, renderer;
+        let playerGroup, playerBody, headMesh;
+        let blocks = [];
+        let raycaster, mouse;
+        let selectedBlockType = 'grass';
+        let targetedBlock = null;
 
-        function joinWorld(worldName) {
-            document.getElementById('menu-screen').classList.add('hidden');
-            document.getElementById('game-hud').classList.remove('hidden');
+        // Player Stats & Physics
+        const player = {
+            position: new THREE.Vector3(0, 5, 0),
+            velocity: new THREE.Vector3(),
+            speed: 0.12,
+            jumpStrength: 0.22,
+            isGrounded: false,
+            rotationY: 0
+        };
 
+        // Inventory Counts
+        const inventory = {
+            grass: 99,
+            dirt: 99,
+            stone: 50,
+            wood: 20,
+            leaves: 30
+        };
+
+        const blockTypes = ['grass', 'dirt', 'stone', 'wood', 'leaves'];
+
+        // Control Inputs
+        const keys = { w: false, a: false, s: false, d: false, space: false };
+        let joystickInput = { x: 0, y: 0 };
+
+        // Colors & Textures setup for voxel blocks
+        const blockMaterials = {
+            grass: new THREE.MeshLambertMaterial({ color: 0x4caf50 }),
+            dirt: new THREE.MeshLambertMaterial({ color: 0x795548 }),
+            stone: new THREE.MeshLambertMaterial({ color: 0x9e9e9e }),
+            wood: new THREE.MeshLambertMaterial({ color: 0x5d4037 }),
+            leaves: new THREE.MeshLambertMaterial({ color: 0x2e7d32 }),
+            highlight: new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
+        };
+
+        let highlightBox;
+
+        // Initialize 3D Engine
+        function initEngine() {
+            const container = document.getElementById('canvas-container');
+            
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0f172a);
+            scene.background = new THREE.Color(0x87ceeb); // Sky blue
+            scene.fog = new THREE.FogExp2(0x87ceeb, 0.025);
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 3, 5);
-
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
 
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(10, 20, 10);
-            scene.add(light);
-            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-
-            // Zemin Blokları
-            const geo = new THREE.BoxGeometry(1, 1, 1);
-            const mat = new THREE.MeshLambertMaterial({ color: 0x9333ea });
-            for(let x = -5; x <= 5; x++) {
-                for(let z = -5; z <= 5; z++) {
-                    const block = new THREE.Mesh(geo, mat);
-                    block.position.set(x, 0, z);
-                    scene.add(block);
-                }
-            }
-
-            animate();
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            if (renderer && scene && camera) {
-                renderer.render(scene, camera);
-            }
-        }
-
-        function exitGame() {
-            location.reload();
-        }
-    </script>
-</body>
-</html>
+            // Ambient & Directional Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientL

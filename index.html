@@ -1,415 +1,386 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GAMERWOST - Studio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GAMERWOST</title>
     <style>
-        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: Arial, sans-serif; }
-        #gameCanvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-
-        #watermark {
-            position: absolute; bottom: 15px; left: 20px;
-            color: #ffffff; font-size: 20px; font-weight: 900; letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8); z-index: 1000; pointer-events: none;
-        }
-
-        #menu-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #1a0b2e 0%, #05020a 100%); z-index: 500; display: flex; flex-direction: column;
-        }
-        .rbx-header {
-            background: linear-gradient(to bottom, #0055b3, #003380);
-            height: 50px; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-bottom: 2px solid #001f4d; color: white; flex-shrink: 0;
-        }
-        .rbx-logo-box { display: flex; align-items: center; gap: 10px; }
-        .rbx-logo-icon {
-            width: 36px; height: 36px; background: linear-gradient(135deg, #a855f7, #3b82f6);
-            border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            font-size: 22px; font-weight: bold; color: white; box-shadow: 0 0 10px rgba(168,85,247,0.8);
-        }
-        .rbx-logo-text { font-size: 24px; font-weight: 900; letter-spacing: 2px; text-shadow: 2px 2px 0px #990000; font-family: Impact, sans-serif; }
-        .rbx-nav {
-            background: #19437d; height: 30px; display: flex; align-items: center;
-            padding: 0 20px; gap: 15px; font-size: 12px; color: #cce0ff; font-weight: bold; flex-shrink: 0;
-        }
-        .menu-body {
-            flex: 1; display: flex; flex-direction: column; padding: 15px;
-            color: white; overflow-y: auto; align-items: center; -webkit-overflow-scrolling: touch;
-        }
-        .game-header-title { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: #a855f7; margin: 15px 0 10px 0; text-align: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+        #canvas-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        #crosshair { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; transform: translate(-50%, -50%); pointer-events: none; }
+        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.8); }
+        #crosshair::before { top: 4px; left: -5px; width: 20px; height: 2px; }
+        #crosshair::after { top: -5px; left: 4px; width: 2px; height: 20px; }
         
-        .publish-box {
-            background: rgba(255,255,255,0.06); border: 2px solid #a855f7; border-radius: 12px;
-            padding: 15px; width: 100%; max-width: 450px; text-align: center; margin-bottom: 15px; flex-shrink: 0;
-        }
-        .publish-box input, .publish-box select {
-            width: 90%; padding: 10px; margin: 5px 0; border-radius: 6px; border: none; font-size: 14px; text-align: center; background: #fff; color: #000;
-        }
-        .btn-pub {
-            background: linear-gradient(135deg, #a855f7, #6366f1); color: white; border: none;
-            padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 8px;
-            width: 90%; box-shadow: 0 4px 12px rgba(168,85,247,0.4); touch-action: manipulation;
-        }
-
-        .games-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;
-            max-width: 600px; width: 100%; padding-bottom: 40px;
-        }
-        .game-card {
-            background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(168, 85, 247, 0.5);
-            border-radius: 10px; padding: 12px; text-align: center; position: relative;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .game-thumb { font-size: 32px; margin-bottom: 4px; }
-        .game-card h3 { font-size: 14px; color: #fff; margin-bottom: 4px; word-break: break-word; }
-        .game-card .tag { font-size: 10px; background: rgba(168,85,247,0.4); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
-        .like-bar { font-size: 12px; color: #ffca28; margin-bottom: 8px; cursor: pointer; }
+        /* UI Overlay */
+        #ui { position: absolute; top: 10px; left: 10px; color: #fff; text-shadow: 1px 1px 2px #000; font-size: 14px; z-index: 10; }
+        .panel { background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+        input, button { padding: 5px 10px; margin: 2px; border: none; border-radius: 4px; font-weight: bold; }
+        button { background: #5c3cbf; color: white; cursor: pointer; }
+        button:active { background: #3c2480; }
         
-        .join-btn {
-            background: #22c55e; color: white; border: none; padding: 10px; border-radius: 6px;
-            font-weight: bold; width: 100%; cursor: pointer; font-size: 13px; touch-action: manipulation;
-        }
-
-        #crosshair {
-            position: absolute; top: 50%; left: 50%; width: 16px; height: 16px;
-            transform: translate(-50%, -50%); pointer-events: none; z-index: 100; display: none;
-        }
-        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.9); }
-        #crosshair::before { top: 7px; left: 0; width: 16px; height: 2px; }
-        #crosshair::after { top: 0; left: 7px; width: 2px; height: 16px; }
-
-        #hotbar {
-            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            display: none; gap: 6px; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 8px;
-            border: 2px solid rgba(255,255,255,0.2); z-index: 100;
-        }
-        .slot {
-            width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid #555;
-            border-radius: 6px; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; color: white; font-size: 10px; font-weight: bold; position: relative; cursor: pointer;
-        }
+        /* Hotbar */
+        #hotbar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 6px; z-index: 10; }
+        .slot { width: 40px; height: 40px; border: 2px solid #555; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; text-align: center; font-weight: bold; background: rgba(255,255,255,0.1); }
         .slot.active { border-color: #fff; background: rgba(255,255,255,0.3); }
-        .count { position: absolute; bottom: 2px; right: 4px; font-size: 9px; color: #fff; }
 
-        #hud-controls { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150; }
-        #joystick-base {
-            position: absolute; bottom: 25px; left: 25px; width: 110px; height: 110px;
-            background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%; pointer-events: auto; touch-action: none;
+        /* Mobile Controls */
+        #mobile-controls { display: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 5; }
+        .touch-btn { position: absolute; pointer-events: auto; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; }
+        .touch-btn:active { background: rgba(255,255,255,0.5); }
+        #btn-up { bottom: 110px; left: 70px; }
+        #btn-down { bottom: 10px; left: 70px; }
+        #btn-left { bottom: 60px; left: 15px; }
+        #btn-right { bottom: 60px; left: 125px; }
+        #btn-jump { bottom: 30px; right: 20px; width: 65px; height: 65px; }
+        #btn-break { bottom: 110px; right: 20px; background: rgba(255,50,50,0.4); }
+        #btn-place { bottom: 110px; right: 85px; background: rgba(50,255,50,0.4); }
+        
+        /* Mobile Detection Override */
+        @media (pointer: coarse) {
+            #mobile-controls { display: block; }
         }
-        #joystick-stick {
-            position: absolute; top: 30px; left: 30px; width: 50px; height: 50px;
-            background: rgba(168, 85, 247, 0.85); border: 2px solid #fff; border-radius: 50%; pointer-events: none;
-        }
-        .action-container {
-            position: absolute; bottom: 25px; right: 20px; display: flex; flex-direction: column; gap: 10px; pointer-events: auto;
-        }
-        .top-action-container {
-            position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; pointer-events: auto;
-        }
-        .act-btn {
-            width: 55px; height: 55px; border-radius: 50%; background: rgba(0,0,0,0.6);
-            border: 2px solid #fff; color: white; font-weight: bold; font-size: 12px;
-            display: flex; align-items: center; justify-content: center; touch-action: manipulation;
-        }
-        .act-btn:active { background: rgba(168, 85, 247, 0.8); }
-
-        #craft-modal {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(20, 10, 35, 0.95); border: 2px solid #a855f7; border-radius: 12px;
-            padding: 20px; color: white; width: 290px; display: none; z-index: 300;
-        }
-        #craft-modal h2 { text-align: center; color: #a855f7; margin-bottom: 12px; font-size: 18px; }
-        .craft-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; }
-        .craft-btn { background: #a855f7; border: none; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; touch-action: manipulation; }
     </style>
+    <!-- Three.js & PeerJS CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
 
-    <div id="watermark">OBYXA</div>
-
-    <div id="menu-screen">
-        <div class="rbx-header">
-            <div class="rbx-logo-box">
-                <div class="rbx-logo-icon">G</div>
-                <div class="rbx-logo-text">GAMERWOST</div>
-            </div>
-            <div style="font-size: 11px; color: #cce0ff;" id="connection-status">Studio Modu</div>
-        </div>
-        <div class="rbx-nav">
-            <span>GAMERWOST Studio</span> | <span>AI Küfür Filtreli Yayınlama</span>
-        </div>
-        <div class="menu-body">
-            
-            <div class="publish-box">
-                <h3 style="color: #a855f7; margin-bottom: 6px;">🛠️ GAMERWOST Studio (Mod Yayınla)</h3>
-                <input type="text" id="custom-game-name" placeholder="Oyun Adı (Örn: Verity Korku)">
-                <select id="custom-game-mod">
-                    <option value="Verity">👻 Verity (Korku / Gece Modu)</option>
-                    <option value="JumpBooster">🚀 Jump Booster (Süper Zıplama)</option>
-                    <option value="TungTung">🥁 Tung Tung Sahur Modu</option>
-                    <option value="Creative">🏗️ Klasik Creative Modu</option>
-                    <option value="Survival">🌲 Klasik Survival Modu</option>
-                </select>
-                <button class="btn-pub" id="create-pub-btn">Oyununu Modla ve Yayınla</button>
-                <p id="pub-status" style="font-size: 11px; color: #00ffcc; margin-top: 6px;"></p>
-            </div>
-
-            <div class="game-header-title">YAYINLANAN OYUNLAR</div>
-            <div class="games-grid" id="games-container"></div>
-        </div>
-    </div>
-
-    <canvas id="gameCanvas"></canvas>
+    <div id="canvas-container"></div>
     <div id="crosshair"></div>
 
+    <div id="ui">
+        <div class="panel">
+            <h2>GAMERWOST</h2>
+            <div id="peer-info">My ID: <span id="my-id">Connecting...</span></div>
+            <div>
+                <input type="text" id="join-id" placeholder="Enter Host ID">
+                <button id="btn-connect">Join World</button>
+            </div>
+            <div>
+                <button id="btn-verity">Toggle AI Verity</button>
+            </div>
+        </div>
+    </div>
+
     <div id="hotbar">
-        <div class="slot active" id="slot0">Çim<span class="count" id="c1">20</span></div>
-        <div class="slot" id="slot1">Taş<span class="count" id="c2">15</span></div>
-        <div class="slot" id="slot2">Odun<span class="count" id="c3">10</span></div>
-        <div class="slot" id="slot3">Yaprak<span class="count" id="c4">10</span></div>
-        <div class="slot" id="slot4">Tahta<span class="count" id="c5">0</span></div>
+        <div class="slot active" data-type="1">Dirt</div>
+        <div class="slot" data-type="2">Grass</div>
+        <div class="slot" data-type="3">Stone</div>
+        <div class="slot" data-type="4">Wood</div>
+        <div class="slot" data-type="5">Sculk</div>
+        <div class="slot" data-type="6">Mud</div>
+        <div class="slot" data-type="7">Froglight</div>
     </div>
 
-    <div id="hud-controls">
-        <div id="joystick-base">
-            <div id="joystick-stick"></div>
-        </div>
-        <div class="top-action-container">
-            <div class="act-btn" id="camBtn">F5</div>
-            <div class="act-btn" id="craftBtn">CRAFT</div>
-        </div>
-        <div class="action-container">
-            <div class="act-btn" id="breakBtn">KIR</div>
-            <div class="act-btn" id="placeBtn">KOY</div>
-            <div class="act-btn" id="jumpBtn">ZIPLA</div>
-        </div>
-    </div>
-
-    <div id="craft-modal">
-        <h2>Minecraft Craft</h2>
-        <div class="craft-row">
-            <div>4x Tahta Plaka<br><small style="color:#aaa;">Gereken: 1 Odun</small></div>
-            <button class="craft-btn" id="doCraftBtn">Üret</button>
-        </div>
-        <button class="craft-btn" style="width: 100%; margin-top: 10px; background: #555;" id="closeCraftBtn">Kapat</button>
+    <!-- Mobile UI Controls -->
+    <div id="mobile-controls">
+        <div class="touch-btn" id="btn-up">W</div>
+        <div class="touch-btn" id="btn-down">S</div>
+        <div class="touch-btn" id="btn-left">A</div>
+        <div class="touch-btn" id="btn-right">D</div>
+        <div class="touch-btn" id="btn-jump">JUMP</div>
+        <div class="touch-btn" id="btn-break">MINE</div>
+        <div class="touch-btn" id="btn-place">PLACE</div>
     </div>
 
     <script>
-        let scene, camera, renderer;
-        let blocks = [];
-        let player, playerY = 4, velocityY = 0, isGrounded = false;
-        let armL, armR, legL, legR;
-        let yaw = 0;
-        let moveX = 0, moveZ = 0;
-        let selectedBlock = 1;
-        let inventory = { 1: 20, 2: 15, 3: 10, 4: 10, 5: 0 };
-        
-        let cameraMode = 3;
-        let playerArmMesh;
-        let swingAnim = 0;
-        let walkTime = 0;
-        let joystickActive = false, jStartX = 0, jStartY = 0;
+        // --- GAME ENGINE SETUP ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+        scene.fog = new THREE.FogExp2(0x87ceeb, 0.03);
 
-        let peer, conn;
-        let otherPlayer = null;
-        let jumpPower = 0.22;
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
 
-        // KÜFÜR VE ARGO KONTROL FİLTRESİ (AI Denetim Simülasyonu)
-        const badWords = ["amk", "aq", "orospu", "o.ç", "sik", "anan", "mal", "salak", "piç", "siktir", "göt"];
-        function checkBadWords(text) {
-            let lower = text.toLowerCase();
-            for (let word of badWords) {
-                if (lower.includes(word)) return true;
-            }
-            return false;
+        // Lighting
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
+        scene.add(hemiLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(50, 100, 50);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        // Blocks & Textures (Procedural Colors for Minecraft 1.19 Vibe)
+        const blockTypes = {
+            1: { name: 'Dirt', color: 0x8B5A2B },
+            2: { name: 'Grass', color: 0x4C9A2A },
+            3: { name: 'Stone', color: 0x808080 },
+            4: { name: 'Wood', color: 0x5C4033 },
+            5: { name: 'Sculk', color: 0x052F3D },     // 1.19 Item
+            6: { name: 'Mud', color: 0x3C2F2F },       // 1.19 Item
+            7: { name: 'Froglight', color: 0xFCE880 } // 1.19 Item
+        };
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const materials = {};
+        for(let id in blockTypes) {
+            materials[id] = new THREE.MeshLambertMaterial({ color: blockTypes[id].color });
         }
 
-        const defaultGames = [
-            { id: 'verity-base', name: 'AI Verity Nightmare', mode: 'Verity', likes: 340, icon: '👻', peerId: '' },
-            { id: 'booster-base', name: 'Mega Jump Booster', mode: 'JumpBooster', likes: 280, icon: '🚀', peerId: '' },
-            { id: 'creative-base', name: 'Klasik Creative', mode: 'Creative', likes: 142, icon: '🏗️', peerId: '' },
-            { id: 'survival-base', name: 'Zorlu Survival', mode: 'Survival', likes: 98, icon: '🌲', peerId: '' }
-        ];
+        const worldBlocks = new Map();
+        function getKey(x, y, z) { return `${x},${y},${z}`; }
 
-        function loadGameList() {
-            let saved = JSON.parse(localStorage.getItem('gamerwost_published_games') || '[]');
-            let allGames = [...defaultGames, ...saved];
-            let container = document.getElementById('games-container');
-            container.innerHTML = '';
+        function addBlock(x, y, z, type, sync = true) {
+            const key = getKey(x, y, z);
+            if (worldBlocks.has(key)) return;
 
-            allGames.forEach((g) => {
-                let card = document.createElement('div');
-                card.className = 'game-card';
-                card.innerHTML = `
-                    <div class="game-thumb">${g.icon || '🎮'}</div>
-                    <h3>${g.name}</h3>
-                    <div><span class="tag">${g.mode}</span></div>
-                    <div class="like-bar" id="like-box-${g.id}">👍 Beğen: <span id="like-${g.id}">${g.likes}</span></div>
-                    <button class="join-btn" id="join-btn-${g.id}">OYNA / KATIL</button>
-                `;
-                container.appendChild(card);
+            const mesh = new THREE.Mesh(geometry, materials[type]);
+            mesh.position.set(x, y, z);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+            worldBlocks.set(key, { mesh, type });
 
-                card.querySelector('#like-box-' + g.id).addEventListener('pointerdown', (e) => {
-                    e.stopPropagation();
-                    likeGame(g.id);
-                });
-
-                card.querySelector('#join-btn-' + g.id).addEventListener('pointerdown', (e) => {
-                    e.stopPropagation();
-                    joinOrStartGame(g.mode, g.peerId);
-                });
-            });
+            if (sync) sendNetworkData({ action: 'place', x, y, z, type });
         }
 
-        function likeGame(id) {
-            let el = document.getElementById('like-' + id);
-            if(el) {
-                let current = parseInt(el.innerText);
-                el.innerText = current + 1;
+        function removeBlock(x, y, z, sync = true) {
+            const key = getKey(x, y, z);
+            if (worldBlocks.has(key)) {
+                const data = worldBlocks.get(key);
+                scene.remove(data.mesh);
+                worldBlocks.delete(key);
+                if (sync) sendNetworkData({ action: 'break', x, y, z });
             }
         }
 
-        // Oyun Yayınlama ve AI Küfür Filtresi Kontrolü
-        document.getElementById('create-pub-btn').addEventListener('pointerdown', () => {
-            let nameInput = document.getElementById('custom-game-name').value.trim();
-            let modeSelect = document.getElementById('custom-game-mod').value;
-            
-            if (!nameInput) { alert("Lütfen oyununa bir isim ver!"); return; }
-
-            // AI Denetim Kontrolü
-            if (checkBadWords(nameInput)) {
-                alert("⚠️ AI Denetim Sistemi: Oyun adında uygunsuz kelime tespit edildi! Lütfen düzgün bir isim gir.");
-                document.getElementById('pub-status').innerText = "Yayınlama reddedildi: Uygunsuz kelime!";
-                return;
+        // Generate Terrain
+        for (let x = -8; x <= 8; x++) {
+            for (let z = -8; z <= 8; z++) {
+                addBlock(x, 0, z, 1, false);
+                addBlock(x, 1, z, 2, false);
             }
+        }
 
-            document.getElementById('pub-status').innerText = "AI Onayladı: Mod yükleniyor...";
+        // --- PLAYER CONTROLS & PHYSICS ---
+        let playerPos = new THREE.Vector3(0, 3, 0);
+        let velocity = new THREE.Vector3();
+        let yaw = 0, pitch = 0;
+        let selectedType = 1;
+        const keys = {};
 
-            let iconMap = { 'Verity': '👻', 'JumpBooster': '🚀', 'TungTung': '🥁', 'Creative': '🏗️', 'Survival': '🌲' };
+        // Mobile / Touch controls state
+        let touchMove = { w: false, s: false, a: false, d: false };
 
-            peer = new Peer();
-            peer.on('open', (id) => {
-                let newGame = {
-                    id: 'g_' + Date.now(),
-                    name: nameInput,
-                    mode: modeSelect,
-                    likes: 1,
-                    peerId: id,
-                    icon: iconMap[modeSelect] || '🎮'
-                };
+        window.addEventListener('keydown', (e) => { keys[e.code] = true; });
+        window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
-                let saved = JSON.parse(localStorage.getItem('gamerwost_published_games') || '[]');
-                saved.unshift(newGame);
-                localStorage.setItem('gamerwost_published_games', JSON.stringify(saved));
-
-                document.getElementById('pub-status').innerText = "Modlu Oyun Yayınlandı!";
-                loadGameList();
-                
-                peer.on('connection', (connection) => {
-                    conn = connection;
-                    setupConnection();
-                    alert("Oyuncu katıldı!");
-                });
-
-                startGame(modeSelect);
+        // Hotbar Selector
+        document.querySelectorAll('.slot').forEach(slot => {
+            slot.addEventListener('click', () => {
+                document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+                slot.classList.add('active');
+                selectedType = parseInt(slot.dataset.type);
             });
         });
 
-        function joinOrStartGame(mode, targetPeerId) {
-            if (targetPeerId && targetPeerId !== '') {
-                peer = new Peer();
-                peer.on('open', () => {
-                    conn = peer.connect(targetPeerId);
-                    setupConnection();
-                    startGame(mode);
-                });
-            } else {
-                startGame(mode);
+        // Pointer Lock for Mouse Camera
+        renderer.domElement.addEventListener('click', () => {
+            if (!isTouchDevice()) renderer.domElement.requestPointerLock();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (document.pointerLockElement === renderer.domElement) {
+                yaw -= e.movementX * 0.002;
+                pitch -= e.movementY * 0.002;
+                pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+            }
+        });
+
+        // Touch Look Controls for Mobile
+        let touchStartX = 0, touchStartY = 0;
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0 && e.target === renderer.domElement) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0 && e.target === renderer.domElement) {
+                let dx = e.touches[0].clientX - touchStartX;
+                let dy = e.touches[0].clientY - touchStartY;
+                yaw -= dx * 0.005;
+                pitch -= dy * 0.005;
+                pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        });
+
+        function isTouchDevice() { return 'ontouchstart' in window || navigator.maxTouchPoints > 0; }
+
+        // Mobile Buttons Bindings
+        function setupTouchBtn(id, keyProp) {
+            const btn = document.getElementById(id);
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); touchMove[keyProp] = true; });
+            btn.addEventListener('touchend', (e) => { e.preventDefault(); touchMove[keyProp] = false; });
+        }
+        setupTouchBtn('btn-up', 'w');
+        setupTouchBtn('btn-down', 's');
+        setupTouchBtn('btn-left', 'a');
+        setupTouchBtn('btn-right', 'd');
+
+        document.getElementById('btn-jump').addEventListener('touchstart', (e) => { e.preventDefault(); if (playerPos.y <= 2.1) velocity.y = 0.15; });
+        document.getElementById('btn-break').addEventListener('touchstart', (e) => { e.preventDefault(); performRaycast(true); });
+        document.getElementById('btn-place').addEventListener('touchstart', (e) => { e.preventDefault(); performRaycast(false); });
+
+        // Mining & Placing Raycast
+        const raycaster = new THREE.Raycaster();
+        function performRaycast(isBreak) {
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const intersects = raycaster.intersectObjects(scene.children);
+            if (intersects.length > 0) {
+                const hit = intersects[0];
+                if (hit.distance < 6) {
+                    const p = hit.point.clone();
+                    if (isBreak) {
+                        p.sub(hit.face.normal.clone().multiplyScalar(0.4));
+                        removeBlock(Math.round(p.x), Math.round(p.y), Math.round(p.z));
+                    } else {
+                        p.add(hit.face.normal.clone().multiplyScalar(0.4));
+                        addBlock(Math.round(p.x), Math.round(p.y), Math.round(p.z), selectedType);
+                    }
+                }
             }
         }
 
-        function setupConnection() {
-            conn.on('data', (data) => {
-                if (data.type === 'move') {
-                    if (!otherPlayer) createOtherPlayer();
-                    otherPlayer.position.set(data.x, data.y, data.z);
-                    otherPlayer.rotation.y = data.yaw;
-                } else if (data.type === 'block_break') {
-                    let target = blocks.find(b => b.position.x === data.x && b.position.y === data.y && b.position.z === data.z);
-                    if (target) {
-                        scene.remove(target);
-                        blocks = blocks.filter(b => b !== target);
-                    }
-                } else if (data.type === 'block_place') {
-                    createBlock(data.x, data.y, data.z, data.blockType);
+        window.addEventListener('mousedown', (e) => {
+            if (document.pointerLockElement === renderer.domElement) {
+                if (e.button === 0) performRaycast(true);  // Left Click -> Break
+                if (e.button === 2) performRaycast(false); // Right Click -> Place
+            }
+        });
+
+        // --- PEERJS MULTIPLAYER ---
+        let peer = new Peer();
+        let connections = [];
+        const remotePlayers = {};
+
+        peer.on('open', (id) => {
+            document.getElementById('my-id').innerText = id;
+        });
+
+        peer.on('connection', (conn) => {
+            setupConnection(conn);
+        });
+
+        document.getElementById('btn-connect').addEventListener('click', () => {
+            const hostId = document.getElementById('join-id').value.trim();
+            if (hostId) {
+                const conn = peer.connect(hostId);
+                setupConnection(conn);
+            }
+        });
+
+        function setupConnection(conn) {
+            conn.on('open', () => {
+                connections.push(conn);
+                conn.on('data', (data) => handleNetworkData(data, conn.peer));
+            });
+            conn.on('close', () => {
+                if (remotePlayers[conn.peer]) {
+                    scene.remove(remotePlayers[conn.peer]);
+                    delete remotePlayers[conn.peer];
                 }
             });
         }
 
-        function createOtherPlayer() {
-            let mGreen = new THREE.MeshStandardMaterial({ color: 0x22c55e });
-            otherPlayer = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.8, 0.4), mGreen);
-            scene.add(otherPlayer);
+        function sendNetworkData(data) {
+            connections.forEach(conn => conn.send(data));
         }
 
-        function startGame(modeName) {
-            document.getElementById('menu-screen').style.display = 'none';
-            document.getElementById('crosshair').style.display = 'block';
-            document.getElementById('hotbar').style.display = 'flex';
-            document.getElementById('hud-controls').style.display = 'block';
-            initGame(modeName);
-            animate();
-        }
-
-        function initGame(modeName) {
-            scene = new THREE.Scene();
-            
-            if (modeName === 'Verity') {
-                scene.background = new THREE.Color(0x05020a);
-                scene.fog = new THREE.FogExp2(0x05020a, 0.08);
-                jumpPower = 0.22;
-            } else if (modeName === 'JumpBooster') {
-                scene.background = new THREE.Color(0x2563eb);
-                scene.fog = new THREE.FogExp2(0x2563eb, 0.01);
-                jumpPower = 0.45;
-            } else {
-                scene.background = new THREE.Color(0x70b5ff);
-                scene.fog = new THREE.FogExp2(0x70b5ff, 0.025);
-                jumpPower = 0.22;
-            }
-
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas'), antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-            let ambientLight = new THREE.AmbientLight(0xffffff, modeName === 'Verity' ? 0.2 : 0.6);
-            scene.add(ambientLight);
-
-            let dirLight = new THREE.DirectionalLight(0xffffff, modeName === 'Verity' ? 0.2 : 0.7);
-            dirLight.position.set(20, 50, 20);
-            scene.add(dirLight);
-
-            let size = 10;
-            for (let x = -size; x <= size; x++) {
-                for (let z = -size; z <= size; z++) {
-                    createBlock(x, 0, z, 1);
-                    createBlock(x, -1, z, 2);
-                    if (x % 4 === 0 && z % 4 === 0) {
-                        createBlock(x, 1, z, 3);
-                        createBlock(x, 2, z, 3);
-                        createBlock(x, 3, z, 4);
-                    }
+        function handleNetworkData(data, peerId) {
+            if (data.action === 'move') {
+                if (!remotePlayers[peerId]) {
+                    // Create Player Mesh
+                    const pGeo = new THREE.BoxGeometry(0.6, 1.8, 0.6);
+                    const pMat = new THREE.MeshBasicMaterial({ color: 0x9b59b6 });
+                    const pMesh = new THREE.Mesh(pGeo, pMat);
+                    scene.add(pMesh);
+                    remotePlayers[peerId] = pMesh;
                 }
+                remotePlayers[peerId].position.set(data.x, data.y, data.z);
+            } else if (data.action === 'place') {
+                addBlock(data.x, data.y, data.z, data.type, false);
+            } else if (data.action === 'break') {
+                removeBlock(data.x, data.y, data.z, false);
             }
-
-            createRobloxCharacter();
-            setupControls();
         }
 
-        function cr
+        // --- AI VERITY ENTITY ---
+        let aiVerity = null;
+        let aiEnabled = false;
+
+        document.getElementById('btn-verity').addEventListener('click', () => {
+            aiEnabled = !aiEnabled;
+            if (aiEnabled && !aiVerity) {
+                const g = new THREE.CylinderGeometry(0.3, 0.3, 2, 8);
+                const m = new THREE.MeshBasicMaterial({ color: 0xff1111 });
+                aiVerity = new THREE.Mesh(g, m);
+                aiVerity.position.set(5, 2, 5);
+                scene.add(aiVerity);
+            } else if (!aiEnabled && aiVerity) {
+                scene.remove(aiVerity);
+                aiVerity = null;
+            }
+        });
+
+        // --- GAME LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Movement Logic
+            const speed = 0.1;
+            let moveF = (keys['KeyW'] || touchMove.w ? 1 : 0) - (keys['KeyS'] || touchMove.s ? 1 : 0);
+            let moveS = (keys['KeyD'] || touchMove.d ? 1 : 0) - (keys['KeyA'] || touchMove.a ? 1 : 0);
+
+            if (keys['Space']) {
+                if (playerPos.y <= 2.1) velocity.y = 0.15;
+            }
+
+            // Gravity
+            velocity.y -= 0.008;
+            playerPos.y += velocity.y;
+            if (playerPos.y < 2) { playerPos.y = 2; velocity.y = 0; }
+
+            // Direction calculation
+            let dir = new THREE.Vector3(moveS, 0, -moveF).normalize();
+            dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+            playerPos.add(dir.multiplyScalar(speed));
+
+            // Camera update
+            camera.position.copy(playerPos);
+            camera.rotation.set(0, 0, 0);
+            camera.rotation.y = yaw;
+            camera.rotation.x = pitch;
+
+            // Broadcast Position
+            sendNetworkData({ action: 'move', x: playerPos.x, y: playerPos.y, z: playerPos.z });
+
+            // AI Verity Follower Logic
+            if (aiVerity) {
+                aiVerity.position.lerp(playerPos, 0.01);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GAMERWOST - Final Fix</title>
+    <title>GAMERWOST - Guaranteed Render</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; touch-action: none; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #87ceeb; font-family: sans-serif; }
-        #canvas-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        #canvas-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         
         #crosshair { position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; transform: translate(-50%, -50%); pointer-events: none; z-index: 10; }
         #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.8); }
@@ -38,6 +38,7 @@
         #mobile-action-btns { position: absolute; bottom: 30px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 20; }
         .act-btn { width: 55px; height: 55px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; }
     </style>
+    <!-- CDN Bağlantıları -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -94,7 +95,7 @@
 
     <script>
         // PEERJS MULTIPLAYER
-        const roomName = 'gamerwost-final-room-2026';
+        const roomName = 'gamerwost-guaranteed-2026';
         let peer;
         try {
             peer = new Peer(roomName + '-' + Math.floor(Math.random() * 99999));
@@ -124,22 +125,19 @@
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87ceeb);
-        scene.fog = new THREE.FogExp2(0x87ceeb, 0.012);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
         container.appendChild(renderer.domElement);
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
-        const sunLight = new THREE.DirectionalLight(0xfff5cc, 0.9);
-        sunLight.position.set(50, 100, 50);
-        sunLight.castShadow = true;
+        const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        sunLight.position.set(40, 80, 40);
         scene.add(sunLight);
 
-        // ARM & HELD BLOCK
+        // EL VE BLOK MODELİ
         const armGroup = new THREE.Group();
         const armMesh = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), new THREE.MeshLambertMaterial({ color: 0x34495e }));
         armMesh.position.set(0.35, -0.35, -0.5);
@@ -188,7 +186,7 @@
             }
         }
 
-        // WORLD GENERATION (ANINDA OLUŞAN ÇİM DÜNYA)
+        // DÜNYA OLUŞTURMA
         const worldBlocks = new Map();
         const blockGeo = new THREE.BoxGeometry(1, 1, 1);
         function getKey(x, y, z) { return `${x},${y},${z}`; }
@@ -198,8 +196,6 @@
             if (worldBlocks.has(key)) return;
             const mesh = new THREE.Mesh(blockGeo, blockMaterials[type]);
             mesh.position.set(x, y, z);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
             scene.add(mesh);
             worldBlocks.set(key, { mesh, type });
             if (sync) sendData({ action: 'place', x, y, z, type });
@@ -218,9 +214,9 @@
             }
         }
 
-        // Zemin Katmanları ve Ağaçlar doğrudan yükleniyor
-        for (let x = -25; x <= 25; x++) {
-            for (let z = -25; z <= 25; z++) {
+        // ÇİM DÜNYAYI ANINDA ÇİZ
+        for (let x = -20; x <= 20; x++) {
+            for (let z = -20; z <= 20; z++) {
                 addBlock(x, 0, z, 3, false);
                 addBlock(x, 1, z, 2, false);
                 addBlock(x, 2, z, 1, false);
@@ -238,7 +234,7 @@
                 }
             }
         }
-        createTree(-6, -6); createTree(8, -10); createTree(-10, 10); createTree(12, 6);
+        createTree(-5, -5); createTree(6, -8); createTree(-8, 8); createTree(8, 5);
 
         // VERITY AI
         const verityGroup = new THREE.Group();
@@ -256,7 +252,7 @@
         mouthMesh.rotation.x = Math.PI;
         verityGroup.add(mouthMesh);
 
-        verityGroup.position.set(4, 4.2, 4);
+        verityGroup.position.set(3, 4.2, 3);
         scene.add(verityGroup);
 
         let verityRage = 0;
@@ -288,7 +284,7 @@
             if (e.key === 'Enter') sendToVerity(e);
         });
 
-        // PLAYER & CONTROLS
+        // OYUNCU HAREKETLERİ
         let playerPos = new THREE.Vector3(0, 4.5, 0);
         let velocity = new THREE.Vector3();
         let yaw = 0, pitch = 0;
@@ -391,4 +387,7 @@
         document.getElementById('btn-place').addEventListener('touchstart', (e) => { e.preventDefault(); performRaycast(false); });
 
         document.querySelectorAll('.slot').forEach(slot => {
-   
+            slot.addEventListener('click', () => {
+                document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+                slot.classList.add('active');
+                selectedTy

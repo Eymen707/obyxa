@@ -2,570 +2,420 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GAMERWOST</title>
     <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            margin: 0;
-            padding: 0;
-        }
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        #game-container {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: Arial, sans-serif; }
+        #gameCanvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+
         /* SOL ALT OBYXA İMZASI */
         #watermark {
-            position: absolute;
-            bottom: 12px;
-            left: 12px;
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 20px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            pointer-events: none;
-            font-family: Arial, sans-serif;
+            position: absolute; bottom: 15px; left: 20px;
+            color: #ffffff; font-size: 20px; font-weight: 900; letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8); z-index: 1000; pointer-events: none;
         }
 
-        /* ESKİ ROBLOX MENÜ KONSEPTİ */
+        /* ANA MENÜ EKRANI */
         #menu-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #e6e6e6;
-            z-index: 500;
-            display: flex;
-            flex-direction: column;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #d0d0d0; z-index: 500; display: flex; flex-direction: column;
         }
-        .roblox-header {
-            background: linear-gradient(to bottom, #0055b3, #003673);
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            border-bottom: 2px solid #002244;
-            color: white;
+        .rbx-header {
+            background: linear-gradient(to bottom, #0055b3, #003380);
+            height: 50px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; border-bottom: 2px solid #001f4d; color: white;
         }
-        .roblox-logo-text {
-            font-size: 26px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            color: #fff;
-            text-shadow: 2px 2px 0px #ba0000;
-            font-family: 'Impact', Arial, sans-serif;
+        .rbx-logo-box { display: flex; align-items: center; gap: 10px; }
+        .rbx-logo-icon {
+            width: 36px; height: 36px; background: linear-gradient(135deg, #a855f7, #3b82f6);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: bold; color: white; box-shadow: 0 0 10px rgba(168,85,247,0.8);
         }
-        .roblox-nav {
-            background: #19437d;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            gap: 15px;
-            font-size: 12px;
-            color: #cce0ff;
-            font-weight: bold;
-            border-bottom: 1px solid #0d274c;
+        .rbx-logo-text { font-size: 24px; font-weight: 900; letter-spacing: 2px; text-shadow: 2px 2px 0px #990000; font-family: Impact, sans-serif; }
+        .rbx-nav {
+            background: #19437d; height: 30px; display: flex; align-items: center;
+            padding: 0 20px; gap: 15px; font-size: 12px; color: #cce0ff; font-weight: bold;
         }
-        .menu-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, #2a1548 0%, #0d0718 100%);
-            color: white;
+        .menu-body {
+            flex: 1; display: flex; flex-direction: column; padding: 20px;
+            background: radial-gradient(circle, #25123e 0%, #080310 100%); color: white; overflow-y: auto; align-items: center;
         }
-        .game-title-box {
-            text-align: center;
-            margin-bottom: 25px;
+        .game-header-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #a855f7; margin-bottom: 15px; text-align: center; }
+        
+        /* MULTIPLAYER KONTROL PANELİ */
+        .mp-box {
+            background: rgba(255,255,255,0.1); border: 2px solid #a855f7; border-radius: 10px;
+            padding: 15px; width: 100%; max-width: 400px; margin-bottom: 20px; text-align: center;
         }
-        .game-title-box h1 {
-            font-size: 56px;
-            font-weight: 900;
-            letter-spacing: 4px;
-            background: linear-gradient(45deg, #a855f7, #6366f1, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0px 5px 15px rgba(168, 85, 247, 0.4);
-            margin-bottom: 5px;
+        .mp-box input {
+            width: 80%; padding: 10px; margin: 8px 0; border-radius: 6px; border: none; font-size: 14px; text-align: center;
         }
-        .play-btn {
-            background: linear-gradient(to bottom, #00cc44, #00882d);
-            border: 2px solid #00551c;
-            border-radius: 8px;
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            padding: 15px 60px;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #004416, 0 10px 20px rgba(0,0,0,0.5);
-            transition: all 0.1s ease;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+        .mp-btn {
+            background: #a855f7; color: white; border: none; padding: 10px 20px; border-radius: 6px;
+            font-weight: bold; cursor: pointer; font-size: 14px; margin: 5px;
         }
-        .play-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #004416;
-        }
+        .mp-btn:active { background: #9333ea; }
 
-        /* OYUN İÇİ ARAYÜZ VE NİŞANGAH */
+        /* OYUN MODLARI IZGARASI */
+        .games-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+            max-width: 600px; width: 100%; padding-bottom: 30px;
+        }
+        .game-card {
+            background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(168, 85, 247, 0.6);
+            border-radius: 10px; padding: 15px; cursor: pointer; text-align: center;
+            -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+        }
+        .game-card:active { background: rgba(168, 85, 247, 0.5); }
+        .game-thumb { font-size: 32px; margin-bottom: 5px; }
+        .game-card h3 { font-size: 14px; color: #fff; }
+
+        /* OYUN İÇİ ARAYÜZ */
         #crosshair {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 14px;
-            height: 14px;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 100;
+            position: absolute; top: 50%; left: 50%; width: 16px; height: 16px;
+            transform: translate(-50%, -50%); pointer-events: none; z-index: 100; display: none;
         }
-        #crosshair::before, #crosshair::after {
-            content: '';
-            position: absolute;
-            background: rgba(255, 255, 255, 0.8);
-        }
-        #crosshair::before { top: 6px; left: 0; width: 14px; height: 2px; }
-        #crosshair::after { top: 0; left: 6px; width: 2px; height: 14px; }
+        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.9); }
+        #crosshair::before { top: 7px; left: 0; width: 16px; height: 2px; }
+        #crosshair::after { top: 0; left: 7px; width: 2px; height: 16px; }
 
-        /* HOTBAR VE ENVANTER */
+        /* HOTBAR */
         #hotbar {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 6px;
-            border-radius: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            z-index: 100;
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            display: none; gap: 6px; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.2); z-index: 100;
         }
-        .hotbar-slot {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #555;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-            position: relative;
+        .slot {
+            width: 42px; height: 42px; background: rgba(255,255,255,0.1); border: 2px solid #555;
+            border-radius: 6px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; color: white; font-size: 10px; font-weight: bold; position: relative; cursor: pointer;
         }
-        .hotbar-slot.active {
-            border-color: #fff;
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-        .slot-count {
-            position: absolute;
-            bottom: 2px;
-            right: 4px;
-            font-size: 11px;
-            color: #fff;
-            text-shadow: 1px 1px 1px #000;
-        }
+        .slot.active { border-color: #fff; background: rgba(255,255,255,0.3); }
+        .count { position: absolute; bottom: 2px; right: 4px; font-size: 9px; color: #fff; }
 
-        /* MOBİL KONTROLLER VE JOYSTICK */
-        #joystick-zone {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            z-index: 150;
-            touch-action: none;
+        /* MOBİL KONTROLLER */
+        #hud-controls { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150; }
+        #joystick-base {
+            position: absolute; bottom: 25px; left: 25px; width: 110px; height: 110px;
+            background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%; pointer-events: auto; touch-action: none;
         }
-        #joystick-knob {
-            position: absolute;
-            top: 35px;
-            left: 35px;
-            width: 50px;
-            height: 50px;
-            background: rgba(168, 85, 247, 0.8);
-            border: 2px solid #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        #joystick-stick {
+            position: absolute; top: 30px; left: 30px; width: 50px; height: 50px;
+            background: rgba(168, 85, 247, 0.85); border: 2px solid #fff; border-radius: 50%; pointer-events: none;
         }
-        .action-btns {
-            position: absolute;
-            bottom: 40px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 150;
+        .action-container {
+            position: absolute; bottom: 25px; right: 20px; display: flex; flex-direction: column; gap: 10px; pointer-events: auto;
         }
-        .btn-action {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #fff;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
+        .top-action-container {
+            position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; pointer-events: auto;
         }
-        .btn-action:active {
-            background: rgba(168, 85, 247, 0.8);
+        .act-btn {
+            width: 55px; height: 55px; border-radius: 50%; background: rgba(0,0,0,0.6);
+            border: 2px solid #fff; color: white; font-weight: bold; font-size: 12px;
+            display: flex; align-items: center; justify-content: center; touch-action: manipulation;
         }
+        .act-btn:active { background: rgba(168, 85, 247, 0.8); }
 
-        /* CRAFTING PENCERESİ */
-        #craft-menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(20, 20, 20, 0.95);
-            border: 2px solid #a855f7;
-            border-radius: 12px;
-            padding: 20px;
-            color: white;
-            z-index: 300;
-            display: none;
-            width: 280px;
+        /* CRAFT MENÜSÜ */
+        #craft-modal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(20, 10, 35, 0.95); border: 2px solid #a855f7; border-radius: 12px;
+            padding: 20px; color: white; width: 290px; display: none; z-index: 300;
         }
-        #craft-menu h2 {
-            text-align: center;
-            margin-bottom: 15px;
-            color: #a855f7;
-            font-size: 20px;
-        }
-        .craft-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-        }
-        .craft-btn {
-            background: #a855f7;
-            border: none;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        #craft-modal h2 { text-align: center; color: #a855f7; margin-bottom: 12px; font-size: 18px; }
+        .craft-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; }
+        .craft-btn { background: #a855f7; border: none; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
     </style>
-    <!-- THREE.JS KÜTÜPHANESİ -->
+    <!-- Three.js ve PeerJS Kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
 
     <div id="watermark">OBYXA</div>
 
-    <!-- ESKİ ROBLOX MENÜSÜ -->
+    <!-- ANA MENÜ EKRANI -->
     <div id="menu-screen">
-        <div class="roblox-header">
-            <div class="roblox-logo-text">ROBLOX</div>
-            <div style="font-size: 12px;">Giriş Yapıldı</div>
-        </div>
-        <div class="roblox-nav">
-            <span>My ROBLOX</span> | <span>Games</span> | <span>Catalog</span> | <span>People</span> | <span>Forum</span>
-        </div>
-        <div class="menu-content">
-            <div class="game-title-box">
-                <h1>GAMERWOST</h1>
-                <p style="color: #aaa; letter-spacing: 1px;">MINIBLOX & MINECRAFT EDITION</p>
+        <div class="rbx-header">
+            <div class="rbx-logo-box">
+                <div class="rbx-logo-icon">G</div>
+                <div class="rbx-logo-text">GAMERWOST</div>
             </div>
-            <button class="play-btn" onclick="startGame()">OYNA</button>
+            <div style="font-size: 11px; color: #cce0ff;" id="connection-status">Çevrimdışı</div>
+        </div>
+        <div class="rbx-nav">
+            <span>My GAMERWOST</span> | <span>Multiplayer (PeerJS)</span>
+        </div>
+        <div class="menu-body">
+            <!-- MULTIPLAYER BAĞLANTI PANELİ -->
+            <div class="mp-box">
+                <h3 style="color: #a855f7; margin-bottom: 8px;">Çok Oyunculu Mod</h3>
+                <div id="host-section">
+                    <button class="mp-btn" onclick="createRoom()">Oda Kur (Host)</button>
+                    <p id="my-room-code" style="font-size: 12px; margin-top: 5px; color: #ff0;"></p>
+                </div>
+                <hr style="border-color: rgba(255,255,255,0.2); margin: 10px 0;">
+                <div id="client-section">
+                    <input type="text" id="peer-id-input" placeholder="Arkadaşının Oda Kodunu Gir">
+                    <br>
+                    <button class="mp-btn" onclick="joinRoom()">Odaya Bağlan</button>
+                </div>
+            </div>
+
+            <div class="game-header-title">OYUN MODLARI</div>
+            <div class="games-grid">
+                <div class="game-card" ontouchend="startGame('Creative')" onclick="startGame('Creative')">
+                    <div class="game-thumb">🏗️</div>
+                    <h3>Creative</h3>
+                </div>
+                <div class="game-card" ontouchend="startGame('Survival')" onclick="startGame('Survival')">
+                    <div class="game-thumb">🌲</div>
+                    <h3>Survival</h3>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- OYUN ALANI -->
-    <div id="game-container"></div>
+    <canvas id="gameCanvas"></canvas>
     <div id="crosshair"></div>
 
     <!-- HOTBAR -->
     <div id="hotbar">
-        <div class="hotbar-slot active" onclick="selectSlot(0)">Toprak<span class="slot-count" id="cnt-1">10</span></div>
-        <div class="hotbar-slot" onclick="selectSlot(1)">Taş<span class="slot-count" id="cnt-2">5</span></div>
-        <div class="hotbar-slot" onclick="selectSlot(2)">Odun<span class="slot-count" id="cnt-3">5</span></div>
-        <div class="hotbar-slot" onclick="selectSlot(3)">Yaprak<span class="slot-count" id="cnt-4">5</span></div>
-        <div class="hotbar-slot" onclick="selectSlot(4)">Tahta<span class="slot-count" id="cnt-5">0</span></div>
+        <div class="slot active" onclick="setSlot(0)" ontouchend="setSlot(0)">Çim<span class="count" id="c1">20</span></div>
+        <div class="slot" onclick="setSlot(1)" ontouchend="setSlot(1)">Taş<span class="count" id="c2">15</span></div>
+        <div class="slot" onclick="setSlot(2)" ontouchend="setSlot(2)">Odun<span class="count" id="c3">10</span></div>
+        <div class="slot" onclick="setSlot(3)" ontouchend="setSlot(3)">Yaprak<span class="count" id="c4">10</span></div>
+        <div class="slot" onclick="setSlot(4)" ontouchend="setSlot(4)">Tahta<span class="count" id="c5">0</span></div>
     </div>
 
     <!-- MOBİL KONTROLLER -->
-    <div id="joystick-zone">
-        <div id="joystick-knob"></div>
-    </div>
-
-    <div class="action-btns">
-        <div class="btn-action" onclick="doBreak()">KIR</div>
-        <div class="btn-action" onclick="doPlace()">KOY</div>
-        <div class="btn-action" onclick="doJump()">ZIPLA</div>
-        <div class="btn-action" onclick="toggleCraft()">CRAFT</div>
+    <div id="hud-controls">
+        <div id="joystick-base">
+            <div id="joystick-stick"></div>
+        </div>
+        <div class="top-action-container">
+            <div class="act-btn" onclick="toggleCameraView()" ontouchend="toggleCameraView()" id="camBtn">F5</div>
+            <div class="act-btn" onclick="toggleCraftMenu()" ontouchend="toggleCraftMenu()">CRAFT</div>
+        </div>
+        <div class="action-container">
+            <div class="act-btn" onclick="breakBlock()" ontouchend="breakBlock()">KIR</div>
+            <div class="act-btn" onclick="placeBlock()" ontouchend="placeBlock()">KOY</div>
+            <div class="act-btn" onclick="jumpPlayer()" ontouchend="jumpPlayer()">ZIPLA</div>
+        </div>
     </div>
 
     <!-- CRAFT MENÜSÜ -->
-    <div id="craft-menu">
-        <h2>Üretim (Craft)</h2>
-        <div class="craft-item">
-            <div>
-                <div>4x Tahta</div>
-                <small style="color: #aaa;">Gereksinim: 1 Odun</small>
-            </div>
-            <button class="craft-btn" onclick="craftPlanks()">Üret</button>
+    <div id="craft-modal">
+        <h2>Minecraft Craft</h2>
+        <div class="craft-row">
+            <div>4x Tahta Plaka<br><small style="color:#aaa;">Gereken: 1 Odun</small></div>
+            <button class="craft-btn" onclick="craftPlanks()" ontouchend="craftPlanks()">Üret</button>
         </div>
-        <button class="craft-btn" style="width: 100%; margin-top: 10px; background: #555;" onclick="toggleCraft()">Kapat</button>
+        <button class="craft-btn" style="width: 100%; margin-top: 10px; background: #555;" onclick="toggleCraftMenu()" ontouchend="toggleCraftMenu()">Kapat</button>
     </div>
 
     <script>
-        // OYUN DEĞİŞKENLERİ
         let scene, camera, renderer;
         let blocks = [];
-        let player, playerBody;
-        let selectedBlockType = 1; // 1: Toprak, 2: Taş, 3: Odun, 4: Yaprak, 5: Tahta
-        let inventory = { 1: 10, 2: 5, 3: 5, 4: 5, 5: 0 };
+        let player, playerY = 4, velocityY = 0, isGrounded = false;
+        let armL, armR, legL, legR;
+        let yaw = 0;
+        let moveX = 0, moveZ = 0;
+        let selectedBlock = 1;
+        let inventory = { 1: 20, 2: 15, 3: 10, 4: 10, 5: 0 };
+        
+        let cameraMode = 3;
+        let playerArmMesh;
+        let swingAnim = 0;
+        let walkTime = 0;
+        let joystickActive = false, jStartX = 0, jStartY = 0;
 
-        // HAREKET DEĞİŞKENLERİ
-        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-        let velocityY = 0;
-        let isGrounded = false;
-        const gravity = -0.015;
-        const speed = 0.12;
+        // PEERJS DEĞİŞKENLERİ
+        let peer, conn;
+        let otherPlayer = null;
+        let isHost = false;
 
-        // DOKUNMATİK VE BAKIŞ
-        let touchStartX = 0, touchStartY = 0;
-        let cameraPitch = 0, cameraYaw = 0;
-        let joystickActive = false;
-        let joystickVector = { x: 0, y: 0 };
+        // PeerJS Başlatma ve Bağlantı Kurma
+        function createRoom() {
+            peer = new Peer();
+            peer.on('open', (id) => {
+                document.getElementById('my-room-code').innerText = "Oda Kodun: " + id;
+                document.getElementById('connection-status').innerText = "Oda Kuruldu (Bekleniyor...)";
+                isHost = true;
+            });
 
-        function startGame() {
-            document.getElementById('menu-screen').style.display = 'none';
-            initEngine();
-            createWorld();
-            createCharacter();
-            setupControls();
+            peer.on('connection', (connection) => {
+                conn = connection;
+                setupConnection();
+                document.getElementById('connection-status').innerText = "Arkadaşa Bağlanıldı!";
+                alert("Bir oyuncu odanıza katıldı!");
+            });
+        }
+
+        function joinRoom() {
+            let friendId = document.getElementById('peer-id-input').value.trim();
+            if (!friendId) { alert("Lütfen oda kodu gir!"); return; }
+
+            peer = new Peer();
+            peer.on('open', () => {
+                conn = peer.connect(friendId);
+                setupConnection();
+                document.getElementById('connection-status').innerText = "Odaya Bağlanıldı!";
+                alert("Odaya başarıyla bağlandın!");
+            });
+        }
+
+        function setupConnection() {
+            conn.on('data', (data) => {
+                if (data.type === 'move') {
+                    if (!otherPlayer) createOtherPlayer();
+                    otherPlayer.position.set(data.x, data.y, data.z);
+                    otherPlayer.rotation.y = data.yaw;
+                } else if (data.type === 'block_break') {
+                    let target = blocks.find(b => b.position.x === data.x && b.position.y === data.y && b.position.z === data.z);
+                    if (target) {
+                        scene.remove(target);
+                        blocks = blocks.filter(b => b !== target);
+                    }
+                } else if (data.type === 'block_place') {
+                    createBlock(data.x, data.y, data.z, data.blockType);
+                }
+            });
+        }
+
+        function createOtherPlayer() {
+            let mBlue = new THREE.MeshStandardMaterial({ color: 0x22c55e }); // Diğer oyuncu yeşil renk
+            otherPlayer = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.8, 0.4), mBlue);
+            scene.add(otherPlayer);
+        }
+
+        function startGame(modeName) {
+            let menu = document.getElementById('menu-screen');
+            if(menu) menu.style.display = 'none';
+            document.getElementById('crosshair').style.display = 'block';
+            document.getElementById('hotbar').style.display = 'flex';
+            document.getElementById('hud-controls').style.display = 'block';
+            initGame(modeName);
             animate();
         }
 
-        function initEngine() {
+        function initGame(modeName) {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x6eb1ff);
-            scene.fog = new THREE.FogExp2(0x6eb1ff, 0.02);
+            scene.background = new THREE.Color(0x70b5ff);
+            scene.fog = new THREE.FogExp2(0x70b5ff, 0.025);
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas'), antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            document.getElementById('game-container').appendChild(renderer.domElement);
 
-            // IŞIKLANDIRMA
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            let dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+            dirLight.position.set(20, 50, 20);
+            scene.add(dirLight);
 
-            const sunLight = new THREE.DirectionalLight(0xffffff, 0.7);
-            sunLight.position.set(40, 60, 20);
-            sunLight.castShadow = true;
-            scene.add(sunLight);
-        }
-
-        // DOKULAR VE MATERYALLER
-        function getBlockMaterial(type) {
-            const colors = {
-                1: 0x557a2b, // Toprak/Çim
-                2: 0x7d7d7d, // Taş
-                3: 0x5c4033, // Odun
-                4: 0x2e8b57, // Yaprak
-                5: 0xc4a482  // Tahta
-            };
-            return new THREE.MeshStandardMaterial({ color: colors[type] || 0xffffff, roughness: 0.8 });
-        }
-
-        const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
-
-        function createWorld() {
-            // Taban Arazi
-            for (let x = -12; x <= 12; x++) {
-                for (let z = -12; z <= 12; z++) {
-                    let height = Math.floor(Math.sin(x * 0.3) + Math.cos(z * 0.3)) + 1;
-                    for (let y = 0; y <= height; y++) {
-                        let type = (y === height) ? 1 : 2;
-                        spawnBlock(x, y, z, type);
-                    }
-
-                    // Ağaçlar
-                    if (x % 5 === 0 && z % 5 === 0 && Math.random() > 0.4) {
-                        for (let ty = height + 1; ty <= height + 3; ty++) {
-                            spawnBlock(x, ty, z, 3);
-                        }
-                        for (let lx = -1; lx <= 1; lx++) {
-                            for (let lz = -1; lz <= 1; lz++) {
-                                for (let ly = height + 3; ly <= height + 4; ly++) {
-                                    if (!(lx === 0 && lz === 0 && ly === height + 3)) {
-                                        spawnBlock(x + lx, ly, z + lz, 4);
-                                    }
-                                }
-                            }
-                        }
+            let size = (modeName === 'Parkour') ? 6 : 10;
+            for (let x = -size; x <= size; x++) {
+                for (let z = -size; z <= size; z++) {
+                    createBlock(x, 0, z, 1);
+                    createBlock(x, -1, z, 2);
+                    if (modeName !== 'Parkour' && x % 4 === 0 && z % 4 === 0) {
+                        createBlock(x, 1, z, 3);
+                        createBlock(x, 2, z, 3);
+                        createBlock(x, 3, z, 4);
                     }
                 }
             }
+
+            createRobloxCharacter();
+            setupControls();
         }
 
-        function spawnBlock(x, y, z, type) {
-            const mesh = new THREE.Mesh(blockGeometry, getBlockMaterial(type));
+        function createRobloxCharacter() {
+            player = new THREE.Group();
+
+            let canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            let ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#24104f'; ctx.fillRect(0, 0, 128, 128);
+            ctx.fillStyle = '#a855f7'; ctx.font = 'bold 85px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('G', 64, 64);
+            let logoTex = new THREE.CanvasTexture(canvas);
+
+            let mBlue = new THREE.MeshStandardMaterial({ color: 0x2563eb });
+            let mDark = new THREE.MeshStandardMaterial({ color: 0x1e1b4b });
+            let mSkin = new THREE.MeshStandardMaterial({ color: 0xeeddcc });
+            let mTorso = new THREE.MeshStandardMaterial({ map: logoTex });
+
+            let torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.4), mTorso);
+            torso.position.y = 0.45; player.add(torso);
+
+            let head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), mSkin);
+            head.position.y = 1.15; player.add(head);
+
+            let cap = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.15, 0.6), mBlue);
+            cap.position.set(0, 1.4, 0.05); player.add(cap);
+
+            armL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), mBlue);
+            armL.position.set(-0.6, 0.4, 0); player.add(armL);
+
+            armR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), mBlue);
+            armR.position.set(0.6, 0.4, 0); player.add(armR);
+
+            legL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.35), mDark);
+            legL.position.set(-0.2, -0.4, 0); player.add(legL);
+
+            legR = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.35), mDark);
+            legR.position.set(0.2, -0.4, 0); player.add(legR);
+
+            playerArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), mBlue);
+            playerArmMesh.position.set(0.4, -0.3, -0.5);
+            camera.add(playerArmMesh);
+            playerArmMesh.visible = false;
+
+            player.position.set(0, 4, 0);
+            scene.add(player);
+        }
+
+        const blockColors = { 1: 0x4f7942, 2: 0x777777, 3: 0x5c4033, 4: 0x2e8b57, 5: 0xc4a482 };
+        const geom = new THREE.BoxGeometry(1, 1, 1);
+
+        function createBlock(x, y, z, type) {
+            let mesh = new THREE.Mesh(geom, new THREE.MeshStandardMaterial({ color: blockColors[type] }));
             mesh.position.set(x, y, z);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
             mesh.userData = { type: type };
             scene.add(mesh);
             blocks.push(mesh);
         }
 
-        // ÖZEL ROBLOX KARAKTERİ (GAMERWOST LOGOLU)
-        function createCharacter() {
-            player = new THREE.Group();
-
-            // Gövde Canvas (Logo Çizimi)
-            const canvas = document.createElement('canvas');
-            canvas.width = 256; canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#2e1065';
-            ctx.fillRect(0, 0, 256, 256);
-            ctx.fillStyle = '#a855f7';
-            ctx.font = 'bold 120px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('G+', 128, 128);
-
-            const torsoTexture = new THREE.CanvasTexture(canvas);
-            const torsoMat = new THREE.MeshStandardMaterial({ map: torsoTexture });
-            const blueMat = new THREE.MeshStandardMaterial({ color: 0x0055ff });
-            const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e1b4b });
-            const headMat = new THREE.MeshStandardMaterial({ color: 0xe5c1cd });
-
-            // Gövde
-            const torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.4), torsoMat);
-            torso.position.y = 0.45;
-            player.add(torso);
-
-            // Kafa
-            const head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), headMat);
-            head.position.y = 1.15;
-            player.add(head);
-
-            // Mavi Şapka
-            const cap = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.15, 0.6), blueMat);
-            cap.position.set(0, 1.4, 0.05);
-            player.add(cap);
-
-            // Kollar
-            const armL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), blueMat);
-            armL.position.set(-0.6, 0.4, 0);
-            player.add(armL);
-
-            const armR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), blueMat);
-            armR.position.set(0.6, 0.4, 0);
-            player.add(armR);
-
-            // Bacaklar
-            const legL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.35), darkMat);
-            legL.position.set(-0.2, -0.4, 0);
-            player.add(legL);
-
-            const legR = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.35), darkMat);
-            legR.position.set(0.2, -0.4, 0);
-            player.add(legR);
-
-            player.position.set(0, 5, 0);
-            scene.add(player);
+        function toggleCameraView() {
+            if (cameraMode === 3) {
+                cameraMode = 1;
+                player.visible = false;
+                playerArmMesh.visible = true;
+                document.getElementById('camBtn').innerText = 'FPS';
+            } else {
+                cameraMode = 3;
+                player.visible = true;
+                playerArmMesh.visible = false;
+                document.getElementById('camBtn').innerText = 'TPS';
+            }
         }
 
-        // KONTROLLER VE GİRDİLER
         function setupControls() {
-            // Klavye Kontrolleri
-            window.addEventListener('keydown', (e) => {
-                if (e.code === 'KeyW') moveForward = true;
-                if (e.code === 'KeyS') moveBackward = true;
-                if (e.code === 'KeyA') moveLeft = true;
-                if (e.code === 'KeyD') moveRight = true;
-                if (e.code === 'Space') doJump();
-                if (e.code === 'KeyE') toggleCraft();
-                if (e.key >= '1' && e.key <= '5') selectSlot(parseInt(e.key) - 1);
-            });
+            let jBase = document.getElementById('joystick-base');
+            let jStick = document.getElementById('joystick-stick');
 
-            window.addEventListener('keyup', (e) => {
-                if (e.code === 'KeyW') moveForward = false;
-                if (e.code === 'KeyS') moveBackward = false;
-                if (e.code === 'KeyA') moveLeft = false;
-                if (e.code === 'KeyD') moveRight = false;
-            });
-
-            // Dokunmatik Kamera Kontrolü (Ekran Sürükleme)
-            window.addEventListener('touchstart', (e) => {
-                if (e.touches[0].clientX > window.innerWidth / 2) {
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                }
-            });
+            jBase.addEventListener('touchstart', (e) => {
+                joystickActive = true;
+                let rect = jBase.getBoundingClientRect();
+                jStartX = rect.left + 55;
+                jStartY = rect.top + 55;
+            }, {passive: true});
 
             window.addEventListener('touchmove', (e) => {
-                for (let touch of e.touches) {
-                    if (touch.clientX > window.innerWidth / 2) {
-                        let deltaX = touch.clientX - touchStartX;
-                        let deltaY = touch.clientY - touchStartY;
-                        
-                        cameraYaw -= deltaX * 0.005;
-                        cameraPitch -= deltaY * 0.005;
-                        cameraPitch = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, cameraPitch));
-
-                        touchStartX = touch.clientX;
-                        touchStartY = touch.clientY;
-                    }
-                }
-            });
-
-            // Joystick Kontrolü
-            const zone = document.getElementById('joystick-zone');
-            const knob = document.getElementById('joystick-knob');
-
-            zone.addEventListener('touchstart', (e) => { joystickActive = true; });
-            window.addEventListener('touchend', () => { 
-                joystickActive = false; 
-                knob.style.top = '35px';
-                knob.style.left = '35px';
-                joystickVector = { x: 0, y: 0 };
-            });
-
-            zone.addEventListener('touchmove', (e) => {
-                if (!joystickActive) return;
-                let rect = zone.getBoundingClientRect();
-                let touch = e.touches[0];
-                let x = touch.clientX - rect.left - 60;
-                let y = touch.clientY - rect.top - 60;
-                le
+                let touch = e.targetTouches[0];
+                if (joystickActive) {
+                    let dx = touch.clientX - jStartX;
+                    let dy = touch.cli

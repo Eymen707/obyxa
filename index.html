@@ -1,389 +1,365 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GAMERWOST - Survival Multiplayer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Craft Multiplayer - PeerJS</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; touch-action: none; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #87ceeb; font-family: sans-serif; }
-        #canvas-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-        
-        #crosshair { position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; transform: translate(-50%, -50%); pointer-events: none; z-index: 10; }
-        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.8); }
-        #crosshair::before { top: 3px; left: -6px; width: 14px; height: 2px; }
-        #crosshair::after { top: -6px; left: 3px; width: 2px; height: 14px; }
-        
-        #hud { position: absolute; top: 12px; left: 12px; color: white; z-index: 10; font-size: 13px; font-weight: bold; display: flex; flex-direction: column; gap: 5px; }
-        .hud-panel { background: rgba(0,0,0,0.6); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); }
-        
-        #craft-btn-ui { position: absolute; top: 12px; right: 12px; z-index: 20; background: #e67e22; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        #craft-menu { position: absolute; top: 50px; right: 12px; background: rgba(0,0,0,0.85); border: 2px solid #e67e22; padding: 10px; border-radius: 8px; z-index: 20; color: white; display: none; flex-direction: column; gap: 8px; width: 180px; }
-        .craft-item { background: rgba(255,255,255,0.1); padding: 6px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .craft-item button { background: #27ae60; border: none; color: white; padding: 3px 6px; border-radius: 3px; font-weight: bold; cursor: pointer; }
-
-        #chat-box { position: absolute; bottom: 80px; left: 20px; width: 260px; background: rgba(0,0,0,0.85); border: 2px solid #a29bfe; border-radius: 8px; padding: 8px; z-index: 100; color: white; font-size: 12px; pointer-events: auto; }
-        #chat-messages { height: 60px; overflow-y: auto; margin-bottom: 6px; display: flex; flex-direction: column; gap: 2px; user-select: text; }
-        .chat-input-row { display: flex; gap: 4px; pointer-events: auto; }
-        #verity-input { flex: 1; padding: 6px; border-radius: 4px; border: none; background: #fff; color: #000; user-select: text; touch-action: auto; }
-        #chat-btn { padding: 6px 10px; background: #6c5ce7; border: none; color: white; border-radius: 4px; font-weight: bold; cursor: pointer; touch-action: auto; }
-
-        #hotbar { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 8px; z-index: 10; }
-        .slot { width: 44px; height: 44px; border: 2px solid #555; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 9px; text-align: center; font-weight: bold; background: rgba(255,255,255,0.05); }
-        .slot.active { border-color: #a29bfe; background: rgba(162,155,254,0.3); }
-
-        #joystick-zone { position: absolute; bottom: 30px; left: 300px; width: 110px; height: 110px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); display: none; z-index: 20; }
-        #joystick-knob { position: absolute; top: 30px; left: 30px; width: 50px; height: 50px; background: rgba(255,255,255,0.5); border-radius: 50%; }
-        
-        #mobile-action-btns { position: absolute; bottom: 30px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 20; }
-        .act-btn { width: 55px; height: 55px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+        body { margin: 0; overflow: hidden; background: #111; font-family: sans-serif; user-select: none; }
+        #ui {
+            position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.7);
+            padding: 15px; border-radius: 8px; z-index: 10; pointer-events: auto;
+        }
+        input, button { padding: 8px; margin-top: 5px; border-radius: 4px; border: none; }
+        button { background: #4f46e5; color: white; cursor: pointer; font-weight: bold; }
+        button:hover { background: #4338ca; }
+        #crosshair {
+            position: absolute; top: 50%; left: 50%; width: 10px; height: 10px;
+            transform: translate(-50%, -50%); border: 2px solid white; border-radius: 50%;
+            pointer-events: none; z-index: 5;
+        }
+        #inventory {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; z-index: 10;
+        }
+        .inv-slot {
+            width: 50px; height: 50px; background: #333; border: 2px solid #555; display: flex;
+            align-items: center; justify-content: center; color: white; cursor: pointer; border-radius: 4px;
+        }
+        .inv-slot.active { border-color: #f59e0b; }
     </style>
+    <!-- Three.js ve PeerJS Kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
 
-    <div id="canvas-container"></div>
     <div id="crosshair"></div>
 
-    <div id="hud">
-        <div class="hud-panel">❤️ HEALTH: <span id="health-val" style="color:#ff4757;">100</span></div>
-        <div class="hud-panel">🍖 HUNGER: <span id="hunger-val" style="color:#ffa502;">100</span></div>
-        <div class="hud-panel">VERITY: <b id="rage-text" style="color:#2ed573;">😊 HAPPY</b></div>
+    <div id="ui">
+        <h2>Mini Craft 1.19 Online</h2>
+        <p id="status">Bağlantı kuruluyor...</p>
+        <div id="connection-box">
+            <input type="text" id="peer-id-input" placeholder="Arkadaşın ID'sini gir">
+            <button onclick="connectToPeer()">Bağlan</button>
+        </div>
+        <p style="font-size: 11px; margin-top: 8px;">Benim ID: <span id="my-id" style="color: #34d399;">Bekleniyor...</span></p>
     </div>
 
-    <button id="craft-btn-ui" onclick="toggleCraftMenu()">CRAFT</button>
-    <div id="craft-menu">
-        <div style="font-weight:bold; text-align:center; margin-bottom:4px;">CRAFTING</div>
-        <div class="craft-item">
-            <span>Planks (2 Wood)</span>
-            <button onclick="craftItem('planks')">Make</button>
-        </div>
-        <div class="craft-item">
-            <span>Apple (Food)</span>
-            <button onclick="craftItem('apple')">Eat</button>
-        </div>
-    </div>
-
-    <div id="chat-box">
-        <div id="chat-messages">
-            <div><b>Verity:</b> Welcome to GAMERWOST! Let's survive! 😊</div>
-        </div>
-        <div class="chat-input-row">
-            <input type="text" id="verity-input" placeholder="Type here..." onclick="event.stopPropagation()">
-            <button id="chat-btn" onclick="sendToVerity(event)">Send</button>
-        </div>
-    </div>
-
-    <div id="hotbar">
-        <div class="slot active" data-type="1">Grass <span id="cnt-1">15</span></div>
-        <div class="slot" data-type="2">Dirt <span id="cnt-2">15</span></div>
-        <div class="slot" data-type="3">Stone <span id="cnt-3">10</span></div>
-        <div class="slot" data-type="4">Wood <span id="cnt-4">10</span></div>
-        <div class="slot" data-type="5">Leaves <span id="cnt-5">5</span></div>
-        <div class="slot" data-type="6">Sculk <span id="cnt-6">5</span></div>
-        <div class="slot" data-type="7">Froglight <span id="cnt-7">5</span></div>
-    </div>
-
-    <div id="joystick-zone"><div id="joystick-knob"></div></div>
-    <div id="mobile-action-btns">
-        <div class="act-btn" id="btn-jump">JUMP</div>
-        <div class="act-btn" id="btn-mine" style="background:rgba(235, 77, 75, 0.4);">MINE</div>
-        <div class="act-btn" id="btn-place" style="background:rgba(106, 176, 76, 0.4);">PLACE</div>
+    <div id="inventory">
+        <div class="inv-slot active" onclick="selectBlock(1)" style="background: #8B4513;">Odun</div>
+        <div class="inv-slot" onclick="selectBlock(2)" style="background: #A9A9A9;">Taş</div>
+        <div class="inv-slot" onclick="selectBlock(3)" style="background: #228B22;">Yaprak</div>
     </div>
 
     <script>
-        // PEERJS ONLINE MULTIPLAYER
-        const roomName = 'gamerwost-master-room-2026';
-        let peer;
-        try {
-            peer = new Peer(roomName + '-' + Math.floor(Math.random() * 99999));
-        } catch(e) {
-            peer = new Peer();
+        let scene, camera, renderer;
+        let peer, conn;
+        let myId = '';
+        let moveable = true;
+        let blocks = [];
+        let selectedBlockType = 1; // 1: Odun, 2: Taş, 3: Yaprak
+
+        // Karakter ve Oyuncu Pozisyonları
+        let playerPos = { x: 0, y: 2, z: 5 };
+        let otherPlayer;
+        let velocityY = 0;
+        let isGrounded = false;
+
+        // Kontroller
+        let keys = { forward: false, backward: false, left: false, right: false, jump: false };
+        let pitch = 0, yaw = 0;
+
+        init3D();
+        initPeer();
+        initControls();
+
+        function init3D() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87ceeb); // Gökyüzü rengi
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Işıklandırma
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(10, 20, 10);
+            scene.add(dirLight);
+
+            // Zemin (Çim)
+            const floorGeo = new THREE.PlaneGeometry(100, 100);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x557a2b });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            scene.add(floor);
+
+            // 1.19 Ağaçları ve Başlangıç Dünyası
+            createInitialWorld();
+
+            // Verity Adlı Sarı Top (İstediğin sarı gülümseyen top)
+            const sphereGeo = new THREE.SphereGeometry(1.5, 32, 32);
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffeb3b'; ctx.fillRect(0,0,256,256);
+            ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(80, 90, 15, 0, Math.PI*2); ctx.arc(176, 90, 15, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(128, 140, 50, 0, Math.PI); ctx.stroke();
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const sphereMat = new THREE.MeshBasicMaterial({ map: texture });
+            const verityBall = new THREE.Mesh(sphereGeo, sphereMat);
+            verityBall.position.set(5, 2, -5);
+            scene.add(verityBall);
+
+            // Diğer Oyuncu Karakteri (Saç ve kollar dahil detaylı model)
+            otherPlayer = createCharacterModel();
+            otherPlayer.position.set(0, 0, -3);
+            scene.add(otherPlayer);
+
+            window.addEventListener('resize', onWindowResize);
         }
 
-        let connections = [];
-        const remotePlayers = {};
+        // Karakter Modeli Oluşturucu (Saç, gövde, kollar)
+        function createCharacterModel() {
+            const group = new THREE.Group();
 
-        peer.on('open', () => {
-            const hostConn = peer.connect(roomName + '-host');
-            setupConn(hostConn);
-            peer.on('connection', conn => setupConn(conn));
-        });
+            // Gövde (Mor/Mavi tonlar)
+            const bodyGeo = new THREE.BoxGeometry(0.6, 0.8, 0.3);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x4f46e5 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = 0.8;
+            group.add(body);
 
-        function setupConn(conn) {
-            conn.on('open', () => {
-                if (!connections.includes(conn)) connections.push(conn);
-                conn.on('data', data => handleData(data, conn.peer));
+            // Kafa
+            const headGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac });
+            const head = new THREE.Mesh(headGeo, headMat);
+            head.position.y = 1.4;
+            group.add(head);
+
+            // Şapka/Saç Detayı
+            const hairGeo = new THREE.BoxGeometry(0.44, 0.15, 0.44);
+            const hairMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a });
+            const hair = new THREE.Mesh(hairGeo, hairMat);
+            hair.position.y = 1.62;
+            group.add(hair);
+
+            // Kollar
+            const armGeo = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+            const armMat = new THREE.MeshStandardMaterial({ color: 0x0ea5e9 });
+            
+            const leftArm = new THREE.Mesh(armGeo, armMat);
+            leftArm.position.set(-0.45, 0.8, 0);
+            group.add(leftArm);
+
+            const rightArm = new THREE.Mesh(armGeo, armMat);
+            rightArm.position.set(0.45, 0.8, 0);
+            group.add(rightArm);
+
+            // Bacaklar
+            const legGeo = new THREE.BoxGeometry(0.25, 0.7, 0.25);
+            const legMat = new THREE.MeshStandardMaterial({ color: 0x312e81 });
+            
+            const leftLeg = new THREE.Mesh(legGeo, legMat);
+            leftLeg.position.set(-0.15, 0.35, 0);
+            group.add(leftLeg);
+
+            const rightLeg = new THREE.Mesh(legGeo, legMat);
+            rightLeg.position.set(0.15, 0.35, 0);
+            group.add(rightLeg);
+
+            return group;
+        }
+
+        function createInitialWorld() {
+            // Birkaç başlangıç bloğu (Odun ve Yapraklar)
+            for (let i = -2; i <= 2; i++) {
+                addBlock(i, 0.5, -5, 1); // Odunlar
+                addBlock(i, 1.5, -5, 3); // Yapraklar
+            }
+        }
+
+        function addBlock(x, y, z, type) {
+            let color = 0x8B4513; // Odun
+            if (type === 2) color = 0xA9A9A9; // Taş
+            if (type === 3) color = 0x228B22; // Yaprak
+
+            const geo = new THREE.BoxGeometry(1, 1, 1);
+            const mat = new THREE.MeshStandardMaterial({ color: color });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, y, z);
+            scene.add(mesh);
+            blocks.push({ mesh, x, y, z, type });
+        }
+
+        // PeerJS Bağlantı Sistemi
+        function initPeer() {
+            peer = new Peer();
+
+            peer.on('open', (id) => {
+                myId = id;
+                document.getElementById('my-id').innerText = id;
+                document.getElementById('status').innerText = 'Çevrimiçi - Bağlantı Bekleniyor';
+            });
+
+            peer.on('connection', (connection) => {
+                conn = connection;
+                setupConnectionEvents();
+                document.getElementById('status').innerText = 'Bağlantı Kuruldu!';
             });
         }
 
-        function sendData(data) { connections.forEach(c => { if(c.open) c.send(data); }); }
-
-        // THREE.JS SCENE SETUP
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
-
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
-
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-        scene.add(ambientLight);
-        const sunLight = new THREE.DirectionalLight(0xfff5cc, 0.9);
-        sunLight.position.set(50, 100, 50);
-        scene.add(sunLight);
-
-        // PLAYER ARM & HELD BLOCK
-        const armGroup = new THREE.Group();
-        const armMesh = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), new THREE.MeshLambertMaterial({ color: 0x34495e }));
-        armMesh.position.set(0.35, -0.35, -0.5);
-        armMesh.rotation.x = Math.PI / 4;
-        armGroup.add(armMesh);
-
-        const blockMaterials = {
-            1: new THREE.MeshLambertMaterial({ color: 0x2ed573 }), // Grass
-            2: new THREE.MeshLambertMaterial({ color: 0x8B5A2B }), // Dirt
-            3: new THREE.MeshLambertMaterial({ color: 0x747d8c }), // Stone
-            4: new THREE.MeshLambertMaterial({ color: 0x5C4033 }), // Wood
-            5: new THREE.MeshLambertMaterial({ color: 0x26de81 }), // Leaves
-            6: new THREE.MeshLambertMaterial({ color: 0x052F3D }), // Sculk (1.19 style)
-            7: new THREE.MeshLambertMaterial({ color: 0xFCE880 })  // Froglight (1.19 style)
-        };
-
-        const handBlockMesh = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), blockMaterials[1]);
-        handBlockMesh.position.set(0.35, -0.2, -0.6);
-        armGroup.add(handBlockMesh);
-        camera.add(armGroup);
-        scene.add(camera);
-
-        const inventory = { 1: 15, 2: 15, 3: 10, 4: 10, 5: 5, 6: 5, 7: 5 };
-        function updateInventoryUI() {
-            for(let i=1; i<=7; i++) {
-                const el = document.getElementById(`cnt-${i}`);
-                if (el) el.innerText = inventory[i] || 0;
-            }
+        function connectToPeer() {
+            const peerId = document.getElementById('peer-id-input').value.trim();
+            if (!peerId) return alert('Lütfen geçerli bir ID girin!');
+            conn = peer.connect(peerId);
+            setupConnectionEvents();
+            document.getElementById('status').innerText = 'Bağlanılıyor...';
         }
 
-        function toggleCraftMenu() {
-            const m = document.getElementById('craft-menu');
-            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function craftItem(type) {
-            if (type === 'planks' && inventory[4] >= 2) {
-                inventory[4] -= 2;
-                inventory[1] += 4;
-                updateInventoryUI();
-            } else if (type === 'apple' && inventory[5] >= 2) {
-                inventory[5] -= 2;
-                hunger = Math.min(100, hunger + 25);
-                document.getElementById('hunger-val').innerText = Math.floor(hunger);
-                updateInventoryUI();
-            }
-        }
-
-        // WORLD GENERATION (GUARANTEED CHUNKS)
-        const worldBlocks = new Map();
-        const blockGeo = new THREE.BoxGeometry(1, 1, 1);
-        function getKey(x, y, z) { return `${x},${y},${z}`; }
-
-        function addBlock(x, y, z, type, sync = true) {
-            const key = getKey(x, y, z);
-            if (worldBlocks.has(key)) return;
-            const mesh = new THREE.Mesh(blockGeo, blockMaterials[type]);
-            mesh.position.set(x, y, z);
-            scene.add(mesh);
-            worldBlocks.set(key, { mesh, type });
-            if (sync) sendData({ action: 'place', x, y, z, type });
-        }
-
-        function removeBlock(x, y, z, sync = true) {
-            const key = getKey(x, y, z);
-            if (worldBlocks.has(key)) {
-                const bType = worldBlocks.get(key).type;
-                scene.remove(worldBlocks.get(key).mesh);
-                worldBlocks.delete(key);
-                inventory[bType] = (inventory[bType] || 0) + 1;
-                updateInventoryUI();
-                verityRage += 8;
-                if (sync) sendData({ action: 'break', x, y, z });
-            }
-        }
-
-        // Build Terrain & Trees
-        for (let x = -20; x <= 20; x++) {
-            for (let z = -20; z <= 20; z++) {
-                addBlock(x, 0, z, 3, false);
-                addBlock(x, 1, z, 2, false);
-                addBlock(x, 2, z, 1, false);
-            }
-        }
-
-        function createTree(tx, tz) {
-            for(let ty = 3; ty <= 6; ty++) addBlock(tx, ty, tz, 4, false);
-            for(let lx = -1; lx <= 1; lx++) {
-                for(let lz = -1; lz <= 1; lz++) {
-                    for(let ly = 6; ly <= 7; ly++) {
-                        if(lx === 0 && lz === 0 && ly === 6) continue;
-                        addBlock(tx + lx, ly, tz + lz, 5, false);
-                    }
+        function setupConnectionEvents() {
+            conn.on('open', () => {
+                document.getElementById('status').innerText = 'Oyuncu Bağlandı!';
+            });
+            conn.on('data', (data) => {
+                if (data.type === 'pos') {
+                    otherPlayer.position.set(data.x, data.y, data.z);
+                    otherPlayer.rotation.y = data.yaw;
+                } else if (data.type === 'addBlock') {
+                    addBlock(data.x, data.y, data.z, data.blockType);
+                } else if (data.type === 'removeBlock') {
+                    removeBlockByIndex(data.index);
                 }
-            }
-        }
-        createTree(-6, -6); createTree(8, -10); createTree(-10, 10); createTree(12, 6);
-
-        // VERITY COMPANION AI
-        const verityGroup = new THREE.Group();
-        const verityBody = new THREE.Mesh(new THREE.SphereGeometry(1.2, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffd700 }));
-        verityGroup.add(verityBody);
-
-        const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshBasicMaterial({ color: 0x000000 }));
-        leftEye.position.set(-0.4, 0.3, 1.05);
-        const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshBasicMaterial({ color: 0x000000 }));
-        rightEye.position.set(0.4, 0.3, 1.05);
-        verityGroup.add(leftEye); verityGroup.add(rightEye);
-
-        const mouthMesh = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.06, 8, 24, Math.PI), new THREE.MeshBasicMaterial({ color: 0x000000 }));
-        mouthMesh.position.set(0, -0.1, 1.02);
-        mouthMesh.rotation.x = Math.PI;
-        verityGroup.add(mouthMesh);
-
-        verityGroup.position.set(4, 4.2, 4);
-        scene.add(verityGroup);
-
-        let verityRage = 0;
-        let health = 100;
-        let hunger = 100;
-
-        function sendToVerity(e) {
-            if (e) e.stopPropagation();
-            const input = document.getElementById('verity-input');
-            const txt = input.value.trim();
-            if (!txt) return;
-
-            const cm = document.getElementById('chat-messages');
-            cm.innerHTML += `<div><b>You:</b> ${txt}</div>`;
-            input.value = "";
-            cm.scrollTop = cm.scrollHeight;
-
-            setTimeout(() => {
-                let reply = "Let's explore GAMERWOST together! 😊";
-                if (verityRage > 50) reply = "Hmph! Stop breaking my blocks!";
-                else if (txt.toLowerCase().includes("hi") || txt.toLowerCase().includes("hello")) reply = "Hello my friend!";
-                cm.innerHTML += `<div><b>Verity:</b> ${reply}</div>`;
-                cm.scrollTop = cm.scrollHeight;
-            }, 400);
+            });
         }
 
-        document.getElementById('verity-input').addEventListener('keydown', (e) => {
-            e.stopPropagation();
-            if (e.key === 'Enter') sendToVerity(e);
-        });
+        // Kontroller ve Mouse Kilitleme
+        function initControls() {
+            document.body.addEventListener('click', () => {
+                document.body.requestPointerLock();
+            });
 
-        // PLAYER CONTROLS & MOVEMENT
-        let playerPos = new THREE.Vector3(0, 4.5, 0);
-        let velocity = new THREE.Vector3();
-        let yaw = 0, pitch = 0;
-        let selectedType = 1;
-        let isArmSwinging = false;
-        let swingTimer = 0;
+            document.addEventListener('mousemove', (e) => {
+                if (document.pointerLockElement !== document.body) return;
+                yaw -= e.movementX * 0.003;
+                pitch -= e.movementY * 0.003;
+                pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
 
-        function isTouch() { return 'ontouchstart' in window || navigator.maxTouchPoints > 0; }
-        if (isTouch()) {
-            document.getElementById('joystick-zone').style.display = 'block';
-            document.getElementById('mobile-action-btns').style.display = 'flex';
+                camera.rotation.order = 'YXZ';
+                camera.rotation.y = yaw;
+                camera.rotation.x = pitch;
+            });
+
+            document.addEventListener('keydown', (e) => handleKeys(e, true));
+            document.addEventListener('keyup', (e) => handleKeys(e, false));
+            document.addEventListener('mousedown', (e) => handleMouseClick(e));
         }
 
-        renderer.domElement.addEventListener('click', (e) => {
-            if (e.target.closest('#chat-box')) return;
-            if (!isTouch()) renderer.domElement.requestPointerLock();
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (document.pointerLockElement === renderer.domElement) {
-                yaw -= e.movementX * 0.0025;
-                pitch -= e.movementY * 0.0025;
-                pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
+        function handleKeys(e, isDown) {
+            switch (e.code) {
+                case 'KeyW': keys.forward = isDown; break;
+                case 'KeyS': keys.backward = isDown; break;
+                case 'KeyA': keys.left = isDown; break;
+                case 'KeyD': keys.right = isDown; break;
+                case 'Space': if (isDown && isGrounded) { velocityY = 0.12; isGrounded = false; } break;
             }
-        });
-
-        let touchLookId = null, lastTouchX = 0, lastTouchY = 0;
-        window.addEventListener('touchstart', (e) => {
-            if (e.target.closest('#chat-box')) return;
-            for (let t of e.changedTouches) {
-                if (t.clientX > window.innerWidth / 2 && touchLookId === null) {
-                    touchLookId = t.identifier; lastTouchX = t.clientX; lastTouchY = t.clientY;
-                }
-            }
-        });
-        window.addEventListener('touchmove', (e) => {
-            for (let t of e.changedTouches) {
-                if (t.identifier === touchLookId) {
-                    yaw -= (t.clientX - lastTouchX) * 0.004;
-                    pitch -= (t.clientY - lastTouchY) * 0.004;
-                    pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
-                    lastTouchX = t.clientX; lastTouchY = t.clientY;
-                }
-            }
-        });
-        window.addEventListener('touchend', (e) => { for (let t of e.changedTouches) if (t.identifier === touchLookId) touchLookId = null; });
-
-        let joyMove = { x: 0, y: 0 };
-        const joyZone = document.getElementById('joystick-zone');
-        const joyKnob = document.getElementById('joystick-knob');
-        let joyTouchId = null;
-
-        joyZone.addEventListener('touchstart', (e) => { e.preventDefault(); joyTouchId = e.changedTouches[0].identifier; updateJoy(e.changedTouches[0]); });
-        joyZone.addEventListener('touchmove', (e) => { e.preventDefault(); for (let t of e.changedTouches) if (t.identifier === joyTouchId) updateJoy(t); });
-        joyZone.addEventListener('touchend', (e) => { for (let t of e.changedTouches) if (t.identifier === joyTouchId) { joyTouchId = null; joyMove = {x:0, y:0}; joyKnob.style.top='30px'; joyKnob.style.left='30px'; } });
-
-        function updateJoy(t) {
-            const rect = joyZone.getBoundingClientRect();
-            let dx = t.clientX - (rect.left + rect.width / 2), dy = t.clientY - (rect.top + rect.height / 2);
-            const dist = Math.hypot(dx, dy), maxDist = 35;
-            if (dist > maxDist) { dx = (dx/dist)*maxDist; dy = (dy/dist)*maxDist; }
-            joyKnob.style.left = `${30 + dx}px`; joyKnob.style.top = `${30 + dy}px`;
-            joyMove.x = dx / maxDist; joyMove.y = dy / maxDist;
         }
 
-        const raycaster = new THREE.Raycaster();
-        function performRaycast(isBreak) {
-            isArmSwinging = true; swingTimer = 0;
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const intersects = raycaster.intersectObjects(scene.children);
+        function selectBlock(type) {
+            selectedBlockType = type;
+            document.querySelectorAll('.inv-slot').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Blok Koyma ve Kırma (Odun Kır / Ev Yap)
+        function handleMouseClick(e) {
+            if (document.pointerLockElement !== document.body) return;
+
+            const raycaster = new THREE.Raycaster();
+            const center = new THREE.Vector2(0, 0);
+            raycaster.setFromCamera(center, camera);
+
+            const intersects = raycaster.intersectObjects(blocks.map(b => b.mesh));
+
             if (intersects.length > 0) {
                 const hit = intersects[0];
-                if (hit.distance < 6 && hit.object !== armMesh && hit.object !== handBlockMesh) {
-                    const p = hit.point.clone();
-                    if (isBreak) {
-                        p.sub(hit.face.normal.clone().multiplyScalar(0.4));
-                        removeBlock(Math.round(p.x), Math.round(p.y), Math.round(p.z));
-                    } else {
-                        if (inventory[selectedType] > 0) {
-                            p.add(hit.face.normal.clone().multiplyScalar(0.4));
-                            addBlock(Math.round(p.x), Math.round(p.y), Math.round(p.z), selectedType);
-                            inventory[selectedType]--;
-                            updateInventoryUI();
-                        }
+                const index = blocks.findIndex(b => b.mesh === hit.object);
+
+                if (e.button === 0) { // Sol tık: Blok Kır (Odun kırma vb.)
+                    if (index > -1) {
+                        scene.remove(blocks[index].mesh);
+                        blocks.splice(index, 1);
+                        if (conn && conn.open) conn.send({ type: 'removeBlock', index: index });
+                    }
+                } else if (e.button === 2) { // Sağ tık: Blok Koy (Ev yapma)
+                    const normal = hit.face.normal;
+                    const pos = hit.object.position.clone().add(normal);
+                    addBlock(pos.x, pos.y, pos.z, selectedBlockType);
+                    if (conn && conn.open) {
+                        conn.send({ type: 'addBlock', x: pos.x, y: pos.y, z: pos.z, blockType: selectedBlockType });
                     }
                 }
             }
         }
 
-        window.addEventListener('mousedown', (e) => {
-            if (e.target.closest('#chat-box')) return;
-            if (document.pointerLockElement === renderer.domElement) {
-                if (e.button === 0) performRaycast(true);
-                if (e.button === 2) performRaycast(false);
+        // Sağ tık menüsünü engelle
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        function removeBlockByIndex(index) {
+            if (blocks[index]) {
+                scene.remove(blocks[index].mesh);
+                blocks.splice(index, 1);
             }
-        });
+        }
 
-        document.getElementById('btn-jump').addEventListener('touchstart', (e) => { e.preventDefault(); if (playerPos.y <= 3.6) velocity.y = 0.14; });
-        document.getElementById('btn-mine').addEventListener('touchstart', (e) => { e.preventDefault(); performRaycast(true); });
-        document.getElementById('btn-place').addEventListener('touchstart', (e) => { e.preventDefault(); performRaycast(false); });
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
 
-        document.querySelectorAll('.slot').forEach(slot => {
-            slot.add
+        // Oyun Döngüsü (Animasyon ve Fizik)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Hareket Hesaplama
+            const speed = 0.08;
+            const dir = new THREE.Vector3();
+            if (keys.forward) dir.z -= 1;
+            if (keys.backward) dir.z += 1;
+            if (keys.left) dir.x -= 1;
+            if (keys.right) dir.x += 1;
+            dir.normalize();
+            dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+
+            playerPos.x += dir.x * speed;
+            playerPos.z += dir.z * speed;
+
+            // Basit Yerçekimi
+            velocityY -= 0.006;
+            playerPos.y += velocityY;
+            if (playerPos.y <= 1.6) {
+                playerPos.y = 1.6;
+                velocityY = 0;
+                isGrounded = true;
+            }
+
+            camera.position.set(playerPos.x, playerPos.y, playerPos.z);
+
+            // Konumu karşı tarafa gönder
+            if (conn && conn.open) {
+                conn.send({ type: 'pos', x: playerPos.x, y: playerPos.y, z: playerPos.z, yaw: yaw });
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

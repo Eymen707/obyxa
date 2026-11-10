@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Multiplayer</title>
+    <title>Gamerwost - Hayatta Kalma & Elmas Sürümü</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
         #crosshair {
@@ -17,9 +17,13 @@
             font-size: 12px; z-index: 10; pointer-events: none; border: 1px solid #555;
             text-align: center;
         }
+        #hud {
+            position: absolute; top: 50px; left: 10px; color: white; background: rgba(0,0,0,0.6);
+            padding: 8px; border-radius: 6px; font-size: 11px; z-index: 10; pointer-events: none;
+        }
         /* Mobil Yön Tuşları */
         #mobile-controls {
-            position: absolute; bottom: 100px; left: 0; width: 100%; display: flex;
+            position: absolute; bottom: 90px; left: 0; width: 100%; display: flex;
             justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 10; pointer-events: none;
         }
         .control-group { display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
@@ -31,7 +35,7 @@
         .m-btn:active { background: rgba(255,255,255,0.6); }
         
         #action-buttons {
-            position: absolute; bottom: 105px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 10;
+            position: absolute; bottom: 95px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 10;
         }
         .act-btn {
             width: 60px; height: 60px; border-radius: 50%; border: none; font-weight: bold; color: white; font-size: 11px;
@@ -39,18 +43,28 @@
         }
         #btn-break { background: #ef4444; }
         #btn-place { background: #22c55e; }
+        #btn-craft { background: #8b5cf6; position: absolute; top: 10px; right: 10px; width: 45px; height: 45px; font-size: 10px; z-index: 20; }
 
-        /* 12 Slotlu Envanter Çubuğu (Kaydırılabilir) */
+        /* 9 Slotlu Envanter Çubuğu */
         #inventory {
             position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 5px; background: rgba(0,0,0,0.85); padding: 6px; border-radius: 8px; z-index: 10; 
             border: 1px solid #444; max-width: 95vw; overflow-x: auto;
         }
         .inv-slot {
-            width: 38px; height: 38px; background: #222; border: 2px solid #555; display: flex;
+            width: 36px; height: 36px; background: #222; border: 2px solid #555; display: flex; flex-direction: column;
             align-items: center; justify-content: center; color: white; cursor: pointer; border-radius: 5px; font-size: 9px; flex-shrink: 0; text-align: center;
         }
         .inv-slot.active { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.7); }
+
+        /* Crafting Menüsü */
+        #crafting-modal {
+            display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(20,20,20,0.95); border: 2px solid #555; padding: 15px; border-radius: 10px; z-index: 100; color: white; width: 280px; text-align: center;
+        }
+        .craft-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 8px; margin: 10px 0; }
+        .craft-item { background: #333; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 11px; border: 1px solid #666; }
+        .craft-item:hover { background: #4f46e5; }
     </style>
     <!-- Three.js ve PeerJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -59,7 +73,27 @@
 <body>
 
     <div id="crosshair"></div>
-    <div id="status-bar">Gamerwost - Bağlantı kuruluyor...</div>
+    <div id="status-bar">Gamerwost - Elmas Kalitesi Modu</div>
+    
+    <div id="hud">
+        Odun: <span id="count-wood">5</span> | Taş: <span id="count-stone">0</span> | Elmas: <span id="count-diamond">0</span><br>
+        Alet: <span id="has-tool">Yok</span>
+    </div>
+
+    <button class="act-btn" id="btn-craft" onclick="toggleCrafting()">Craft</button>
+
+    <!-- Crafting Menüsü -->
+    <div id="crafting-modal">
+        <h3>Gamerwost Üretim</h3>
+        <p style="font-size:11px; color:#aaa;">Gelişmiş Eşya Üretimi:</p>
+        <div class="craft-grid">
+            <div class="craft-item" onclick="craftItem('plank')">Tahta Yap (1 Odun = 4 Tahta)</div>
+            <div class="craft-item" onclick="craftItem('stick')">Çubuk Yap (2 Tahta = 4 Çubuk)</div>
+            <div class="craft-item" onclick="craftItem('stone_pick')">Taş Kazma (3 Taş + 2 Çubuk)</div>
+            <div class="craft-item" onclick="craftItem('diamond_pick')">Elmas Kazma (3 Elmas + 2 Çubuk)</div>
+        </div>
+        <button onclick="toggleCrafting()" style="background:#ef4444; border:none; padding:6px 12px; color:white; border-radius:4px; margin-top:10px;">Kapat</button>
+    </div>
 
     <!-- Mobil Yön Tuşları -->
     <div id="mobile-controls">
@@ -80,27 +114,28 @@
         <button class="act-btn" id="btn-place" onclick="placeBlock()">Koy</button>
     </div>
 
-    <!-- Tam 12 Bloklu Envanter -->
+    <!-- 9 Slotlu Envanter -->
     <div id="inventory">
-        <div class="inv-slot active" onclick="selectBlock(1, this)" style="background: #8B4513;">Odun</div>
-        <div class="inv-slot" onclick="selectBlock(2, this)" style="background: #A9A9A9;">Taş</div>
-        <div class="inv-slot" onclick="selectBlock(3, this)" style="background: #228B22;">Yaprak</div>
-        <div class="inv-slot" onclick="selectBlock(4, this)" style="background: #8B7355;">Toprak</div>
-        <div class="inv-slot" onclick="selectBlock(5, this)" style="background: #B22222;">Tuğla</div>
-        <div class="inv-slot" onclick="selectBlock(6, this)" style="background: #DEB887;">Kum</div>
-        <div class="inv-slot" onclick="selectBlock(7, this)" style="background: #4682B4;">Demir</div>
-        <div class="inv-slot" onclick="selectBlock(8, this)" style="background: #FFD700; color:#000;">Altın</div>
-        <div class="inv-slot" onclick="selectBlock(9, this)" style="background: #00FFFF; color:#000;">Elmas</div>
-        <div class="inv-slot" onclick="selectBlock(10, this)" style="background: #800080;">Nether</div>
-        <div class="inv-slot" onclick="selectBlock(11, this)" style="background: #556B2F;">Çimen</div>
-        <div class="inv-slot" onclick="selectBlock(12, this)" style="background: #FFFFFF; color:#000;">Yün</div>
+        <div class="inv-slot active" onclick="selectSlot(1, this)">Odun<br><span id="inv-1">5</span></div>
+        <div class="inv-slot" onclick="selectSlot(2, this)">Taş<br><span id="inv-2">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(3, this)">Yaprak<br><span id="inv-3">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(4, this)">Toprak<br><span id="inv-4">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(5, this)">Tahta<br><span id="inv-5">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(6, this)">Tuğla<br><span id="inv-6">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(7, this)">Demir<br><span id="inv-7">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(8, this)">Elmas<br><span id="inv-8">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(9, this)">Yün<br><span id="inv-9">0</span></div>
     </div>
 
     <script>
         let scene, camera, renderer;
         let peer, conn;
         let blocks = [];
+        let selectedSlotIndex = 1;
         let selectedBlockType = 1;
+
+        let inventoryItems = { 1: 5, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+        let craftingMaterials = { wood: 5, stone: 0, diamond: 0, planks: 0, sticks: 0, toolTier: 0 }; // 0: Yok, 1: Taş Kazma, 2: Elmas Kazma
 
         let playerPos = { x: 0, y: 2, z: 5 };
         let velocityY = 0;
@@ -109,7 +144,6 @@
 
         let keys = { forward: false, backward: false, left: false, right: false };
         let otherPlayer, myHands;
-
         let touchX = 0, touchY = 0, isTouchingScreen = false;
 
         init3D();
@@ -130,7 +164,6 @@
             dirLight.position.set(20, 40, 20);
             scene.add(dirLight);
 
-            // Zemin
             const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshStandardMaterial({ color: 0x557a2b }));
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
@@ -138,12 +171,12 @@
             createSmallVerity();
             createInitialWorld();
 
-            // Karşı Oyuncu (Görünürlük garantili model)
+            // Karşı Oyuncu (Arkadaşının ekranında tam karakter olarak görünürsün)
             otherPlayer = createFullCharacterModel();
             otherPlayer.position.set(0, 1.6, -4);
             scene.add(otherPlayer);
 
-            // Kendi Kollarımız
+            // Kendi Kollarımız (Kendi ekranında sadece kollarını görürsün)
             myHands = createFirstPersonHands();
             camera.add(myHands);
             scene.add(camera);
@@ -155,7 +188,6 @@
             });
         }
 
-        // Küçük Sarı Top Verity
         function createSmallVerity() {
             const canvas = document.createElement('canvas');
             canvas.width = 256; canvas.height = 256;
@@ -172,6 +204,7 @@
             scene.add(verity);
         }
 
+        // İstediğin gibi logodaki renk tonlarıyla uyumlu karakter modeli
         function createFullCharacterModel() {
             const group = new THREE.Group();
             const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.3), new THREE.MeshStandardMaterial({ color: 0x4f46e5 }));
@@ -205,13 +238,13 @@
 
         function createInitialWorld() {
             for (let i = -2; i <= 1; i++) {
-                addBlock(i, 0.5, -5, 1);
-                addBlock(i, 1.5, -5, 3);
+                addBlock(i, 0.5, -5, 1); // Odun
+                addBlock(i, 1.5, -5, 3); // Yaprak
+                addBlock(i, 0.5, -7, 2); // Taş
             }
-            addBlock(-2, 2.5, -5, 2);
-            addBlock(-1, 2.5, -5, 2);
-            addBlock(0, 2.5, -5, 2);
-            addBlock(1, 2.5, -5, 2);
+            // Dünyaya Elmas Blokları da eklendi!
+            addBlock(0, 0.5, -3, 8); 
+            addBlock(1, 0.5, -3, 8);
         }
 
         function getBlockColor(type) {
@@ -220,14 +253,11 @@
                 case 2: return 0xA9A9A9; // Taş
                 case 3: return 0x228B22; // Yaprak
                 case 4: return 0x8B7355; // Toprak
-                case 5: return 0xB22222; // Tuğla
-                case 6: return 0xDEB887; // Kum
+                case 5: return 0xDEB887; // Tahta
+                case 6: return 0xB22222; // Tuğla
                 case 7: return 0x4682B4; // Demir
-                case 8: return 0xFFD700; // Altın
-                case 9: return 0x00FFFF; // Elmas
-                case 10: return 0x800080; // Nether
-                case 11: return 0x556B2F; // Çimen
-                case 12: return 0xFFFFFF; // Yün
+                case 8: return 0x00FFFF; // Elmas (Parlak Mavi)
+                case 9: return 0xFFFFFF; // Yün
                 default: return 0x8B4513;
             }
         }
@@ -251,103 +281,62 @@
             return false;
         }
 
-        // --- KESİN ÇÖZÜMLÜ OTOMATİK EŞLEŞME (Gamerwost Host/Client) ---
-        function initReliablePeer() {
-            const roomPrefix = "gamerwost_room_v2_";
-            // İlk açan Host (1), ikinci açan Client (2) olur
-            let myRoleNum = Math.floor(Math.random() * 90000) + 10000;
-            
-            peer = new Peer(roomPrefix + "host");
-
-            peer.on('open', (id) => {
-                document.getElementById('status-bar').innerText = 'Gamerwost - Oda Kuruldu (Oyuncu Bekleniyor...)';
-            });
-
-            peer.on('error', (err) => {
-                if (err.type === 'unavailable-id') {
-                    // Oda dolu, demek ki 2. oyuncusun -> Host'a bağlan!
-                    connectToHost(roomPrefix + "host");
-                }
-            });
-
-            peer.on('connection', (connection) => {
-                conn = connection;
-                setupConnectionEvents();
-                document.getElementById('status-bar').innerText = 'Gamerwost - Oyuncu Bağlandı!';
-            });
+        function toggleCrafting() {
+            const modal = document.getElementById('crafting-modal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
         }
 
-        function connectToHost(hostId) {
-            if (peer) { try { peer.destroy(); } catch(e){} }
-            peer = new Peer();
-
-            peer.on('open', () => {
-                document.getElementById('status-bar').innerText = 'Odaya bağlanılıyor...';
-                conn = peer.connect(hostId);
-                setupConnectionEvents();
-            });
+        function craftItem(item) {
+            if (item === 'plank') {
+                if (craftingMaterials.wood >= 1) {
+                    craftingMaterials.wood -= 1;
+                    craftingMaterials.planks += 4;
+                    inventoryItems[5] += 4;
+                    inventoryItems[1] = craftingMaterials.wood;
+                    alert("4 Tahta üretildi!");
+                } else alert("Yeterli Odun yok!");
+            } else if (item === 'stick') {
+                if (craftingMaterials.planks >= 2) {
+                    craftingMaterials.planks -= 2;
+                    craftingMaterials.sticks += 4;
+                    inventoryItems[5] = craftingMaterials.planks;
+                    alert("4 Çubuk üretildi!");
+                } else alert("Yeterli Tahta yok!");
+            } else if (item === 'stone_pick') {
+                if (craftingMaterials.planks >= 2 && craftingMaterials.sticks >= 2) {
+                    craftingMaterials.planks -= 2;
+                    craftingMaterials.sticks -= 2;
+                    craftingMaterials.toolTier = 1;
+                    inventoryItems[5] = craftingMaterials.planks;
+                    document.getElementById('has-tool').innerText = 'Taş Kazma';
+                    alert("Taş Kazma üretildi!");
+                } else alert("Gerekli: 2 Tahta + 2 Çubuk");
+            } else if (item === 'diamond_pick') {
+                if (craftingMaterials.diamond >= 3 && craftingMaterials.sticks >= 2) {
+                    craftingMaterials.diamond -= 3;
+                    craftingMaterials.sticks -= 2;
+                    craftingMaterials.toolTier = 2;
+                    inventoryItems[8] = craftingMaterials.diamond;
+                    document.getElementById('has-tool').innerText = 'Elmas Kazma';
+                    alert("Gamerwost Elmas Kazma üretildi!");
+                } else alert("Gerekli: 3 Elmas + 2 Çubuk");
+            }
+            updateHUD();
         }
 
-        function setupConnectionEvents() {
-            if (!conn) return;
-
-            conn.on('open', () => {
-                document.getElementById('status-bar').innerText = 'Gamerwost - Multiplayer Aktif!';
-            });
-
-            conn.on('data', (data) => {
-                if (data.type === 'pos') {
-                    otherPlayer.position.set(data.x, data.y, data.z);
-                    otherPlayer.rotation.y = data.yaw;
-                } else if (data.type === 'addBlock') {
-                    addBlock(data.x, data.y, data.z, data.blockType);
-                } else if (data.type === 'removeBlock') {
-                    removeBlockByIndex(data.index);
-                }
-            });
-
-            conn.on('close', () => {
-                document.getElementById('status-bar').innerText = 'Bağlantı koptu.';
-            });
+        function updateHUD() {
+            document.getElementById('count-wood').innerText = craftingMaterials.wood;
+            document.getElementById('count-stone').innerText = craftingMaterials.stone;
+            document.getElementById('count-diamond').innerText = craftingMaterials.diamond;
+            for (let i = 1; i <= 9; i++) {
+                const el = document.getElementById(`inv-${i}`);
+                if (el) el.innerText = inventoryItems[i];
+            }
         }
 
-        function setKey(action, state) {
-            keys[action] = state;
-        }
-
-        function triggerJump() {
-            if (isGrounded) { velocityY = 0.12; isGrounded = false; }
-        }
-
-        function initControls() {
-            document.addEventListener('touchstart', (e) => {
-                if (e.target.tagName === 'BUTTON' || e.target.classList.contains('inv-slot')) return;
-                isTouchingScreen = true;
-                touchX = e.touches[0].clientX;
-                touchY = e.touches[0].clientY;
-            });
-
-            document.addEventListener('touchmove', (e) => {
-                if (!isTouchingScreen) return;
-                let dx = e.touches[0].clientX - touchX;
-                let dy = e.touches[0].clientY - touchY;
-                touchX = e.touches[0].clientX;
-                touchY = e.touches[0].clientY;
-
-                yaw -= dx * 0.005;
-                pitch -= dy * 0.005;
-                pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
-
-                camera.rotation.order = 'YXZ';
-                camera.rotation.y = yaw;
-                camera.rotation.x = pitch;
-            });
-
-            document.addEventListener('touchend', () => { isTouchingScreen = false; });
-        }
-
-        function selectBlock(type, element) {
-            selectedBlockType = type;
+        function selectSlot(slotIndex, element) {
+            selectedSlotIndex = slotIndex;
+            selectedBlockType = slotIndex;
             document.querySelectorAll('.inv-slot').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
         }
@@ -361,6 +350,19 @@
                 const hit = intersects[0];
                 const index = blocks.findIndex(b => b.mesh === hit.object);
                 if (index > -1) {
+                    const bType = blocks[index].type;
+
+                    if (bType === 8 && craftingMaterials.toolTier < 1) {
+                        alert("Elmas bloğu kırmak için en az Taş Kazma yapmalısın!");
+                        return;
+                    }
+
+                    if (bType === 1) craftingMaterials.wood++;
+                    if (bType === 2) craftingMaterials.stone++;
+                    if (bType === 8) craftingMaterials.diamond++;
+                    inventoryItems[bType]++;
+                    updateHUD();
+
                     scene.remove(blocks[index].mesh);
                     blocks.splice(index, 1);
                     if (conn && conn.open) conn.send({ type: 'removeBlock', index: index });
@@ -369,6 +371,11 @@
         }
 
         function placeBlock() {
+            if (inventoryItems[selectedBlockType] <= 0) {
+                alert("Bu bloktan kalmadı!");
+                return;
+            }
+
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
             const intersects = raycaster.intersectObjects(blocks.map(b => b.mesh));
@@ -377,6 +384,13 @@
                 const hit = intersects[0];
                 const normal = hit.face.normal;
                 const pos = hit.object.position.clone().add(normal);
+                
+                inventoryItems[selectedBlockType]--;
+                if (selectedBlockType === 1) craftingMaterials.wood = inventoryItems[1];
+                if (selectedBlockType === 2) craftingMaterials.stone = inventoryItems[2];
+                if (selectedBlockType === 8) craftingMaterials.diamond = inventoryItems[8];
+                updateHUD();
+
                 addBlock(pos.x, pos.y, pos.z, selectedBlockType);
                 if (conn && conn.open) {
                     conn.send({ type: 'addBlock', x: pos.x, y: pos.y, z: pos.z, blockType: selectedBlockType });
@@ -391,42 +405,9 @@
             }
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
+        function initReliablePeer() {
+            const roomPrefix = "gamerwost_diamond_v1_";
+            peer = new Peer(roomPrefix + "host");
 
-            const speed = 0.08;
-            const dir = new THREE.Vector3();
-            if (keys.forward) dir.z -= 1;
-            if (keys.backward) dir.z += 1;
-            if (keys.left) dir.x -= 1;
-            if (keys.right) dir.x += 1;
-            dir.normalize();
-            dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-
-            let nextX = playerPos.x + dir.x * speed;
-            let nextZ = playerPos.z + dir.z * speed;
-
-            if (!checkCollision(nextX, playerPos.z)) playerPos.x = nextX;
-            if (!checkCollision(playerPos.x, nextZ)) playerPos.z = nextZ;
-
-            velocityY -= 0.006;
-            playerPos.y += velocityY;
-            if (playerPos.y <= 1.6) {
-                playerPos.y = 1.6;
-                velocityY = 0;
-                isGrounded = true;
-            }
-
-            camera.position.set(playerPos.x, playerPos.y, playerPos.z);
-
-            if (conn && conn.open) {
-                conn.send({ type: 'pos', x: playerPos.x, y: playerPos.y, z: playerPos.z, yaw: yaw });
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-    </script>
-</body>
-</html>
+            peer.on('open', (id) => {
+                document.getElementById('status-bar').innerTex

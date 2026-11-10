@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Craft Multiplayer - PeerJS</title>
+    <title>Mini Craft 3D - Direct PeerJS</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #111; font-family: sans-serif; user-select: none; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; user-select: none; }
         #ui {
-            position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.7);
-            padding: 15px; border-radius: 8px; z-index: 10; pointer-events: auto;
+            position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.8);
+            padding: 15px; border-radius: 8px; z-index: 10; border: 1px solid #444;
         }
-        input, button { padding: 8px; margin-top: 5px; border-radius: 4px; border: none; }
-        button { background: #4f46e5; color: white; cursor: pointer; font-weight: bold; }
-        button:hover { background: #4338ca; }
+        input, button { padding: 8px; margin-top: 5px; border-radius: 4px; border: none; font-weight: bold; }
+        button { background: #6366f1; color: white; cursor: pointer; }
+        button:hover { background: #4f46e5; }
         #crosshair {
-            position: absolute; top: 50%; left: 50%; width: 10px; height: 10px;
-            transform: translate(-50%, -50%); border: 2px solid white; border-radius: 50%;
+            position: absolute; top: 50%; left: 50%; width: 12px; height: 12px;
+            transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0.7); border-radius: 50%;
             pointer-events: none; z-index: 5;
         }
         #inventory {
@@ -23,12 +23,12 @@
             display: flex; gap: 10px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; z-index: 10;
         }
         .inv-slot {
-            width: 50px; height: 50px; background: #333; border: 2px solid #555; display: flex;
-            align-items: center; justify-content: center; color: white; cursor: pointer; border-radius: 4px;
+            width: 55px; height: 55px; background: #222; border: 2px solid #555; display: flex;
+            align-items: center; justify-content: center; color: white; cursor: pointer; border-radius: 6px; font-size: 12px;
         }
-        .inv-slot.active { border-color: #f59e0b; }
+        .inv-slot.active { border-color: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5); }
     </style>
-    <!-- Three.js ve PeerJS Kütüphaneleri -->
+    <!-- Three.js ve PeerJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -37,15 +37,16 @@
     <div id="crosshair"></div>
 
     <div id="ui">
-        <h2>Mini Craft 1.19 Online</h2>
-        <p id="status">Bağlantı kuruluyor...</p>
+        <h3 style="margin:0 0 5px 0; color:#818cf8;">Minecraft 1.19 P2P Multiplayer</h3>
+        <p id="status" style="font-size:13px; margin:5px 0;">Bağlantı başlatılıyor...</p>
         <div id="connection-box">
-            <input type="text" id="peer-id-input" placeholder="Arkadaşın ID'sini gir">
+            <input type="text" id="peer-id-input" placeholder="Arkadaşın ID'sini yaz...">
             <button onclick="connectToPeer()">Bağlan</button>
         </div>
-        <p style="font-size: 11px; margin-top: 8px;">Benim ID: <span id="my-id" style="color: #34d399;">Bekleniyor...</span></p>
+        <p style="font-size: 11px; margin: 8px 0 0 0;">Benim ID'im: <span id="my-id" style="color: #34d399; user-select:all;">Yükleniyor...</span></p>
     </div>
 
+    <!-- Envanter / Blok Seçimi -->
     <div id="inventory">
         <div class="inv-slot active" onclick="selectBlock(1)" style="background: #8B4513;">Odun</div>
         <div class="inv-slot" onclick="selectBlock(2)" style="background: #A9A9A9;">Taş</div>
@@ -56,19 +57,18 @@
         let scene, camera, renderer;
         let peer, conn;
         let myId = '';
-        let moveable = true;
         let blocks = [];
-        let selectedBlockType = 1; // 1: Odun, 2: Taş, 3: Yaprak
+        let selectedBlockType = 1;
 
-        // Karakter ve Oyuncu Pozisyonları
+        // Oyuncu Pozisyonu ve Görüş Açısı
         let playerPos = { x: 0, y: 2, z: 5 };
-        let otherPlayer;
         let velocityY = 0;
         let isGrounded = false;
-
-        // Kontroller
-        let keys = { forward: false, backward: false, left: false, right: false, jump: false };
         let pitch = 0, yaw = 0;
+
+        let keys = { forward: false, backward: false, left: false, right: false };
+        let otherPlayer;
+        let myHands; // Birinci şahısta kendi kollarımız
 
         init3D();
         initPeer();
@@ -76,7 +76,7 @@
 
         function init3D() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87ceeb); // Gökyüzü rengi
+            scene.background = new THREE.Color(0x87ceeb); // Gökyüzü
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             
@@ -84,103 +84,109 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Işıklandırma
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
+            // Işıklar
+            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
             const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            dirLight.position.set(10, 20, 10);
+            dirLight.position.set(20, 40, 20);
             scene.add(dirLight);
 
-            // Zemin (Çim)
-            const floorGeo = new THREE.PlaneGeometry(100, 100);
+            // Çim Zemin
+            const floorGeo = new THREE.PlaneGeometry(120, 120);
             const floorMat = new THREE.MeshStandardMaterial({ color: 0x557a2b });
             const floor = new THREE.Mesh(floorGeo, floorMat);
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            // 1.19 Ağaçları ve Başlangıç Dünyası
+            // --- VERITY (Sarı Gülümseyen Top) ---
+            createVerity();
+
+            // Başlangıç Ağaçları / Blokları (Odun kırıp ev yapmak için)
             createInitialWorld();
 
-            // Verity Adlı Sarı Top (İstediğin sarı gülümseyen top)
-            const sphereGeo = new THREE.SphereGeometry(1.5, 32, 32);
-            const canvas = document.createElement('canvas');
-            canvas.width = 256; canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffeb3b'; ctx.fillRect(0,0,256,256);
-            ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(80, 90, 15, 0, Math.PI*2); ctx.arc(176, 90, 15, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(128, 140, 50, 0, Math.PI); ctx.stroke();
-            
-            const texture = new THREE.CanvasTexture(canvas);
-            const sphereMat = new THREE.MeshBasicMaterial({ map: texture });
-            const verityBall = new THREE.Mesh(sphereGeo, sphereMat);
-            verityBall.position.set(5, 2, -5);
-            scene.add(verityBall);
-
-            // Diğer Oyuncu Karakteri (Saç ve kollar dahil detaylı model)
-            otherPlayer = createCharacterModel();
-            otherPlayer.position.set(0, 0, -3);
+            // Karşı Tarafın Karakteri (Senin dışındaki oyuncu seni saçınla, gövdenle ve kollarınla görür)
+            otherPlayer = createFullCharacterModel();
+            otherPlayer.position.set(0, 0, -4);
             scene.add(otherPlayer);
+
+            // Senin Birinci Şahıs Kolların (Kendi ekranında kollarını görürsün)
+            myHands = createFirstPersonHands();
+            camera.add(myHands);
+            scene.add(camera);
 
             window.addEventListener('resize', onWindowResize);
         }
 
-        // Karakter Modeli Oluşturucu (Saç, gövde, kollar)
-        function createCharacterModel() {
+        // Verity - Sarı Gülümseyen Top Sahnede
+        function createVerity() {
+            const sphereGeo = new THREE.SphereGeometry(1.2, 32, 32);
+            
+            // Yüz deseni için Canvas Texture oluşturma
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffeb3b'; ctx.fillRect(0, 0, 256, 256); // Sarı zemin
+            // Gözler
+            ctx.fillStyle = '#000';
+            ctx.beginPath(); ctx.arc(80, 90, 14, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(176, 90, 14, 0, Math.PI * 2); ctx.fill();
+            // Gülümseme
+            ctx.lineWidth = 8; ctx.strokeStyle = '#000';
+            ctx.beginPath(); ctx.arc(128, 130, 45, 0, Math.PI); ctx.stroke();
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.MeshBasicMaterial({ map: texture });
+            const verity = new THREE.Mesh(sphereGeo, mat);
+            verity.position.set(6, 1.5, -6);
+            scene.add(verity);
+        }
+
+        // Karşı Oyuncu İçin Tam Model (Saç, Gövde, Kollar, Bacaklar)
+        function createFullCharacterModel() {
             const group = new THREE.Group();
 
-            // Gövde (Mor/Mavi tonlar)
-            const bodyGeo = new THREE.BoxGeometry(0.6, 0.8, 0.3);
-            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x4f46e5 });
-            const body = new THREE.Mesh(bodyGeo, bodyMat);
-            body.position.y = 0.8;
-            group.add(body);
+            // Gövde
+            const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.3), new THREE.MeshStandardMaterial({ color: 0x4f46e5 }));
+            body.position.y = 0.8; group.add(body);
 
-            // Kafa
-            const headGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
-            const headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac });
-            const head = new THREE.Mesh(headGeo, headMat);
-            head.position.y = 1.4;
-            group.add(head);
-
-            // Şapka/Saç Detayı
-            const hairGeo = new THREE.BoxGeometry(0.44, 0.15, 0.44);
-            const hairMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a });
-            const hair = new THREE.Mesh(hairGeo, hairMat);
-            hair.position.y = 1.62;
-            group.add(hair);
+            // Kafa ve Saç
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), new THREE.MeshStandardMaterial({ color: 0xffdbac }));
+            head.position.y = 1.4; group.add(head);
+            const hair = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.15, 0.44), new THREE.MeshStandardMaterial({ color: 0x1e3a8a }));
+            hair.position.y = 1.62; group.add(hair);
 
             // Kollar
             const armGeo = new THREE.BoxGeometry(0.2, 0.7, 0.2);
             const armMat = new THREE.MeshStandardMaterial({ color: 0x0ea5e9 });
-            
-            const leftArm = new THREE.Mesh(armGeo, armMat);
-            leftArm.position.set(-0.45, 0.8, 0);
-            group.add(leftArm);
-
-            const rightArm = new THREE.Mesh(armGeo, armMat);
-            rightArm.position.set(0.45, 0.8, 0);
-            group.add(rightArm);
+            const leftArm = new THREE.Mesh(armGeo, armMat); leftArm.position.set(-0.45, 0.8, 0); group.add(leftArm);
+            const rightArm = new THREE.Mesh(armGeo, armMat); rightArm.position.set(0.45, 0.8, 0); group.add(rightArm);
 
             // Bacaklar
             const legGeo = new THREE.BoxGeometry(0.25, 0.7, 0.25);
             const legMat = new THREE.MeshStandardMaterial({ color: 0x312e81 });
-            
-            const leftLeg = new THREE.Mesh(legGeo, legMat);
-            leftLeg.position.set(-0.15, 0.35, 0);
-            group.add(leftLeg);
+            const leftLeg = new THREE.Mesh(legGeo, legMat); leftLeg.position.set(-0.15, 0.35, 0); group.add(leftLeg);
+            const rightLeg = new THREE.Mesh(legGeo, legMat); rightLeg.position.set(0.15, 0.35, 0); group.add(rightLeg);
 
-            const rightLeg = new THREE.Mesh(legGeo, legMat);
-            rightLeg.position.set(0.15, 0.35, 0);
-            group.add(rightLeg);
+            return group;
+        }
+
+        // Birinci Şahıs Görüşü İçin Kendi Ellerimiz/Kollarımız
+        function createFirstPersonHands() {
+            const group = new THREE.Group();
+            const armMat = new THREE.MeshStandardMaterial({ color: 0x0ea5e9 });
+            
+            // Sağ Kol
+            const rArm = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.6), armMat);
+            rArm.position.set(0.4, -0.3, -0.5);
+            group.add(rArm);
 
             return group;
         }
 
         function createInitialWorld() {
-            // Birkaç başlangıç bloğu (Odun ve Yapraklar)
-            for (let i = -2; i <= 2; i++) {
-                addBlock(i, 0.5, -5, 1); // Odunlar
-                addBlock(i, 1.5, -5, 3); // Yapraklar
+            // Başlangıç odunları ve yaprakları (Odun kırıp ev yapmak için)
+            for (let i = -3; i <= 3; i++) {
+                addBlock(i, 0.5, -6, 1); // Odun blokları
+                addBlock(i, 1.5, -6, 3); // Yaprak blokları
             }
         }
 
@@ -197,26 +203,26 @@
             blocks.push({ mesh, x, y, z, type });
         }
 
-        // PeerJS Bağlantı Sistemi
+        // PeerJS Bağlantısı
         function initPeer() {
             peer = new Peer();
 
             peer.on('open', (id) => {
                 myId = id;
                 document.getElementById('my-id').innerText = id;
-                document.getElementById('status').innerText = 'Çevrimiçi - Bağlantı Bekleniyor';
+                document.getElementById('status').innerText = 'Bağlantıya hazır. ID paylaş veya bağlan!';
             });
 
             peer.on('connection', (connection) => {
                 conn = connection;
                 setupConnectionEvents();
-                document.getElementById('status').innerText = 'Bağlantı Kuruldu!';
+                document.getElementById('status').innerText = 'Arkadaşın bağlandı!';
             });
         }
 
         function connectToPeer() {
             const peerId = document.getElementById('peer-id-input').value.trim();
-            if (!peerId) return alert('Lütfen geçerli bir ID girin!');
+            if (!peerId) return alert('Lütfen arkadaşının Peer ID kodunu gir!');
             conn = peer.connect(peerId);
             setupConnectionEvents();
             document.getElementById('status').innerText = 'Bağlanılıyor...';
@@ -224,7 +230,7 @@
 
         function setupConnectionEvents() {
             conn.on('open', () => {
-                document.getElementById('status').innerText = 'Oyuncu Bağlandı!';
+                document.getElementById('status').innerText = 'Online Oynanıyor!';
             });
             conn.on('data', (data) => {
                 if (data.type === 'pos') {
@@ -246,8 +252,8 @@
 
             document.addEventListener('mousemove', (e) => {
                 if (document.pointerLockElement !== document.body) return;
-                yaw -= e.movementX * 0.003;
-                pitch -= e.movementY * 0.003;
+                yaw -= e.movementX * 0.002;
+                pitch -= e.movementY * 0.002;
                 pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
 
                 camera.rotation.order = 'YXZ';
@@ -276,27 +282,25 @@
             event.target.classList.add('active');
         }
 
-        // Blok Koyma ve Kırma (Odun Kır / Ev Yap)
+        // Blok Kırma (Odun kırma) ve Blok Koyma (Ev yapma)
         function handleMouseClick(e) {
             if (document.pointerLockElement !== document.body) return;
 
             const raycaster = new THREE.Raycaster();
-            const center = new THREE.Vector2(0, 0);
-            raycaster.setFromCamera(center, camera);
-
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
             const intersects = raycaster.intersectObjects(blocks.map(b => b.mesh));
 
             if (intersects.length > 0) {
                 const hit = intersects[0];
                 const index = blocks.findIndex(b => b.mesh === hit.object);
 
-                if (e.button === 0) { // Sol tık: Blok Kır (Odun kırma vb.)
+                if (e.button === 0) { // Sol Tık: Odun / Blok Kır
                     if (index > -1) {
                         scene.remove(blocks[index].mesh);
                         blocks.splice(index, 1);
                         if (conn && conn.open) conn.send({ type: 'removeBlock', index: index });
                     }
-                } else if (e.button === 2) { // Sağ tık: Blok Koy (Ev yapma)
+                } else if (e.button === 2) { // Sağ Tık: Blok Koy (Ev yap)
                     const normal = hit.face.normal;
                     const pos = hit.object.position.clone().add(normal);
                     addBlock(pos.x, pos.y, pos.z, selectedBlockType);
@@ -307,7 +311,6 @@
             }
         }
 
-        // Sağ tık menüsünü engelle
         document.addEventListener('contextmenu', e => e.preventDefault());
 
         function removeBlockByIndex(index) {
@@ -323,11 +326,11 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // Oyun Döngüsü (Animasyon ve Fizik)
+        // Oyun Döngüsü
         function animate() {
             requestAnimationFrame(animate);
 
-            // Hareket Hesaplama
+            // Hareket Mantığı
             const speed = 0.08;
             const dir = new THREE.Vector3();
             if (keys.forward) dir.z -= 1;
@@ -340,7 +343,7 @@
             playerPos.x += dir.x * speed;
             playerPos.z += dir.z * speed;
 
-            // Basit Yerçekimi
+            // Yerçekimi
             velocityY -= 0.006;
             playerPos.y += velocityY;
             if (playerPos.y <= 1.6) {
@@ -351,7 +354,7 @@
 
             camera.position.set(playerPos.x, playerPos.y, playerPos.z);
 
-            // Konumu karşı tarafa gönder
+            // Pozisyonu arkadaşına PeerJS ile bildir
             if (conn && conn.open) {
                 conn.send({ type: 'pos', x: playerPos.x, y: playerPos.y, z: playerPos.z, yaw: yaw });
             }

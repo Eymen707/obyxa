@@ -15,6 +15,7 @@
             position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
             color: white; background: rgba(0,0,0,0.7); padding: 6px 14px; border-radius: 20px;
             font-size: 12px; z-index: 10; pointer-events: none; border: 1px solid #555;
+            text-align: center;
         }
         /* Mobil Yön Tuşları */
         #mobile-controls {
@@ -57,7 +58,7 @@
 <body>
 
     <div id="crosshair"></div>
-    <div id="status-bar">Gamerwost - Otomatik Bağlanıyor...</div>
+    <div id="status-bar">Gamerwost - Sunucuya bağlanılıyor...</div>
 
     <!-- Mobil Yön Tuşları -->
     <div id="mobile-controls">
@@ -78,7 +79,7 @@
         <button class="act-btn" id="btn-place" onclick="placeBlock()">Koy</button>
     </div>
 
-    <!-- Envanter (12 blok kapasiteli sistem) -->
+    <!-- Envanter -->
     <div id="inventory">
         <div class="inv-slot active" onclick="selectBlock(1)" style="background: #8B4513;">Odun</div>
         <div class="inv-slot" onclick="selectBlock(2)" style="background: #A9A9A9;">Taş</div>
@@ -124,10 +125,10 @@
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            createSmallVerity(); // Küçük Sarı Top Verity
-            createExact12Blocks(); // Tam 12 Adet Başlangıç Bloğu
+            createSmallVerity();
+            createExact12Blocks();
 
-            // Karşı Oyuncu (Saç, gövde, kollar)
+            // Karşı Oyuncu
             otherPlayer = createFullCharacterModel();
             otherPlayer.position.set(0, 0, -4);
             scene.add(otherPlayer);
@@ -156,7 +157,6 @@
             ctx.lineWidth = 8; ctx.strokeStyle = '#000';
             ctx.beginPath(); ctx.arc(128, 130, 45, 0, Math.PI); ctx.stroke();
 
-            // İstediğin gibi boyutu küçük tutuldu (Yarıçap: 0.6)
             const verity = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas) }));
             verity.position.set(4, 1, -4);
             scene.add(verity);
@@ -193,16 +193,15 @@
             return group;
         }
 
-        // Tam 12 Adet Başlangıç Bloğu
         function createExact12Blocks() {
             for (let i = -2; i <= 1; i++) {
-                addBlock(i, 0.5, -5, 1); // 4 Odun
-                addBlock(i, 1.5, -5, 3); // 4 Yaprak
+                addBlock(i, 0.5, -5, 1);
+                addBlock(i, 1.5, -5, 3);
             }
             addBlock(-2, 2.5, -5, 2);
             addBlock(-1, 2.5, -5, 2);
             addBlock(0, 2.5, -5, 2);
-            addBlock(1, 2.5, -5, 2); // 4 Taş (Toplam 12 blok)
+            addBlock(1, 2.5, -5, 2);
         }
 
         function addBlock(x, y, z, type) {
@@ -216,56 +215,72 @@
             blocks.push({ mesh, x, y, z, type });
         }
 
-        // --- ÇARPIŞMA KONTROLÜ (Blokların İçinden Geçmeme) ---
         function checkCollision(nx, nz) {
             const playerRadius = 0.35;
             for (let b of blocks) {
-                // X ve Z ekseninde kutu çarpışma testi
                 if (Math.abs(nx - b.x) < 0.5 + playerRadius && Math.abs(nz - b.z) < 0.5 + playerRadius) {
                     if (playerPos.y < b.y + 1.0 && playerPos.y + 1.8 > b.y) {
-                        return true; // Çarpışma var
+                        return true;
                     }
                 }
             }
             return false;
         }
 
-        // Otomatik Bağlantı
+        // --- GELİŞTİRİLMİŞ OTOMATİK BAĞLANTI (Gamerwost Host/Client) ---
         function initAutoPeer() {
-            const roomId = "gamerwost-global-room-2026";
-            peer = new Peer(roomId);
+            // Benzersiz ortak oda anahtarı
+            const hostId = "gamerwost_room_v1_host";
+            
+            // Önce 1. oyuncu (Host) olmayı dene
+            peer = new Peer(hostId);
 
             peer.on('open', (id) => {
-                document.getElementById('status-bar').innerText = 'Gamerwost - Hazır (Oyuncu Bekleniyor)';
+                document.getElementById('status-bar').innerText = 'Gamerwost - Oda Kuruldu (2. Oyuncu Bekleniyor...)';
             });
 
+            // Eğer bu ID zaten alınmışsa, demek ki odayı başkası kurmuş -> Direkt bağlan!
             peer.on('error', (err) => {
-                if (err.type === 'unavailable-id') {
-                    connectToRoom(roomId);
+                if (err.type === 'unavailable-id' || err.type === 'browser-incompatible' || err.err) {
+                    connectAsClient(hostId);
+                } else {
+                    // Alternatif olarak doğrudan istemci moduna geç
+                    connectAsClient(hostId);
                 }
             });
 
+            // Host iken biri bağlandığında
             peer.on('connection', (connection) => {
                 conn = connection;
                 setupConnectionEvents();
-                document.getElementById('status-bar').innerText = 'Gamerwost - Biri Katıldı!';
+                document.getElementById('status-bar').innerText = 'Gamerwost - Oyuncu Bağlandı! İyi Oyunlar!';
             });
         }
 
-        function connectToRoom(roomId) {
-            setTimeout(() => {
-                if (!conn) {
-                    conn = peer.connect(roomId);
-                    setupConnectionEvents();
-                    document.getElementById('status-bar').innerText = 'Gamerwost - Bağlanıldı!';
-                }
-            }, 500);
+        function connectAsClient(hostId) {
+            // Eski peer'ı kapat ve client olarak tekrar bağlan
+            if (peer) { try { peer.destroy(); } catch(e){} }
+            
+            peer = new Peer(); // Rastgele istemci ID'si ile aç
+
+            peer.on('open', () => {
+                document.getElementById('status-bar').innerText = 'Odaya bağlanılıyor...';
+                conn = peer.connect(hostId);
+                setupConnectionEvents();
+            });
+
+            peer.on('error', () => {
+                document.getElementById('status-bar').innerText = 'Bağlantı deneniyor... Yeniden yükleyin.';
+            });
         }
 
         function setupConnectionEvents() {
+            if (!conn) return;
+
             conn.on('open', () => {
-                document.getElementById('status-bar').innerText = 'Gamerwost - Online Aktif!';
+                document.getElementById('status-bar').innerText = 'Gamerwost - Bağlantı Aktif!';
             });
+
             conn.on('data', (data) => {
                 if (data.type === 'pos') {
                     otherPlayer.position.set(data.x, data.y, data.z);
@@ -275,6 +290,10 @@
                 } else if (data.type === 'removeBlock') {
                     removeBlockByIndex(data.index);
                 }
+            });
+
+            conn.on('close', () => {
+                document.getElementById('status-bar').innerText = 'Bağlantı koptu.';
             });
         }
 
@@ -319,7 +338,6 @@
             event.target.classList.add('active');
         }
 
-        // Gelişmiş Sorunsuz Blok Kırma
         function breakBlock() {
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
@@ -336,7 +354,6 @@
             }
         }
 
-        // Gelişmiş Sorunsuz Blok Koyma
         function placeBlock() {
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
@@ -375,7 +392,6 @@
             let nextX = playerPos.x + dir.x * speed;
             let nextZ = playerPos.z + dir.z * speed;
 
-            // Duvarlardan/bloklardan geçmeme kontrolü
             if (!checkCollision(nextX, playerPos.z)) playerPos.x = nextX;
             if (!checkCollision(playerPos.x, nextZ)) playerPos.z = nextZ;
 

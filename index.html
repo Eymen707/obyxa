@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Hayatta Kalma & Elmas Sürümü</title>
+    <title>Gamerwost - Hayatta Kalma & Online</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
         #crosshair {
@@ -43,7 +43,7 @@
         }
         #btn-break { background: #ef4444; }
         #btn-place { background: #22c55e; }
-        #btn-craft { background: #8b5cf6; position: absolute; top: 10px; right: 10px; width: 45px; height: 45px; font-size: 10px; z-index: 20; }
+        #btn-craft { background: #8b5cf6; position: absolute; top: 10px; right: 10px; width: 45px; height: 45px; font-size: 10px; z-index: 20; cursor: pointer; border-radius: 50%; border: none; color: white; font-weight: bold;}
 
         /* 9 Slotlu Envanter Çubuğu */
         #inventory {
@@ -73,26 +73,26 @@
 <body>
 
     <div id="crosshair"></div>
-    <div id="status-bar">Gamerwost - Elmas Kalitesi Modu</div>
+    <div id="status-bar">Gamerwost - Online Bağlanıyor...</div>
     
     <div id="hud">
         Odun: <span id="count-wood">5</span> | Taş: <span id="count-stone">0</span> | Elmas: <span id="count-diamond">0</span><br>
         Alet: <span id="has-tool">Yok</span>
     </div>
 
-    <button class="act-btn" id="btn-craft" onclick="toggleCrafting()">Craft</button>
+    <button id="btn-craft" onclick="toggleCrafting()">Craft</button>
 
-    <!-- Crafting Menüsü -->
+    <!-- Crafting Menüsü (Çalışma Masası Gerektirmez, Doğrudan Üretim) -->
     <div id="crafting-modal">
         <h3>Gamerwost Üretim</h3>
-        <p style="font-size:11px; color:#aaa;">Gelişmiş Eşya Üretimi:</p>
+        <p style="font-size:11px; color:#aaa;">Envanterden Doğrudan Eşya Yap:</p>
         <div class="craft-grid">
-            <div class="craft-item" onclick="craftItem('plank')">Tahta Yap (1 Odun = 4 Tahta)</div>
-            <div class="craft-item" onclick="craftItem('stick')">Çubuk Yap (2 Tahta = 4 Çubuk)</div>
-            <div class="craft-item" onclick="craftItem('stone_pick')">Taş Kazma (3 Taş + 2 Çubuk)</div>
-            <div class="craft-item" onclick="craftItem('diamond_pick')">Elmas Kazma (3 Elmas + 2 Çubuk)</div>
+            <div class="craft-item" onclick="craftItem('plank')">Tahta Yap (1 Odun = 4 Tahta)[span_2](start_span)[span_2](end_span)</div>
+            <div class="craft-item" onclick="craftItem('stick')">Çubuk Yap (2 Tahta = 4 Çubuk)[span_3](start_span)[span_3](end_span)</div>
+            <div class="craft-item" onclick="craftItem('stone_pick')">Taş Kazma (2 Tahta + 2 Çubuk)[span_4](start_span)[span_4](end_span)</div>
+            <div class="craft-item" onclick="craftItem('diamond_pick')">Elmas Kazma (3 Elmas + 2 Çubuk)[span_5](start_span)[span_5](end_span)</div>
         </div>
-        <button onclick="toggleCrafting()" style="background:#ef4444; border:none; padding:6px 12px; color:white; border-radius:4px; margin-top:10px;">Kapat</button>
+        <button onclick="toggleCrafting()" style="background:#ef4444; border:none; padding:6px 12px; color:white; border-radius:4px; margin-top:10px; cursor:pointer;">Kapat</button>
     </div>
 
     <!-- Mobil Yön Tuşları -->
@@ -114,7 +114,7 @@
         <button class="act-btn" id="btn-place" onclick="placeBlock()">Koy</button>
     </div>
 
-    <!-- 9 Slotlu Envanter -->
+    <!-- 9 Slotlu Envanter Çubuğu -->
     <div id="inventory">
         <div class="inv-slot active" onclick="selectSlot(1, this)">Odun<br><span id="inv-1">5</span></div>
         <div class="inv-slot" onclick="selectSlot(2, this)">Taş<br><span id="inv-2">0</span></div>
@@ -135,7 +135,7 @@
         let selectedBlockType = 1;
 
         let inventoryItems = { 1: 5, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
-        let craftingMaterials = { wood: 5, stone: 0, diamond: 0, planks: 0, sticks: 0, toolTier: 0 }; // 0: Yok, 1: Taş Kazma, 2: Elmas Kazma
+        let craftingMaterials = { wood: 5, stone: 0, diamond: 0, planks: 0, sticks: 0, toolTier: 0 };
 
         let playerPos = { x: 0, y: 2, z: 5 };
         let velocityY = 0;
@@ -171,12 +171,12 @@
             createSmallVerity();
             createInitialWorld();
 
-            // Karşı Oyuncu (Arkadaşının ekranında tam karakter olarak görünürsün)
+            // Arkadaşının ekranında tam karakter (saç, gövde, kollar) görünür[span_6](start_span)[span_6](end_span)
             otherPlayer = createFullCharacterModel();
             otherPlayer.position.set(0, 1.6, -4);
             scene.add(otherPlayer);
 
-            // Kendi Kollarımız (Kendi ekranında sadece kollarını görürsün)
+            // Kendi ekranında sadece ellerini/kollarını görürsün (FPS)[span_7](start_span)[span_7](end_span)
             myHands = createFirstPersonHands();
             camera.add(myHands);
             scene.add(camera);
@@ -204,7 +204,6 @@
             scene.add(verity);
         }
 
-        // İstediğin gibi logodaki renk tonlarıyla uyumlu karakter modeli
         function createFullCharacterModel() {
             const group = new THREE.Group();
             const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.3), new THREE.MeshStandardMaterial({ color: 0x4f46e5 }));
@@ -238,26 +237,25 @@
 
         function createInitialWorld() {
             for (let i = -2; i <= 1; i++) {
-                addBlock(i, 0.5, -5, 1); // Odun
-                addBlock(i, 1.5, -5, 3); // Yaprak
-                addBlock(i, 0.5, -7, 2); // Taş
+                addBlock(i, 0.5, -5, 1); // Odun[span_8](start_span)[span_8](end_span)
+                addBlock(i, 1.5, -5, 3); // Yaprak[span_9](start_span)[span_9](end_span)
+                addBlock(i, 0.5, -7, 2); // Taş[span_10](start_span)[span_10](end_span)
             }
-            // Dünyaya Elmas Blokları da eklendi!
-            addBlock(0, 0.5, -3, 8); 
-            addBlock(1, 0.5, -3, 8);
+            addBlock(0, 0.5, -3, 8); // Elmas Blok[span_11](start_span)[span_11](end_span)
+            addBlock(1, 0.5, -3, 8); // Elmas Blok[span_12](start_span)[span_12](end_span)
         }
 
         function getBlockColor(type) {
             switch(type) {
-                case 1: return 0x8B4513; // Odun
-                case 2: return 0xA9A9A9; // Taş
-                case 3: return 0x228B22; // Yaprak
-                case 4: return 0x8B7355; // Toprak
-                case 5: return 0xDEB887; // Tahta
-                case 6: return 0xB22222; // Tuğla
-                case 7: return 0x4682B4; // Demir
-                case 8: return 0x00FFFF; // Elmas (Parlak Mavi)
-                case 9: return 0xFFFFFF; // Yün
+                case 1: return 0x8B4513; // Odun[span_13](start_span)[span_13](end_span)
+                case 2: return 0xA9A9A9; // Taş[span_14](start_span)[span_14](end_span)
+                case 3: return 0x228B22; // Yaprak[span_15](start_span)[span_15](end_span)
+                case 4: return 0x8B7355; // Toprak[span_16](start_span)[span_16](end_span)
+                case 5: return 0xDEB887; // Tahta[span_17](start_span)[span_17](end_span)
+                case 6: return 0xB22222; // Tuğla[span_18](start_span)[span_18](end_span)
+                case 7: return 0x4682B4; // Demir[span_19](start_span)[span_19](end_span)
+                case 8: return 0x00FFFF; // Elmas[span_20](start_span)[span_20](end_span)
+                case 9: return 0xFFFFFF; // Yün[span_21](start_span)[span_21](end_span)
                 default: return 0x8B4513;
             }
         }
@@ -293,15 +291,15 @@
                     craftingMaterials.planks += 4;
                     inventoryItems[5] += 4;
                     inventoryItems[1] = craftingMaterials.wood;
-                    alert("4 Tahta üretildi!");
-                } else alert("Yeterli Odun yok!");
+                    alert("4 Tahta üretildi[span_22](start_span)[span_22](end_span)!");
+                } else alert("Yeterli Odun yok[span_23](start_span)[span_23](end_span)!");
             } else if (item === 'stick') {
                 if (craftingMaterials.planks >= 2) {
                     craftingMaterials.planks -= 2;
                     craftingMaterials.sticks += 4;
                     inventoryItems[5] = craftingMaterials.planks;
-                    alert("4 Çubuk üretildi!");
-                } else alert("Yeterli Tahta yok!");
+                    alert("4 Çubuk üretildi[span_24](start_span)[span_24](end_span)!");
+                } else alert("Yeterli Tahta yok[span_25](start_span)[span_25](end_span)!");
             } else if (item === 'stone_pick') {
                 if (craftingMaterials.planks >= 2 && craftingMaterials.sticks >= 2) {
                     craftingMaterials.planks -= 2;
@@ -309,8 +307,8 @@
                     craftingMaterials.toolTier = 1;
                     inventoryItems[5] = craftingMaterials.planks;
                     document.getElementById('has-tool').innerText = 'Taş Kazma';
-                    alert("Taş Kazma üretildi!");
-                } else alert("Gerekli: 2 Tahta + 2 Çubuk");
+                    alert("Taş Kazma üretildi[span_26](start_span)[span_26](end_span)!");
+                } else alert("Gerekli: 2 Tahta + 2 Çubuk[span_27](start_span)[span_27](end_span)");
             } else if (item === 'diamond_pick') {
                 if (craftingMaterials.diamond >= 3 && craftingMaterials.sticks >= 2) {
                     craftingMaterials.diamond -= 3;
@@ -318,8 +316,8 @@
                     craftingMaterials.toolTier = 2;
                     inventoryItems[8] = craftingMaterials.diamond;
                     document.getElementById('has-tool').innerText = 'Elmas Kazma';
-                    alert("Gamerwost Elmas Kazma üretildi!");
-                } else alert("Gerekli: 3 Elmas + 2 Çubuk");
+                    alert("Elmas Kazma üretildi[span_28](start_span)[span_28](end_span)!");
+                } else alert("Gerekli: 3 Elmas + 2 Çubuk[span_29](start_span)[span_29](end_span)");
             }
             updateHUD();
         }
@@ -353,7 +351,7 @@
                     const bType = blocks[index].type;
 
                     if (bType === 8 && craftingMaterials.toolTier < 1) {
-                        alert("Elmas bloğu kırmak için en az Taş Kazma yapmalısın!");
+                        alert("Elmas bloğu kırmak için en az Taş Kazma yapmalısın[span_30](start_span)[span_30](end_span)!");
                         return;
                     }
 
@@ -372,7 +370,7 @@
 
         function placeBlock() {
             if (inventoryItems[selectedBlockType] <= 0) {
-                alert("Bu bloktan kalmadı!");
+                alert("Bu bloktan kalmadı[span_31](start_span)[span_31](end_span)!");
                 return;
             }
 
@@ -382,32 +380,4 @@
 
             if (intersects.length > 0) {
                 const hit = intersects[0];
-                const normal = hit.face.normal;
-                const pos = hit.object.position.clone().add(normal);
-                
-                inventoryItems[selectedBlockType]--;
-                if (selectedBlockType === 1) craftingMaterials.wood = inventoryItems[1];
-                if (selectedBlockType === 2) craftingMaterials.stone = inventoryItems[2];
-                if (selectedBlockType === 8) craftingMaterials.diamond = inventoryItems[8];
-                updateHUD();
-
-                addBlock(pos.x, pos.y, pos.z, selectedBlockType);
-                if (conn && conn.open) {
-                    conn.send({ type: 'addBlock', x: pos.x, y: pos.y, z: pos.z, blockType: selectedBlockType });
-                }
-            }
-        }
-
-        function removeBlockByIndex(index) {
-            if (blocks[index]) {
-                scene.remove(blocks[index].mesh);
-                blocks.splice(index, 1);
-            }
-        }
-
-        function initReliablePeer() {
-            const roomPrefix = "gamerwost_diamond_v1_";
-            peer = new Peer(roomPrefix + "host");
-
-            peer.on('open', (id) => {
-                document.getElementById('status-bar').innerTex
+                const normal = hit

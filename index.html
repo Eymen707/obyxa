@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GAMERWOST - Survival</title>
+    <title>GAMERWOST - Final Fix</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; touch-action: none; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #87ceeb; font-family: sans-serif; }
@@ -67,7 +67,7 @@
 
     <div id="chat-box">
         <div id="chat-messages">
-            <div><b>Verity:</b> Gather wood and food to survive! 😊</div>
+            <div><b>Verity:</b> Hello! Let's survive together! 😊</div>
         </div>
         <div class="chat-input-row">
             <input type="text" id="verity-input" placeholder="Type here..." onclick="event.stopPropagation()">
@@ -94,8 +94,14 @@
 
     <script>
         // PEERJS MULTIPLAYER
-        const roomName = 'gamerwost-room-2026-v2';
-        const peer = new Peer(roomName + '-' + Math.floor(Math.random() * 9999));
+        const roomName = 'gamerwost-final-room-2026';
+        let peer;
+        try {
+            peer = new Peer(roomName + '-' + Math.floor(Math.random() * 99999));
+        } catch(e) {
+            peer = new Peer();
+        }
+
         let connections = [];
         const remotePlayers = {};
 
@@ -114,7 +120,7 @@
 
         function sendData(data) { connections.forEach(c => { if(c.open) c.send(data); }); }
 
-        // THREE.JS SCENE SETUP
+        // THREE.JS SETUP
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87ceeb);
@@ -133,7 +139,7 @@
         sunLight.castShadow = true;
         scene.add(sunLight);
 
-        // ARM & HAND BLOCK
+        // ARM & HELD BLOCK
         const armGroup = new THREE.Group();
         const armMesh = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), new THREE.MeshLambertMaterial({ color: 0x34495e }));
         armMesh.position.set(0.35, -0.35, -0.5);
@@ -212,7 +218,7 @@
             }
         }
 
-        // Geniş Çimli Zemin ve Taş/Toprak Katmanları
+        // Zemin Katmanları ve Ağaçlar doğrudan yükleniyor
         for (let x = -25; x <= 25; x++) {
             for (let z = -25; z <= 25; z++) {
                 addBlock(x, 0, z, 3, false);
@@ -385,5 +391,4 @@
         document.getElementById('btn-place').addEventListener('touchstart', (e) => { e.preventDefault(); performRaycast(false); });
 
         document.querySelectorAll('.slot').forEach(slot => {
-            slot.addEventListener('click', () => {
-                document.querySelectorAll('.slo
+   

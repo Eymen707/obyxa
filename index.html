@@ -3,28 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GAMERWOST</title>
+    <title>GAMERWOST - Studio</title>
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: Arial, sans-serif; }
         #gameCanvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
 
-        /* SOL ALT OBYXA İMZASI */
         #watermark {
             position: absolute; bottom: 15px; left: 20px;
             color: #ffffff; font-size: 20px; font-weight: 900; letter-spacing: 2px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8); z-index: 1000; pointer-events: none;
         }
 
-        /* ANA MENÜ EKRANI */
         #menu-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #d0d0d0; z-index: 500; display: flex; flex-direction: column;
+            background: radial-gradient(circle, #1a0b2e 0%, #05020a 100%); z-index: 500; display: flex; flex-direction: column;
         }
         .rbx-header {
             background: linear-gradient(to bottom, #0055b3, #003380);
             height: 50px; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-bottom: 2px solid #001f4d; color: white;
+            padding: 0 20px; border-bottom: 2px solid #001f4d; color: white; flex-shrink: 0;
         }
         .rbx-logo-box { display: flex; align-items: center; gap: 10px; }
         .rbx-logo-icon {
@@ -35,43 +33,46 @@
         .rbx-logo-text { font-size: 24px; font-weight: 900; letter-spacing: 2px; text-shadow: 2px 2px 0px #990000; font-family: Impact, sans-serif; }
         .rbx-nav {
             background: #19437d; height: 30px; display: flex; align-items: center;
-            padding: 0 20px; gap: 15px; font-size: 12px; color: #cce0ff; font-weight: bold;
+            padding: 0 20px; gap: 15px; font-size: 12px; color: #cce0ff; font-weight: bold; flex-shrink: 0;
         }
         .menu-body {
-            flex: 1; display: flex; flex-direction: column; padding: 20px;
-            background: radial-gradient(circle, #25123e 0%, #080310 100%); color: white; overflow-y: auto; align-items: center;
+            flex: 1; display: flex; flex-direction: column; padding: 15px;
+            color: white; overflow-y: auto; align-items: center; -webkit-overflow-scrolling: touch;
         }
-        .game-header-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #a855f7; margin-bottom: 15px; text-align: center; }
+        .game-header-title { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: #a855f7; margin: 15px 0 10px 0; text-align: center; }
         
-        /* MULTIPLAYER KONTROL PANELİ */
-        .mp-box {
-            background: rgba(255,255,255,0.1); border: 2px solid #a855f7; border-radius: 10px;
-            padding: 15px; width: 100%; max-width: 400px; margin-bottom: 20px; text-align: center;
+        .publish-box {
+            background: rgba(255,255,255,0.06); border: 2px solid #a855f7; border-radius: 12px;
+            padding: 15px; width: 100%; max-width: 450px; text-align: center; margin-bottom: 15px; flex-shrink: 0;
         }
-        .mp-box input {
-            width: 80%; padding: 10px; margin: 8px 0; border-radius: 6px; border: none; font-size: 14px; text-align: center;
+        .publish-box input, .publish-box select {
+            width: 90%; padding: 10px; margin: 5px 0; border-radius: 6px; border: none; font-size: 14px; text-align: center; background: #fff; color: #000;
         }
-        .mp-btn {
-            background: #a855f7; color: white; border: none; padding: 10px 20px; border-radius: 6px;
-            font-weight: bold; cursor: pointer; font-size: 14px; margin: 5px;
+        .btn-pub {
+            background: linear-gradient(135deg, #a855f7, #6366f1); color: white; border: none;
+            padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 8px;
+            width: 90%; box-shadow: 0 4px 12px rgba(168,85,247,0.4); touch-action: manipulation;
         }
-        .mp-btn:active { background: #9333ea; }
 
-        /* OYUN MODLARI IZGARASI */
         .games-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-            max-width: 600px; width: 100%; padding-bottom: 30px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;
+            max-width: 600px; width: 100%; padding-bottom: 40px;
         }
         .game-card {
-            background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(168, 85, 247, 0.6);
-            border-radius: 10px; padding: 15px; cursor: pointer; text-align: center;
-            -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+            background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(168, 85, 247, 0.5);
+            border-radius: 10px; padding: 12px; text-align: center; position: relative;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
-        .game-card:active { background: rgba(168, 85, 247, 0.5); }
-        .game-thumb { font-size: 32px; margin-bottom: 5px; }
-        .game-card h3 { font-size: 14px; color: #fff; }
+        .game-thumb { font-size: 32px; margin-bottom: 4px; }
+        .game-card h3 { font-size: 14px; color: #fff; margin-bottom: 4px; word-break: break-word; }
+        .game-card .tag { font-size: 10px; background: rgba(168,85,247,0.4); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+        .like-bar { font-size: 12px; color: #ffca28; margin-bottom: 8px; cursor: pointer; }
+        
+        .join-btn {
+            background: #22c55e; color: white; border: none; padding: 10px; border-radius: 6px;
+            font-weight: bold; width: 100%; cursor: pointer; font-size: 13px; touch-action: manipulation;
+        }
 
-        /* OYUN İÇİ ARAYÜZ */
         #crosshair {
             position: absolute; top: 50%; left: 50%; width: 16px; height: 16px;
             transform: translate(-50%, -50%); pointer-events: none; z-index: 100; display: none;
@@ -80,21 +81,19 @@
         #crosshair::before { top: 7px; left: 0; width: 16px; height: 2px; }
         #crosshair::after { top: 0; left: 7px; width: 2px; height: 16px; }
 
-        /* HOTBAR */
         #hotbar {
             position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
             display: none; gap: 6px; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 8px;
             border: 2px solid rgba(255,255,255,0.2); z-index: 100;
         }
         .slot {
-            width: 42px; height: 42px; background: rgba(255,255,255,0.1); border: 2px solid #555;
+            width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid #555;
             border-radius: 6px; display: flex; flex-direction: column; align-items: center;
             justify-content: center; color: white; font-size: 10px; font-weight: bold; position: relative; cursor: pointer;
         }
         .slot.active { border-color: #fff; background: rgba(255,255,255,0.3); }
         .count { position: absolute; bottom: 2px; right: 4px; font-size: 9px; color: #fff; }
 
-        /* MOBİL KONTROLLER */
         #hud-controls { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150; }
         #joystick-base {
             position: absolute; bottom: 25px; left: 25px; width: 110px; height: 110px;
@@ -118,7 +117,6 @@
         }
         .act-btn:active { background: rgba(168, 85, 247, 0.8); }
 
-        /* CRAFT MENÜSÜ */
         #craft-modal {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(20, 10, 35, 0.95); border: 2px solid #a855f7; border-radius: 12px;
@@ -126,9 +124,8 @@
         }
         #craft-modal h2 { text-align: center; color: #a855f7; margin-bottom: 12px; font-size: 18px; }
         .craft-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; }
-        .craft-btn { background: #a855f7; border: none; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .craft-btn { background: #a855f7; border: none; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; touch-action: manipulation; }
     </style>
-    <!-- Three.js ve PeerJS Kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -136,84 +133,71 @@
 
     <div id="watermark">OBYXA</div>
 
-    <!-- ANA MENÜ EKRANI -->
     <div id="menu-screen">
         <div class="rbx-header">
             <div class="rbx-logo-box">
                 <div class="rbx-logo-icon">G</div>
                 <div class="rbx-logo-text">GAMERWOST</div>
             </div>
-            <div style="font-size: 11px; color: #cce0ff;" id="connection-status">Çevrimdışı</div>
+            <div style="font-size: 11px; color: #cce0ff;" id="connection-status">Studio Modu</div>
         </div>
         <div class="rbx-nav">
-            <span>My GAMERWOST</span> | <span>Multiplayer (PeerJS)</span>
+            <span>GAMERWOST Studio</span> | <span>AI Küfür Filtreli Yayınlama</span>
         </div>
         <div class="menu-body">
-            <!-- MULTIPLAYER BAĞLANTI PANELİ -->
-            <div class="mp-box">
-                <h3 style="color: #a855f7; margin-bottom: 8px;">Çok Oyunculu Mod</h3>
-                <div id="host-section">
-                    <button class="mp-btn" onclick="createRoom()">Oda Kur (Host)</button>
-                    <p id="my-room-code" style="font-size: 12px; margin-top: 5px; color: #ff0;"></p>
-                </div>
-                <hr style="border-color: rgba(255,255,255,0.2); margin: 10px 0;">
-                <div id="client-section">
-                    <input type="text" id="peer-id-input" placeholder="Arkadaşının Oda Kodunu Gir">
-                    <br>
-                    <button class="mp-btn" onclick="joinRoom()">Odaya Bağlan</button>
-                </div>
+            
+            <div class="publish-box">
+                <h3 style="color: #a855f7; margin-bottom: 6px;">🛠️ GAMERWOST Studio (Mod Yayınla)</h3>
+                <input type="text" id="custom-game-name" placeholder="Oyun Adı (Örn: Verity Korku)">
+                <select id="custom-game-mod">
+                    <option value="Verity">👻 Verity (Korku / Gece Modu)</option>
+                    <option value="JumpBooster">🚀 Jump Booster (Süper Zıplama)</option>
+                    <option value="TungTung">🥁 Tung Tung Sahur Modu</option>
+                    <option value="Creative">🏗️ Klasik Creative Modu</option>
+                    <option value="Survival">🌲 Klasik Survival Modu</option>
+                </select>
+                <button class="btn-pub" id="create-pub-btn">Oyununu Modla ve Yayınla</button>
+                <p id="pub-status" style="font-size: 11px; color: #00ffcc; margin-top: 6px;"></p>
             </div>
 
-            <div class="game-header-title">OYUN MODLARI</div>
-            <div class="games-grid">
-                <div class="game-card" ontouchend="startGame('Creative')" onclick="startGame('Creative')">
-                    <div class="game-thumb">🏗️</div>
-                    <h3>Creative</h3>
-                </div>
-                <div class="game-card" ontouchend="startGame('Survival')" onclick="startGame('Survival')">
-                    <div class="game-thumb">🌲</div>
-                    <h3>Survival</h3>
-                </div>
-            </div>
+            <div class="game-header-title">YAYINLANAN OYUNLAR</div>
+            <div class="games-grid" id="games-container"></div>
         </div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
     <div id="crosshair"></div>
 
-    <!-- HOTBAR -->
     <div id="hotbar">
-        <div class="slot active" onclick="setSlot(0)" ontouchend="setSlot(0)">Çim<span class="count" id="c1">20</span></div>
-        <div class="slot" onclick="setSlot(1)" ontouchend="setSlot(1)">Taş<span class="count" id="c2">15</span></div>
-        <div class="slot" onclick="setSlot(2)" ontouchend="setSlot(2)">Odun<span class="count" id="c3">10</span></div>
-        <div class="slot" onclick="setSlot(3)" ontouchend="setSlot(3)">Yaprak<span class="count" id="c4">10</span></div>
-        <div class="slot" onclick="setSlot(4)" ontouchend="setSlot(4)">Tahta<span class="count" id="c5">0</span></div>
+        <div class="slot active" id="slot0">Çim<span class="count" id="c1">20</span></div>
+        <div class="slot" id="slot1">Taş<span class="count" id="c2">15</span></div>
+        <div class="slot" id="slot2">Odun<span class="count" id="c3">10</span></div>
+        <div class="slot" id="slot3">Yaprak<span class="count" id="c4">10</span></div>
+        <div class="slot" id="slot4">Tahta<span class="count" id="c5">0</span></div>
     </div>
 
-    <!-- MOBİL KONTROLLER -->
     <div id="hud-controls">
         <div id="joystick-base">
             <div id="joystick-stick"></div>
         </div>
         <div class="top-action-container">
-            <div class="act-btn" onclick="toggleCameraView()" ontouchend="toggleCameraView()" id="camBtn">F5</div>
-            <div class="act-btn" onclick="toggleCraftMenu()" ontouchend="toggleCraftMenu()">CRAFT</div>
+            <div class="act-btn" id="camBtn">F5</div>
+            <div class="act-btn" id="craftBtn">CRAFT</div>
         </div>
         <div class="action-container">
-            <div class="act-btn" onclick="breakBlock()" ontouchend="breakBlock()">KIR</div>
-            <div class="act-btn" onclick="placeBlock()" ontouchend="placeBlock()">KOY</div>
-            <div class="act-btn" onclick="jumpPlayer()" ontouchend="jumpPlayer()">ZIPLA</div>
+            <div class="act-btn" id="breakBtn">KIR</div>
+            <div class="act-btn" id="placeBtn">KOY</div>
+            <div class="act-btn" id="jumpBtn">ZIPLA</div>
         </div>
     </div>
 
-    <!-- CRAFT MENÜSÜ -->
     <div id="craft-modal">
         <h2>Minecraft Craft</h2>
         <div class="craft-row">
             <div>4x Tahta Plaka<br><small style="color:#aaa;">Gereken: 1 Odun</small></div>
-            <button class="craft-btn" onclick="craftPlanks()" ontouchend="craftPlanks()">Üret</button>
+            <button class="craft-btn" id="doCraftBtn">Üret</button>
         </div>
-        <button class="craft-btn" style="width: 100%; margin-top: 10px; background: #555;" onclick="toggleCraftMenu()" ontouchend="toggleCraftMenu()">Kapat</button>
+        <button class="craft-btn" style="width: 100%; margin-top: 10px; background: #555;" id="closeCraftBtn">Kapat</button>
     </div>
 
     <script>
@@ -232,39 +216,122 @@
         let walkTime = 0;
         let joystickActive = false, jStartX = 0, jStartY = 0;
 
-        // PEERJS DEĞİŞKENLERİ
         let peer, conn;
         let otherPlayer = null;
-        let isHost = false;
+        let jumpPower = 0.22;
 
-        // PeerJS Başlatma ve Bağlantı Kurma
-        function createRoom() {
-            peer = new Peer();
-            peer.on('open', (id) => {
-                document.getElementById('my-room-code').innerText = "Oda Kodun: " + id;
-                document.getElementById('connection-status').innerText = "Oda Kuruldu (Bekleniyor...)";
-                isHost = true;
-            });
+        // KÜFÜR VE ARGO KONTROL FİLTRESİ (AI Denetim Simülasyonu)
+        const badWords = ["amk", "aq", "orospu", "o.ç", "sik", "anan", "mal", "salak", "piç", "siktir", "göt"];
+        function checkBadWords(text) {
+            let lower = text.toLowerCase();
+            for (let word of badWords) {
+                if (lower.includes(word)) return true;
+            }
+            return false;
+        }
 
-            peer.on('connection', (connection) => {
-                conn = connection;
-                setupConnection();
-                document.getElementById('connection-status').innerText = "Arkadaşa Bağlanıldı!";
-                alert("Bir oyuncu odanıza katıldı!");
+        const defaultGames = [
+            { id: 'verity-base', name: 'AI Verity Nightmare', mode: 'Verity', likes: 340, icon: '👻', peerId: '' },
+            { id: 'booster-base', name: 'Mega Jump Booster', mode: 'JumpBooster', likes: 280, icon: '🚀', peerId: '' },
+            { id: 'creative-base', name: 'Klasik Creative', mode: 'Creative', likes: 142, icon: '🏗️', peerId: '' },
+            { id: 'survival-base', name: 'Zorlu Survival', mode: 'Survival', likes: 98, icon: '🌲', peerId: '' }
+        ];
+
+        function loadGameList() {
+            let saved = JSON.parse(localStorage.getItem('gamerwost_published_games') || '[]');
+            let allGames = [...defaultGames, ...saved];
+            let container = document.getElementById('games-container');
+            container.innerHTML = '';
+
+            allGames.forEach((g) => {
+                let card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `
+                    <div class="game-thumb">${g.icon || '🎮'}</div>
+                    <h3>${g.name}</h3>
+                    <div><span class="tag">${g.mode}</span></div>
+                    <div class="like-bar" id="like-box-${g.id}">👍 Beğen: <span id="like-${g.id}">${g.likes}</span></div>
+                    <button class="join-btn" id="join-btn-${g.id}">OYNA / KATIL</button>
+                `;
+                container.appendChild(card);
+
+                card.querySelector('#like-box-' + g.id).addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    likeGame(g.id);
+                });
+
+                card.querySelector('#join-btn-' + g.id).addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    joinOrStartGame(g.mode, g.peerId);
+                });
             });
         }
 
-        function joinRoom() {
-            let friendId = document.getElementById('peer-id-input').value.trim();
-            if (!friendId) { alert("Lütfen oda kodu gir!"); return; }
+        function likeGame(id) {
+            let el = document.getElementById('like-' + id);
+            if(el) {
+                let current = parseInt(el.innerText);
+                el.innerText = current + 1;
+            }
+        }
+
+        // Oyun Yayınlama ve AI Küfür Filtresi Kontrolü
+        document.getElementById('create-pub-btn').addEventListener('pointerdown', () => {
+            let nameInput = document.getElementById('custom-game-name').value.trim();
+            let modeSelect = document.getElementById('custom-game-mod').value;
+            
+            if (!nameInput) { alert("Lütfen oyununa bir isim ver!"); return; }
+
+            // AI Denetim Kontrolü
+            if (checkBadWords(nameInput)) {
+                alert("⚠️ AI Denetim Sistemi: Oyun adında uygunsuz kelime tespit edildi! Lütfen düzgün bir isim gir.");
+                document.getElementById('pub-status').innerText = "Yayınlama reddedildi: Uygunsuz kelime!";
+                return;
+            }
+
+            document.getElementById('pub-status').innerText = "AI Onayladı: Mod yükleniyor...";
+
+            let iconMap = { 'Verity': '👻', 'JumpBooster': '🚀', 'TungTung': '🥁', 'Creative': '🏗️', 'Survival': '🌲' };
 
             peer = new Peer();
-            peer.on('open', () => {
-                conn = peer.connect(friendId);
-                setupConnection();
-                document.getElementById('connection-status').innerText = "Odaya Bağlanıldı!";
-                alert("Odaya başarıyla bağlandın!");
+            peer.on('open', (id) => {
+                let newGame = {
+                    id: 'g_' + Date.now(),
+                    name: nameInput,
+                    mode: modeSelect,
+                    likes: 1,
+                    peerId: id,
+                    icon: iconMap[modeSelect] || '🎮'
+                };
+
+                let saved = JSON.parse(localStorage.getItem('gamerwost_published_games') || '[]');
+                saved.unshift(newGame);
+                localStorage.setItem('gamerwost_published_games', JSON.stringify(saved));
+
+                document.getElementById('pub-status').innerText = "Modlu Oyun Yayınlandı!";
+                loadGameList();
+                
+                peer.on('connection', (connection) => {
+                    conn = connection;
+                    setupConnection();
+                    alert("Oyuncu katıldı!");
+                });
+
+                startGame(modeSelect);
             });
+        });
+
+        function joinOrStartGame(mode, targetPeerId) {
+            if (targetPeerId && targetPeerId !== '') {
+                peer = new Peer();
+                peer.on('open', () => {
+                    conn = peer.connect(targetPeerId);
+                    setupConnection();
+                    startGame(mode);
+                });
+            } else {
+                startGame(mode);
+            }
         }
 
         function setupConnection() {
@@ -286,14 +353,13 @@
         }
 
         function createOtherPlayer() {
-            let mBlue = new THREE.MeshStandardMaterial({ color: 0x22c55e }); // Diğer oyuncu yeşil renk
-            otherPlayer = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.8, 0.4), mBlue);
+            let mGreen = new THREE.MeshStandardMaterial({ color: 0x22c55e });
+            otherPlayer = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.8, 0.4), mGreen);
             scene.add(otherPlayer);
         }
 
         function startGame(modeName) {
-            let menu = document.getElementById('menu-screen');
-            if(menu) menu.style.display = 'none';
+            document.getElementById('menu-screen').style.display = 'none';
             document.getElementById('crosshair').style.display = 'block';
             document.getElementById('hotbar').style.display = 'flex';
             document.getElementById('hud-controls').style.display = 'block';
@@ -303,24 +369,38 @@
 
         function initGame(modeName) {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x70b5ff);
-            scene.fog = new THREE.FogExp2(0x70b5ff, 0.025);
+            
+            if (modeName === 'Verity') {
+                scene.background = new THREE.Color(0x05020a);
+                scene.fog = new THREE.FogExp2(0x05020a, 0.08);
+                jumpPower = 0.22;
+            } else if (modeName === 'JumpBooster') {
+                scene.background = new THREE.Color(0x2563eb);
+                scene.fog = new THREE.FogExp2(0x2563eb, 0.01);
+                jumpPower = 0.45;
+            } else {
+                scene.background = new THREE.Color(0x70b5ff);
+                scene.fog = new THREE.FogExp2(0x70b5ff, 0.025);
+                jumpPower = 0.22;
+            }
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas'), antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-            let dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+            let ambientLight = new THREE.AmbientLight(0xffffff, modeName === 'Verity' ? 0.2 : 0.6);
+            scene.add(ambientLight);
+
+            let dirLight = new THREE.DirectionalLight(0xffffff, modeName === 'Verity' ? 0.2 : 0.7);
             dirLight.position.set(20, 50, 20);
             scene.add(dirLight);
 
-            let size = (modeName === 'Parkour') ? 6 : 10;
+            let size = 10;
             for (let x = -size; x <= size; x++) {
                 for (let z = -size; z <= size; z++) {
                     createBlock(x, 0, z, 1);
                     createBlock(x, -1, z, 2);
-                    if (modeName !== 'Parkour' && x % 4 === 0 && z % 4 === 0) {
+                    if (x % 4 === 0 && z % 4 === 0) {
                         createBlock(x, 1, z, 3);
                         createBlock(x, 2, z, 3);
                         createBlock(x, 3, z, 4);
@@ -332,90 +412,4 @@
             setupControls();
         }
 
-        function createRobloxCharacter() {
-            player = new THREE.Group();
-
-            let canvas = document.createElement('canvas');
-            canvas.width = 128; canvas.height = 128;
-            let ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#24104f'; ctx.fillRect(0, 0, 128, 128);
-            ctx.fillStyle = '#a855f7'; ctx.font = 'bold 85px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText('G', 64, 64);
-            let logoTex = new THREE.CanvasTexture(canvas);
-
-            let mBlue = new THREE.MeshStandardMaterial({ color: 0x2563eb });
-            let mDark = new THREE.MeshStandardMaterial({ color: 0x1e1b4b });
-            let mSkin = new THREE.MeshStandardMaterial({ color: 0xeeddcc });
-            let mTorso = new THREE.MeshStandardMaterial({ map: logoTex });
-
-            let torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.4), mTorso);
-            torso.position.y = 0.45; player.add(torso);
-
-            let head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), mSkin);
-            head.position.y = 1.15; player.add(head);
-
-            let cap = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.15, 0.6), mBlue);
-            cap.position.set(0, 1.4, 0.05); player.add(cap);
-
-            armL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), mBlue);
-            armL.position.set(-0.6, 0.4, 0); player.add(armL);
-
-            armR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), mBlue);
-            armR.position.set(0.6, 0.4, 0); player.add(armR);
-
-            legL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.35), mDark);
-            legL.position.set(-0.2, -0.4, 0); player.add(legL);
-
-            legR = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.35), mDark);
-            legR.position.set(0.2, -0.4, 0); player.add(legR);
-
-            playerArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), mBlue);
-            playerArmMesh.position.set(0.4, -0.3, -0.5);
-            camera.add(playerArmMesh);
-            playerArmMesh.visible = false;
-
-            player.position.set(0, 4, 0);
-            scene.add(player);
-        }
-
-        const blockColors = { 1: 0x4f7942, 2: 0x777777, 3: 0x5c4033, 4: 0x2e8b57, 5: 0xc4a482 };
-        const geom = new THREE.BoxGeometry(1, 1, 1);
-
-        function createBlock(x, y, z, type) {
-            let mesh = new THREE.Mesh(geom, new THREE.MeshStandardMaterial({ color: blockColors[type] }));
-            mesh.position.set(x, y, z);
-            mesh.userData = { type: type };
-            scene.add(mesh);
-            blocks.push(mesh);
-        }
-
-        function toggleCameraView() {
-            if (cameraMode === 3) {
-                cameraMode = 1;
-                player.visible = false;
-                playerArmMesh.visible = true;
-                document.getElementById('camBtn').innerText = 'FPS';
-            } else {
-                cameraMode = 3;
-                player.visible = true;
-                playerArmMesh.visible = false;
-                document.getElementById('camBtn').innerText = 'TPS';
-            }
-        }
-
-        function setupControls() {
-            let jBase = document.getElementById('joystick-base');
-            let jStick = document.getElementById('joystick-stick');
-
-            jBase.addEventListener('touchstart', (e) => {
-                joystickActive = true;
-                let rect = jBase.getBoundingClientRect();
-                jStartX = rect.left + 55;
-                jStartY = rect.top + 55;
-            }, {passive: true});
-
-            window.addEventListener('touchmove', (e) => {
-                let touch = e.targetTouches[0];
-                if (joystickActive) {
-                    let dx = touch.clientX - jStartX;
-                    let dy = touch.cli
+        function cr

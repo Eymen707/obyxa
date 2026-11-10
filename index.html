@@ -3,38 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Otomatik Multiplayer</title>
+    <title>Gamerwost - Multiplayer</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
         #crosshair {
-            position: absolute; top: 50%; left: 50%; width: 12px; height: 12px;
-            transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0.7); border-radius: 50%;
+            position: absolute; top: 50%; left: 50%; width: 14px; height: 14px;
+            transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0.8); border-radius: 50%;
             pointer-events: none; z-index: 5;
         }
         #status-bar {
             position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            color: white; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px;
-            font-size: 12px; z-index: 10; pointer-events: none;
+            color: white; background: rgba(0,0,0,0.7); padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; z-index: 10; pointer-events: none; border: 1px solid #555;
         }
-        /* Mobil Kontrol Tuşları */
+        /* Mobil Yön Tuşları */
         #mobile-controls {
             position: absolute; bottom: 90px; left: 0; width: 100%; display: flex;
             justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 10; pointer-events: none;
         }
         .control-group { display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
         .m-btn {
-            width: 60px; height: 60px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5);
+            width: 60px; height: 60px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6);
             border-radius: 50%; color: white; font-size: 18px; font-weight: bold; display: flex;
             align-items: center; justify-content: center;
         }
-        .m-btn:active { background: rgba(255,255,255,0.5); }
+        .m-btn:active { background: rgba(255,255,255,0.6); }
         
         #action-buttons {
             position: absolute; bottom: 100px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 10;
         }
         .act-btn {
-            width: 65px; height: 65px; border-radius: 50%; border: none; font-weight: bold; color: white; font-size: 11px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            width: 65px; height: 65px; border-radius: 50%; border: none; font-weight: bold; color: white; font-size: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
         #btn-break { background: #ef4444; }
         #btn-place { background: #22c55e; }
@@ -42,13 +42,13 @@
         /* Envanter Çubuğu */
         #inventory {
             position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 8px; background: rgba(0,0,0,0.8); padding: 8px; border-radius: 8px; z-index: 10;
+            display: flex; gap: 8px; background: rgba(0,0,0,0.85); padding: 8px; border-radius: 8px; z-index: 10; border: 1px solid #444;
         }
         .inv-slot {
             width: 45px; height: 45px; background: #222; border: 2px solid #555; display: flex;
             align-items: center; justify-content: center; color: white; cursor: pointer; border-radius: 6px; font-size: 11px;
         }
-        .inv-slot.active { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.6); }
+        .inv-slot.active { border-color: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.7); }
     </style>
     <!-- Three.js ve PeerJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -57,7 +57,7 @@
 <body>
 
     <div id="crosshair"></div>
-    <div id="status-bar">Gamerwost - Otomatik bağlanılıyor...</div>
+    <div id="status-bar">Gamerwost - Otomatik Bağlanıyor...</div>
 
     <!-- Mobil Yön Tuşları -->
     <div id="mobile-controls">
@@ -71,14 +71,14 @@
         </div>
     </div>
 
-    <!-- Aksiyon Tuşları (Zıpla / Kır / Koy) -->
+    <!-- Aksiyon Tuşları -->
     <div id="action-buttons">
         <button class="act-btn" onclick="triggerJump()" style="background:#3b82f6;">Zıpla</button>
         <button class="act-btn" id="btn-break" onclick="breakBlock()">Kır</button>
         <button class="act-btn" id="btn-place" onclick="placeBlock()">Koy</button>
     </div>
 
-    <!-- Envanter -->
+    <!-- Envanter (12 blok kapasiteli sistem) -->
     <div id="inventory">
         <div class="inv-slot active" onclick="selectBlock(1)" style="background: #8B4513;">Odun</div>
         <div class="inv-slot" onclick="selectBlock(2)" style="background: #A9A9A9;">Taş</div>
@@ -124,8 +124,8 @@
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            createVerity();
-            createInitialWorld();
+            createSmallVerity(); // Küçük Sarı Top Verity
+            createExact12Blocks(); // Tam 12 Adet Başlangıç Bloğu
 
             // Karşı Oyuncu (Saç, gövde, kollar)
             otherPlayer = createFullCharacterModel();
@@ -144,8 +144,8 @@
             });
         }
 
-        // Verity - Sarı Gülümseyen Top
-        function createVerity() {
+        // Küçük Sarı Top Verity
+        function createSmallVerity() {
             const canvas = document.createElement('canvas');
             canvas.width = 256; canvas.height = 256;
             const ctx = canvas.getContext('2d');
@@ -156,8 +156,9 @@
             ctx.lineWidth = 8; ctx.strokeStyle = '#000';
             ctx.beginPath(); ctx.arc(128, 130, 45, 0, Math.PI); ctx.stroke();
 
-            const verity = new THREE.Mesh(new THREE.SphereGeometry(1.2, 32, 32), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas) }));
-            verity.position.set(5, 1.5, -5);
+            // İstediğin gibi boyutu küçük tutuldu (Yarıçap: 0.6)
+            const verity = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas) }));
+            verity.position.set(4, 1, -4);
             scene.add(verity);
         }
 
@@ -192,11 +193,16 @@
             return group;
         }
 
-        function createInitialWorld() {
-            for (let i = -3; i <= 3; i++) {
-                addBlock(i, 0.5, -6, 1);
-                addBlock(i, 1.5, -6, 3);
+        // Tam 12 Adet Başlangıç Bloğu
+        function createExact12Blocks() {
+            for (let i = -2; i <= 1; i++) {
+                addBlock(i, 0.5, -5, 1); // 4 Odun
+                addBlock(i, 1.5, -5, 3); // 4 Yaprak
             }
+            addBlock(-2, 2.5, -5, 2);
+            addBlock(-1, 2.5, -5, 2);
+            addBlock(0, 2.5, -5, 2);
+            addBlock(1, 2.5, -5, 2); // 4 Taş (Toplam 12 blok)
         }
 
         function addBlock(x, y, z, type) {
@@ -210,18 +216,31 @@
             blocks.push({ mesh, x, y, z, type });
         }
 
-        // --- ID'SİZ OTOMATİK BAĞLANTI (Gamerwost Özel Oda) ---
+        // --- ÇARPIŞMA KONTROLÜ (Blokların İçinden Geçmeme) ---
+        function checkCollision(nx, nz) {
+            const playerRadius = 0.35;
+            for (let b of blocks) {
+                // X ve Z ekseninde kutu çarpışma testi
+                if (Math.abs(nx - b.x) < 0.5 + playerRadius && Math.abs(nz - b.z) < 0.5 + playerRadius) {
+                    if (playerPos.y < b.y + 1.0 && playerPos.y + 1.8 > b.y) {
+                        return true; // Çarpışma var
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Otomatik Bağlantı
         function initAutoPeer() {
             const roomId = "gamerwost-global-room-2026";
             peer = new Peer(roomId);
 
             peer.on('open', (id) => {
-                document.getElementById('status-bar').innerText = 'Gamerwost - Oda Kuruldu (Oyuncu Bekleniyor)';
+                document.getElementById('status-bar').innerText = 'Gamerwost - Hazır (Oyuncu Bekleniyor)';
             });
 
             peer.on('error', (err) => {
                 if (err.type === 'unavailable-id') {
-                    // Oda zaten doluysa 2. oyuncu olarak direkt bağlan
                     connectToRoom(roomId);
                 }
             });
@@ -238,14 +257,14 @@
                 if (!conn) {
                     conn = peer.connect(roomId);
                     setupConnectionEvents();
-                    document.getElementById('status-bar').innerText = 'Gamerwost - Oyuncuya Bağlandı!';
+                    document.getElementById('status-bar').innerText = 'Gamerwost - Bağlanıldı!';
                 }
             }, 500);
         }
 
         function setupConnectionEvents() {
             conn.on('open', () => {
-                document.getElementById('status-bar').innerText = 'Gamerwost - Bağlantı Aktif!';
+                document.getElementById('status-bar').innerText = 'Gamerwost - Online Aktif!';
             });
             conn.on('data', (data) => {
                 if (data.type === 'pos') {
@@ -300,6 +319,7 @@
             event.target.classList.add('active');
         }
 
+        // Gelişmiş Sorunsuz Blok Kırma
         function breakBlock() {
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
@@ -316,6 +336,7 @@
             }
         }
 
+        // Gelişmiş Sorunsuz Blok Koyma
         function placeBlock() {
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
@@ -351,8 +372,12 @@
             dir.normalize();
             dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
 
-            playerPos.x += dir.x * speed;
-            playerPos.z += dir.z * speed;
+            let nextX = playerPos.x + dir.x * speed;
+            let nextZ = playerPos.z + dir.z * speed;
+
+            // Duvarlardan/bloklardan geçmeme kontrolü
+            if (!checkCollision(nextX, playerPos.z)) playerPos.x = nextX;
+            if (!checkCollision(playerPos.x, nextZ)) playerPos.z = nextZ;
 
             velocityY -= 0.006;
             playerPos.y += velocityY;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GAMERWOST - Full Survival Craft</title>
+    <title>GAMERWOST - Fixed World & Chat</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; touch-action: none; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #87ceeb; font-family: sans-serif; }
@@ -14,21 +14,15 @@
         #crosshair::before { top: 3px; left: -6px; width: 14px; height: 2px; }
         #crosshair::after { top: -6px; left: 3px; width: 2px; height: 14px; }
         
-        /* Survival Status HUD */
         #hud { position: absolute; top: 12px; left: 12px; color: white; z-index: 10; font-size: 13px; font-weight: bold; display: flex; flex-direction: column; gap: 5px; }
         .hud-panel { background: rgba(0,0,0,0.6); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); }
         
-        /* Crafting Interface UI */
-        #craft-btn-ui { position: absolute; top: 12px; right: 12px; z-index: 20; background: #e67e22; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        #craft-menu { position: absolute; top: 50px; right: 12px; background: rgba(0,0,0,0.85); border: 2px solid #e67e22; padding: 10px; border-radius: 8px; z-index: 20; color: white; display: none; flex-direction: column; gap: 8px; width: 180px; }
-        .craft-item { background: rgba(255,255,255,0.1); padding: 6px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .craft-item button { background: #27ae60; border: none; color: white; padding: 3px 6px; border-radius: 3px; font-weight: bold; cursor: pointer; }
-
-        #chat-box { position: absolute; bottom: 80px; left: 20px; width: 260px; background: rgba(0,0,0,0.7); border: 2px solid #a29bfe; border-radius: 8px; padding: 8px; z-index: 20; color: white; font-size: 12px; }
-        #chat-messages { height: 50px; overflow-y: auto; margin-bottom: 4px; display: flex; flex-direction: column; gap: 2px; }
-        .chat-input-row { display: flex; gap: 4px; }
-        #verity-input { flex: 1; padding: 4px; border-radius: 4px; border: none; background: #fff; color: #000; }
-        #chat-btn { padding: 4px 8px; background: #6c5ce7; border: none; color: white; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        /* Chat UI - Pointer Events Fix */
+        #chat-box { position: absolute; bottom: 80px; left: 20px; width: 260px; background: rgba(0,0,0,0.85); border: 2px solid #a29bfe; border-radius: 8px; padding: 8px; z-index: 100; color: white; font-size: 12px; pointer-events: auto; }
+        #chat-messages { height: 60px; overflow-y: auto; margin-bottom: 6px; display: flex; flex-direction: column; gap: 2px; user-select: text; }
+        .chat-input-row { display: flex; gap: 4px; pointer-events: auto; }
+        #verity-input { flex: 1; padding: 6px; border-radius: 4px; border: none; background: #fff; color: #000; user-select: text; touch-action: auto; }
+        #chat-btn { padding: 6px 10px; background: #6c5ce7; border: none; color: white; border-radius: 4px; font-weight: bold; cursor: pointer; touch-action: auto; }
 
         #hotbar { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 8px; z-index: 10; }
         .slot { width: 44px; height: 44px; border: 2px solid #555; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 9px; text-align: center; font-weight: bold; background: rgba(255,255,255,0.05); }
@@ -39,7 +33,6 @@
         
         #mobile-action-btns { position: absolute; bottom: 30px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 20; }
         .act-btn { width: 55px; height: 55px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; }
-        .act-btn:active { background: rgba(255,255,255,0.5); }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -50,42 +43,28 @@
     <div id="crosshair"></div>
 
     <div id="hud">
-        <div class="hud-panel">❤️ HEALTH: <span id="health-val" style="color:#ff4757;">100</span> / 100</div>
-        <div class="hud-panel">🍖 HUNGER: <span id="hunger-val" style="color:#ffa502;">100</span> / 100</div>
+        <div class="hud-panel">❤️ HEALTH: <span id="health-val" style="color:#ff4757;">100</span></div>
         <div class="hud-panel">VERITY: <b id="rage-text" style="color:#2ed573;">😊 HAPPY</b></div>
-    </div>
-
-    <button id="craft-btn-ui" onclick="toggleCraftMenu()">CRAFT</button>
-    <div id="craft-menu">
-        <div style="font-weight:bold; text-align:center; margin-bottom:4px;">CRAFTING</div>
-        <div class="craft-item">
-            <span>Planks (2 Wood)</span>
-            <button onclick="craftItem('planks')">Make</button>
-        </div>
-        <div class="craft-item">
-            <span>Apple (Food)</span>
-            <button onclick="craftItem('apple')">Eat</button>
-        </div>
     </div>
 
     <div id="chat-box">
         <div id="chat-messages">
-            <div><b>Verity:</b> Gather wood and food to survive! 😊</div>
+            <div><b>Verity:</b> Hello! Let's build together! 😊</div>
         </div>
         <div class="chat-input-row">
-            <input type="text" id="verity-input" placeholder="Talk to Verity...">
-            <button id="chat-btn" onclick="sendToVerity()">Send</button>
+            <input type="text" id="verity-input" placeholder="Type here..." onclick="event.stopPropagation()">
+            <button id="chat-btn" onclick="sendToVerity(event)">Send</button>
         </div>
     </div>
 
     <div id="hotbar">
-        <div class="slot active" data-type="1">Grass <span id="cnt-1">0</span></div>
-        <div class="slot" data-type="2">Dirt <span id="cnt-2">0</span></div>
-        <div class="slot" data-type="3">Stone <span id="cnt-3">0</span></div>
-        <div class="slot" data-type="4">Wood <span id="cnt-4">0</span></div>
-        <div class="slot" data-type="5">Leaves <span id="cnt-5">0</span></div>
-        <div class="slot" data-type="6">Sculk <span id="cnt-6">0</span></div>
-        <div class="slot" data-type="7">Froglight <span id="cnt-7">0</span></div>
+        <div class="slot active" data-type="1">Grass <span id="cnt-1">10</span></div>
+        <div class="slot" data-type="2">Dirt <span id="cnt-2">10</span></div>
+        <div class="slot" data-type="3">Stone <span id="cnt-3">5</span></div>
+        <div class="slot" data-type="4">Wood <span id="cnt-4">5</span></div>
+        <div class="slot" data-type="5">Leaves <span id="cnt-5">5</span></div>
+        <div class="slot" data-type="6">Sculk <span id="cnt-6">2</span></div>
+        <div class="slot" data-type="7">Froglight <span id="cnt-7">2</span></div>
     </div>
 
     <div id="joystick-zone"><div id="joystick-knob"></div></div>
@@ -96,8 +75,8 @@
     </div>
 
     <script>
-        // MULTIPLAYER PEERJS
-        const roomName = 'gamerwost-survival-craft-v6';
+        // PEERJS MULTIPLAYER
+        const roomName = 'gamerwost-room-2026';
         const peer = new Peer(roomName + '-' + Math.floor(Math.random() * 9999));
         let connections = [];
         const remotePlayers = {};
@@ -117,11 +96,11 @@
 
         function sendData(data) { connections.forEach(c => { if(c.open) c.send(data); }); }
 
-        // ENGINE & WORLD
+        // ENGINE & SETUP
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
-        scene.fog = new THREE.FogExp2(0x87ceeb, 0.012);
+        scene.background = new THREE.Color(0x70a1ff);
+        scene.fog = new THREE.FogExp2(0x70a1ff, 0.015);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -129,11 +108,10 @@
         renderer.shadowMap.enabled = true;
         container.appendChild(renderer.domElement);
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
-        const sunLight = new THREE.DirectionalLight(0xfff5cc, 0.9);
-        sunLight.position.set(50, 100, 50);
-        sunLight.castShadow = true;
+        const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        sunLight.position.set(40, 80, 40);
         scene.add(sunLight);
 
         // ARM & HELD BLOCK
@@ -159,34 +137,9 @@
         camera.add(armGroup);
         scene.add(camera);
 
-        // INVENTORY SYSTEM
         const inventory = { 1: 10, 2: 10, 3: 5, 4: 5, 5: 5, 6: 2, 7: 2 };
-        function updateInventoryUI() {
-            for(let i=1; i<=7; i++) {
-                const el = document.getElementById(`cnt-${i}`);
-                if (el) el.innerText = inventory[i] || 0;
-            }
-        }
-        updateInventoryUI();
 
-        function toggleCraftMenu() {
-            const m = document.getElementById('craft-menu');
-            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function craftItem(type) {
-            if (type === 'planks' && inventory[4] >= 2) {
-                inventory[4] -= 2;
-                inventory[1] += 4; // Çim/Tahta üretir
-                updateInventoryUI();
-            } else if (type === 'apple' && inventory[5] >= 2) {
-                inventory[5] -= 2;
-                hunger = Math.min(100, hunger + 25);
-                document.getElementById('hunger-val').innerText = Math.floor(hunger);
-            }
-        }
-
-        // WORLD GENERATION
+        // WORLD BUILDING (ÇİMLİ DÜNYA VE AĞAÇLAR)
         const worldBlocks = new Map();
         const blockGeo = new THREE.BoxGeometry(1, 1, 1);
         function getKey(x, y, z) { return `${x},${y},${z}`; }
@@ -209,18 +162,16 @@
                 const bType = worldBlocks.get(key).type;
                 scene.remove(worldBlocks.get(key).mesh);
                 worldBlocks.delete(key);
-                
-                // Envantere blok ekle
                 inventory[bType] = (inventory[bType] || 0) + 1;
-                updateInventoryUI();
-
-                verityRage += 8; // Blok kırınca hafif kışkırır
+                document.getElementById(`cnt-${bType}`).innerText = inventory[bType];
+                verityRage += 8;
                 if (sync) sendData({ action: 'break', x, y, z });
             }
         }
 
-        for (let x = -20; x <= 20; x++) {
-            for (let z = -20; z <= 20; z++) {
+        // Zemin Katmanları
+        for (let x = -25; x <= 25; x++) {
+            for (let z = -25; z <= 25; z++) {
                 addBlock(x, 0, z, 3, false);
                 addBlock(x, 1, z, 2, false);
                 addBlock(x, 2, z, 1, false);
@@ -238,9 +189,9 @@
                 }
             }
         }
-        createTree(-8, -8); createTree(10, -12); createTree(-12, 12); createTree(14, 8);
+        createTree(-6, -6); createTree(8, -10); createTree(-10, 10); createTree(12, 6);
 
-        // VERITY AI (HAFİF SALDIRI)
+        // VERITY AI MODEL
         const verityGroup = new THREE.Group();
         const verityBody = new THREE.Mesh(new THREE.SphereGeometry(1.2, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffd700 }));
         verityGroup.add(verityBody);
@@ -256,31 +207,39 @@
         mouthMesh.rotation.x = Math.PI;
         verityGroup.add(mouthMesh);
 
-        verityGroup.position.set(5, 4.2, 5);
+        verityGroup.position.set(4, 4.2, 4);
         scene.add(verityGroup);
 
         let verityRage = 0;
         let health = 100;
-        let hunger = 100;
 
-        function sendToVerity() {
+        // CHAT FONKSİYONU FIX
+        function sendToVerity(e) {
+            if (e) e.stopPropagation();
             const input = document.getElementById('verity-input');
             const txt = input.value.trim();
             if (!txt) return;
+
             const cm = document.getElementById('chat-messages');
             cm.innerHTML += `<div><b>You:</b> ${txt}</div>`;
             input.value = "";
             cm.scrollTop = cm.scrollHeight;
 
             setTimeout(() => {
-                let reply = "Happy survival crafting!";
-                if (verityRage > 50) reply = "Don't break my trees!";
+                let reply = "I love exploring this world with you!";
+                if (verityRage > 50) reply = "Stop destroying the environment!";
+                else if (txt.toLowerCase().includes("hi") || txt.toLowerCase().includes("hello")) reply = "Hello my friend!";
                 cm.innerHTML += `<div><b>Verity:</b> ${reply}</div>`;
                 cm.scrollTop = cm.scrollHeight;
-            }, 500);
+            }, 400);
         }
 
-        // CONTROLS & LOOP
+        document.getElementById('verity-input').addEventListener('keydown', (e) => {
+            e.stopPropagation();
+            if (e.key === 'Enter') sendToVerity(e);
+        });
+
+        // PLAYER MOVEMENT & CONTROLS
         let playerPos = new THREE.Vector3(0, 4.5, 0);
         let velocity = new THREE.Vector3();
         let yaw = 0, pitch = 0;
@@ -294,7 +253,10 @@
             document.getElementById('mobile-action-btns').style.display = 'flex';
         }
 
-        renderer.domElement.addEventListener('click', () => { if (!isTouch()) renderer.domElement.requestPointerLock(); });
+        renderer.domElement.addEventListener('click', (e) => {
+            if (e.target.closest('#chat-box')) return;
+            if (!isTouch()) renderer.domElement.requestPointerLock();
+        });
 
         document.addEventListener('mousemove', (e) => {
             if (document.pointerLockElement === renderer.domElement) {
@@ -304,10 +266,12 @@
             }
         });
 
+        // DOKUNMATİK KAMERA
         let touchLookId = null, lastTouchX = 0, lastTouchY = 0;
         window.addEventListener('touchstart', (e) => {
+            if (e.target.closest('#chat-box')) return;
             for (let t of e.changedTouches) {
-                if (t.clientX > window.innerWidth / 2 && touchLookId === null && t.target.tagName !== 'INPUT') {
+                if (t.clientX > window.innerWidth / 2 && touchLookId === null) {
                     touchLookId = t.identifier; lastTouchX = t.clientX; lastTouchY = t.clientY;
                 }
             }
@@ -324,6 +288,7 @@
         });
         window.addEventListener('touchend', (e) => { for (let t of e.changedTouches) if (t.identifier === touchLookId) touchLookId = null; });
 
+        // JOYSTICK
         let joyMove = { x: 0, y: 0 };
         const joyZone = document.getElementById('joystick-zone');
         const joyKnob = document.getElementById('joystick-knob');
@@ -359,7 +324,7 @@
                             p.add(hit.face.normal.clone().multiplyScalar(0.4));
                             addBlock(Math.round(p.x), Math.round(p.y), Math.round(p.z), selectedType);
                             inventory[selectedType]--;
-                            updateInventoryUI();
+                            document.getElementById(`cnt-${selectedType}`).innerText = inventory[selectedType];
                         }
                     }
                 }
@@ -367,6 +332,7 @@
         }
 
         window.addEventListener('mousedown', (e) => {
+            if (e.target.closest('#chat-box')) return;
             if (document.pointerLockElement === renderer.domElement) {
                 if (e.button === 0) performRaycast(true);
                 if (e.button === 2) performRaycast(false);
@@ -389,4 +355,38 @@
         function handleData(data, peerId) {
             if (data.action === 'move') {
                 if (!remotePlayers[peerId]) {
-                    cons
+                    const av = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.5, 0.5), new THREE.MeshLambertMaterial({color: 0x9b59b6}));
+                    scene.add(av);
+                    remotePlayers[peerId] = av;
+                }
+                remotePlayers[peerId].position.set(data.x, data.y - 1, data.z);
+            } else if (data.action === 'place') addBlock(data.x, data.y, data.z, data.type, false);
+            else if (data.action === 'break') removeBlock(data.x, data.y, data.z, false);
+        }
+
+        const keys = {};
+        window.addEventListener('keydown', e => { if (document.activeElement.id !== 'verity-input') keys[e.code] = true; });
+        window.addEventListener('keyup', e => { if (document.activeElement.id !== 'verity-input') keys[e.code] = false; });
+
+        // GAME LOOP
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isArmSwinging) {
+                swingTimer += 0.2;
+                armMesh.rotation.x = Math.PI / 4 + Math.sin(swingTimer) * 0.4;
+                if (swingTimer > Math.PI) { isArmSwinging = false; armMesh.rotation.x = Math.PI / 4; }
+            }
+
+            let moveF = (keys['KeyW'] ? 1 : 0) - (keys['KeyS'] ? 1 : 0) - joyMove.y;
+            let moveS = (keys['KeyD'] ? 1 : 0) - (keys['KeyA'] ? 1 : 0) + joyMove.x;
+
+            if (keys['Space'] && playerPos.y <= 3.6) velocity.y = 0.14;
+
+            velocity.y -= 0.008;
+            playerPos.y += velocity.y;
+            if (playerPos.y < 3.5) { playerPos.y = 3.5; velocity.y = 0; }
+
+            let dir = new THREE.Vector3(moveS, 0, -moveF).normalize();
+            dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+            playerPos.add(

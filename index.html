@@ -2,172 +2,158 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>GAMERWOST - Make, Publish, Play</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMERWOST</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
-  *{box-sizing:border-box;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:#0b0b14;color:#fff;overflow-x:hidden}
-  header{background:linear-gradient(90deg,#7b2ff7,#00d4ff);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-  .logo{display:flex;gap:10px;align-items:center;font-size:24px;font-weight:900}
-  .logo-img{width:52px;height:52px;border-radius:50%;background:#000;padding:3px;box-shadow:0 0 18px #a855f7;flex-shrink:0}
-  .container{max-width:1300px;margin:auto;padding:16px;padding-bottom:120px}
-  .grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
-  .card{background:#171726;border:1px solid #2d2d4a;border-radius:16px;padding:16px;margin-bottom:16px}
-  canvas{width:100%;height:400px;background:#87ceeb;border-radius:12px;display:block;touch-action:none}
-  input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#0f0f1e;color:#fff;font-size:16px}
-  textarea{resize:vertical}
-  button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:800;color:#fff;touch-action:manipulation}
-  .btn-primary{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
-  .btn-green{background:#22c55e}.btn-red{background:#ef4444}.btn-dark{background:#2a2a45}.btn-small{padding:7px 10px;font-size:12px}
-  .row{display:flex;gap:8px}.row>*{flex:1}.row button{flex:0 0 140px}
-  .hint{font-size:13px;color:#aaa}.status{color:#7CFC00;font-size:13px}.error{color:#ff6b6b;font-size:13px}.ok{color:#7CFC00;font-size:13px}
-  .chat-box{height:120px;overflow:auto;background:#0a0a16;padding:10px;border-radius:10px;font-size:14px}
-  .game-item{border:1px solid #333;padding:12px;border-radius:12px;margin-top:10px}
-  .tag{display:inline-block;background:#2a2a45;padding:3px 8px;border-radius:20px;font-size:11px;margin:2px}
-  .palette{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-  .palette button{padding:12px 4px;font-size:18px;border:2px solid transparent}
-  .palette button.selected{border-color:#fff}
-  .hidden{display:none!important}
-  .stat{display:flex;gap:10px;margin-bottom:14px}.stat div{flex:1;background:#171726;border-radius:12px;padding:12px;text-align:center}.stat b{font-size:22px;display:block}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;overflow:auto}
-  .modal-box{background:#171726;border:1px solid #3a3a5a;border-radius:18px;padding:22px;width:100%;max-width:430px;text-align:center}
-  .modal-box .logo-img{width:92px;height:92px;margin:0 auto 10px}
-  iframe.game-frame{width:100%;height:420px;border:0;border-radius:12px;background:#fff}
-  .user-badge{background:rgba(0,0,0,.35);padding:8px 12px;border-radius:20px;font-size:13px}
-  #langSelect{width:140px;padding:10px;border-radius:10px;background:#0f0f1e;color:#fff;border:1px solid #333}
-  #touchControls{display:none;position:fixed;bottom:12px;left:0;right:0;z-index:999;padding:0 12px;justify-content:space-between;align-items:flex-end;pointer-events:none}
-  #touchControls button{pointer-events:auto;user-select:none}
-  .touch-btn{width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,.65);border:2px solid #fff;font-size:28px;display:flex;align-items:center;justify-content:center}
-  .touch-btn.jump{width:82px;height:82px;background:rgba(34,197,94,.9)}
-  .touch-btn.break{width:62px;height:62px;background:rgba(239,68,68,.9);font-size:22px}
-  .auth-tabs{display:flex;gap:8px;margin:12px 0}.auth-tabs button{flex:1;background:#2a2a45}.auth-tabs button.active{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
-  .pass-wrap{position:relative}.pass-wrap button{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:44px;padding:8px;background:#2a2a45}
-  @media (pointer:coarse){ #touchControls{display:flex!important} }
-  @media (max-width:900px){ #touchControls{display:flex!important} .grid{grid-template-columns:1fr} header{flex-direction:column} .row button{flex:0 0 110px} }
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#0b0b14;color:#fff}
+header{background:linear-gradient(90deg,#7b2ff7,#00d4ff);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.logo{display:flex;gap:10px;align-items:center;font-size:22px;font-weight:900}
+.logo-img{width:52px;height:52px;border-radius:50%;background:#000;padding:3px}
+.container{max-width:1300px;margin:auto;padding:14px;padding-bottom:140px}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
+.card{background:#171726;border:1px solid #2d2d4a;border-radius:16px;padding:14px;margin-bottom:14px}
+canvas{width:100%;height:400px;background:#87ceeb;border-radius:12px;display:block}
+input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#0f0f1e;color:#fff;font-size:16px}
+button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:800;color:#fff}
+.btn-primary{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
+.btn-green{background:#22c55e}.btn-red{background:#ef4444}.btn-dark{background:#2a2a45}.btn-small{padding:7px 10px;font-size:12px}
+.row{display:flex;gap:8px}.row>*{flex:1}.row button{flex:0 0 120px}
+.hint{font-size:13px;color:#aaa}.status{color:#7CFC00;font-size:13px}.error{color:#ff6b6b}.ok{color:#7CFC00}
+.chat-box{height:110px;overflow:auto;background:#0a0a16;padding:10px;border-radius:10px;font-size:14px}
+.game-item{border:1px solid #333;padding:12px;border-radius:12px;margin-top:10px}
+.tag{display:inline-block;background:#2a2a45;padding:3px 8px;border-radius:20px;font-size:11px;margin:2px}
+.palette{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.palette button{padding:10px 4px;font-size:18px;border:2px solid transparent}.palette button.selected{border-color:#fff}
+.hidden{display:none!important}
+.stat{display:flex;gap:8px;margin-bottom:12px}.stat div{flex:1;background:#171726;border-radius:12px;padding:10px;text-align:center}.stat b{font-size:20px;display:block}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:9999;padding:14px}
+.modal-box{background:#171726;border:1px solid #3a3a5a;border-radius:18px;padding:20px;width:100%;max-width:430px;text-align:center}
+.modal-box .logo-img{width:90px;height:90px;margin:0 auto 8px}
+iframe.game-frame{width:100%;height:420px;border:0;border-radius:12px;background:#fff}
+.user-badge{background:rgba(0,0,0,.35);padding:8px 12px;border-radius:20px;font-size:13px}
+#langSelect{width:140px;padding:10px;border-radius:10px;background:#0f0f1e;color:#fff;border:1px solid #333}
+/* DOKUNMA - EN BASİT HALİ */
+#touchControls{position:fixed;bottom:10px;left:0;right:0;z-index:100;display:flex;justify-content:space-between;padding:0 10px;pointer-events:none}
+#touchControls div{display:flex;gap:10px;pointer-events:none}
+.touch-btn{width:74px;height:74px;border-radius:50%;background:#111;border:3px solid #fff;font-size:30px;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.touch-btn:active{background:#7b2ff7}
+.touch-btn.jump{width:86px;height:86px;background:#22c55e}
+.touch-btn.break{width:64px;height:64px;background:#ef4444;font-size:24px}
+.auth-tabs{display:flex;gap:8px;margin:10px 0}.auth-tabs button{flex:1;background:#2a2a45}.auth-tabs button.active{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
+.id-box{background:#0f0f1e;border:2px dashed #00d4ff;border-radius:12px;padding:10px;text-align:center}.id-box b{font-size:28px;letter-spacing:4px;color:#00d4ff}
+@media(max-width:900px){.grid{grid-template-columns:1fr}header{flex-direction:column}.row button{flex:0 0 100px}}
 </style>
 </head>
 <body>
 
 <template id="logoTemplate">
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-  <defs><linearGradient id="gGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a855f7"/><stop offset=".5" stop-color="#7b2ff7"/><stop offset="1" stop-color="#00aaff"/></linearGradient></defs>
-  <circle cx="100" cy="100" r="96" fill="#000"/>
-  <path d="M165 28 C110 28 55 55 35 105 C18 145 35 185 95 192 C145 198 175 165 178 125 L122 125 L112 148 L145 148 C135 168 105 175 78 162 C50 148 42 115 62 92 C78 73 115 68 140 82 L155 62 C135 48 155 28 165 28 Z" fill="url(#gGrad)"/>
-  <rect x="48" y="95" width="10" height="34" rx="3" fill="#a855f7"/><rect x="40" y="103" width="26" height="10" rx="3" fill="#a855f7"/>
-  <circle cx="148" cy="105" r="7" fill="#5b8cff"/><circle cx="155" cy="128" r="7" fill="#5b8cff"/><circle cx="138" cy="145" r="7" fill="#5b8cff"/><circle cx="118" cy="62" r="7" fill="#7aa2ff"/>
+<defs><linearGradient id="gGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a855f7"/><stop offset=".5" stop-color="#7b2ff7"/><stop offset="1" stop-color="#00aaff"/></linearGradient></defs>
+<circle cx="100" cy="100" r="96" fill="#000"/>
+<path d="M165 28 C110 28 55 55 35 105 C18 145 35 185 95 192 C145 198 175 165 178 125 L122 125 L112 148 L145 148 C135 168 105 175 78 162 C50 148 42 115 62 92 C78 73 115 68 140 82 L155 62 C135 48 155 28 165 28 Z" fill="url(#gGrad)"/>
+<rect x="48" y="95" width="10" height="34" rx="3" fill="#a855f7"/><rect x="40" y="103" width="26" height="10" rx="3" fill="#a855f7"/>
+<circle cx="148" cy="105" r="7" fill="#5b8cff"/><circle cx="155" cy="128" r="7" fill="#5b8cff"/><circle cx="138" cy="145" r="7" fill="#5b8cff"/><circle cx="118" cy="62" r="7" fill="#7aa2ff"/>
 </svg>
 </template>
 
-<!-- LOGIN - İSİM + ŞİFRE, E-POSTA YOK -->
 <div id="loginModal" class="modal">
-  <div class="modal-box">
-    <div class="logo-img"><span id="loginLogo"></span></div>
-    <h2 id="loginTitle">Welcome to GAMERWOST!</h2>
-    <p class="hint" id="loginSub">Pick a username + password. Same username can't be taken twice. Your progress is saved.</p>
-
-    <div class="auth-tabs">
-      <button id="tabLogin" class="active" onclick="switchAuthTab('login')">🔑 LOGIN</button>
-      <button id="tabRegister" onclick="switchAuthTab('register')">📝 REGISTER</button>
-    </div>
-
-    <input id="authUsername" type="text" placeholder="Username: e.g. GamerWost" autocomplete="username" maxlength="20" oninput="checkUsernameLive()">
-    <p id="usernameStatus" class="hint"></p>
-
-    <div class="pass-wrap">
-      <input id="authPassword" type="password" placeholder="Password: min 4 chars" autocomplete="current-password" maxlength="30">
-      <button type="button" onclick="togglePass()">👁️</button>
-    </div>
-
-    <div id="registerExtra" class="hidden">
-      <div class="pass-wrap">
-        <input id="authPassword2" type="password" placeholder="Password again" autocomplete="new-password" maxlength="30">
-        <button type="button" onclick="togglePass2()">👁️</button>
-      </div>
-      <p class="hint">Username: 3-20 chars, letters + numbers only. No one else can take it.</p>
-    </div>
-
-    <p id="authError" class="error"></p>
-    <p id="authOk" class="ok"></p>
-
-    <button class="btn-primary" style="width:100%" id="authMainBtn" onclick="doAuth()">🔑 LOGIN</button>
-    <p class="hint" style="margin-top:10px" id="authSwitchText">No account? <a href="#" style="color:#00d4ff" onclick="switchAuthTab('register');return false">Register here</a></p>
-    <p class="hint"><a href="#" style="color:#aaa" onclick="guestLogin();return false">Continue as Guest</a> (progress not saved)</p>
-    <p class="hint" style="font-size:11px;color:#666">🔒 Passwords are hashed in your browser, not sent anywhere. This is a demo account system for GitHub Pages. For real global accounts, Firebase is needed.</p>
-  </div>
+<div class="modal-box">
+<div class="logo-img"><span id="loginLogo"></span></div>
+<h2 id="loginTitle">Welcome to GAMERWOST!</h2>
+<p class="hint" id="loginSub">Pick username + password. Same name can't be taken twice. Progress saved.</p>
+<div class="auth-tabs"><button id="tabLogin" class="active" onclick="switchAuthTab('login')">🔑 LOGIN</button><button id="tabRegister" onclick="switchAuthTab('register')">📝 REGISTER</button></div>
+<input id="authUsername" placeholder="Username: e.g. GamerWost" maxlength="20" oninput="checkUsernameLive()">
+<p id="usernameStatus" class="hint"></p>
+<input id="authPassword" type="password" placeholder="Password: min 4 chars" maxlength="30">
+<div id="registerExtra" class="hidden"><input id="authPassword2" type="password" placeholder="Password again" maxlength="30"></div>
+<p id="authError" class="error"></p><p id="authOk" class="ok"></p>
+<button class="btn-primary" style="width:100%" id="authMainBtn" onclick="doAuth()">🔑 LOGIN</button>
+<p class="hint"><a href="#" style="color:#00d4ff" onclick="switchAuthTab('register');return false">Register here</a> • <a href="#" style="color:#aaa" onclick="guestLogin();return false">Guest</a></p>
+</div>
 </div>
 
 <header>
-  <div class="logo"><div class="logo-img"><span id="headerLogo"></span></div><span>GAMERWOST</span></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-    <button class="btn-dark" onclick="showPage('play')" id="navPlay">🎮 PLAY</button>
-    <button class="btn-dark" onclick="showPage('make')" id="navMake">🛠️ MAKE GAME</button>
-    <button class="btn-dark" onclick="showPage('htmlgame')" id="navHtml">💻 ADD HTML GAME</button>
-    <button class="btn-dark" onclick="showPage('publish')" id="navPublish">🚀 PUBLISH</button>
-    <select id="langSelect" onchange="setLanguage(this.value)"><option value="en" selected>🇬🇧 English</option><option value="tr">🇹🇷 Türkçe</option></select>
-  </div>
-  <div class="user-badge">👤 <span id="headerNick">Guest</span> • ⭐ <span id="headerCoin">0</span> • <button class="btn-red btn-small" onclick="logout()">Logout</button></div>
+<div class="logo"><div class="logo-img"><span id="headerLogo"></span></div><span>GAMERWOST</span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+<button class="btn-dark" onclick="showPage('play')" id="navPlay">🎮 PLAY</button>
+<button class="btn-dark" onclick="showPage('make')" id="navMake">🛠️ MAKE GAME</button>
+<button class="btn-dark" onclick="showPage('htmlgame')" id="navHtml">💻 ADD HTML GAME</button>
+<button class="btn-dark" onclick="showPage('publish')" id="navPublish">🚀 PUBLISH</button>
+<select id="langSelect" onchange="setLanguage(this.value)"><option value="en" selected>🇬🇧 English</option><option value="tr">🇹🇷 Türkçe</option></select>
+</div>
+<div class="user-badge">👤 <span id="headerNick">Guest</span> • ⭐ <span id="headerCoin">0</span> • <button class="btn-red btn-small" onclick="logout()">Logout</button></div>
 </header>
 
 <div class="container">
-  <div style="background:#171726;border-radius:12px;padding:12px;margin-bottom:14px">📍 <b id="continueText">Welcome!</b> <button class="btn-green btn-small" style="float:right" onclick="continueGame()" id="continueBtn">▶️ Continue Where I Left Off</button></div>
-  <div class="stat"><div><b id="statGames">0</b><span>Published Games</span></div><div><b id="statPlayers">1</b><span>Online</span></div><div><b id="statPlays">0</b><span>Plays</span></div><div><b id="statLikes">0</b><span>Likes</span></div></div>
-  <div class="grid">
-    <div>
-      <div id="pagePlay">
-        <div class="card">
-          <h2>🌍 <span id="playingLabel">Playing:</span> <span id="nowPlaying">Block World</span></h2>
-          <canvas id="gameCanvas" width="900" height="400"></canvas>
-          <div id="htmlPlayer" class="hidden"><iframe id="htmlFrame" class="game-frame" sandbox="allow-scripts"></iframe><button class="btn-dark" style="margin-top:8px" onclick="closeHtmlGame()">❌ Close HTML Game</button></div>
-          <p class="hint">Keyboard: WASD / Arrows = Move • W / Space = Jump • Touch: Use buttons below ⬇️</p>
-          <div class="row"><div style="background:#0f0f1e;padding:10px;border-radius:10px">❤️ HP: <b id="hpText">100</b><br>⭐ Score: <b id="scoreText">0</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">🪙 Coin: <b id="coinText">0</b><br>🏆 Level: <b id="levelText">1</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">⏱ Time: <b id="timeText">00:00</b><br>🎯 Goal: <b id="goalText">10 coins</b></div></div>
-          <br><div class="row"><button class="btn-green" onclick="restartGame()">🔄 Restart</button><button class="btn-dark" onclick="saveProgress(true)">💾 Save Now</button><button class="btn-red" onclick="leaveGame()">🚪 Exit</button></div>
-          <p class="hint" id="autoSaveText">Auto-save: ON • Every 10 seconds</p>
-        </div>
-        <div class="card"><h2>👥 Multiplayer - PeerJS</h2><div class="row"><input id="myIdInput" readonly placeholder="Loading ID..."><button class="btn-dark" id="copyBtn">Copy ID</button></div><div class="row"><input id="joinIdInput" placeholder="Friend's ID"><button class="btn-primary" id="joinBtn">Join Room</button></div><p id="statusText" class="status">Connecting...</p><div id="onlineList"></div></div>
-        <div class="card"><h2>💬 Live Chat</h2><div id="chatBox" class="chat-box"></div><div class="row"><input id="chatInput" placeholder="Type message..."><button class="btn-primary" id="sendBtn">Send</button></div><div class="row" style="margin-top:8px"><button class="btn-dark btn-small" onclick="quickChat('GG! 🔥')">GG!</button><button class="btn-dark btn-small" onclick="quickChat('Come on!')">Come on!</button><button class="btn-dark btn-small" onclick="quickChat('Need help!')">Help!</button></div></div>
-      </div>
-      <div id="pageMake" class="hidden">
-        <div class="card"><h2>🛠️ Make Game - Map Editor</h2><p class="hint">Pick block, tap map. Everyone can make games like a website! On phone, tap with finger.</p><div class="palette" id="palette"></div><br><canvas id="editorCanvas" width="900" height="400"></canvas><div class="row" style="margin-top:10px"><button class="btn-green" onclick="testMyMap()">▶️ Test My Map</button><button class="btn-dark" onclick="clearMap()">🗑️ Clear</button><button class="btn-dark" onclick="randomMap()">🎲 Random</button><button class="btn-dark" onclick="loadTemplate('kolay')">Easy Template</button></div><div class="row"><button class="btn-dark" onclick="loadTemplate('zor')">Hard Template</button><button class="btn-dark" onclick="loadTemplate('parkur')">Parkour Template</button><button class="btn-dark" onclick="exportMap()">📤 Copy Map</button><button class="btn-dark" onclick="importMap()">📥 Paste Map</button></div><div class="row"><select id="mapDifficulty"><option>Easy</option><option>Medium</option><option>Hard</option></select><select id="mapTheme"><option>Grass</option><option>Desert</option><option>Snow</option><option>Lava</option><option>Space</option></select></div><div class="row"><input id="mapTime" type="number" value="120" placeholder="Time"><input id="mapCoinGoal" type="number" value="10" placeholder="Coin Goal"></div></div>
-      </div>
-      <div id="pageHtmlgame" class="hidden">
-        <div class="card"><h2>💻 Add Game with HTML</h2><p class="hint">Paste your own HTML game. Runs in safe iframe, everyone can play.</p><input id="htmlGameName" placeholder="HTML Game Name: Click Game"><textarea id="htmlGameCode" rows="12" placeholder="<!DOCTYPE html><html><body><h1>My Game</h1></body></html>"></textarea><div class="row"><button class="btn-green" onclick="previewHtmlGame()">👀 Preview</button><button class="btn-primary" onclick="publishHtmlGame()">🚀 Publish HTML Game</button></div><div id="htmlPreviewWrap" class="hidden" style="margin-top:10px"><h3>Preview:</h3><iframe id="htmlPreview" class="game-frame" sandbox="allow-scripts"></iframe></div><h3>📝 Ready Examples</h3><div class="row"><button class="btn-dark btn-small" onclick="loadHtmlExample('click')">🖱️ Click Game</button><button class="btn-dark btn-small" onclick="loadHtmlExample('guess')">🎲 Guess</button><button class="btn-dark btn-small" onclick="loadHtmlExample('quiz')">🧠 Quiz</button><button class="btn-dark btn-small" onclick="loadHtmlExample('snake')">🐍 Snake</button></div></div>
-      </div>
-      <div id="pagePublish" class="hidden">
-        <div class="card"><h2>🚀 Publish Your Game</h2><input id="gameName" placeholder="Game Name"><select id="gameType"><option>Parkour</option><option>Battle</option><option>Race</option><option>Adventure</option><option>Horror</option><option>HTML Game</option><option>Puzzle</option></select><textarea id="gameDesc" placeholder="Describe your game..."></textarea><input id="gameTags" placeholder="Tags: parkour, hard (comma)"><button class="btn-primary" id="publishBtn" style="width:100%;padding:15px;font-size:17px">🚀 PUBLISH GAME</button><p class="hint" id="publishInfo"></p></div>
-      </div>
-    </div>
-    <div>
-      <div class="card"><h2>🧍 Your Profile</h2><input id="playerName" placeholder="Your name" readonly><p class="hint">Username can't be changed after register. That's your identity.</p><div class="row"><button class="btn-dark color-btn" data-color="#7b2ff7">Purple</button><button class="btn-dark color-btn" data-color="#00d4ff">Cyan</button><button class="btn-dark color-btn" data-color="#ffcc00">Yellow</button></div><select id="avatarHat"><option value="sahin">Blue Hat</option><option value="kask">Helmet</option><option value="tac">Crown</option><option value="yok">No Hat</option></select><select id="avatarPet"><option value="yok">No Pet</option><option value="kedi">🐱 Cat</option><option value="kopek">🐶 Dog</option><option value="ejderha">🐲 Dragon</option></select><button class="btn-primary" style="width:100%" onclick="saveProfile()">Save Profile</button><p class="hint" id="profileEmailText"></p><button class="btn-dark" style="width:100%;margin-top:8px" onclick="changePassword()">🔑 Change Password</button></div>
-      <div class="card"><h2>🔍 Search & Filter</h2><input id="searchInput" placeholder="Search game..." oninput="renderGames()"><select id="filterType" onchange="renderGames()"><option value="">All Types</option><option>Parkour</option><option>HTML Game</option><option>Adventure</option><option>Horror</option></select><select id="sortType" onchange="renderGames()"><option value="new">Newest</option><option value="like">Most Liked</option><option value="play">Most Played</option></select></div>
-      <div class="card"><h2>🔥 Published Games</h2><div id="gameList"></div></div>
-      <div class="card"><h2>🏆 Leaderboard</h2><div id="leaderboard"></div></div>
-      <div class="card"><h2>🎁 Daily Reward</h2><button class="btn-green" style="width:100%" onclick="claimDaily()">🎁 Get +50 Coins</button><p class="hint" id="dailyText"></p></div>
-    </div>
-  </div>
+<div style="background:#171726;border-radius:12px;padding:12px;margin-bottom:12px">📍 <b id="continueText">Welcome!</b> <button class="btn-green btn-small" style="float:right" onclick="continueGame()" id="continueBtn">▶️ Continue</button></div>
+<div class="stat"><div><b id="statGames">0</b><span>Games</span></div><div><b id="statPlayers">1</b><span>Online</span></div><div><b id="statPlays">0</b><span>Plays</span></div><div><b id="statLikes">0</b><span>Likes</span></div></div>
+<div class="grid">
+<div>
+<div id="pagePlay">
+<div class="card">
+<h2>🌍 <span id="playingLabel">Playing:</span> <span id="nowPlaying">Block World</span></h2>
+<canvas id="gameCanvas" width="900" height="400"></canvas>
+<div id="htmlPlayer" class="hidden"><iframe id="htmlFrame" class="game-frame" sandbox="allow-scripts"></iframe><button class="btn-dark" style="margin-top:8px" onclick="closeHtmlGame()">❌ Close HTML Game</button></div>
+<p class="hint">Telefonda alttaki butonlara BASILI TUTarak oyna. Klavyede WASD.</p>
+<div class="row"><div style="background:#0f0f1e;padding:10px;border-radius:10px">❤️ HP: <b id="hpText">100</b><br>⭐ Score: <b id="scoreText">0</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">🪙 Coin: <b id="coinText">0</b><br>🏆 Level: <b id="levelText">1</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">⏱ Time: <b id="timeText">00:00</b><br>🎯 Goal: <b id="goalText">10 coins</b></div></div>
+<br><div class="row"><button class="btn-green" onclick="restartGame()">🔄 Restart</button><button class="btn-dark" onclick="saveProgress(true)">💾 Save</button><button class="btn-red" onclick="leaveGame()">🚪 Exit</button></div>
+<p class="hint" id="autoSaveText">Auto-save ON</p>
+</div>
+<div class="card">
+<h2>👥 Multiplayer - Short ID</h2>
+<p class="hint">ID'n 8 haneli, herkeste farklı. İkiniz de aynı anda sitede olmalısınız!</p>
+<div class="id-box">Your ID:<br><b id="myShortId">--------</b><br><span class="hint" id="myIdStatus">Connecting...</span></div>
+<div class="row"><input id="myIdInput" readonly placeholder="Loading..."><button class="btn-dark" id="copyBtn">Copy ID</button></div>
+<div class="row"><input id="joinIdInput" placeholder="Friend's 8-digit ID" maxlength="8" inputmode="numeric"><button class="btn-primary" id="joinBtn">Join Room</button></div>
+<div class="row"><button class="btn-dark" onclick="newShortId()">🔄 New ID</button><button class="btn-green" onclick="copyShortId()">📋 Copy My ID</button></div>
+<p id="statusText" class="status">Connecting...</p><div id="onlineList"></div>
+</div>
+<div class="card"><h2>💬 Chat</h2><div id="chatBox" class="chat-box"></div><div class="row"><input id="chatInput" placeholder="Type message..."><button class="btn-primary" id="sendBtn">Send</button></div><div class="row" style="margin-top:8px"><button class="btn-dark btn-small" onclick="quickChat('GG! 🔥')">GG!</button><button class="btn-dark btn-small" onclick="quickChat('Come on!')">Come on!</button><button class="btn-dark btn-small" onclick="quickChat('Help!')">Help!</button></div></div>
+</div>
+<div id="pageMake" class="hidden">
+<div class="card"><h2>🛠️ Make Game - Map Editor</h2><p class="hint">Blok seç, haritaya dokun. Telefonda parmağınla koy.</p><div class="palette" id="palette"></div><br><canvas id="editorCanvas" width="900" height="400"></canvas><div class="row" style="margin-top:10px"><button class="btn-green" onclick="testMyMap()">▶️ Test</button><button class="btn-dark" onclick="clearMap()">🗑️ Clear</button><button class="btn-dark" onclick="randomMap()">🎲 Random</button><button class="btn-dark" onclick="loadTemplate('kolay')">Easy</button></div><div class="row"><button class="btn-dark" onclick="loadTemplate('zor')">Hard</button><button class="btn-dark" onclick="loadTemplate('parkur')">Parkour</button><button class="btn-dark" onclick="exportMap()">📤 Copy</button><button class="btn-dark" onclick="importMap()">📥 Paste</button></div><div class="row"><select id="mapDifficulty"><option>Easy</option><option>Medium</option><option>Hard</option></select><select id="mapTheme"><option>Grass</option><option>Desert</option><option>Snow</option><option>Lava</option><option>Space</option></select></div><div class="row"><input id="mapTime" type="number" value="120"><input id="mapCoinGoal" type="number" value="10"></div></div>
+</div>
+<div id="pageHtmlgame" class="hidden">
+<div class="card"><h2>💻 Add Game with HTML</h2><input id="htmlGameName" placeholder="HTML Game Name"><textarea id="htmlGameCode" rows="12" placeholder="<!DOCTYPE html><html><body><h1>My Game</h1></body></html>"></textarea><div class="row"><button class="btn-green" onclick="previewHtmlGame()">👀 Preview</button><button class="btn-primary" onclick="publishHtmlGame()">🚀 Publish HTML Game</button></div><div id="htmlPreviewWrap" class="hidden" style="margin-top:10px"><h3>Preview:</h3><iframe id="htmlPreview" class="game-frame" sandbox="allow-scripts"></iframe></div><h3>Examples</h3><div class="row"><button class="btn-dark btn-small" onclick="loadHtmlExample('click')">🖱️ Click</button><button class="btn-dark btn-small" onclick="loadHtmlExample('guess')">🎲 Guess</button><button class="btn-dark btn-small" onclick="loadHtmlExample('quiz')">🧠 Quiz</button><button class="btn-dark btn-small" onclick="loadHtmlExample('snake')">🐍 Snake</button></div></div>
+</div>
+<div id="pagePublish" class="hidden">
+<div class="card"><h2>🚀 Publish Your Game</h2><input id="gameName" placeholder="Game Name"><select id="gameType"><option>Parkour</option><option>Battle</option><option>Race</option><option>Adventure</option><option>Horror</option><option>HTML Game</option><option>Puzzle</option></select><textarea id="gameDesc" placeholder="Describe..."></textarea><input id="gameTags" placeholder="Tags: parkour, hard"><button class="btn-primary" id="publishBtn" style="width:100%;padding:15px">🚀 PUBLISH GAME</button><p class="hint" id="publishInfo"></p></div>
+</div>
+</div>
+<div>
+<div class="card"><h2>🧍 Profile</h2><input id="playerName" placeholder="Your name" readonly><div class="row"><button class="btn-dark color-btn" data-color="#7b2ff7">Purple</button><button class="btn-dark color-btn" data-color="#00d4ff">Cyan</button><button class="btn-dark color-btn" data-color="#ffcc00">Yellow</button></div><select id="avatarHat"><option value="sahin">Blue Hat</option><option value="kask">Helmet</option><option value="tac">Crown</option><option value="yok">No Hat</option></select><select id="avatarPet"><option value="yok">No Pet</option><option value="kedi">🐱 Cat</option><option value="kopek">🐶 Dog</option><option value="ejderha">🐲 Dragon</option></select><button class="btn-primary" style="width:100%" onclick="saveProfile()">Save Profile</button><p class="hint" id="profileEmailText"></p><button class="btn-dark" style="width:100%;margin-top:8px" onclick="changePassword()">🔑 Change Password</button></div>
+<div class="card"><h2>🔍 Search</h2><input id="searchInput" placeholder="Search..." oninput="renderGames()"><select id="filterType" onchange="renderGames()"><option value="">All Types</option><option>Parkour</option><option>HTML Game</option><option>Adventure</option><option>Horror</option></select><select id="sortType" onchange="renderGames()"><option value="new">Newest</option><option value="like">Most Liked</option><option value="play">Most Played</option></select></div>
+<div class="card"><h2>🔥 Published Games</h2><div id="gameList"></div></div>
+<div class="card"><h2>🏆 Leaderboard</h2><div id="leaderboard"></div></div>
+<div class="card"><h2>🎁 Daily</h2><button class="btn-green" style="width:100%" onclick="claimDaily()">🎁 Get +50 Coins</button><p class="hint" id="dailyText"></p></div>
+</div>
+</div>
 </div>
 
+<!-- DOKUNMA BUTONLARI - HER ZAMAN EKRANDA, SADECE BUTONLAR TIKLANIYOR -->
 <div id="touchControls">
-  <div style="display:flex;gap:10px"><button class="touch-btn" id="btnLeft">◀️</button><button class="touch-btn" id="btnRight">▶️</button></div>
-  <div style="display:flex;gap:10px;align-items:flex-end"><button class="touch-btn break" id="btnBreak">⛏️</button><button class="touch-btn jump" id="btnJump">⬆️</button></div>
+<div><button class="touch-btn" id="btnLeft" onpointerdown="touchDown('a')" onpointerup="touchUp('a')" onpointerleave="touchUp('a')" onpointercancel="touchUp('a')">◀️</button><button class="touch-btn" id="btnRight" onpointerdown="touchDown('d')" onpointerup="touchUp('d')" onpointerleave="touchUp('d')" onpointercancel="touchUp('d')">▶️</button></div>
+<div><button class="touch-btn break" id="btnBreak" onpointerdown="touchDown('e')" onpointerup="touchUp('e')" onpointerleave="touchUp('e')">⛏️</button><button class="touch-btn jump" id="btnJump" onpointerdown="touchDown('w')" onpointerup="touchUp('w')" onpointerleave="touchUp('w')" onpointercancel="touchUp('w')">⬆️</button></div>
 </div>
 
 <script>
-function mountLogo(){ let tpl=document.getElementById("logoTemplate").innerHTML; document.getElementById("headerLogo").innerHTML=tpl; document.getElementById("loginLogo").innerHTML=tpl; }
+function mountLogo(){let t=document.getElementById("logoTemplate").innerHTML;document.getElementById("headerLogo").innerHTML=t;document.getElementById("loginLogo").innerHTML=t;}
 mountLogo();
-const TRANSLATIONS={
-en:{welcome:"Welcome to GAMERWOST!",sub:"Pick a username + password. Same username can't be taken twice. Your progress is saved.",play:"🎮 PLAY",make:"🛠️ MAKE GAME",html:"💻 ADD HTML GAME",publish:"🚀 PUBLISH",continue:"Welcome! Continue where you left off",continueBtn:"▶️ Continue Where I Left Off",publishBtn:"🚀 PUBLISH GAME",playing:"Playing:"},
-tr:{welcome:"GAMERWOST'a Hoş Geldin!",sub:"İsim + şifre seç. Aynı isim 2 kişi tarafından alınamaz. İlerlemen kaydedilir.",play:"🎮 OYNA",make:"🛠️ OYUN YAP",html:"💻 HTML OYUN EKLE",publish:"🚀 YAYINLA",continue:"Hoş geldin! Kaldığın yerden devam et",continueBtn:"▶️ Kaldığım Yerden Devam Et",publishBtn:"🚀 OYUNU YAYINLA",playing:"Oynuyorsun:"}
-};
-function setLanguage(lang){ localStorage.setItem("GW_LANG",lang); document.getElementById("langSelect").value=lang; let t=TRANSLATIONS[lang]; document.documentElement.lang=lang; document.getElementById("loginTitle").innerText=t.welcome; document.getElementById("loginSub").innerText=t.sub; document.getElementById("navPlay").innerText=t.play; document.getElementById("navMake").innerText=t.make; document.getElementById("navHtml").innerText=t.html; document.getElementById("navPublish").innerText=t.publish; document.getElementById("continueText").innerText=t.continue; document.getElementById("continueBtn").innerText=t.continueBtn; document.getElementById("publishBtn").innerText=t.publishBtn; document.getElementById("playingLabel").innerText=t.playing; }
+const TRANSLATIONS={en:{welcome:"Welcome to GAMERWOST!",sub:"Pick username + password. Same name can't be taken twice.",play:"🎮 PLAY",make:"🛠️ MAKE GAME",html:"💻 ADD HTML GAME",publish:"🚀 PUBLISH",continue:"Welcome! Continue where you left off",continueBtn:"▶️ Continue",publishBtn:"🚀 PUBLISH GAME",playing:"Playing:"},tr:{welcome:"GAMERWOST'a Hoş Geldin!",sub:"İsim + şifre seç. Aynı isim 2 kişi alamaz.",play:"🎮 OYNA",make:"🛠️ OYUN YAP",html:"💻 HTML OYUN EKLE",publish:"🚀 YAYINLA",continue:"Hoş geldin! Kaldığın yerden devam et",continueBtn:"▶️ Kaldığım Yerden Devam Et",publishBtn:"🚀 OYUNU YAYINLA",playing:"Oynuyorsun:"}};
+function setLanguage(l){localStorage.setItem("GW_LANG",l);document.getElementById("langSelect").value=l;let t=TRANSLATIONS[l];document.getElementById("loginTitle").innerText=t.welcome;document.getElementById("loginSub").innerText=t.sub;document.getElementById("navPlay").innerText=t.play;document.getElementById("navMake").innerText=t.make;document.getElementById("navHtml").innerText=t.html;document.getElementById("navPublish").innerText=t.publish;document.getElementById("continueText").innerText=t.continue;document.getElementById("continueBtn").innerText=t.continueBtn;document.getElementById("publishBtn").innerText=t.publishBtn;document.getElementById("playingLabel").innerText=t.playing;}
 setLanguage(localStorage.getItem("GW_LANG")||"en");
-function safeParse(s,f){ try{ return JSON.parse(s)||f; }catch(e){ return f; } }
-function showPage(p){ ["play","make","htmlgame","publish"].forEach(x=>{ let el=document.getElementById("page"+x[0].toUpperCase()+x.slice(1)); if(el) el.classList.toggle("hidden",x!==p); }); }
-function hashPassword(p){ let h=0; for(let i=0;i<p.length;i++){ h=((h<<5)-h)+p.charCodeAt(i); h=h&h; } return "h"+Math.abs(h)+"_"+p.length+"_"+btoa(unescape(encodeURIComponent(p))).slice(0,12); }
-function cleanUsername(u){ return u.trim().toLowerCase().replace(/[^a-z0-9_]/g,""); }
-const LS_USER="GW_USER_V4", LS_USERS="GW_USERS_V4", LS_DB="GW_DB_V4";
+function safeParse(s,f){try{return JSON.parse(s)||f}catch(e){return f}}
+function showPage(p){["play","make","htmlgame","publish"].forEach(x=>{let el=document.getElementById("page"+x[0].toUpperCase()+x.slice(1));if(el)el.classList.toggle("hidden",x!==p)})}
+function hashPassword(p){let h=0;for(let i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h=h&h}return "h"+Math.abs(h)+"_"+p.length}
+function cleanUsername(u){return u.trim().toLowerCase().replace(/[^a-z0-9_]/g,"")}
+const LS_USER="GW_USER_V4",LS_USERS="GW_USERS_V4",LS_DB="GW_DB_V4",LS_PEER="GW_PEER_ID_V1";
 let DB=safeParse(localStorage.getItem(LS_DB),null);
-if(!DB||!Array.isArray(DB.games)){
-  DB={games:[],plays:0};
-  DB.games=[
-    {id:1,name:"Block World",type:"Parkour",desc:"Jump with purple character, collect 10 coins!",author:"GAMERWOST
+if(!DB||!Array.isArray(DB.games)){DB={games:[],plays:0};DB.games=[{id:1,name:"Block World",type:"Parkour",desc:"Collect 10 coins!",author:"GAMERWOST",username:"gamerwost",date:"Today",likes:128,plays:542,map:null,difficulty:"Easy",theme:"Grass",tags:["parkour"],coinGoal:10,html:null},{id:2,name:"Click Game (HTML)",type:"HTML Game",desc:"HTML example!",author:"GAMERWOST",username:"gamerwost",date:"Today",likes:95,plays:320,map:null,difficulty:"Easy",theme:"Grass",tags:["html"],coinGoal:5,html:"<html><body style='font-family:Arial;text-align:center;padding:30px'><h1>Click Game</h1><p>Score: <b id='s'>0</b></p><button onclick=\"document.getElementById('s').innerText++\" style='padding:20px 40px;font-size:20px;background:#7b2ff7;color:#fff;border:0;border-radius:12px'>CLICK!</button></body></html>"},{id:3,name:"Lava Escape",type:"Adventure",desc:"Escape lava!",author:"ProPlayer",username:"proplayer",date:"Yesterday",likes:89,plays:310,map:null,difficulty:"Hard",theme:"Lava",tags:["lava"],coinGoal:8,html:null}];}
+function saveDB(){try{localStorage.setItem(LS_DB,JSON.stringify(DB))}catch(e){}updateStats()}
+function hideLogin(){let m=document.getElementById("loginModal");m.classList.add("hidden");m.style.display="none"}
+function showLogin(){let m=document.getElementById("loginModal");m.classList.remove("hidden");m.style.display="flex"}
+let currentUser=safeParse(localStorage.getItem(LS_USER),null);
+let authMode="login";
+function switchAuthTab(mode){authMode=mode;document.getElementById("tabLogin").classList.toggle("active",mode==="login");document.getElementById("tabRegister").classList.toggle("active",mode==="register");document.getElementById("registerExtra").classList.toggle("hidden",mode!=="register");document.getElementById("authMainBtn").innerText=mode==="login"?"🔑 LOGIN":"📝 REGISTER";document.getElementById("authError").innerText="";document.getElementById("authOk").innerText="";checkUsernameLive()}
+function checkUsernameLive(){let raw=document.getElementById("authUsername").value;let clean=cleanUsername(raw);let el=document.getElementById("usernameStatus");if(!raw){el.innerText="";return}if(raw!==clean){el.innerText="Will be saved as: "+clean;el.style.color="#ffcc00";return}if(clean.length<3){e

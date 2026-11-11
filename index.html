@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Hayatta Kalma & Verity</title>
+    <title>Gamerwost - Hayatta Kalma & Online</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; overflow: hidden; background: #87ceeb; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
+        #canvas-container { width: 100vw; height: 100vh; display: block; position: fixed; top: 0; left: 0; z-index: 1; }
         #crosshair {
             position: absolute; top: 50%; left: 50%; width: 14px; height: 14px;
             transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0.8); border-radius: 50%;
@@ -21,25 +22,29 @@
             position: absolute; top: 50px; left: 10px; color: white; background: rgba(0,0,0,0.6);
             padding: 8px; border-radius: 6px; font-size: 11px; z-index: 10; pointer-events: none;
         }
-        /* Mobil Yön Tuşları */
+        /* Mobil Yön Tuşları (Artık Joystick tarzı yönler düzenlendi) */
         #mobile-controls {
-            position: absolute; bottom: 90px; left: 0; width: 100%; display: flex;
-            justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 10; pointer-events: none;
+            position: absolute; bottom: 90px; left: 20px; display: grid;
+            grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(3, 50px); gap: 5px; z-index: 10;
         }
-        .control-group { display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
         .m-btn {
-            width: 55px; height: 55px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6);
             border-radius: 50%; color: white; font-size: 16px; font-weight: bold; display: flex;
-            align-items: center; justify-content: center;
+            align-items: center; justify-content: center; cursor: pointer;
         }
         .m-btn:active { background: rgba(255,255,255,0.6); }
         
+        #btn-up { grid-column: 2; grid-row: 1; }
+        #btn-left { grid-column: 1; grid-row: 2; }
+        #btn-right { grid-column: 3; grid-row: 2; }
+        #btn-down { grid-column: 2; grid-row: 3; }
+
         #action-buttons {
             position: absolute; bottom: 95px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 10;
         }
         .act-btn {
             width: 60px; height: 60px; border-radius: 50%; border: none; font-weight: bold; color: white; font-size: 11px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4); cursor: pointer;
         }
         #btn-break { background: #ef4444; }
         #btn-place { background: #22c55e; }
@@ -66,14 +71,14 @@
         .craft-item { background: #333; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 11px; border: 1px solid #666; }
         .craft-item:hover { background: #4f46e5; }
     </style>
-    <!-- Three.js ve PeerJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- Kararlı Three.js ve PeerJS Kütüphaneleri -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
 
     <div id="crosshair"></div>
-    <div id="status-bar">Gamerwost - Online & Verity Modu</div>
+    <div id="status-bar">Gamerwost - Yükleniyor...</div>
     
     <div id="hud">
         Odun: <span id="count-wood">5</span> | Taş: <span id="count-stone">0</span> | Elmas: <span id="count-diamond">0</span><br>
@@ -87,24 +92,20 @@
         <h3>Gamerwost Üretim</h3>
         <p style="font-size:11px; color:#aaa;">Envanterden Doğrudan Eşya Yap:</p>
         <div class="craft-grid">
-            <div class="craft-item" onclick="craftItem('plank')">Tahta Yap (1 Odun = 4 Tahta)[span_1](start_span)[span_1](end_span)</div>
-            <div class="craft-item" onclick="craftItem('stick')">Çubuk Yap (2 Tahta = 4 Çubuk)[span_2](start_span)[span_2](end_span)</div>
-            <div class="craft-item" onclick="craftItem('stone_pick')">Taş Kazma (2 Tahta + 2 Çubuk)[span_3](start_span)[span_3](end_span)</div>
-            <div class="craft-item" onclick="craftItem('diamond_pick')">Elmas Kazma (3 Elmas + 2 Çubuk)[span_4](start_span)[span_4](end_span)</div>
+            <div class="craft-item" onclick="craftItem('plank')">Tahta Yap (1 Odun = 4 Tahta)[span_2](start_span)[span_2](end_span)</div>
+            <div class="craft-item" onclick="craftItem('stick')">Çubuk Yap (2 Tahta = 4 Çubuk)[span_3](start_span)[span_3](end_span)</div>
+            <div class="craft-item" onclick="craftItem('stone_pick')">Taş Kazma (2 Tahta + 2 Çubuk)[span_4](start_span)[span_4](end_span)</div>
+            <div class="craft-item" onclick="craftItem('diamond_pick')">Elmas Kazma (3 Elmas + 2 Çubuk)[span_5](start_span)[span_5](end_span)</div>
         </div>
         <button onclick="toggleCrafting()" style="background:#ef4444; border:none; padding:6px 12px; color:white; border-radius:4px; margin-top:10px; cursor:pointer;">Kapat</button>
     </div>
 
-    <!-- Mobil Yön Tuşları -->
+    <!-- Mobil Yön Tuşları (Joystick Düzeni) -->
     <div id="mobile-controls">
-        <div class="control-group">
-            <div style="display:flex; justify-content:center;"><div class="m-btn" ontouchstart="setKey('forward', true)" ontouchend="setKey('forward', false)">⬆️</div></div>
-            <div style="display:flex; gap:20px;">
-                <div class="m-btn" ontouchstart="setKey('left', true)" ontouchend="setKey('left', false)">⬅️</div>
-                <div class="m-btn" ontouchstart="setKey('right', true)" ontouchend="setKey('right', false)">➡️</div>
-            </div>
-            <div style="display:flex; justify-content:center;"><div class="m-btn" ontouchstart="setKey('backward', true)" ontouchend="setKey('backward', false)">⬇️</div></div>
-        </div>
+        <div class="m-btn" id="btn-up" ontouchstart="setKey('forward', true)" ontouchend="setKey('forward', false)" onmousedown="setKey('forward', true)" onmouseup="setKey('forward', false)">⬆️</div>
+        <div class="m-btn" id="btn-left" ontouchstart="setKey('left', true)" ontouchend="setKey('left', false)" onmousedown="setKey('left', true)" onmouseup="setKey('left', false)">⬅️</div>
+        <div class="m-btn" id="btn-right" ontouchstart="setKey('right', true)" ontouchend="setKey('right', false)" onmousedown="setKey('right', true)" onmouseup="setKey('right', false)">➡️</div>
+        <div class="m-btn" id="btn-down" ontouchstart="setKey('backward', true)" ontouchend="setKey('backward', false)" onmousedown="setKey('backward', true)" onmouseup="setKey('backward', false)">⬇️</div>
     </div>
 
     <!-- Aksiyon Tuşları -->
@@ -146,10 +147,8 @@
         let otherPlayer, myHands;
         let touchX = 0, touchY = 0, isTouchingScreen = false;
 
-        // Verity (Sarı Top) Değişkenleri
         let verityMesh;
         let verityMatHappy, verityMatAngry;
-        let verityPos = { x: 4, y: 1, z: -4 };
 
         init3D();
         initReliablePeer();
@@ -160,8 +159,9 @@
             scene.background = new THREE.Color(0x87ceeb);
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.domElement.id = "canvas-container";
             document.body.appendChild(renderer.domElement);
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.7));
@@ -191,9 +191,7 @@
             });
         }
 
-        // Verity'nin Mutlu ve Sinirli Yüz Dokuları
         function createVerityTextures() {
-            // Mutlu Yüz
             const canvasHappy = document.createElement('canvas');
             canvasHappy.width = 256; canvasHappy.height = 256;
             let ctx = canvasHappy.getContext('2d');
@@ -205,13 +203,11 @@
             ctx.beginPath(); ctx.arc(128, 130, 45, 0, Math.PI); ctx.stroke();
             verityMatHappy = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvasHappy) });
 
-            // Sinirli Yüz (Uzaklaşınca)
             const canvasAngry = document.createElement('canvas');
             canvasAngry.width = 256; canvasAngry.height = 256;
             ctx = canvasAngry.getContext('2d');
-            ctx.fillStyle = '#ff5722'; ctx.fillRect(0, 0, 256, 256); // Öfkelenince turuncumsu/kızıl olur
+            ctx.fillStyle = '#ff5722'; ctx.fillRect(0, 0, 256, 256);
             ctx.fillStyle = '#000';
-            // Çatık kaşlar ve ters gülümseme / dişlek ağız
             ctx.fillRect(60, 75, 40, 10);
             ctx.fillRect(156, 75, 40, 10);
             ctx.beginPath(); ctx.arc(80, 100, 10, 0, Math.PI * 2); ctx.fill();
@@ -221,7 +217,7 @@
             verityMatAngry = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvasAngry) });
 
             verityMesh = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), verityMatHappy);
-            verityMesh.position.set(verityPos.x, verityPos.y, verityPos.z);
+            verityMesh.position.set(4, 1, -4);
             scene.add(verityMesh);
         }
 
@@ -312,15 +308,15 @@
                     craftingMaterials.planks += 4;
                     inventoryItems[5] += 4;
                     inventoryItems[1] = craftingMaterials.wood;
-                    alert("4 Tahta üretildi[span_5](start_span)[span_5](end_span)!");
-                } else alert("Yeterli Odun yok[span_6](start_span)[span_6](end_span)!");
+                    alert("4 Tahta üretildi[span_6](start_span)[span_6](end_span)!");
+                } else alert("Yeterli Odun yok[span_7](start_span)[span_7](end_span)!");
             } else if (item === 'stick') {
                 if (craftingMaterials.planks >= 2) {
                     craftingMaterials.planks -= 2;
                     craftingMaterials.sticks += 4;
                     inventoryItems[5] = craftingMaterials.planks;
-                    alert("4 Çubuk üretildi[span_7](start_span)[span_7](end_span)!");
-                } else alert("Yeterli Tahta yok[span_8](start_span)[span_8](end_span)!");
+                    alert("4 Çubuk üretildi[span_8](start_span)[span_8](end_span)!");
+                } else alert("Yeterli Tahta yok[span_9](start_span)[span_9](end_span)!");
             } else if (item === 'stone_pick') {
                 if (craftingMaterials.planks >= 2 && craftingMaterials.sticks >= 2) {
                     craftingMaterials.planks -= 2;
@@ -328,8 +324,8 @@
                     craftingMaterials.toolTier = 1;
                     inventoryItems[5] = craftingMaterials.planks;
                     document.getElementById('has-tool').innerText = 'Taş Kazma';
-                    alert("Taş Kazma üretildi[span_9](start_span)[span_9](end_span)!");
-                } else alert("Gerekli: 2 Tahta + 2 Çubuk[span_10](start_span)[span_10](end_span)");
+                    alert("Taş Kazma üretildi[span_10](start_span)[span_10](end_span)!");
+                } else alert("Gerekli: 2 Tahta + 2 Çubuk[span_11](start_span)[span_11](end_span)");
             } else if (item === 'diamond_pick') {
                 if (craftingMaterials.diamond >= 3 && craftingMaterials.sticks >= 2) {
                     craftingMaterials.diamond -= 3;
@@ -337,8 +333,8 @@
                     craftingMaterials.toolTier = 2;
                     inventoryItems[8] = craftingMaterials.diamond;
                     document.getElementById('has-tool').innerText = 'Elmas Kazma';
-                    alert("Elmas Kazma üretildi[span_11](start_span)[span_11](end_span)!");
-                } else alert("Gerekli: 3 Elmas + 2 Çubuk[span_12](start_span)[span_12](end_span)");
+                    alert("Elmas Kazma üretildi[span_12](start_span)[span_12](end_span)!");
+                } else alert("Gerekli: 3 Elmas + 2 Çubuk[span_13](start_span)[span_13](end_span)");
             }
             updateHUD();
         }
@@ -372,7 +368,7 @@
                     const bType = blocks[index].type;
 
                     if (bType === 8 && craftingMaterials.toolTier < 1) {
-                        alert("Elmas bloğu kırmak için en az Taş Kazma yapmalısın[span_13](start_span)[span_13](end_span)!");
+                        alert("Elmas bloğu kırmak için en az Taş Kazma yapmalısın[span_14](start_span)[span_14](end_span)!");
                         return;
                     }
 
@@ -391,8 +387,4 @@
 
         function placeBlock() {
             if (inventoryItems[selectedBlockType] <= 0) {
-                alert("Bu bloktan kalmadı[span_14](start_span)[span_14](end_span)!");
-                return;
-            }
-
-            const raycaster = new THR
+          

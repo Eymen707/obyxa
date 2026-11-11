@@ -2,10 +2,10 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamerwost - Roblox x Minecraft</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gamerwost - Mobile Roblox x Minecraft</title>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: none; }
         body {
             margin: 0;
             width: 100vw;
@@ -19,81 +19,121 @@
             width: 100%;
             height: 100%;
             display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
         #ui {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             color: white;
             z-index: 10;
-            background: rgba(11, 15, 25, 0.9);
-            padding: 20px;
-            border-radius: 16px;
+            background: rgba(11, 15, 25, 0.85);
+            padding: 12px 16px;
+            border-radius: 12px;
             border: 2px solid #8b5cf6;
-            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.4);
-            pointer-events: auto;
-            max-width: 320px;
+            max-width: 280px;
+            pointer-events: none;
         }
         h1 {
-            margin: 0 0 10px 0;
-            font-size: 24px;
+            margin: 0 0 6px 0;
+            font-size: 20px;
             background: linear-gradient(45deg, #c084fc, #38bdf8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .info {
-            font-size: 14px;
+            font-size: 12px;
             color: #cbd5e1;
-            margin-bottom: 6px;
-        }
-        #status {
-            font-weight: bold;
-            color: #facc15;
+            margin-bottom: 4px;
         }
         #crosshair {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             transform: translate(-50%, -50%);
-            border: 2px solid rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             pointer-events: none;
             z-index: 5;
         }
+        /* Mobil Joystick ve Butonlar */
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .joy-pad {
+            display: grid;
+            grid-template-columns: 50px 50px 50px;
+            grid-template-rows: 50px 50px;
+            gap: 5px;
+            pointer-events: auto;
+        }
+        .joy-btn {
+            background: rgba(139, 92, 246, 0.4);
+            border: 2px solid #c084fc;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            active { background: rgba(139, 92, 246, 0.8); }
+        }
+        .action-pad {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: auto;
+        }
+        .act-btn {
+            width: 65px;
+            height: 45px;
+            background: rgba(56, 189, 248, 0.4);
+            border: 2px solid #38bdf8;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+        }
         #hotbar {
             position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 15px;
+            right: 15px;
             display: flex;
-            gap: 12px;
-            background: rgba(11, 15, 25, 0.9);
-            padding: 12px;
-            border-radius: 16px;
-            border: 2px solid #38bdf8;
+            flex-direction: column;
+            gap: 6px;
             z-index: 10;
         }
         .slot {
-            width: 55px;
-            height: 55px;
+            width: 40px;
+            height: 40px;
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #64748b;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.2s;
         }
         .slot.active {
             border-color: #c084fc;
-            background: rgba(192, 132, 252, 0.3);
-            transform: scale(1.1);
+            background: rgba(192, 132, 252, 0.4);
         }
     </style>
 </head>
@@ -101,73 +141,65 @@
 
     <div id="ui">
         <h1>🎮 GAMERWOST</h1>
-        <div class="info">Durum: <span id="status">Bağlanıyor...</span></div>
-        <div class="info">Çevrimiçi: <span id="players">1</span> Oyuncu</div>
-        <hr style="border-color: #334155; margin: 10px 0;">
-        <div class="info"><b>WASD</b>: Yürü</div>
-        <div class="info"><b>BOŞLUK</b>: Zıpla</div>
-        <div class="info"><b>SOL TIK</b>: Blok Kır</div>
-        <div class="info"><b>SAĞ TIK</b>: Blok Koy</div>
-        <div class="info" style="font-size: 12px; color: #94a3b8; margin-top: 8px;">* Dünyanız tarayıcıda otomatik kaydedilir (Çıkıp girseniz de silinmez).</div>
+        <div class="info">Durum: <span id="status" style="color:#facc15;">Aktif</span></div>
+        <div class="info">Blok Koy / Kır ve Dünyanı Kur!</div>
     </div>
 
     <div id="crosshair"></div>
 
     <div id="hotbar">
-        <div class="slot active" onclick="selectBlock(1)" style="background:#8b5cf6;" title="Mor Blok">1</div>
-        <div class="slot" onclick="selectBlock(2)" style="background:#3b82f6;" title="Mavi Blok">2</div>
-        <div class="slot" onclick="selectBlock(3)" style="background:#10b981;" title="Yeşil Blok">3</div>
-        <div class="slot" onclick="selectBlock(4)" style="background:#ef4444;" title="Kırmızı Blok">4</div>
-        <div class="slot" onclick="selectBlock(5)" style="background:#f59e0b;" title="Altın Blok">5</div>
-        <div class="slot" onclick="selectBlock(6)" style="background:#ec4899;" title="Pembe Blok">6</div>
+        <div class="slot active" onclick="selectBlock(1)" style="background:#8b5cf6;">1</div>
+        <div class="slot" onclick="selectBlock(2)" style="background:#3b82f6;">2</div>
+        <div class="slot" onclick="selectBlock(3)" style="background:#10b981;">3</div>
+        <div class="slot" onclick="selectBlock(4)" style="background:#ef4444;">4</div>
+    </div>
+
+    <div id="controls">
+        <div class="joy-pad">
+            <div></div>
+            <button class="joy-btn" ontouchstart="moveState.forward=true" ontouchend="moveState.forward=false" onmousedown="moveState.forward=true" onmouseup="moveState.forward=false">⬆️</button>
+            <div></div>
+            <button class="joy-btn" ontouchstart="moveState.left=true" ontouchend="moveState.left=false" onmousedown="moveState.left=true" onmouseup="moveState.left=false">⬅️</button>
+            <button class="joy-btn" ontouchstart="moveState.backward=true" ontouchend="moveState.backward=false" onmousedown="moveState.backward=true" onmouseup="moveState.backward=false">⬇️</button>
+            <button class="joy-btn" ontouchstart="moveState.right=true" ontouchend="moveState.right=false" onmousedown="moveState.right=true" onmouseup="moveState.right=false">➡️</button>
+        </div>
+        <div class="action-pad">
+            <button class="act-btn" onclick="triggerJump()">Zıpla</button>
+            <button class="act-btn" style="background:rgba(239, 68, 68, 0.4); border-color:#ef4444;" onclick="breakBlockAction()">Kır</button>
+            <button class="act-btn" style="background:rgba(16, 185, 129, 0.4); border-color:#10b981;" onclick="placeBlockAction()">Koy</button>
+        </div>
     </div>
 
     <div id="game-container"></div>
 
-    <!-- Three.js ve PeerJS Kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 
     <script>
         let selectedBlockType = 1;
-        const BLOCK_COLORS = {
-            1: 0x8b5cf6,
-            2: 0x3b82f6,
-            3: 0x10b981,
-            4: 0xef4444,
-            5: 0xf59e0b,
-            6: 0xec4899
-        };
+        const BLOCK_COLORS = { 1: 0x8b5cf6, 2: 0x3b82f6, 3: 0x10b981, 4: 0xef4444 };
 
-        // Sahne Kurulumu
         const container = document.getElementById('game-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x0b0f19);
-        scene.fog = new THREE.FogExp2(0x0b0f19, 0.025);
+        scene.fog = new THREE.FogExp2(0x0b0f19, 0.02);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true;
         container.appendChild(renderer.domElement);
 
-        // Işıklandırma
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-        scene.add(ambientLight);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+        sun.position.set(20, 40, 20);
+        scene.add(sun);
 
-        const sunLight = new THREE.DirectionalLight(0xffffff, 0.9);
-        sunLight.position.set(30, 50, 30);
-        sunLight.castShadow = true;
-        scene.add(sunLight);
-
-        // Kalıcı Dünya (LocalStorage)
-        let worldData = JSON.parse(localStorage.getItem('gamerwost_persistent_world')) || {};
-
+        let worldData = JSON.parse(localStorage.getItem('gamerwost_mobile_world')) || {};
         const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
         const materials = {};
         Object.keys(BLOCK_COLORS).forEach(type => {
-            materials[type] = new THREE.MeshStandardMaterial({ color: BLOCK_COLORS[type], roughness: 0.2 });
+            materials[type] = new THREE.MeshStandardMaterial({ color: BLOCK_COLORS[type], roughness: 0.3 });
         });
 
         const blocksGroup = new THREE.Group();
@@ -179,127 +211,82 @@
         function createBlockMesh(x, y, z, type) {
             const mesh = new THREE.Mesh(blockGeometry, materials[type] || materials[1]);
             mesh.position.set(x, y, z);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
             blocksGroup.add(mesh);
             blockMeshes[getBlockKey(x, y, z)] = mesh;
         }
 
-        function initWorld() {
-            if (Object.keys(worldData).length === 0) {
-                // Geniş başlangıç platformu
-                for (let x = -8; x <= 8; x++) {
-                    for (let z = -8; z <= 8; z++) {
-                        worldData[getBlockKey(x, 0, z)] = (x + z) % 2 === 0 ? 1 : 2;
-                    }
+        if (Object.keys(worldData).length === 0) {
+            for (let x = -5; x <= 5; x++) {
+                for (let z = -5; z <= 5; z++) {
+                    worldData[getBlockKey(x, 0, z)] = 1;
                 }
-                saveWorld();
             }
-            Object.keys(worldData).forEach(key => {
-                const [x, y, z] = key.split(',').map(Number);
-                createBlockMesh(x, y, z, worldData[key]);
-            });
+            localStorage.setItem('gamerwost_mobile_world', JSON.stringify(worldData));
         }
 
-        function saveWorld() {
-            localStorage.setItem('gamerwost_persistent_world', JSON.stringify(worldData));
-        }
+        Object.keys(worldData).forEach(key => {
+            const [x, y, z] = key.split(',').map(Number);
+            createBlockMesh(x, y, z, worldData[key]);
+        });
 
-        initWorld();
-
-        // --- OYUNCU VE KONTROLLER ---
-        let playerPos = { x: 0, y: 4, z: 10 };
+        let playerPos = { x: 0, y: 4, z: 6 };
         let velocityY = 0;
         const moveState = { forward: false, backward: false, left: false, right: false };
-        let euler = new THREE.Euler(0, 0, 0, 'YXZ');
+        let cameraAngleY = 0;
 
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'KeyW') moveState.forward = true;
-            if (e.code === 'KeyS') moveState.backward = true;
-            if (e.code === 'KeyA') moveState.left = true;
-            if (e.code === 'KeyD') moveState.right = true;
-            if (e.code === 'Space' && velocityY === 0) velocityY = 0.22;
+        // Ekran kaydırma ile etrafa bakma
+        let isDragging = false, prevMouseX = 0;
+        window.addEventListener('touchstart', (e) => {
+            if(e.target.tagName === 'BUTTON' || e.target.closest('#controls') || e.target.closest('#hotbar')) return;
+            isDragging = true;
+            prevMouseX = e.touches[0].clientX;
         });
-
-        window.addEventListener('keyup', (e) => {
-            if (e.code === 'KeyW') moveState.forward = false;
-            if (e.code === 'KeyS') moveState.backward = false;
-            if (e.code === 'KeyA') moveState.left = false;
-            if (e.code === 'KeyD') moveState.right = false;
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            let deltaX = e.touches[0].clientX - prevMouseX;
+            cameraAngleY -= deltaX * 0.008;
+            prevMouseX = e.touches[0].clientX;
         });
+        window.addEventListener('touchend', () => { isDragging = false; });
 
-        document.body.addEventListener('click', () => {
-            document.body.requestPointerLock();
-        });
+        function triggerJump() {
+            if (playerPos.y <= 1.5) velocityY = 0.2;
+        }
 
-        window.addEventListener('mousemove', (e) => {
-            if (document.pointerLockElement === document.body) {
-                euler.y -= e.movementX * 0.003;
-                euler.x -= e.movementY * 0.003;
-                euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, euler.x));
-                camera.quaternion.setFromEuler(euler);
-            }
-        });
-
-        // Roblox Tarzı Karakter Modeli (Blok Gövde + Kafa + Kollar)
-        const avatarGroup = new THREE.Group();
-        const torsoMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8 });
-        const headMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
-        const limbMat = new THREE.MeshStandardMaterial({ color: 0xc084fc });
-
-        const torso = new THREE.Mesh(new BoxGeometrySafe(0.6, 0.8, 0.3), torsoMat);
-        torso.position.y = 0.4;
-        const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), headMat);
-        head.position.y = 0.9;
-
-        const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.7, 0.25), limbMat);
-        leftArm.position.set(-0.45, 0.4, 0);
-        const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.7, 0.25), limbMat);
-        rightArm.position.set(0.45, 0.4, 0);
-
-        avatarGroup.add(torso, head, leftArm, rightArm);
-        scene.add(avatarGroup);
-
-        function BoxGeometrySafe(w, h, d) { return new THREE.BoxGeometry(w, h, d); }
-
-        // Blok Kırma ve Koyma (Raycaster)
         const raycaster = new THREE.Raycaster();
-        window.addEventListener('mousedown', (e) => {
-            if (document.pointerLockElement !== document.body) return;
+        function breakBlockAction() {
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const intersects = raycaster.intersectObjects(blocksGroup.children);
+            const hits = raycaster.intersectObjects(blocksGroup.children);
+            if (hits.length > 0) {
+                const pos = hits[0].object.position;
+                const key = getBlockKey(pos.x, pos.y, pos.z);
+                blocksGroup.remove(hits[0].object);
+                delete blockMeshes[key];
+                delete worldData[key];
+                localStorage.setItem('gamerwost_mobile_world', JSON.stringify(worldData));
+                broadcast({ type: 'BREAK', x: pos.x, y: pos.y, z: pos.z });
+            }
+        }
 
-            if (intersects.length > 0) {
-                const hit = intersects[0];
+        function placeBlockAction() {
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const hits = raycaster.intersectObjects(blocksGroup.children);
+            if (hits.length > 0) {
+                const hit = hits[0];
                 const pos = hit.object.position;
-
-                if (e.button === 0) {
-                    // Sol Tık: Blok Kır
-                    const key = getBlockKey(pos.x, pos.y, pos.z);
-                    blocksGroup.remove(hit.object);
-                    delete blockMeshes[key];
-                    delete worldData[key];
-                    saveWorld();
-                    broadcast({ type: 'BREAK', x: pos.x, y: pos.y, z: pos.z });
-                } else if (e.button === 2) {
-                    // Sağ Tık: Blok Koy
-                    const normal = hit.face.normal;
-                    const nx = pos.x + normal.x;
-                    const ny = pos.y + normal.y;
-                    const nz = pos.z + normal.z;
-
-                    const key = getBlockKey(nx, ny, nz);
-                    if (!blockMeshes[key]) {
-                        createBlockMesh(nx, ny, nz, selectedBlockType);
-                        worldData[key] = selectedBlockType;
-                        saveWorld();
-                        broadcast({ type: 'PLACE', x: nx, y: ny, z: nz, blockType: selectedBlockType });
-                    }
+                const normal = hit.face.normal;
+                const nx = pos.x + normal.x;
+                const ny = pos.y + normal.y;
+                const nz = pos.z + normal.z;
+                const key = getBlockKey(nx, ny, nz);
+                if (!blockMeshes[key]) {
+                    createBlockMesh(nx, ny, nz, selectedBlockType);
+                    worldData[key] = selectedBlockType;
+                    localStorage.setItem('gamerwost_mobile_world', JSON.stringify(worldData));
+                    broadcast({ type: 'PLACE', x: nx, y: ny, z: nz, blockType: selectedBlockType });
                 }
             }
-        });
-
-        window.addEventListener('contextmenu', e => e.preventDefault());
+        }
 
         function selectBlock(type) {
             selectedBlockType = type;
@@ -308,26 +295,12 @@
             });
         }
 
-        // --- PEERJS BAĞLANTISI (ID Gerekmez) ---
+        // PeerJS Multiplayer Bağlantısı
         const peer = new Peer();
         let connections = [];
-
-        peer.on('open', (id) => {
-            document.getElementById('status').innerText = "Çevrimiçi (Multiplayer Aktif)";
-        });
-
+        peer.on('open', () => { document.getElementById('status').innerText = "Çevrimiçi"; });
         peer.on('connection', (conn) => {
-            setupConnection(conn);
-        });
-
-        function broadcast(data) {
-            connections.forEach(conn => conn.send(data));
-        }
-
-        function setupConnection(conn) {
             connections.push(conn);
-            document.getElementById('players').innerText = connections.length + 1;
-
             conn.on('data', (data) => {
                 if (data.type === 'BREAK') {
                     const key = getBlockKey(data.x, data.y, data.z);
@@ -344,36 +317,44 @@
                     }
                 }
             });
+        });
+
+        function broadcast(data) {
+            connections.forEach(conn => conn.send(data));
         }
 
-        // --- OYUN DÖNGÜSÜ ---
+        // Roblox Tarzı Karakter Modeli
+        const avatarGroup = new THREE.Group();
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8 });
+        const headMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
+        const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.3), bodyMat);
+        torso.position.y = 0.4;
+        const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), headMat);
+        head.position.y = 0.9;
+        avatarGroup.add(torso, head);
+        scene.add(avatarGroup);
+
         function animate() {
             requestAnimationFrame(animate);
 
-            const speed = 0.09;
-            const dir = new THREE.Vector3();
-            camera.getWorldDirection(dir);
-            dir.y = 0;
-            dir.normalize();
+            const speed = 0.08;
+            const dirX = Math.sin(cameraAngleY);
+            const dirZ = Math.cos(cameraAngleY);
 
-            const sideDir = new THREE.Vector3(-dir.z, 0, dir.x);
+            if (moveState.forward) { playerPos.x -= dirX * speed; playerPos.z -= dirZ * speed; }
+            if (moveState.backward) { playerPos.x += dirX * speed; playerPos.z += dirZ * speed; }
+            if (moveState.left) { playerPos.x -= dirZ * speed; playerPos.z += dirX * speed; }
+            if (moveState.right) { playerPos.x += dirZ * speed; playerPos.z -= dirX * speed; }
 
-            if (moveState.forward) playerPos.addScaledVector(dir, speed);
-            if (moveState.backward) playerPos.addScaledVector(dir, -speed);
-            if (moveState.left) playerPos.addScaledVector(sideDir, speed);
-            if (moveState.right) playerPos.addScaledVector(sideDir, -speed);
-
-            // Yerçekimi
             velocityY -= 0.012;
             playerPos.y += velocityY;
-            if (playerPos.y < 1.5) {
-                playerPos.y = 1.5;
-                velocityY = 0;
-            }
+            if (playerPos.y < 1.5) { playerPos.y = 1.5; velocityY = 0; }
 
-            camera.position.set(playerPos.x, playerPos.y + 0.8, playerPos.z);
+            camera.position.set(playerPos.x + Math.sin(cameraAngleY) * 3, playerPos.y + 1.5, playerPos.z + Math.cos(cameraAngleY) * 3);
+            camera.lookAt(playerPos.x, playerPos.y, playerPos.z);
+
             avatarGroup.position.set(playerPos.x, playerPos.y - 0.5, playerPos.z);
-            avatarGroup.rotation.y = euler.y;
+            avatarGroup.rotation.y = cameraAngleY;
 
             renderer.render(scene, camera);
         }

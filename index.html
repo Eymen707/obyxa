@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Hayatta Kalma & Online</title>
+    <title>Gamerwost - Hayatta Kalma & VerityChase</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #87ceeb; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; overflow: hidden; background: #87ceeb; font-family: sans-serif; user-select: none; -webkit-user-select: none; touch-action: none; }
         #canvas-container { width: 100vw; height: 100vh; display: block; position: fixed; top: 0; left: 0; z-index: 1; }
         #crosshair {
             position: absolute; top: 50%; left: 50%; width: 16px; height: 16px;
@@ -64,7 +64,7 @@
         #verity-alert {
             display: none; position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
             background: rgba(220, 38, 38, 0.9); color: white; padding: 10px 20px; border-radius: 8px;
-            font-size: 14px; font-weight: bold; z-index: 50; border: 2px solid white; text-align: center;
+            font-size: 14px; font-weight: bold; z-index: 50; border: 2px solid white; text-align: center; pointer-events: none;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -74,14 +74,14 @@
 
     <div id="crosshair"></div>
     <div id="status-bar">Gamerwost - Hazırlanıyor...</div>
-    <div id="verity-alert">⚠️ VERITY SİNİRLENDİ! SENİ KOVALIYOR! (10s)</div>
+    <div id="verity-alert">⚠️ 50 BLOKTAN UZAKLAŞTIN! VERITYCHASE BAŞLADI!</div>
     
     <div id="hud">
-        Odun: <span id="count-wood">5</span> | Taş: <span id="count-stone">0</span><br>
+        Mesafe: <span id="verity-dist">0</span>m | Odun: <span id="count-wood">5</span><br>
         Durum: <span id="game-mode">Hayatta Kalma</span>
     </div>
 
-    <button id="btn-verity-mode" onclick="toggleVerityMode()">Verity Modu</button>
+    <button id="btn-verity-mode" onclick="triggerVerityAnger()">Verity Modu</button>
 
     <div id="mobile-controls">
         <div class="m-btn" id="btn-up" ontouchstart="setKey('forward', true)" ontouchend="setKey('forward', false)" onmousedown="setKey('forward', true)" onmouseup="setKey('forward', false)">⬆️</div>
@@ -117,12 +117,17 @@
         let playerPos = { x: 0, y: 2, z: 2 };
         let velocityY = 0, isGrounded = true;
         let keys = { forward: false, backward: false, left: false, right: false };
+        
+        // Kamera Dokunmatik Kontrolü İçin
+        let isTouchingScreen = false;
+        let prevTouchX = 0, prevTouchY = 0;
+        let cameraYaw = 0, cameraPitch = 0;
 
         let verityMesh, verityMatHappy, verityMatAngry;
-        let verityAngryTimer = 0;
+        let isVerityAngry = false;
         let playerHand;
 
-        const ROOM_PREFIX = "gamerwost_global_room_v2";
+        const ROOM_PREFIX = "gamerwost_global_room_v3";
 
         init3D();
         initAutoPeer();
@@ -146,22 +151,22 @@
             scene.add(dirLight);
 
             // Zemin
-            const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshStandardMaterial({ color: 0x557a2b }));
+            const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x557a2b }));
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            // Oyuncu Kolu (First Person Hand Texture/Model)
+            // Oyuncu Kolu (First Person Hand)
             playerHand = new THREE.Group();
             const armMesh = new THREE.Mesh(
                 new THREE.BoxGeometry(0.25, 0.25, 0.7),
-                new THREE.MeshStandardMaterial({ color: 0x4f46e5 }) // Mor/Mavi Gamerwost giysisi
+                new THREE.MeshStandardMaterial({ color: 0x4f46e5 })
             );
             armMesh.position.set(0.4, -0.35, -0.5);
             playerHand.add(armMesh);
 
             const handMesh = new THREE.Mesh(
                 new THREE.BoxGeometry(0.22, 0.22, 0.25),
-                new THREE.MeshStandardMaterial({ color: 0xffdbac }) // Ten rengi el
+                new THREE.MeshStandardMaterial({ color: 0xffdbac })
             );
             handMesh.position.set(0.4, -0.35, -0.85);
             playerHand.add(handMesh);
@@ -170,6 +175,7 @@
             scene.add(camera);
 
             createVerityTextures();
+            setupTouchLook();
             animate();
 
             window.addEventListener('resize', () => {
@@ -179,7 +185,36 @@
             });
         }
 
-        // Verity Topu (Mutlu / Sinirli Kaplamaları)
+        // Telefondan Ekrana Dokunup Etrafa Bakma (Touch Look)
+        function setupTouchLook() {
+            window.addEventListener('touchstart', (e) => {
+                // UI butonlarına dokunulmuyorsa kamera döndürmeyi başlat
+                if (e.target.tagName === 'BUTTON' || e.target.closest('#mobile-controls') || e.target.closest('#inventory')) return;
+                isTouchingScreen = true;
+                prevTouchX = e.touches[0].clientX;
+                prevTouchY = e.touches[0].clientY;
+            });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isTouchingScreen) return;
+                let clientX = e.touches[0].clientX;
+                let clientY = e.touches[0].clientY;
+                let deltaX = clientX - prevTouchX;
+                let deltaY = clientY - prevTouchY;
+
+                cameraYaw -= deltaX * 0.005;
+                cameraPitch -= deltaY * 0.005;
+                // Yukarı-aşağı bakış açısını sınırla
+                cameraPitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraPitch));
+
+                prevTouchX = clientX;
+                prevTouchY = clientY;
+            });
+
+            window.addEventListener('touchend', () => { isTouchingScreen = false; });
+        }
+
+        // Verity Topu ve Yüz Kaplamaları
         function createVerityTextures() {
             const canvasHappy = document.createElement('canvas');
             canvasHappy.width = 256; canvasHappy.height = 256;
@@ -205,78 +240,69 @@
             ctx.beginPath(); ctx.arc(128, 170, 40, Math.PI, Math.PI * 2); ctx.stroke();
             verityMatAngry = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvasAngry) });
 
-            verityMesh = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 32), verityMatHappy);
-            verityMesh.position.set(3, 1, -4);
+            verityMesh = new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 32), verityMatHappy);
+            verityMesh.position.set(0, 1, -5); // Başlangıç noktası
             scene.add(verityMesh);
         }
 
-        // --- ID Girmeden Otomatik Bağlantı ---
         function initAutoPeer() {
             peer = new Peer(ROOM_PREFIX);
-            peer.on('open', () => {
-                document.getElementById('status-bar').innerText = "Online (Host)";
-            });
-            peer.on('error', (err) => {
-                if (err.type === 'unavailable-id') {
-                    connectAsGuest();
-                }
-            });
-            peer.on('connection', (connection) => {
-                conn = connection;
-                setupConnectionEvents();
-            });
+            peer.on('open', () => { document.getElementById('status-bar').innerText = "Online (Host)"; });
+            peer.on('error', (err) => { if (err.type === 'unavailable-id') connectAsGuest(); });
+            peer.on('connection', (connection) => { conn = connection; setupConnectionEvents(); });
         }
 
         function connectAsGuest() {
             peer = new Peer();
-            peer.on('open', () => {
-                conn = peer.connect(ROOM_PREFIX);
-                setupConnectionEvents();
-            });
+            peer.on('open', () => { conn = peer.connect(ROOM_PREFIX); setupConnectionEvents(); });
         }
 
         function setupConnectionEvents() {
-            conn.on('open', () => {
-                document.getElementById('status-bar').innerText = "Online Bağlandı!";
-            });
+            conn.on('open', () => { document.getElementById('status-bar').innerText = "Online Bağlandı!"; });
             conn.on('data', (data) => {
-                if (data.type === 'addBlock') {
-                    addBlockToScene(data.x, data.y, data.z, data.blockType, true);
-                } else if (data.type === 'removeBlock') {
-                    if (blocks[data.index]) {
-                        scene.remove(blocks[data.index].mesh);
-                        blocks.splice(data.index, 1);
-                        saveWorld();
-                    }
+                if (data.type === 'addBlock') addBlockToScene(data.x, data.y, data.z, data.blockType, true);
+                else if (data.type === 'removeBlock' && blocks[data.index]) {
+                    scene.remove(blocks[data.index].mesh);
+                    blocks.splice(data.index, 1);
+                    saveWorld();
                 }
             });
         }
 
         function triggerVerityAnger() {
+            isVerityAngry = true;
             verityMesh.material = verityMatAngry;
-            verityAngryTimer = 600; // 10 Saniye
             document.getElementById('verity-alert').style.display = 'block';
         }
 
-        function toggleVerityMode() {
-            triggerVerityAnger();
+        function resetVerityCalm() {
+            isVerityAngry = false;
+            verityMesh.material = verityMatHappy;
+            document.getElementById('verity-alert').style.display = 'none';
         }
 
         function saveWorld() {
             const savedData = blocks.map(b => ({ x: b.x, y: b.y, z: b.z, type: b.type }));
-            localStorage.setItem('gamerwost_world', JSON.stringify(savedData));
+            localStorage.setItem('gamerwost_world_v3', JSON.stringify(savedData));
         }
 
         function loadWorld() {
-            const data = localStorage.getItem('gamerwost_world');
+            const data = localStorage.getItem('gamerwost_world_v3');
             if (data) {
                 JSON.parse(data).forEach(b => addBlockToScene(b.x, b.y, b.z, b.type, false));
             } else {
-                for (let i = -2; i <= 1; i++) {
-                    addBlockToScene(i, 0.5, -5, 1, false);
-                    addBlockToScene(i, 1.5, -5, 3, false);
+                // Başlangıç Ağaçları ve Yapıları
+                for (let x = -3; x <= 3; x += 3) {
+                    for (let z = -8; z <= -4; z += 4) {
+                        // Ağaç Gövdesi (Odun)
+                        addBlockToScene(x, 0.5, z, 1, false);
+                        addBlockToScene(x, 1.5, z, 1, false);
+                        // Yapraklar
+                        addBlockToScene(x, 2.5, z, 3, false);
+                        addBlockToScene(x+1, 2.5, z, 3, false);
+                        addBlockToScene(x-1, 2.5, z, 3, false);
+                    }
                 }
-                addBlockToScene(0, 0.5, -3, 8, false);
             }
         }
 
@@ -294,12 +320,7 @@
         }
 
         function setKey(action, state) { keys[action] = state; }
-        function triggerJump() { 
-            if (isGrounded) { 
-                velocityY = 0.15; 
-                isGrounded = false; 
-            } 
-        }
+        function triggerJump() { if (isGrounded) { velocityY = 0.15; isGrounded = false; } }
 
         function selectSlot(slotIndex, element) {
             selectedBlockType = slotIndex;
@@ -323,9 +344,7 @@
                 const index = blocks.findIndex(b => b.mesh === hit.object);
                 if (index > -1) {
                     const bType = blocks[index].type;
-                    if (bType === 8) { // Elmas kırılınca Verity sinirlenir!
-                        triggerVerityAnger();
-                    }
+                    if (bType === 8) triggerVerityAnger();
                     inventoryItems[bType]++;
                     document.getElementById(`inv-${bType}`).innerText = inventoryItems[bType];
                     scene.remove(blocks[index].mesh);
@@ -356,39 +375,30 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            // Verity Sinirli Kovalama Mantığı (10 Saniye)
-            if (verityAngryTimer > 0) {
-                verityAngryTimer--;
-                verityMesh.rotation.y += 0.15;
-                // Oyuncuya doğru yavaşça kovalama hareketi
-                verityMesh.position.x += (camera.position.x - verityMesh.position.x) * 0.02;
-                verityMesh.position.z += (camera.position.z - verityMesh.position.z) * 0.02;
-
-                if (verityAngryTimer === 0) {
-                    verityMesh.material = verityMatHappy;
-                    document.getElementById('verity-alert').style.display = 'none';
-                }
-            }
-
-            // Yer çekimi ve Hareket
+            // Hareket Hesaplama
             let speed = 0.08;
-            if (keys.forward) playerPos.z -= speed;
-            if (keys.backward) playerPos.z += speed;
-            if (keys.left) playerPos.x -= speed;
-            if (keys.right) playerPos.x += speed;
+            let moveX = 0, moveZ = 0;
+            if (keys.forward) { moveX -= Math.sin(cameraYaw) * speed; moveZ -= Math.cos(cameraYaw) * speed; }
+            if (keys.backward) { moveX += Math.sin(cameraYaw) * speed; moveZ += Math.cos(cameraYaw) * speed; }
+            if (keys.left) { moveX -= Math.cos(cameraYaw) * speed; moveZ += Math.sin(cameraYaw) * speed; }
+            if (keys.right) { moveX += Math.cos(cameraYaw) * speed; moveZ -= Math.sin(cameraYaw) * speed; }
+
+            playerPos.x += moveX;
+            playerPos.z += moveZ;
 
             if (!isGrounded) {
                 playerPos.y += velocityY;
                 velocityY -= 0.008;
-                if (playerPos.y <= 2) {
-                    playerPos.y = 2;
-                    isGrounded = true;
-                }
+                if (playerPos.y <= 2) { playerPos.y = 2; isGrounded = true; }
             }
 
             camera.position.set(playerPos.x, playerPos.y, playerPos.z);
-            renderer.render(scene, camera);
-        }
-    </script>
-</body>
-</html>
+            
+            // Kameranın yönünü güncelle (Touch Look)
+            let euler = new THREE.Euler(cameraPitch, cameraYaw, 0, 'YXZ');
+            camera.quaternion.setFromEuler(euler);
+
+            // --- 50 Blok Mesafe & VerityChase Mekanizması ---
+            let dx = verityMesh.position.x - playerPos.x;
+            let dz = verityMesh.position.z - playerPos.z;
+            let 

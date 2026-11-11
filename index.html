@@ -124,12 +124,47 @@
         let verityMesh, verityMatHappy, verityMatAngry;
         let isVerityAngry = false;
         let playerHand;
+        let blockMaterials = [];
 
         const ROOM_PREFIX = "gamerwost_global_room_v3";
 
+        initTextures();
         init3D();
         initAutoPeer();
         loadWorld();
+
+        // Orijinal Piksel Doku Kaplamaları (Minecraft Tarzı)
+        function initTextures() {
+            const textureLoader = new THREE.TextureLoader();
+            // Keskin piksel görünümü için filtre ayarı
+            const setPixelFilter = (tex) => {
+                tex.magFilter = THREE.NearestFilter;
+                tex.minFilter = THREE.NearestFilter;
+            };
+
+            // Resmi Minecraft doku linkleri (Açık kaynaklı harici texture kaynakları)
+            const texWood = textureLoader.load('https://i.imgur.com/pV5tN7u.png', setPixelFilter); // Odun
+            const texStone = textureLoader.load('https://i.imgur.com/0042gQy.png', setPixelFilter); // Taş
+            const texLeaves = textureLoader.load('https://i.imgur.com/W2q2o7v.png', setPixelFilter); // Yaprak
+            const texDirt = textureLoader.load('https://i.imgur.com/k9bT68Z.png', setPixelFilter); // Toprak
+            const texPlanks = textureLoader.load('https://i.imgur.com/5u82a8L.png', setPixelFilter); // Tahta
+            const texBrick = textureLoader.load('https://i.imgur.com/83W1YVw.png', setPixelFilter); // Tuğla
+            const texIron = textureLoader.load('https://i.imgur.com/n1h83b9.png', setPixelFilter); // Demir
+            const texDiamond = textureLoader.load('https://i.imgur.com/2s9V90m.png', setPixelFilter); // Elmas
+            const texWool = textureLoader.load('https://i.imgur.com/j6B2a89.png', setPixelFilter); // Yün
+
+            blockMaterials = {
+                1: new THREE.MeshStandardMaterial({ map: texWood }),
+                2: new THREE.MeshStandardMaterial({ map: texStone }),
+                3: new THREE.MeshStandardMaterial({ map: texLeaves }),
+                4: new THREE.MeshStandardMaterial({ map: texDirt }),
+                5: new THREE.MeshStandardMaterial({ map: texPlanks }),
+                6: new THREE.MeshStandardMaterial({ map: texBrick }),
+                7: new THREE.MeshStandardMaterial({ map: texIron }),
+                8: new THREE.MeshStandardMaterial({ map: texDiamond }),
+                9: new THREE.MeshStandardMaterial({ map: texWool })
+            };
+        }
 
         function init3D() {
             scene = new THREE.Scene();
@@ -295,13 +330,9 @@
             }
         }
 
-        function getBlockColor(type) {
-            const colors = { 1: 0x8B4513, 2: 0xA9A9A9, 3: 0x228B22, 4: 0x8B7355, 5: 0xDEB887, 6: 0xB22222, 7: 0x4682B4, 8: 0x00FFFF, 9: 0xFFFFFF };
-            return colors[type] || 0x8B4513;
-        }
-
         function addBlockToScene(x, y, z, type, save = true) {
-            const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: getBlockColor(type) }));
+            const material = blockMaterials[type] || blockMaterials[1];
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material);
             mesh.position.set(x, y, z);
             scene.add(mesh);
             blocks.push({ mesh, x, y, z, type });
@@ -357,54 +388,4 @@
                 inventoryItems[selectedBlockType]--;
                 document.getElementById(`inv-${selectedBlockType}`).innerText = inventoryItems[selectedBlockType];
                 addBlockToScene(pos.x, pos.y, pos.z, selectedBlockType, true);
-                if (conn && conn.open) conn.send({ type: 'addBlock', x: pos.x, y: pos.y, z: pos.z, blockType: selectedBlockType });
-            }
-        }
-
-        // Çarpışma Kontrolü
-        function checkCollision(x, y, z) {
-            const playerRadius = 0.3;
-            for (let b of blocks) {
-                let bx = b.x, by = b.y, bz = b.z;
-                if (
-                    x + playerRadius > bx - 0.5 && x - playerRadius < bx + 0.5 &&
-                    y + 0.8 > by - 0.5 && y - 0.8 < by + 0.5 &&
-                    z + playerRadius > bz - 0.5 && z - playerRadius < bz + 0.5
-                ) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            let speed = 0.08;
-            let moveX = 0, moveZ = 0;
-            if (keys.forward) { moveX -= Math.sin(cameraYaw) * speed; moveZ -= Math.cos(cameraYaw) * speed; }
-            if (keys.backward) { moveX += Math.sin(cameraYaw) * speed; moveZ += Math.cos(cameraYaw) * speed; }
-            if (keys.left) { moveX -= Math.cos(cameraYaw) * speed; moveZ += Math.sin(cameraYaw) * speed; }
-            if (keys.right) { moveX += Math.cos(cameraYaw) * speed; moveZ -= Math.sin(cameraYaw) * speed; }
-
-            let nextX = playerPos.x + moveX;
-            let nextZ = playerPos.z + moveZ;
-
-            if (!checkCollision(nextX, playerPos.y, playerPos.z)) {
-                playerPos.x = nextX;
-            }
-            if (!checkCollision(playerPos.x, playerPos.y, nextZ)) {
-                playerPos.z = nextZ;
-            }
-
-            if (!isGrounded) {
-                playerPos.y += velocityY;
-                velocityY -= 0.008;
-                if (checkCollision(playerPos.x, playerPos.y, playerPos.z)) {
-                    playerPos.y -= velocityY;
-                    velocityY = 0;
-                    isGrounded = true;
-                }
-                if (playerPos.y <= 2) { 
-                    playerPos.y = 2; 
-        
+                if (conn && conn.open) conn.send({ type: 'addBlock', x: pos.

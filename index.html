@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Hayatta Kalma & Online</title>
+    <title>Gamerwost - Hayatta Kalma & Verity</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
         #crosshair {
@@ -73,7 +73,7 @@
 <body>
 
     <div id="crosshair"></div>
-    <div id="status-bar">Gamerwost - Online Bağlanıyor...</div>
+    <div id="status-bar">Gamerwost - Online & Verity Modu</div>
     
     <div id="hud">
         Odun: <span id="count-wood">5</span> | Taş: <span id="count-stone">0</span> | Elmas: <span id="count-diamond">0</span><br>
@@ -82,15 +82,15 @@
 
     <button id="btn-craft" onclick="toggleCrafting()">Craft</button>
 
-    <!-- Crafting Menüsü (Çalışma Masası Gerektirmez, Doğrudan Üretim) -->
+    <!-- Crafting Menüsü -->
     <div id="crafting-modal">
         <h3>Gamerwost Üretim</h3>
         <p style="font-size:11px; color:#aaa;">Envanterden Doğrudan Eşya Yap:</p>
         <div class="craft-grid">
-            <div class="craft-item" onclick="craftItem('plank')">Tahta Yap (1 Odun = 4 Tahta)[span_2](start_span)[span_2](end_span)</div>
-            <div class="craft-item" onclick="craftItem('stick')">Çubuk Yap (2 Tahta = 4 Çubuk)[span_3](start_span)[span_3](end_span)</div>
-            <div class="craft-item" onclick="craftItem('stone_pick')">Taş Kazma (2 Tahta + 2 Çubuk)[span_4](start_span)[span_4](end_span)</div>
-            <div class="craft-item" onclick="craftItem('diamond_pick')">Elmas Kazma (3 Elmas + 2 Çubuk)[span_5](start_span)[span_5](end_span)</div>
+            <div class="craft-item" onclick="craftItem('plank')">Tahta Yap (1 Odun = 4 Tahta)[span_1](start_span)[span_1](end_span)</div>
+            <div class="craft-item" onclick="craftItem('stick')">Çubuk Yap (2 Tahta = 4 Çubuk)[span_2](start_span)[span_2](end_span)</div>
+            <div class="craft-item" onclick="craftItem('stone_pick')">Taş Kazma (2 Tahta + 2 Çubuk)[span_3](start_span)[span_3](end_span)</div>
+            <div class="craft-item" onclick="craftItem('diamond_pick')">Elmas Kazma (3 Elmas + 2 Çubuk)[span_4](start_span)[span_4](end_span)</div>
         </div>
         <button onclick="toggleCrafting()" style="background:#ef4444; border:none; padding:6px 12px; color:white; border-radius:4px; margin-top:10px; cursor:pointer;">Kapat</button>
     </div>
@@ -146,6 +146,11 @@
         let otherPlayer, myHands;
         let touchX = 0, touchY = 0, isTouchingScreen = false;
 
+        // Verity (Sarı Top) Değişkenleri
+        let verityMesh;
+        let verityMatHappy, verityMatAngry;
+        let verityPos = { x: 4, y: 1, z: -4 };
+
         init3D();
         initReliablePeer();
         initControls();
@@ -168,15 +173,13 @@
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
-            createSmallVerity();
+            createVerityTextures();
             createInitialWorld();
 
-            // Arkadaşının ekranında tam karakter (saç, gövde, kollar) görünür[span_6](start_span)[span_6](end_span)
             otherPlayer = createFullCharacterModel();
             otherPlayer.position.set(0, 1.6, -4);
             scene.add(otherPlayer);
 
-            // Kendi ekranında sadece ellerini/kollarını görürsün (FPS)[span_7](start_span)[span_7](end_span)
             myHands = createFirstPersonHands();
             camera.add(myHands);
             scene.add(camera);
@@ -188,20 +191,38 @@
             });
         }
 
-        function createSmallVerity() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 256; canvas.height = 256;
-            const ctx = canvas.getContext('2d');
+        // Verity'nin Mutlu ve Sinirli Yüz Dokuları
+        function createVerityTextures() {
+            // Mutlu Yüz
+            const canvasHappy = document.createElement('canvas');
+            canvasHappy.width = 256; canvasHappy.height = 256;
+            let ctx = canvasHappy.getContext('2d');
             ctx.fillStyle = '#ffeb3b'; ctx.fillRect(0, 0, 256, 256);
             ctx.fillStyle = '#000';
             ctx.beginPath(); ctx.arc(80, 90, 14, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(176, 90, 14, 0, Math.PI * 2); ctx.fill();
             ctx.lineWidth = 8; ctx.strokeStyle = '#000';
             ctx.beginPath(); ctx.arc(128, 130, 45, 0, Math.PI); ctx.stroke();
+            verityMatHappy = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvasHappy) });
 
-            const verity = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas) }));
-            verity.position.set(4, 1, -4);
-            scene.add(verity);
+            // Sinirli Yüz (Uzaklaşınca)
+            const canvasAngry = document.createElement('canvas');
+            canvasAngry.width = 256; canvasAngry.height = 256;
+            ctx = canvasAngry.getContext('2d');
+            ctx.fillStyle = '#ff5722'; ctx.fillRect(0, 0, 256, 256); // Öfkelenince turuncumsu/kızıl olur
+            ctx.fillStyle = '#000';
+            // Çatık kaşlar ve ters gülümseme / dişlek ağız
+            ctx.fillRect(60, 75, 40, 10);
+            ctx.fillRect(156, 75, 40, 10);
+            ctx.beginPath(); ctx.arc(80, 100, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(176, 100, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.lineWidth = 8; ctx.strokeStyle = '#000';
+            ctx.beginPath(); ctx.arc(128, 160, 35, Math.PI, Math.PI * 2); ctx.stroke();
+            verityMatAngry = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvasAngry) });
+
+            verityMesh = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), verityMatHappy);
+            verityMesh.position.set(verityPos.x, verityPos.y, verityPos.z);
+            scene.add(verityMesh);
         }
 
         function createFullCharacterModel() {
@@ -237,25 +258,25 @@
 
         function createInitialWorld() {
             for (let i = -2; i <= 1; i++) {
-                addBlock(i, 0.5, -5, 1); // Odun[span_8](start_span)[span_8](end_span)
-                addBlock(i, 1.5, -5, 3); // Yaprak[span_9](start_span)[span_9](end_span)
-                addBlock(i, 0.5, -7, 2); // Taş[span_10](start_span)[span_10](end_span)
+                addBlock(i, 0.5, -5, 1);
+                addBlock(i, 1.5, -5, 3);
+                addBlock(i, 0.5, -7, 2);
             }
-            addBlock(0, 0.5, -3, 8); // Elmas Blok[span_11](start_span)[span_11](end_span)
-            addBlock(1, 0.5, -3, 8); // Elmas Blok[span_12](start_span)[span_12](end_span)
+            addBlock(0, 0.5, -3, 8);
+            addBlock(1, 0.5, -3, 8);
         }
 
         function getBlockColor(type) {
             switch(type) {
-                case 1: return 0x8B4513; // Odun[span_13](start_span)[span_13](end_span)
-                case 2: return 0xA9A9A9; // Taş[span_14](start_span)[span_14](end_span)
-                case 3: return 0x228B22; // Yaprak[span_15](start_span)[span_15](end_span)
-                case 4: return 0x8B7355; // Toprak[span_16](start_span)[span_16](end_span)
-                case 5: return 0xDEB887; // Tahta[span_17](start_span)[span_17](end_span)
-                case 6: return 0xB22222; // Tuğla[span_18](start_span)[span_18](end_span)
-                case 7: return 0x4682B4; // Demir[span_19](start_span)[span_19](end_span)
-                case 8: return 0x00FFFF; // Elmas[span_20](start_span)[span_20](end_span)
-                case 9: return 0xFFFFFF; // Yün[span_21](start_span)[span_21](end_span)
+                case 1: return 0x8B4513;
+                case 2: return 0xA9A9A9;
+                case 3: return 0x228B22;
+                case 4: return 0x8B7355;
+                case 5: return 0xDEB887;
+                case 6: return 0xB22222;
+                case 7: return 0x4682B4;
+                case 8: return 0x00FFFF;
+                case 9: return 0xFFFFFF;
                 default: return 0x8B4513;
             }
         }
@@ -291,15 +312,15 @@
                     craftingMaterials.planks += 4;
                     inventoryItems[5] += 4;
                     inventoryItems[1] = craftingMaterials.wood;
-                    alert("4 Tahta üretildi[span_22](start_span)[span_22](end_span)!");
-                } else alert("Yeterli Odun yok[span_23](start_span)[span_23](end_span)!");
+                    alert("4 Tahta üretildi[span_5](start_span)[span_5](end_span)!");
+                } else alert("Yeterli Odun yok[span_6](start_span)[span_6](end_span)!");
             } else if (item === 'stick') {
                 if (craftingMaterials.planks >= 2) {
                     craftingMaterials.planks -= 2;
                     craftingMaterials.sticks += 4;
                     inventoryItems[5] = craftingMaterials.planks;
-                    alert("4 Çubuk üretildi[span_24](start_span)[span_24](end_span)!");
-                } else alert("Yeterli Tahta yok[span_25](start_span)[span_25](end_span)!");
+                    alert("4 Çubuk üretildi[span_7](start_span)[span_7](end_span)!");
+                } else alert("Yeterli Tahta yok[span_8](start_span)[span_8](end_span)!");
             } else if (item === 'stone_pick') {
                 if (craftingMaterials.planks >= 2 && craftingMaterials.sticks >= 2) {
                     craftingMaterials.planks -= 2;
@@ -307,8 +328,8 @@
                     craftingMaterials.toolTier = 1;
                     inventoryItems[5] = craftingMaterials.planks;
                     document.getElementById('has-tool').innerText = 'Taş Kazma';
-                    alert("Taş Kazma üretildi[span_26](start_span)[span_26](end_span)!");
-                } else alert("Gerekli: 2 Tahta + 2 Çubuk[span_27](start_span)[span_27](end_span)");
+                    alert("Taş Kazma üretildi[span_9](start_span)[span_9](end_span)!");
+                } else alert("Gerekli: 2 Tahta + 2 Çubuk[span_10](start_span)[span_10](end_span)");
             } else if (item === 'diamond_pick') {
                 if (craftingMaterials.diamond >= 3 && craftingMaterials.sticks >= 2) {
                     craftingMaterials.diamond -= 3;
@@ -316,8 +337,8 @@
                     craftingMaterials.toolTier = 2;
                     inventoryItems[8] = craftingMaterials.diamond;
                     document.getElementById('has-tool').innerText = 'Elmas Kazma';
-                    alert("Elmas Kazma üretildi[span_28](start_span)[span_28](end_span)!");
-                } else alert("Gerekli: 3 Elmas + 2 Çubuk[span_29](start_span)[span_29](end_span)");
+                    alert("Elmas Kazma üretildi[span_11](start_span)[span_11](end_span)!");
+                } else alert("Gerekli: 3 Elmas + 2 Çubuk[span_12](start_span)[span_12](end_span)");
             }
             updateHUD();
         }
@@ -351,7 +372,7 @@
                     const bType = blocks[index].type;
 
                     if (bType === 8 && craftingMaterials.toolTier < 1) {
-                        alert("Elmas bloğu kırmak için en az Taş Kazma yapmalısın[span_30](start_span)[span_30](end_span)!");
+                        alert("Elmas bloğu kırmak için en az Taş Kazma yapmalısın[span_13](start_span)[span_13](end_span)!");
                         return;
                     }
 
@@ -370,14 +391,8 @@
 
         function placeBlock() {
             if (inventoryItems[selectedBlockType] <= 0) {
-                alert("Bu bloktan kalmadı[span_31](start_span)[span_31](end_span)!");
+                alert("Bu bloktan kalmadı[span_14](start_span)[span_14](end_span)!");
                 return;
             }
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const intersects = raycaster.intersectObjects(blocks.map(b => b.mesh));
-
-            if (intersects.length > 0) {
-                const hit = intersects[0];
-                const normal = hit
+            const raycaster = new THR

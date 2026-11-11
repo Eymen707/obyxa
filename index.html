@@ -124,46 +124,83 @@
         let verityMesh, verityMatHappy, verityMatAngry;
         let isVerityAngry = false;
         let playerHand;
-        let blockMaterials = [];
+        let blockMaterials = {};
 
         const ROOM_PREFIX = "gamerwost_global_room_v3";
 
-        initTextures();
+        generateProceduralTextures();
         init3D();
         initAutoPeer();
         loadWorld();
 
-        // Orijinal Piksel Doku Kaplamaları (Minecraft Tarzı)
-        function initTextures() {
-            const textureLoader = new THREE.TextureLoader();
-            // Keskin piksel görünümü için filtre ayarı
-            const setPixelFilter = (tex) => {
+        // Harici bağlantı hatası vermeyen, dahili piksel desenli Minecraft blok materyalleri
+        function generateProceduralTextures() {
+            function createPixelCanvas(drawFunc) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 64; canvas.height = 64;
+                const ctx = canvas.getContext('2d');
+                drawFunc(ctx);
+                const tex = new THREE.CanvasTexture(canvas);
                 tex.magFilter = THREE.NearestFilter;
                 tex.minFilter = THREE.NearestFilter;
-            };
+                return new THREE.MeshStandardMaterial({ map: tex });
+            }
 
-            // Resmi Minecraft doku linkleri (Açık kaynaklı harici texture kaynakları)
-            const texWood = textureLoader.load('https://i.imgur.com/pV5tN7u.png', setPixelFilter); // Odun
-            const texStone = textureLoader.load('https://i.imgur.com/0042gQy.png', setPixelFilter); // Taş
-            const texLeaves = textureLoader.load('https://i.imgur.com/W2q2o7v.png', setPixelFilter); // Yaprak
-            const texDirt = textureLoader.load('https://i.imgur.com/k9bT68Z.png', setPixelFilter); // Toprak
-            const texPlanks = textureLoader.load('https://i.imgur.com/5u82a8L.png', setPixelFilter); // Tahta
-            const texBrick = textureLoader.load('https://i.imgur.com/83W1YVw.png', setPixelFilter); // Tuğla
-            const texIron = textureLoader.load('https://i.imgur.com/n1h83b9.png', setPixelFilter); // Demir
-            const texDiamond = textureLoader.load('https://i.imgur.com/2s9V90m.png', setPixelFilter); // Elmas
-            const texWool = textureLoader.load('https://i.imgur.com/j6B2a89.png', setPixelFilter); // Yün
-
-            blockMaterials = {
-                1: new THREE.MeshStandardMaterial({ map: texWood }),
-                2: new THREE.MeshStandardMaterial({ map: texStone }),
-                3: new THREE.MeshStandardMaterial({ map: texLeaves }),
-                4: new THREE.MeshStandardMaterial({ map: texDirt }),
-                5: new THREE.MeshStandardMaterial({ map: texPlanks }),
-                6: new THREE.MeshStandardMaterial({ map: texBrick }),
-                7: new THREE.MeshStandardMaterial({ map: texIron }),
-                8: new THREE.MeshStandardMaterial({ map: texDiamond }),
-                9: new THREE.MeshStandardMaterial({ map: texWool })
-            };
+            // 1: Odun
+            blockMaterials[1] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#654321'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#4a2f13';
+                for(let i=0; i<30; i++) ctx.fillRect(Math.random()*64, Math.random()*64, 8, 16);
+            });
+            // 2: Taş
+            blockMaterials[2] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#808080'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#555555';
+                for(let i=0; i<40; i++) ctx.fillRect(Math.random()*64, Math.random()*64, 6, 6);
+            });
+            // 3: Yaprak
+            blockMaterials[3] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#2d5a27'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#1e3f1a';
+                for(let i=0; i<50; i++) ctx.fillRect(Math.random()*64, Math.random()*64, 5, 5);
+            });
+            // 4: Toprak
+            blockMaterials[4] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#8b5a2b'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#5c3a21';
+                for(let i=0; i<40; i++) ctx.fillRect(Math.random()*64, Math.random()*64, 6, 6);
+            });
+            // 5: Tahta
+            blockMaterials[5] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#deb887'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#b58863';
+                for(let i=0; i<8; i++) ctx.fillRect(0, i*8, 64, 2);
+            });
+            // 6: Tuğla
+            blockMaterials[6] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#a52a2a'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#440000';
+                for(let y=0; y<64; y+=16) { ctx.fillRect(0, y, 64, 2); }
+                for(let x=0; x<64; x+=16) { ctx.fillRect(x, 0, 2, 64); }
+            });
+            // 7: Demir
+            blockMaterials[7] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#b0c4de'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#778899';
+                for(let i=0; i<25; i++) ctx.fillRect(Math.random()*64, Math.random()*64, 8, 8);
+            });
+            // 8: Elmas
+            blockMaterials[8] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#00ffff'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#008b8b';
+                for(let i=0; i<20; i++) ctx.fillRect(Math.random()*64, Math.random()*64, 6, 6);
+            });
+            // 9: Yün
+            blockMaterials[9] = createPixelCanvas(ctx => {
+                ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,64,64);
+                ctx.fillStyle = '#e0e0e0';
+                for(let i=0; i<60; i++) ctx.fillRect(Math.random()*64, Math.random()*64, 4, 4);
+            });
         }
 
         function init3D() {
@@ -302,12 +339,6 @@
             document.getElementById('verity-alert').style.display = 'block';
         }
 
-        function resetVerityCalm() {
-            isVerityAngry = false;
-            verityMesh.material = verityMatHappy;
-            document.getElementById('verity-alert').style.display = 'none';
-        }
-
         function saveWorld() {
             const savedData = blocks.map(b => ({ x: b.x, y: b.y, z: b.z, type: b.type }));
             localStorage.setItem('gamerwost_world_v3', JSON.stringify(savedData));
@@ -366,26 +397,4 @@
                     const bType = blocks[index].type;
                     if (bType === 8) triggerVerityAnger();
                     inventoryItems[bType]++;
-                    document.getElementById(`inv-${bType}`).innerText = inventoryItems[bType];
-                    scene.remove(blocks[index].mesh);
-                    blocks.splice(index, 1);
-                    saveWorld();
-                    if (conn && conn.open) conn.send({ type: 'removeBlock', index: index });
-                }
-            }
-        }
-
-        function placeBlock() {
-            if (inventoryItems[selectedBlockType] <= 0) return;
-            animateHand();
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const intersects = raycaster.intersectObjects(blocks.map(b => b.mesh));
-
-            if (intersects.length > 0) {
-                const hit = intersects[0];
-                const pos = hit.object.position.clone().add(hit.face.normal);
-                inventoryItems[selectedBlockType]--;
-                document.getElementById(`inv-${selectedBlockType}`).innerText = inventoryItems[selectedBlockType];
-                addBlockToScene(pos.x, pos.y, pos.z, selectedBlockType, true);
-                if (conn && conn.open) conn.send({ type: 'addBlock', x: pos.
+                    document.getElementById(`inv-${bType}`).innerText = in

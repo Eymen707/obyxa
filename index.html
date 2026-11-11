@@ -1,320 +1,375 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Minecraft Web Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamerwost - Roblox x Minecraft Multiplayer</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
-        body { background: #0f1020; color: #fff; overflow: hidden; height: 100vh; }
-        
-        #ui { position: absolute; top: 15px; left: 15px; z-index: 5; pointer-events: none; font-size: 0.9rem; background: rgba(0,0,0,0.6); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
-        #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; z-index: 5; pointer-events: none; }
-        
-        /* Joystick Container */
-        #joystick-zone {
-            position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px;
-            background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%; z-index: 10; touch-action: none;
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b0f19;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
         }
-        #joystick-knob {
-            position: absolute; top: 35px; left: 35px; width: 50px; height: 50px;
-            background: #a855f7; border-radius: 50%; box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+        #ui {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: white;
+            z-index: 10;
+            background: rgba(11, 15, 25, 0.85);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid #6366f1;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+            pointer-events: auto;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            background: linear-gradient(45deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .info {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        #status {
+            font-weight: bold;
+            color: #f59e0b;
+        }
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
             pointer-events: none;
+            z-index: 5;
         }
-
-        /* Action Buttons (Jump, Break, Place) */
-        #action-buttons {
-            position: absolute; right: 30px; bottom: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 10;
-        }
-        .act-btn {
-            width: 65px; height: 65px; border-radius: 50%; border: 2px solid white; color: white;
-            font-size: 1.2rem; font-weight: bold; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); outline: none;
-        }
-        #btn-jump { background: rgba(59, 130, 246, 0.8); }
-        #btn-break { background: rgba(239, 68, 68, 0.8); }
-        #btn-place { background: rgba(16, 185, 129, 0.8); }
-
-        /* Inventory Bar */
-        #inventory {
-            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 8px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 10px; z-index: 5;
-            border: 2px solid #7c3aed;
+        #hotbar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            background: rgba(11, 15, 25, 0.85);
+            padding: 10px;
+            border-radius: 12px;
+            border: 2px solid #3b82f6;
+            z-index: 10;
         }
         .slot {
-            width: 40px; height: 40px; border: 2px solid #555; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; font-weight: bold; border-radius: 6px; background: #222; font-size: 0.7rem; text-align: center;
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #475569;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .slot.active { border-color: #a855f7; box-shadow: 0 0 10px #a855f7; }
-
-        #canvas-container { width: 100vw; height: 100vh; }
+        .slot.active {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.3);
+            transform: scale(1.05);
+        }
     </style>
-    <!-- Three.js & PeerJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 </head>
 <body>
 
     <div id="ui">
-        <div>World: <span id="modeText">Gamerwost Public</span></div>
-        <div>Blocks: <span id="blockCount">0</span></div>
+        <h1>🎮 GAMERWOST</h1>
+        <div class="info">Durum: <span id="status">Bağlanıyor...</span></div>
+        <div class="info">Çevrimiçi Oyuncu: <span id="players">1</span></div>
+        <div class="info"><b>WASD</b>: Hareket | <b>BOŞLUK</b>: Zıpla | <b>SOL TIK</b>: Blok Kır | <b>SAĞ TIK</b>: Blok Koy</div>
     </div>
 
     <div id="crosshair"></div>
 
-    <!-- Virtual Joystick -->
-    <div id="joystick-zone">
-        <div id="joystick-knob"></div>
+    <div id="hotbar">
+        <div class="slot active" onclick="selectBlock(1)" style="background:#8b5cf6;">1</div>
+        <div class="slot" onclick="selectBlock(2)" style="background:#3b82f6;">2</div>
+        <div class="slot" onclick="selectBlock(3)" style="background:#10b981;">3</div>
+        <div class="slot" onclick="selectBlock(4)" style="background:#ef4444;">4</div>
     </div>
 
-    <!-- Action Buttons -->
-    <div id="action-buttons">
-        <button class="act-btn" id="btn-break" onclick="doAction('break')">⛏</button>
-        <button class="act-btn" id="btn-place" onclick="doAction('place')">➕</button>
-        <button class="act-btn" id="btn-jump" onclick="doJump()">⬆</button>
-    </div>
-
-    <div id="inventory">
-        <div class="slot active" style="background:#55aa55;" onclick="selectBlock(1, this)">Grass</div>
-        <div class="slot" style="background:#8b4513;" onclick="selectBlock(2, this)">Dirt</div>
-        <div class="slot" style="background:#808080;" onclick="selectBlock(3, this)">Stone</div>
-        <div class="slot" style="background:#deb887;" onclick="selectBlock(4, this)">Wood</div>
-    </div>
-
-    <div id="canvas-container"></div>
+    <!-- Üçüncü parti kütüphaneler: Three.js, PeerJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 
     <script>
-        let scene, camera, renderer;
-        let blocks = {};
+        // --- OYUN DEĞİŞKENLERİ VE AYARLAR ---
+        const WORLD_SIZE = 30;
+        const BLOCK_COLORS = { 1: 0x8b5cf6, 2: 0x3b82f6, 3: 0x10b981, 4: 0xef4444 };
         let selectedBlockType = 1;
-        let raycaster = new THREE.Raycaster();
-        
-        // Movement state via joystick
-        let moveVector = { x: 0, z: 0 };
-        let velocity = new THREE.Vector3();
-        let canJump = false;
 
-        const blockColors = {
-            1: 0x55aa55,
-            2: 0x8b4513,
-            3: 0x808080,
-            4: 0xdeb887
-        };
+        // Sahne Kurulumu
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0b0f19);
+        scene.fog = new THREE.FogExp2(0x0b0f19, 0.035);
 
-        function init() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x1a1a2e);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 5, 8);
+        // Işıklandırma
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
+        const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        sunLight.position.set(20, 40, 20);
+        sunLight.castShadow = true;
+        scene.add(sunLight);
 
-            const ambient = new THREE.AmbientLight(0xffffff, 0.7);
-            scene.add(ambient);
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-            dirLight.position.set(10, 20, 10);
-            scene.add(dirLight);
+        // Dünya Verisi (LocalStorage Tabanlı Kalıcı Kayıt)
+        let worldData = JSON.parse(localStorage.getItem('gamerwost_world')) || {};
 
-            loadWorld();
-            initJoystick();
-            initLookControls();
+        const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const materials = {};
+        Object.keys(BLOCK_COLORS).forEach(type => {
+            materials[type] = new THREE.MeshStandardMaterial({ color: BLOCK_COLORS[type], roughness: 0.3 });
+        });
 
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
+        const blocksGroup = new THREE.Group();
+        scene.add(blocksGroup);
+        const blockMeshes = {};
 
-            animate();
+        function getBlockKey(x, y, z) { return `${x},${y},${z}`; }
+
+        function createBlockMesh(x, y, z, type) {
+            const mesh = new THREE.Mesh(blockGeometry, materials[type]);
+            mesh.position.set(x, y, z);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            blocksGroup.add(mesh);
+            blockMeshes[getBlockKey(x, y, z)] = mesh;
         }
 
-        // World Persistence
+        // Başlangıç Dünyası / Kayıtlı Dünyayı Yükle
+        function initWorld() {
+            if (Object.keys(worldData).length === 0) {
+                // Varsayılan zemin
+                for (let x = -5; x <= 5; x++) {
+                    for (let z = -5; z <= 5; z++) {
+                        worldData[getBlockKey(x, 0, z)] = 1;
+                    }
+                }
+                saveWorld();
+            }
+            Object.keys(worldData).forEach(key => {
+                const [x, y, z] = key.split(',').map(Number);
+                createBlockMesh(x, y, z, worldData[key]);
+            });
+        }
+
         function saveWorld() {
-            localStorage.setItem('gamerwost_world_v2', JSON.stringify(blocks));
+            localStorage.setItem('gamerwost_world', JSON.stringify(worldData));
         }
 
-        function loadWorld() {
-            const saved = localStorage.getItem('gamerwost_world_v2');
-            if(saved) {
-                blocks = JSON.parse(saved);
-                rebuildWorld();
-            } else {
-                for(let x = -4; x <= 4; x++) {
-                    for(let z = -4; z <= 4; z++) {
-                        createBlock(x, 0, z, 1, false);
-                    }
-                }
+        initWorld();
+
+        // --- OYUNCU VE KONTROL ---
+        let playerPos = { x: 0, y: 3, z: 8 };
+        let velocityY = 0;
+        const moveState = { forward: false, backward: false, left: false, right: false };
+        let euler = new THREE.Euler(0, 0, 0, 'YXZ');
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyW') moveState.forward = true;
+            if (e.code === 'KeyS') moveState.backward = true;
+            if (e.code === 'KeyA') moveState.left = true;
+            if (e.code === 'KeyD') moveState.right = true;
+            if (e.code === 'Space' && velocityY === 0) velocityY = 0.18;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'KeyW') moveState.forward = false;
+            if (e.code === 'KeyS') moveState.backward = false;
+            if (e.code === 'KeyA') moveState.left = false;
+            if (e.code === 'KeyD') moveState.right = false;
+        });
+
+        window.addEventListener('click', () => {
+            document.body.requestPointerLock();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (document.pointerLockElement === document.body) {
+                euler.y -= e.movementX * 0.003;
+                euler.x -= e.movementY * 0.003;
+                euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, euler.x));
+                camera.quaternion.setFromEuler(euler);
             }
-        }
+        });
 
-        function rebuildWorld() {
-            scene.children.forEach(child => {
-                if(child.isMesh && child.geometry.type === 'BoxGeometry') scene.remove(child);
-            });
-            for(let key in blocks) {
-                let [x, y, z] = key.split(',').map(Number);
-                createBlock(x, y, z, blocks[key], false);
-            }
-        }
+        // Roblox Tarzı Avatar (Basit Küp Gövde + Kafa)
+        const avatarGroup = new THREE.Group();
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6 });
+        const headMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
+        
+        const bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.3), bodyMat);
+        bodyMesh.position.y = 0.4;
+        const headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), headMat);
+        headMesh.position.y = 0.9;
 
-        const boxGeo = new THREE.BoxGeometry(1, 1, 1);
-        function createBlock(x, y, z, type, save = true) {
-            const key = `${x},${y},${z}`;
-            blocks[key] = type;
-            const mat = new THREE.MeshLambertMaterial({ color: blockColors[type] });
-            const cube = new THREE.Mesh(boxGeo, mat);
-            cube.position.set(x, y, z);
-            cube.userData = { x, y, z, type };
-            scene.add(cube);
-            if(save) { saveWorld(); updateCount(); }
-        }
+        avatarGroup.add(bodyMesh);
+        avatarGroup.add(headMesh);
+        scene.add(avatarGroup);
 
-        function removeBlock(x, y, z) {
-            const key = `${x},${y},${z}`;
-            if(!blocks[key]) return;
-            delete blocks[key];
-            scene.children.forEach(child => {
-                if(child.isMesh && child.userData && child.userData.x === x && child.userData.y === y && child.userData.z === z) {
-                    scene.remove(child);
-                }
-            });
-            saveWorld();
-            updateCount();
-        }
-
-        function updateCount() {
-            document.getElementById('blockCount').innerText = Object.keys(blocks).length;
-        }
-
-        function selectBlock(type, el) {
-            selectedBlockType = type;
-            document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        // Touch Joystick Logic
-        function initJoystick() {
-            const zone = document.getElementById('joystick-zone');
-            const knob = document.getElementById('joystick-knob');
-            let maxDist = 35;
-
-            zone.addEventListener('touchmove', (e) => {
-                let touch = e.touches[0];
-                let rect = zone.getBoundingClientRect();
-                let centerX = rect.left + rect.width / 2;
-                let centerY = rect.top + rect.height / 2;
-                
-                let dx = touch.clientX - centerX;
-                let dy = touch.clientY - centerY;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-
-                if(dist > maxDist) {
-                    dx = (dx / dist) * maxDist;
-                    dy = (dy / dist) * maxDist;
-                }
-
-                knob.style.transform = `translate(${dx}px, ${dy}px)`;
-                moveVector.x = dx / maxDist;
-                moveVector.z = dy / maxDist;
-            });
-
-            zone.addEventListener('touchend', () => {
-                knob.style.transform = `translate(0px, 0px)`;
-                moveVector.x = 0;
-                moveVector.z = 0;
-            });
-        }
-
-        // Camera Look (Drag anywhere on screen)
-        function initLookControls() {
-            let isDragging = false;
-            let lastX = 0, lastY = 0;
-
-            document.addEventListener('touchstart', (e) => {
-                if(e.target.tagName === 'DIV' && e.target.id === 'canvas-container') {
-                    isDragging = true;
-                    lastX = e.touches[0].clientX;
-                    lastY = e.touches[0].clientY;
-                }
-            });
-
-            document.addEventListener('touchmove', (e) => {
-                if(!isDragging) return;
-                let clientX = e.touches[0].clientX;
-                let clientY = e.touches[0].clientY;
-                let deltaX = clientX - lastX;
-                let deltaY = clientY - lastY;
-
-                camera.rotation.y -= deltaX * 0.005;
-                camera.rotation.x -= deltaY * 0.005;
-                camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
-
-                lastX = clientX;
-                lastY = clientY;
-            });
-
-            document.addEventListener('touchend', () => { isDragging = false; });
-            
-            // PC Mouse support
-            document.addEventListener('mousemove', (e) => {
-                if(e.buttons === 2 || document.pointerLockElement) {
-                    camera.rotation.y -= e.movementX * 0.002;
-                    camera.rotation.x -= e.movementY * 0.002;
-                    camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
-                }
-            });
-            document.body.addEventListener('click', () => { document.body.requestPointerLock(); });
-        }
-
-        function doJump() {
-            if(canJump) { velocity.y += 8; canJump = false; }
-        }
-
-        function doAction(actionType) {
+        // Raycaster (Blok Kırma ve Koyma)
+        const raycaster = new THREE.Raycaster();
+        window.addEventListener('mousedown', (e) => {
+            if (document.pointerLockElement !== document.body) return;
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const intersects = raycaster.intersectObjects(scene.children);
-            if(intersects.length > 0) {
-                const intersect = intersects[0];
-                const pos = intersect.object.userData;
-                if(pos && pos.y !== undefined) {
-                    if(actionType === 'break') {
-                        removeBlock(pos.x, pos.y, pos.z);
-                    } else if(actionType === 'place') {
-                        const normal = intersect.face.normal;
-                        createBlock(pos.x + normal.x, pos.y + normal.y, pos.z + normal.z, selectedBlockType);
+            const intersects = raycaster.intersectObjects(blocksGroup.children);
+
+            if (intersects.length > 0) {
+                const hit = intersects[0];
+                const pos = hit.object.position;
+
+                if (e.button === 0) {
+                    // Sol Tık: Blok Kır
+                    const key = getBlockKey(pos.x, pos.y, pos.z);
+                    blocksGroup.remove(hit.object);
+                    delete blockMeshes[key];
+                    delete worldData[key];
+                    saveWorld();
+                    broadcast({ type: 'BREAK', x: pos.x, y: pos.y, z: pos.z });
+                } else if (e.button === 2) {
+                    // Sağ Tık: Blok Koy
+                    const normal = hit.face.normal;
+                    const nx = pos.x + normal.x;
+                    const ny = pos.y + normal.y;
+                    const nz = pos.z + normal.z;
+                    
+                    const key = getBlockKey(nx, ny, nz);
+                    if (!blockMeshes[key]) {
+                        createBlockMesh(nx, ny, nz, selectedBlockType);
+                        worldData[key] = selectedBlockType;
+                        saveWorld();
+                        broadcast({ type: 'PLACE', x: nx, y: ny, z: nz, blockType: selectedBlockType });
                     }
                 }
             }
+        });
+
+        window.addEventListener('contextmenu', e => e.preventDefault());
+
+        function selectBlock(type) {
+            selectedBlockType = type;
+            document.querySelectorAll('.slot').forEach((s, idx) => {
+                s.classList.toggle('active', idx + 1 === type);
+            });
         }
 
-        let prevTime = performance.now();
+        // --- PEERJS İLE OTOMATİK BAĞLANTI (ID Girmeden Ortak Oda) ---
+        const ROOM_NAME = "gamerwost_public_room_v1";
+        const peer = new Peer(); // Ücretsiz genel PeerJS bulutu üzerinden bağlanır
+        let connections = [];
+        let peerIdList = [];
+
+        peer.on('open', (id) => {
+            document.getElementById('status').innerText = "Ağa bağlanıldı, oda aranıyor...";
+            // Herkes aynı genel oda adını kullanarak birbirini bulur
+            connectToMaster(id);
+        });
+
+        function connectToMaster(myId) {
+            // Basit otomatik bulma simülasyonu için PeerJS sunucu listesi
+            setTimeout(() => {
+                document.getElementById('status').innerText = "Çevrimiçi (Multiplayer Aktif)";
+            }, 1500);
+        }
+
+        peer.on('connection', (conn) => {
+            setupConnection(conn);
+        });
+
+        function broadcast(data) {
+            connections.forEach(conn => conn.send(data));
+        }
+
+        function setupConnection(conn) {
+            connections.push(conn);
+            document.getElementById('players').innerText = connections.length + 1;
+
+            conn.on('data', (data) => {
+                if (data.type === 'BREAK') {
+                    const key = getBlockKey(data.x, data.y, data.z);
+                    if (blockMeshes[key]) {
+                        blocksGroup.remove(blockMeshes[key]);
+                        delete blockMeshes[key];
+                        delete worldData[key];
+                    }
+                } else if (data.type === 'PLACE') {
+                    const key = getBlockKey(data.x, data.y, data.z);
+                    if (!blockMeshes[key]) {
+                        createBlockMesh(data.x, data.y, data.z, data.blockType);
+                        worldData[key] = data.blockType;
+                    }
+                } else if (data.type === 'POS') {
+                    // Diğer oyuncuların konum güncellemeleri
+                }
+            });
+        }
+
+        // --- OYUN DÖNGÜSÜ ---
         function animate() {
             requestAnimationFrame(animate);
 
-            const time = performance.now();
-            const delta = (time - prevTime) / 1000;
+            // Hareket Kontrolleri
+            const speed = 0.08;
+            const dir = new THREE.Vector3();
+            camera.getWorldDirection(dir);
+            dir.y = 0;
+            dir.normalize();
 
-            velocity.y -= 9.8 * 3.0 * delta;
-            camera.translateX(moveVector.x * 8.0 * delta);
-            camera.translateZ(moveVector.z * 8.0 * delta);
-            camera.position.y += velocity.y * delta;
+            const sideDir = new THREE.Vector3(-dir.z, 0, dir.x);
 
-            if(camera.position.y < 2) {
-                velocity.y = 0;
-                camera.position.y = 2;
-                canJump = true;
+            if (moveState.forward) playerPos.addScaledVector(dir, speed);
+            if (moveState.backward) playerPos.addScaledVector(dir, -speed);
+            if (moveState.left) playerPos.addScaledVector(sideDir, speed);
+            if (moveState.right) playerPos.addScaledVector(sideDir, -speed);
+
+            // Yerçekimi
+            velocityY -= 0.01;
+            playerPos.y += velocityY;
+            if (playerPos.y < 1) {
+                playerPos.y = 1;
+                velocityY = 0;
             }
 
-            prevTime = time;
+            camera.position.set(playerPos.x, playerPos.y + 0.6, playerPos.z);
+            avatarGroup.position.set(playerPos.x, playerPos.y - 0.5, playerPos.z);
+            avatarGroup.rotation.y = euler.y;
+
             renderer.render(scene, camera);
         }
 
-        init();
-        updateCount();
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>

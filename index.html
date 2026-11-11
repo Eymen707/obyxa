@@ -1,371 +1,194 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Mobile Roblox x Minecraft</title>
-    <style>
-        * { box-sizing: border-box; touch-action: none; }
-        body {
-            margin: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #0b0f19;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
-        }
-        #game-container {
-            width: 100%;
-            height: 100%;
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-        #ui {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            color: white;
-            z-index: 10;
-            background: rgba(11, 15, 25, 0.85);
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 2px solid #8b5cf6;
-            max-width: 280px;
-            pointer-events: none;
-        }
-        h1 {
-            margin: 0 0 6px 0;
-            font-size: 20px;
-            background: linear-gradient(45deg, #c084fc, #38bdf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .info {
-            font-size: 12px;
-            color: #cbd5e1;
-            margin-bottom: 4px;
-        }
-        #crosshair {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 10px;
-            height: 10px;
-            transform: translate(-50%, -50%);
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 5;
-        }
-        /* Mobil Joystick ve Butonlar */
-        #controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            z-index: 10;
-            pointer-events: none;
-        }
-        .joy-pad {
-            display: grid;
-            grid-template-columns: 50px 50px 50px;
-            grid-template-rows: 50px 50px;
-            gap: 5px;
-            pointer-events: auto;
-        }
-        .joy-btn {
-            background: rgba(139, 92, 246, 0.4);
-            border: 2px solid #c084fc;
-            border-radius: 10px;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            active { background: rgba(139, 92, 246, 0.8); }
-        }
-        .action-pad {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: auto;
-        }
-        .act-btn {
-            width: 65px;
-            height: 45px;
-            background: rgba(56, 189, 248, 0.4);
-            border: 2px solid #38bdf8;
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        #hotbar {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            z-index: 10;
-        }
-        .slot {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #64748b;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .slot.active {
-            border-color: #c084fc;
-            background: rgba(192, 132, 252, 0.4);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMERWOST - Oyun Yap, Yayınla, Oyna</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+  /* ============ GENEL ============ */
+  *{box-sizing:border-box;font-family:Arial,sans-serif}
+  body{margin:0;background:#0b0b14;color:#fff}
+  header{background:linear-gradient(90deg,#7b2ff7,#00d4ff);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+  .logo{display:flex;gap:10px;align-items:center;font-size:26px;font-weight:900;letter-spacing:1px}
+  .logo-icon{width:46px;height:46px;border-radius:50%;background:#111;color:#a855f7;display:flex;align-items:center;justify-content:center;font-size:28px}
+  .top-nav{display:flex;gap:8px}
+  .top-nav button{padding:10px 16px;border:0;border-radius:10px;background:rgba(0,0,0,.35);color:#fff;font-weight:800;cursor:pointer}
+  .top-nav button.active{background:#fff;color:#000}
+  .container{max-width:1300px;margin:auto;padding:16px}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+  .card{background:#171726;border:1px solid #2d2d4a;border-radius:16px;padding:16px;margin-bottom:16px}
+  .card h2{margin:0 0 10px 0;font-size:19px}
+  .card h3{margin:14px 0 8px 0;font-size:15px;color:#9beaff}
+  canvas{width:100%;background:#87ceeb;border-radius:12px;display:block;cursor:crosshair}
+  input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#0f0f1e;color:#fff}
+  textarea{height:70px;resize:none}
+  button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:800;color:#fff}
+  .btn-primary{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
+  .btn-green{background:#22c55e}
+  .btn-red{background:#ef4444}
+  .btn-dark{background:#2a2a45}
+  .btn-small{padding:7px 10px;font-size:12px}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  .row button{flex:0 0 140px}
+  .hint{font-size:13px;color:#aaa}
+  .status{color:#7CFC00;font-size:13px}
+  .chat-box{height:130px;overflow:auto;background:#0a0a16;padding:10px;border-radius:10px;font-size:14px}
+  .game-item{border:1px solid #333;padding:12px;border-radius:12px;margin-top:10px}
+  .game-item b{font-size:16px}
+  .tag{display:inline-block;background:#2a2a45;padding:3px 8px;border-radius:20px;font-size:11px;margin:2px}
+  .palette{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+  .palette button{padding:14px 4px;font-size:20px;border:2px solid transparent}
+  .palette button.selected{border-color:#fff;transform:scale(1.05)}
+  .stat{display:flex;gap:10px}
+  .stat div{flex:1;background:#0f0f1e;border-radius:10px;padding:10px;text-align:center}
+  .stat b{font-size:22px;display:block}
+  .hidden{display:none!important}
+  .tabs{display:flex;gap:8px;margin-bottom:12px}
+  .tabs button{flex:1;background:#2a2a45}
+  .tabs button.active{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
+  .leader{font-size:13px}
+  .leader div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}header{flex-direction:column;gap:10px}}
+</style>
 </head>
 <body>
 
-    <div id="ui">
-        <h1>🎮 GAMERWOST</h1>
-        <div class="info">Durum: <span id="status" style="color:#facc15;">Aktif</span></div>
-        <div class="info">Blok Koy / Kır ve Dünyanı Kur!</div>
-    </div>
+<header>
+  <div class="logo"><span class="logo-icon">G</span> GAMERWOST</div>
+  <div class="top-nav">
+    <button id="navPlay" class="active" onclick="showPage('play')">🎮 OYNA</button>
+    <button id="navMake" onclick="showPage('make')">🛠️ OYUN YAP</button>
+    <button id="navPublish" onclick="showPage('publish')">🚀 YAYINLA</button>
+  </div>
+  <div>👤 <span id="headerNick">GamerWost</span> • ⭐ <span id="headerPoint">0</span></div>
+</header>
 
-    <div id="crosshair"></div>
+<div class="container">
+  <div class="stat">
+    <div><b id="statGames">0</b>Yayınlanan Oyun</div>
+    <div><b id="statPlayers">1</b>Çevrimiçi</div>
+    <div><b id="statPlays">0</b>Oynanma</div>
+    <div><b id="statLikes">0</b>Beğeni</div>
+  </div>
 
-    <div id="hotbar">
-        <div class="slot active" onclick="selectBlock(1)" style="background:#8b5cf6;">1</div>
-        <div class="slot" onclick="selectBlock(2)" style="background:#3b82f6;">2</div>
-        <div class="slot" onclick="selectBlock(3)" style="background:#10b981;">3</div>
-        <div class="slot" onclick="selectBlock(4)" style="background:#ef4444;">4</div>
-    </div>
-
-    <div id="controls">
-        <div class="joy-pad">
-            <div></div>
-            <button class="joy-btn" ontouchstart="moveState.forward=true" ontouchend="moveState.forward=false" onmousedown="moveState.forward=true" onmouseup="moveState.forward=false">⬆️</button>
-            <div></div>
-            <button class="joy-btn" ontouchstart="moveState.left=true" ontouchend="moveState.left=false" onmousedown="moveState.left=true" onmouseup="moveState.left=false">⬅️</button>
-            <button class="joy-btn" ontouchstart="moveState.backward=true" ontouchend="moveState.backward=false" onmousedown="moveState.backward=true" onmouseup="moveState.backward=false">⬇️</button>
-            <button class="joy-btn" ontouchstart="moveState.right=true" ontouchend="moveState.right=false" onmousedown="moveState.right=true" onmouseup="moveState.right=false">➡️</button>
+  <div class="grid">
+    <!-- ================= SOL ================= -->
+    <div>
+      <!-- OYNA SAYFASI -->
+      <div id="pagePlay">
+        <div class="card">
+          <h2>🌍 Canlı Dünya - <span id="nowPlaying">Blok Dünyası</span></h2>
+          <div class="tabs">
+            <button class="active" onclick="setMode('play')">🎮 Oyna</button>
+            <button onclick="setMode('spectate')">👀 İzle</button>
+          </div>
+          <canvas id="gameCanvas" width="900" height="420"></canvas>
+          <p class="hint">WASD / Ok Tuşu = Hareket • W / Space = Zıpla • E = Blok Kır • R = Blok Koy • Puan topla, düşme!</p>
+          <div class="row">
+            <div style="background:#0f0f1e;padding:10px;border-radius:10px">❤️ Can: <b id="hpText">100</b><br>⭐ Puan: <b id="scoreText">0</b></div>
+            <div style="background:#0f0f1e;padding:10px;border-radius:10px">🪙 Coin: <b id="coinText">0</b><br>🏆 Seviye: <b id="levelText">1</b></div>
+            <div style="background:#0f0f1e;padding:10px;border-radius:10px">⏱ Süre: <b id="timeText">00:00</b><br>🎯 Hedef: <b id="goalText">10 coin topla</b></div>
+          </div>
+          <br>
+          <div class="row">
+            <button class="btn-green" onclick="restartGame()">🔄 Yeniden Başla</button>
+            <button class="btn-dark" onclick="toggleSound()">🔊 Ses: <span id="soundText">Açık</span></button>
+            <button class="btn-red" onclick="leaveGame()">🚪 Oyundan Çık</button>
+          </div>
         </div>
-        <div class="action-pad">
-            <button class="act-btn" onclick="triggerJump()">Zıpla</button>
-            <button class="act-btn" style="background:rgba(239, 68, 68, 0.4); border-color:#ef4444;" onclick="breakBlockAction()">Kır</button>
-            <button class="act-btn" style="background:rgba(16, 185, 129, 0.4); border-color:#10b981;" onclick="placeBlockAction()">Koy</button>
+
+        <div class="card">
+          <h2>👥 Çok Oyunculu - PeerJS</h2>
+          <div class="row"><input id="myIdInput" readonly placeholder="ID yükleniyor..."><button class="btn-dark" id="copyBtn">ID Kopyala</button></div>
+          <div class="row"><input id="joinIdInput" placeholder="Arkadaşının ID'si"><button class="btn-primary" id="joinBtn">Odaya Katıl</button></div>
+          <p id="statusText" class="status">Bağlanılıyor...</p>
+          <div id="onlineList" class="leader"></div>
         </div>
+
+        <div class="card">
+          <h2>💬 Canlı Sohbet</h2>
+          <div id="chatBox" class="chat-box"></div>
+          <div class="row"><input id="chatInput" placeholder="Mesaj yaz..."><button class="btn-primary" id="sendBtn">Gönder</button></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn-dark btn-small" onclick="quickChat('GG! 🔥')">GG!</button>
+            <button class="btn-dark btn-small" onclick="quickChat('Hadi gel!')">Hadi gel!</button>
+            <button class="btn-dark btn-small" onclick="quickChat('Çok iyi oynuyorsun!')">Çok iyi!</button>
+            <button class="btn-dark btn-small" onclick="quickChat('Yardım lazım!')">Yardım!</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OYUN YAP SAYFASI -->
+      <div id="pageMake" class="hidden">
+        <div class="card">
+          <h2>🛠️ Oyun Yap - Harita Editörü</h2>
+          <p class="hint">Bir blok seç, haritaya tıkla. Sağ tık = Sil. Editörde yaptığın harita oyun olur.</p>
+          <div class="palette" id="palette"></div>
+          <br>
+          <canvas id="editorCanvas" width="900" height="420"></canvas>
+          <div class="row" style="margin-top:10px">
+            <button class="btn-green" onclick="testMyMap()">▶️ Haritamı Test Et</button>
+            <button class="btn-dark" onclick="clearMap()">🗑️ Haritayı Temizle</button>
+            <button class="btn-dark" onclick="randomMap()">🎲 Rastgele Harita</button>
+            <button class="btn-dark" onclick="saveTemplate('kolay')">Kolay Şablon</button>
+          </div>
+          <div class="row">
+            <button class="btn-dark" onclick="saveTemplate('zor')">Zor Şablon</button>
+            <button class="btn-dark" onclick="saveTemplate('parkur')">Parkur Şablon</button>
+            <button class="btn-dark" onclick="exportMap()">📤 Haritayı Kopyala</button>
+            <button class="btn-dark" onclick="importMap()">📥 Harita Yapıştır</button>
+          </div>
+          <h3>Harita Ayarları</h3>
+          <div class="row">
+            <select id="mapDifficulty"><option>Kolay</option><option>Orta</option><option>Zor</option><option>İmkansız</option></select>
+            <select id="mapTheme"><option>Çim</option><option>Çöl</option><option>Kar</option><option>Lav</option><option>Uzay</option></select>
+          </div>
+          <div class="row">
+            <input id="mapTime" type="number" value="120" placeholder="Süre (sn)">
+            <input id="mapCoinGoal" type="number" value="10" placeholder="Coin Hedefi">
+          </div>
+        </div>
+      </div>
+
+      <!-- YAYINLA SAYFASI -->
+      <div id="pagePublish" class="hidden">
+        <div class="card">
+          <h2>🚀 Oyununu Yayınla</h2>
+          <p class="hint">Editörde yaptığın harita otomatik buraya gelir. Adını yaz, yayınla, herkes oynasın!</p>
+          <input id="gameName" placeholder="Oyun Adı: Örn: Lava Parkuru">
+          <select id="gameType"><option>Parkur</option><option>Savaş</option><option>Yarış</option><option>Macera</option><option>Korku</option><option>Simülasyon</option><option>Bulmaca</option></select>
+          <textarea id="gameDesc" placeholder="Oyununu anlat: Nasıl oynanır? Ne kadar zor?"></textarea>
+          <input id="gameTags" placeholder="Etiketler: parkur, zor, eğlenceli (virgülle ayır)">
+          <div class="row">
+            <select id="gameAge"><option>Herkes</option><option>7+</option><option>13+</option></select>
+            <select id="gamePrice"><option>Ücretsiz</option><option>10 Coin</option><option>50 Coin</option></select>
+          </div>
+          <button class="btn-primary" id="publishBtn" style="width:100%;margin-top:8px;font-size:17px;padding:15px">🚀 OYUNU YAYINLA</button>
+          <p class="hint" id="publishInfo">Henüz yayınlanmadı.</p>
+        </div>
+        <div class="card">
+          <h2>📋 Yayınlama Kuralları</h2>
+          <p class="hint">1. Küfür / kötü içerik yok • 2. Haritan en az 5 blok olmalı • 3. Adın boş olamaz • 4. Yayınladığın oyun herkesin listesinde görünür</p>
+        </div>
+      </div>
     </div>
 
-    <div id="game-container"></div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-
-    <script>
-        let selectedBlockType = 1;
-        const BLOCK_COLORS = { 1: 0x8b5cf6, 2: 0x3b82f6, 3: 0x10b981, 4: 0xef4444 };
-
-        const container = document.getElementById('game-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0b0f19);
-        scene.fog = new THREE.FogExp2(0x0b0f19, 0.02);
-
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        container.appendChild(renderer.domElement);
-
-        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-        const sun = new THREE.DirectionalLight(0xffffff, 0.8);
-        sun.position.set(20, 40, 20);
-        scene.add(sun);
-
-        let worldData = JSON.parse(localStorage.getItem('gamerwost_mobile_world')) || {};
-        const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
-        const materials = {};
-        Object.keys(BLOCK_COLORS).forEach(type => {
-            materials[type] = new THREE.MeshStandardMaterial({ color: BLOCK_COLORS[type], roughness: 0.3 });
-        });
-
-        const blocksGroup = new THREE.Group();
-        scene.add(blocksGroup);
-        const blockMeshes = {};
-
-        function getBlockKey(x, y, z) { return `${x},${y},${z}`; }
-
-        function createBlockMesh(x, y, z, type) {
-            const mesh = new THREE.Mesh(blockGeometry, materials[type] || materials[1]);
-            mesh.position.set(x, y, z);
-            blocksGroup.add(mesh);
-            blockMeshes[getBlockKey(x, y, z)] = mesh;
-        }
-
-        if (Object.keys(worldData).length === 0) {
-            for (let x = -5; x <= 5; x++) {
-                for (let z = -5; z <= 5; z++) {
-                    worldData[getBlockKey(x, 0, z)] = 1;
-                }
-            }
-            localStorage.setItem('gamerwost_mobile_world', JSON.stringify(worldData));
-        }
-
-        Object.keys(worldData).forEach(key => {
-            const [x, y, z] = key.split(',').map(Number);
-            createBlockMesh(x, y, z, worldData[key]);
-        });
-
-        let playerPos = { x: 0, y: 4, z: 6 };
-        let velocityY = 0;
-        const moveState = { forward: false, backward: false, left: false, right: false };
-        let cameraAngleY = 0;
-
-        // Ekran kaydırma ile etrafa bakma
-        let isDragging = false, prevMouseX = 0;
-        window.addEventListener('touchstart', (e) => {
-            if(e.target.tagName === 'BUTTON' || e.target.closest('#controls') || e.target.closest('#hotbar')) return;
-            isDragging = true;
-            prevMouseX = e.touches[0].clientX;
-        });
-        window.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            let deltaX = e.touches[0].clientX - prevMouseX;
-            cameraAngleY -= deltaX * 0.008;
-            prevMouseX = e.touches[0].clientX;
-        });
-        window.addEventListener('touchend', () => { isDragging = false; });
-
-        function triggerJump() {
-            if (playerPos.y <= 1.5) velocityY = 0.2;
-        }
-
-        const raycaster = new THREE.Raycaster();
-        function breakBlockAction() {
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const hits = raycaster.intersectObjects(blocksGroup.children);
-            if (hits.length > 0) {
-                const pos = hits[0].object.position;
-                const key = getBlockKey(pos.x, pos.y, pos.z);
-                blocksGroup.remove(hits[0].object);
-                delete blockMeshes[key];
-                delete worldData[key];
-                localStorage.setItem('gamerwost_mobile_world', JSON.stringify(worldData));
-                broadcast({ type: 'BREAK', x: pos.x, y: pos.y, z: pos.z });
-            }
-        }
-
-        function placeBlockAction() {
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const hits = raycaster.intersectObjects(blocksGroup.children);
-            if (hits.length > 0) {
-                const hit = hits[0];
-                const pos = hit.object.position;
-                const normal = hit.face.normal;
-                const nx = pos.x + normal.x;
-                const ny = pos.y + normal.y;
-                const nz = pos.z + normal.z;
-                const key = getBlockKey(nx, ny, nz);
-                if (!blockMeshes[key]) {
-                    createBlockMesh(nx, ny, nz, selectedBlockType);
-                    worldData[key] = selectedBlockType;
-                    localStorage.setItem('gamerwost_mobile_world', JSON.stringify(worldData));
-                    broadcast({ type: 'PLACE', x: nx, y: ny, z: nz, blockType: selectedBlockType });
-                }
-            }
-        }
-
-        function selectBlock(type) {
-            selectedBlockType = type;
-            document.querySelectorAll('.slot').forEach((s, idx) => {
-                s.classList.toggle('active', idx + 1 === type);
-            });
-        }
-
-        // PeerJS Multiplayer Bağlantısı
-        const peer = new Peer();
-        let connections = [];
-        peer.on('open', () => { document.getElementById('status').innerText = "Çevrimiçi"; });
-        peer.on('connection', (conn) => {
-            connections.push(conn);
-            conn.on('data', (data) => {
-                if (data.type === 'BREAK') {
-                    const key = getBlockKey(data.x, data.y, data.z);
-                    if (blockMeshes[key]) {
-                        blocksGroup.remove(blockMeshes[key]);
-                        delete blockMeshes[key];
-                        delete worldData[key];
-                    }
-                } else if (data.type === 'PLACE') {
-                    const key = getBlockKey(data.x, data.y, data.z);
-                    if (!blockMeshes[key]) {
-                        createBlockMesh(data.x, data.y, data.z, data.blockType);
-                        worldData[key] = data.blockType;
-                    }
-                }
-            });
-        });
-
-        function broadcast(data) {
-            connections.forEach(conn => conn.send(data));
-        }
-
-        // Roblox Tarzı Karakter Modeli
-        const avatarGroup = new THREE.Group();
-        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8 });
-        const headMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
-        const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.3), bodyMat);
-        torso.position.y = 0.4;
-        const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), headMat);
-        head.position.y = 0.9;
-        avatarGroup.add(torso, head);
-        scene.add(avatarGroup);
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            const speed = 0.08;
-            const dirX = Math.sin(cameraAngleY);
-            const dirZ = Math.cos(cameraAngleY);
-
-            if (moveState.forward) { playerPos.x -= dirX * speed; playerPos.z -= dirZ * speed; }
-            if (moveState.backward) { playerPos.x += dirX * speed; playerPos.z += dirZ * speed; }
-            if (moveState.left) { playerPos.x -= dirZ * speed; playerPos.z += dirX * speed; }
-            if (moveState.right) { playerPos.x += dirZ * speed; playerPos.z -= dirX * speed; }
-
-            velocityY -= 0.012;
-            playerPos.y += velocityY;
-            if (playerPos.y < 1.5) { playerPos.y = 1.5; velocityY = 0; }
-
-            camera.position.set(playerPos.x + Math.sin(cameraAngleY) * 3, playerPos.y + 1.5, playerPos.z + Math.cos(cameraAngleY) * 3);
-            camera.lookAt(playerPos.x, playerPos.y, playerPos.z);
-
-            avatarGroup.position.set(playerPos.x, playerPos.y - 0.5, playerPos.z);
-            avatarGroup.rotation.y = cameraAngleY;
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
-</body>
-</html>
+    <!-- ================= SAĞ ================= -->
+    <div>
+      <div class="card">
+        <h2>🧍 Profilin</h2>
+        <input id="playerName" value="GamerWost" placeholder="İsmin">
+        <div class="row">
+          <button class="btn-dark color-btn" data-color="#7b2ff7">Mor</button>
+          <button class="btn-dark color-btn" data-color="#00d4ff">Turkuaz</button>
+          <button class="btn-dark color-btn" data-color="#ffcc00">Sarı</button>
+        </div>
+        <div class="row">
+          <button class="btn-dark color-btn" data-color="#ef4444">Kırmızı</button>
+          <button class="btn-dark color-btn" data-color="#22c55e">Yeşil</button>
+          <button class="btn-dark color-btn" data-color="#ff6b9d">Pembe</button>
+        </div>
+        <select id="avatarHat"><option value="sahin">Mavi Şapka</option><option value="kask">Kask</option><option value="tac">Taç</option><option value="yok">Şapkasız</option></select>
+        <select id="avatarPet"><option value="yok">Evcil Hayvan Yok</option><option value="k

@@ -3,60 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost - Otomatik Online</title>
+    <title>Gamerwost - Hayatta Kalma & Online</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #87ceeb; font-family: sans-serif; user-select: none; }
+        body { margin: 0; overflow: hidden; background: #87ceeb; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
         #canvas-container { width: 100vw; height: 100vh; display: block; position: fixed; top: 0; left: 0; z-index: 1; }
         #crosshair {
-            position: absolute; top: 50%; left: 50%; width: 14px; height: 14px;
-            transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0.8); border-radius: 50%;
+            position: absolute; top: 50%; left: 50%; width: 16px; height: 16px;
+            transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0.9); border-radius: 50%;
             pointer-events: none; z-index: 5;
         }
         #status-bar {
             position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            color: white; background: rgba(0,0,0,0.7); padding: 6px 14px; border-radius: 20px;
-            font-size: 11px; z-index: 10; pointer-events: none; border: 1px solid #555;
-            text-align: center;
+            color: white; background: rgba(0,0,0,0.75); padding: 8px 16px; border-radius: 20px;
+            font-size: 12px; font-weight: bold; z-index: 10; pointer-events: none; border: 1px solid #555;
+            text-align: center; max-width: 90vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         #hud {
-            position: absolute; top: 50px; left: 10px; color: white; background: rgba(0,0,0,0.6);
-            padding: 8px; border-radius: 6px; font-size: 11px; z-index: 10; pointer-events: none;
+            position: absolute; top: 50px; left: 10px; color: white; background: rgba(0,0,0,0.65);
+            padding: 10px; border-radius: 8px; font-size: 12px; z-index: 10; pointer-events: none; border: 1px solid #444;
         }
         #mobile-controls {
-            position: absolute; bottom: 90px; left: 20px; display: grid;
-            grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(3, 50px); gap: 5px; z-index: 10;
+            position: absolute; bottom: 110px; left: 15px; display: grid;
+            grid-template-columns: repeat(3, 55px); grid-template-rows: repeat(3, 55px); gap: 6px; z-index: 10;
         }
         .m-btn {
-            background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6);
-            border-radius: 50%; color: white; font-size: 16px; font-weight: bold; display: flex;
-            align-items: center; justify-content: center; cursor: pointer;
+            background: rgba(255,255,255,0.3); border: 2px solid rgba(255,255,255,0.7);
+            border-radius: 50%; color: white; font-size: 20px; font-weight: bold; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; touch-action: manipulation;
         }
-        .m-btn:active { background: rgba(255,255,255,0.6); }
+        .m-btn:active { background: rgba(255,255,255,0.7); }
         #btn-up { grid-column: 2; grid-row: 1; }
         #btn-left { grid-column: 1; grid-row: 2; }
         #btn-right { grid-column: 3; grid-row: 2; }
         #btn-down { grid-column: 2; grid-row: 3; }
 
         #action-buttons {
-            position: absolute; bottom: 95px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 10;
+            position: absolute; bottom: 115px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 10;
         }
         .act-btn {
-            width: 60px; height: 60px; border-radius: 50%; border: none; font-weight: bold; color: white; font-size: 11px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4); cursor: pointer;
+            width: 65px; height: 65px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);
+            font-weight: bold; color: white; font-size: 13px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            cursor: pointer; touch-action: manipulation;
         }
         #btn-break { background: #ef4444; }
         #btn-place { background: #22c55e; }
+        #btn-verity-mode { position: absolute; top: 10px; right: 10px; padding: 8px 12px; font-size: 11px; z-index: 20; cursor: pointer; border-radius: 20px; border: 1px solid #fff; background: #eab308; color: black; font-weight: bold;}
 
+        /* Büyütülmüş Mobil Envanter */
         #inventory {
             position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 5px; background: rgba(0,0,0,0.85); padding: 6px; border-radius: 8px; z-index: 10; 
-            border: 1px solid #444; max-width: 95vw; overflow-x: auto;
+            display: flex; gap: 6px; background: rgba(0,0,0,0.85); padding: 8px; border-radius: 10px; z-index: 10; 
+            border: 2px solid #555; max-width: 96vw; overflow-x: auto; -webkit-overflow-scrolling: touch;
         }
         .inv-slot {
-            width: 36px; height: 36px; background: #222; border: 2px solid #555; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; color: white; cursor: pointer; border-radius: 5px; font-size: 9px; flex-shrink: 0; text-align: center;
+            width: 48px; height: 48px; background: #222; border: 2px solid #666; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: white; cursor: pointer; border-radius: 6px; font-size: 10px; flex-shrink: 0; text-align: center; font-weight: bold;
         }
-        .inv-slot.active { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.7); }
+        .inv-slot.active { border-color: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.9); background: #333; }
+        
+        #verity-alert {
+            display: none; position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+            background: rgba(220, 38, 38, 0.9); color: white; padding: 10px 20px; border-radius: 8px;
+            font-size: 14px; font-weight: bold; z-index: 50; border: 2px solid white; text-align: center;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -64,11 +73,15 @@
 <body>
 
     <div id="crosshair"></div>
-    <div id="status-bar">Bağlanıyor...</div>
+    <div id="status-bar">Gamerwost - Hazırlanıyor...</div>
+    <div id="verity-alert">⚠️ VERITY SİNİRLENDİ! SENİ KOVALIYOR! (10s)</div>
     
     <div id="hud">
-        Odun: <span id="count-wood">5</span> | Taş: <span id="count-stone">0</span>
+        Odun: <span id="count-wood">5</span> | Taş: <span id="count-stone">0</span><br>
+        Durum: <span id="game-mode">Hayatta Kalma</span>
     </div>
+
+    <button id="btn-verity-mode" onclick="toggleVerityMode()">Verity Modu</button>
 
     <div id="mobile-controls">
         <div class="m-btn" id="btn-up" ontouchstart="setKey('forward', true)" ontouchend="setKey('forward', false)" onmousedown="setKey('forward', true)" onmouseup="setKey('forward', false)">⬆️</div>
@@ -87,6 +100,12 @@
         <div class="inv-slot active" onclick="selectSlot(1, this)">Odun<br><span id="inv-1">5</span></div>
         <div class="inv-slot" onclick="selectSlot(2, this)">Taş<br><span id="inv-2">0</span></div>
         <div class="inv-slot" onclick="selectSlot(3, this)">Yaprak<br><span id="inv-3">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(4, this)">Toprak<br><span id="inv-4">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(5, this)">Tahta<br><span id="inv-5">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(6, this)">Tuğla<br><span id="inv-6">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(7, this)">Demir<br><span id="inv-7">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(8, this)">Elmas<br><span id="inv-8">0</span></div>
+        <div class="inv-slot" onclick="selectSlot(9, this)">Yün<br><span id="inv-9">0</span></div>
     </div>
 
     <script>
@@ -94,13 +113,16 @@
         let peer, conn;
         let blocks = [];
         let selectedBlockType = 1;
-        let inventoryItems = { 1: 5, 2: 0, 3: 0 };
-        let playerPos = { x: 0, y: 3, z: 2 };
-        let velocityY = 0, isGrounded = false;
+        let inventoryItems = { 1: 5, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+        let playerPos = { x: 0, y: 2, z: 2 };
+        let velocityY = 0, isGrounded = true;
         let keys = { forward: false, backward: false, left: false, right: false };
 
-        // HERKESİN OTOMATİK BAĞLANACAĞI SABİT ODA İSMİ (İstediğin gibi değiştirebilirsin)
-        const ROOM_PREFIX = "gamerwost_ana_oda_v1";
+        let verityMesh, verityMatHappy, verityMatAngry;
+        let verityAngryTimer = 0;
+        let playerHand;
+
+        const ROOM_PREFIX = "gamerwost_global_room_v2";
 
         init3D();
         initAutoPeer();
@@ -113,20 +135,41 @@
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(playerPos.x, playerPos.y, playerPos.z);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.domElement.id = "canvas-container";
             document.body.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
             dirLight.position.set(20, 40, 20);
             scene.add(dirLight);
 
+            // Zemin
             const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshStandardMaterial({ color: 0x557a2b }));
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
+            // Oyuncu Kolu (First Person Hand Texture/Model)
+            playerHand = new THREE.Group();
+            const armMesh = new THREE.Mesh(
+                new THREE.BoxGeometry(0.25, 0.25, 0.7),
+                new THREE.MeshStandardMaterial({ color: 0x4f46e5 }) // Mor/Mavi Gamerwost giysisi
+            );
+            armMesh.position.set(0.4, -0.35, -0.5);
+            playerHand.add(armMesh);
+
+            const handMesh = new THREE.Mesh(
+                new THREE.BoxGeometry(0.22, 0.22, 0.25),
+                new THREE.MeshStandardMaterial({ color: 0xffdbac }) // Ten rengi el
+            );
+            handMesh.position.set(0.4, -0.35, -0.85);
+            playerHand.add(handMesh);
+
+            camera.add(playerHand);
+            scene.add(camera);
+
+            createVerityTextures();
             animate();
 
             window.addEventListener('resize', () => {
@@ -136,33 +179,55 @@
             });
         }
 
-        // --- ID Girmeden Otomatik Oda Sistemi ---
+        // Verity Topu (Mutlu / Sinirli Kaplamaları)
+        function createVerityTextures() {
+            const canvasHappy = document.createElement('canvas');
+            canvasHappy.width = 256; canvasHappy.height = 256;
+            let ctx = canvasHappy.getContext('2d');
+            ctx.fillStyle = '#ffeb3b'; ctx.fillRect(0, 0, 256, 256);
+            ctx.fillStyle = '#000';
+            ctx.beginPath(); ctx.arc(75, 90, 16, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(181, 90, 16, 0, Math.PI * 2); ctx.fill();
+            ctx.lineWidth = 10; ctx.strokeStyle = '#000';
+            ctx.beginPath(); ctx.arc(128, 130, 50, 0, Math.PI); ctx.stroke();
+            verityMatHappy = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvasHappy) });
+
+            const canvasAngry = document.createElement('canvas');
+            canvasAngry.width = 256; canvasAngry.height = 256;
+            ctx = canvasAngry.getContext('2d');
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(0, 0, 256, 256);
+            ctx.fillStyle = '#000';
+            ctx.lineWidth = 8;
+            ctx.beginPath(); ctx.moveTo(50, 65); ctx.lineTo(100, 95); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(206, 65); ctx.lineTo(156, 95); ctx.stroke();
+            ctx.beginPath(); ctx.arc(75, 105, 12, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(181, 105, 12, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(128, 170, 40, Math.PI, Math.PI * 2); ctx.stroke();
+            verityMatAngry = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvasAngry) });
+
+            verityMesh = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 32), verityMatHappy);
+            verityMesh.position.set(3, 1, -4);
+            scene.add(verityMesh);
+        }
+
+        // --- ID Girmeden Otomatik Bağlantı ---
         function initAutoPeer() {
-            // Önce odayı kurmayı (Host olmayı) deniyoruz
             peer = new Peer(ROOM_PREFIX);
-
-            peer.on('open', (id) => {
-                document.getElementById('status-barinnerText = "Oda Kuruldu (Host sensin!)";');
+            peer.on('open', () => {
+                document.getElementById('status-bar').innerText = "Online (Host)";
             });
-
-            // Eğer odayı başka biri kurduysa, PeerJS hata verir ve bu yakalama bloğu çalışır -> Misafir olarak bağlanır
             peer.on('error', (err) => {
                 if (err.type === 'unavailable-id') {
-                    document.getElementById('status-bar').innerText = "Odaya Katılınıyor...";
                     connectAsGuest();
                 }
             });
-
-            // Host isek başkası bağlandığında:
             peer.on('connection', (connection) => {
                 conn = connection;
                 setupConnectionEvents();
-                document.getElementById('status-bar').innerText = "Biri Odaya Katıldı!";
             });
         }
 
         function connectAsGuest() {
-            // Zaten açık olan odaya bağlanıyoruz
             peer = new Peer();
             peer.on('open', () => {
                 conn = peer.connect(ROOM_PREFIX);
@@ -172,17 +237,29 @@
 
         function setupConnectionEvents() {
             conn.on('open', () => {
-                document.getElementById('status-bar').innerText = "Online Bağlantı Aktif!";
+                document.getElementById('status-bar').innerText = "Online Bağlandı!";
             });
             conn.on('data', (data) => {
                 if (data.type === 'addBlock') {
                     addBlockToScene(data.x, data.y, data.z, data.blockType, true);
                 } else if (data.type === 'removeBlock') {
-                    scene.remove(blocks[data.index].mesh);
-                    blocks.splice(data.index, 1);
-                    saveWorld();
+                    if (blocks[data.index]) {
+                        scene.remove(blocks[data.index].mesh);
+                        blocks.splice(data.index, 1);
+                        saveWorld();
+                    }
                 }
             });
+        }
+
+        function triggerVerityAnger() {
+            verityMesh.material = verityMatAngry;
+            verityAngryTimer = 600; // 10 Saniye
+            document.getElementById('verity-alert').style.display = 'block';
+        }
+
+        function toggleVerityMode() {
+            triggerVerityAnger();
         }
 
         function saveWorld() {
@@ -197,13 +274,19 @@
             } else {
                 for (let i = -2; i <= 1; i++) {
                     addBlockToScene(i, 0.5, -5, 1, false);
+                    addBlockToScene(i, 1.5, -5, 3, false);
                 }
+                addBlockToScene(0, 0.5, -3, 8, false);
             }
         }
 
+        function getBlockColor(type) {
+            const colors = { 1: 0x8B4513, 2: 0xA9A9A9, 3: 0x228B22, 4: 0x8B7355, 5: 0xDEB887, 6: 0xB22222, 7: 0x4682B4, 8: 0x00FFFF, 9: 0xFFFFFF };
+            return colors[type] || 0x8B4513;
+        }
+
         function addBlockToScene(x, y, z, type, save = true) {
-            const colors = { 1: 0x8B4513, 2: 0xA9A9A9, 3: 0x228B22 };
-            const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: colors[type] || 0x8B4513 }));
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: getBlockColor(type) }));
             mesh.position.set(x, y, z);
             scene.add(mesh);
             blocks.push({ mesh, x, y, z, type });
@@ -211,22 +294,40 @@
         }
 
         function setKey(action, state) { keys[action] = state; }
-        function triggerJump() { if (isGrounded) { velocityY = 0.15; isGrounded = false; } }
+        function triggerJump() { 
+            if (isGrounded) { 
+                velocityY = 0.15; 
+                isGrounded = false; 
+            } 
+        }
+
         function selectSlot(slotIndex, element) {
             selectedBlockType = slotIndex;
             document.querySelectorAll('.inv-slot').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
         }
 
+        function animateHand() {
+            playerHand.position.z = -0.1;
+            setTimeout(() => playerHand.position.z = 0, 150);
+        }
+
         function breakBlock() {
+            animateHand();
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
             const intersects = raycaster.intersectObjects(blocks.map(b => b.mesh));
+
             if (intersects.length > 0) {
                 const hit = intersects[0];
                 const index = blocks.findIndex(b => b.mesh === hit.object);
                 if (index > -1) {
-                    inventoryItems[blocks[index].type]++;
+                    const bType = blocks[index].type;
+                    if (bType === 8) { // Elmas kırılınca Verity sinirlenir!
+                        triggerVerityAnger();
+                    }
+                    inventoryItems[bType]++;
+                    document.getElementById(`inv-${bType}`).innerText = inventoryItems[bType];
                     scene.remove(blocks[index].mesh);
                     blocks.splice(index, 1);
                     saveWorld();
@@ -237,13 +338,16 @@
 
         function placeBlock() {
             if (inventoryItems[selectedBlockType] <= 0) return;
+            animateHand();
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
             const intersects = raycaster.intersectObjects(blocks.map(b => b.mesh));
+
             if (intersects.length > 0) {
                 const hit = intersects[0];
                 const pos = hit.object.position.clone().add(hit.face.normal);
                 inventoryItems[selectedBlockType]--;
+                document.getElementById(`inv-${selectedBlockType}`).innerText = inventoryItems[selectedBlockType];
                 addBlockToScene(pos.x, pos.y, pos.z, selectedBlockType, true);
                 if (conn && conn.open) conn.send({ type: 'addBlock', x: pos.x, y: pos.y, z: pos.z, blockType: selectedBlockType });
             }
@@ -251,11 +355,36 @@
 
         function animate() {
             requestAnimationFrame(animate);
+
+            // Verity Sinirli Kovalama Mantığı (10 Saniye)
+            if (verityAngryTimer > 0) {
+                verityAngryTimer--;
+                verityMesh.rotation.y += 0.15;
+                // Oyuncuya doğru yavaşça kovalama hareketi
+                verityMesh.position.x += (camera.position.x - verityMesh.position.x) * 0.02;
+                verityMesh.position.z += (camera.position.z - verityMesh.position.z) * 0.02;
+
+                if (verityAngryTimer === 0) {
+                    verityMesh.material = verityMatHappy;
+                    document.getElementById('verity-alert').style.display = 'none';
+                }
+            }
+
+            // Yer çekimi ve Hareket
             let speed = 0.08;
             if (keys.forward) playerPos.z -= speed;
             if (keys.backward) playerPos.z += speed;
             if (keys.left) playerPos.x -= speed;
             if (keys.right) playerPos.x += speed;
+
+            if (!isGrounded) {
+                playerPos.y += velocityY;
+                velocityY -= 0.008;
+                if (playerPos.y <= 2) {
+                    playerPos.y = 2;
+                    isGrounded = true;
+                }
+            }
 
             camera.position.set(playerPos.x, playerPos.y, playerPos.z);
             renderer.render(scene, camera);

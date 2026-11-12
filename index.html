@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mamerwost Classic 0.30</title>
+    <title>Gamerwost</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -30,7 +30,6 @@
 
         /* HUD */
         #hud {
-            display: block;
             position: fixed;
             inset: 0;
             pointer-events: none;
@@ -40,81 +39,94 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             transform: translate(-50%, -50%);
-            color: rgba(255,255,255,0.9);
+            color: #ffffff;
             font-size: 22px;
-            line-height: 18px;
+            line-height: 20px;
             text-align: center;
             font-weight: bold;
             text-shadow: 1px 1px 0 #000;
         }
-        #top-bar {
+
+        /* Top Left Launcher & PeerJS Panel */
+        #top-left-panel {
             position: fixed;
             top: 8px;
             left: 8px;
-            right: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 8px;
-            pointer-events: none;
-        }
-        #version-tag {
+            background: rgba(0, 0, 0, 0.65);
+            border: 2px solid #888;
+            padding: 8px 10px;
             color: #fff;
-            text-shadow: 1px 1px 0 #000;
             font-size: 12px;
-            background: rgba(0, 0, 0, 0.55);
-            border: 2px solid #777;
-            padding: 6px 8px;
             pointer-events: auto;
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            max-width: 240px;
+            gap: 5px;
+            max-width: 265px;
+            text-shadow: 1px 1px 0 #000;
         }
-        .peer-line {
+        .title-main {
+            font-size: 15px;
+            font-weight: bold;
+            color: #ffff55;
+            letter-spacing: 1px;
+        }
+        .title-sub {
+            font-size: 11px;
+            color: #cccccc;
+            margin-top: -3px;
+        }
+        .peer-row {
             display: flex;
             align-items: center;
             gap: 5px;
             color: #55ff55;
             font-weight: bold;
+            margin-top: 2px;
         }
-        .join-line {
+        .join-row {
             display: flex;
             gap: 4px;
         }
         .hud-input {
             background: #111;
-            border: 1px solid #888;
+            border: 1px solid #999;
             color: #fff;
-            padding: 3px 5px;
-            font-size: 11px;
-            width: 105px;
+            padding: 4px 6px;
+            font-size: 12px;
+            width: 115px;
             outline: none;
             user-select: text;
             -webkit-user-select: text;
         }
-        .hud-actions {
+
+        /* Top Right Action Buttons */
+        #top-right-panel {
+            position: fixed;
+            top: 8px;
+            right: 8px;
             display: flex;
             flex-wrap: wrap;
             justify-content: flex-end;
             gap: 5px;
             pointer-events: auto;
         }
-        .mini-btn {
-            background: rgba(0, 0, 0, 0.65);
-            border: 2px solid #aaa;
+        .mc-btn {
+            background: #6e6e6e;
+            border: 2px solid;
+            border-color: #b0b0b0 #2e2e2e #2e2e2e #b0b0b0;
             color: #fff;
-            padding: 5px 8px;
+            padding: 5px 9px;
             font-size: 11px;
             font-weight: bold;
             cursor: pointer;
-            text-shadow: 1px 1px 0 #000;
+            text-shadow: 1px 1px 0 #222;
         }
-        .mini-btn:active {
-            background: #444;
+        .mc-btn:active {
+            border-color: #2e2e2e #b0b0b0 #b0b0b0 #2e2e2e;
+            background: #525252;
         }
 
         /* Hotbar */
@@ -124,31 +136,32 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            background: rgba(0,0,0,0.65);
-            border: 3px solid #444;
+            background: rgba(20, 20, 20, 0.75);
+            border: 3px solid #555;
             pointer-events: auto;
+            z-index: 25;
         }
         .slot {
             width: 38px;
             height: 38px;
-            border: 2px solid #666;
+            border: 2px solid #777;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
         }
         .slot.active {
-            border: 3px solid #fff;
-            background: rgba(255,255,255,0.22);
+            border: 3px solid #ffffff;
+            background: rgba(255, 255, 255, 0.25);
         }
         .slot-preview {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             image-rendering: pixelated;
             background-size: cover;
         }
 
-        /* Mobile Controls */
+        /* Mobile Touch Controls */
         #mobile-controls {
             position: fixed;
             inset: 0;
@@ -157,7 +170,7 @@
         }
         .dpad {
             position: fixed;
-            bottom: 62px;
+            bottom: 64px;
             left: 14px;
             width: 132px;
             height: 132px;
@@ -167,8 +180,8 @@
             position: absolute;
             width: 44px;
             height: 44px;
-            background: rgba(255,255,255,0.22);
-            border: 2px solid rgba(255,255,255,0.55);
+            background: rgba(255, 255, 255, 0.22);
+            border: 2px solid rgba(255, 255, 255, 0.55);
             color: #fff;
             font-weight: bold;
             font-size: 18px;
@@ -177,7 +190,7 @@
             justify-content: center;
             border-radius: 6px;
         }
-        .dpad-btn:active { background: rgba(255,255,255,0.45); }
+        .dpad-btn:active { background: rgba(255, 255, 255, 0.48); }
         #btn-up { top: 0; left: 44px; }
         #btn-down { bottom: 0; left: 44px; }
         #btn-left { top: 44px; left: 0; }
@@ -185,7 +198,7 @@
 
         .action-pad {
             position: fixed;
-            bottom: 62px;
+            bottom: 64px;
             right: 14px;
             display: flex;
             flex-direction: column;
@@ -201,24 +214,24 @@
             width: 54px;
             height: 54px;
             border-radius: 8px;
-            background: rgba(255,255,255,0.22);
-            border: 2px solid rgba(255,255,255,0.55);
+            background: rgba(255, 255, 255, 0.22);
+            border: 2px solid rgba(255, 255, 255, 0.55);
             color: #fff;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
         }
-        .act-btn:active { background: rgba(255,255,255,0.5); }
+        .act-btn:active { background: rgba(255, 255, 255, 0.5); }
 
-        /* Modals */
+        /* Inventory & Modals */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.75);
+            background: rgba(0, 0, 0, 0.78);
             z-index: 50;
             align-items: center;
             justify-content: center;
@@ -226,71 +239,69 @@
             pointer-events: auto;
         }
         .modal-box {
-            background: #2b2b2b;
-            border: 3px solid #999;
-            padding: 16px;
+            background: #c6c6c6;
+            border: 4px solid;
+            border-color: #ffffff #555555 #555555 #ffffff;
+            padding: 14px;
             width: 100%;
             max-width: 440px;
-            color: #fff;
+            color: #222;
         }
-        .mc-btn {
-            background: #727272;
-            border: 3px solid;
-            border-color: #aaa #333 #333 #aaa;
-            color: #fff;
-            padding: 10px;
-            font-size: 14px;
+        .inv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
             font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-        }
-        .mc-input {
-            background: #000;
-            border: 2px solid #888;
-            color: #fff;
-            padding: 8px;
-            font-size: 14px;
-            width: 100%;
-            outline: none;
-            user-select: text;
-            -webkit-user-select: text;
+            font-size: 15px;
         }
         .inv-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin: 12px 0;
+            gap: 6px;
+            background: #8b8b8b;
+            padding: 8px;
+            border: 2px solid;
+            border-color: #373737 #ffffff #ffffff #373737;
+            max-height: 280px;
+            overflow-y: auto;
         }
         .inv-item {
-            background: #1a1a1a;
-            border: 2px solid #666;
-            padding: 8px 4px;
+            background: #8b8b8b;
+            border: 2px solid;
+            border-color: #373737 #ffffff #ffffff #373737;
+            padding: 6px 2px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
             cursor: pointer;
             font-size: 10px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 0 #222;
             text-align: center;
         }
         .inv-item:hover, .inv-item:active {
-            border-color: #fff;
-            background: #3a3a3a;
+            background: #a5a5a5;
+            border-color: #ffff55;
         }
         .mod-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #444;
+            padding: 9px 4px;
+            border-bottom: 1px solid #999;
+            font-weight: bold;
+            font-size: 13px;
         }
 
         /* Chat */
         #chat-box {
             position: fixed;
-            top: 108px;
+            top: 135px;
             left: 8px;
-            width: 240px;
+            width: 250px;
             max-height: 110px;
             overflow-y: auto;
             font-size: 11px;
@@ -299,7 +310,7 @@
             pointer-events: none;
         }
         .chat-line {
-            background: rgba(0,0,0,0.45);
+            background: rgba(0, 0, 0, 0.5);
             padding: 2px 6px;
             margin-bottom: 2px;
         }
@@ -321,35 +332,39 @@
 
 <canvas id="game-canvas"></canvas>
 
-<!-- DIRECT IN-GAME HUD -->
 <div id="hud">
     <div id="crosshair">+</div>
 
-    <div id="top-bar">
-        <div id="version-tag">
-            <div><strong>Mamerwost Classic 0.30</strong></div>
-            <div class="peer-line">
-                <span>ID: <span id="my-peer-id">Loading...</span></span>
-                <button class="mini-btn" style="padding:2px 5px;" onclick="copyPeerId()">Copy</button>
-            </div>
-            <div class="join-line">
-                <input type="text" id="join-id-input" class="hud-input" placeholder="mamer-XXX">
-                <button class="mini-btn" style="padding:2px 6px;" onclick="joinFriend()">Join</button>
-            </div>
-            <div id="players-count" style="color:#ffff55; font-size:11px;">Players: 1</div>
+    <!-- Top Left: Gamerwost & Classic Minecraft Launcher & PeerJS ID -->
+    <div id="top-left-panel">
+        <div class="title-main">Gamerwost</div>
+        <div class="title-sub">Classic Minecraft Launcher</div>
+
+        <div class="peer-row">
+            <span>ID: <span id="my-peer-id">Generating...</span></span>
+            <button class="mc-btn" style="padding:2px 6px;" onclick="copyPeerId()">Copy</button>
+            <button class="mc-btn" style="padding:2px 6px;" onclick="resetPeer()">New</button>
         </div>
 
-        <div class="hud-actions">
-            <button class="mini-btn" onclick="toggleChat()">Chat (T)</button>
-            <button class="mini-btn" onclick="toggleModal('inv-modal')">Blocks (B)</button>
-            <button class="mini-btn" onclick="toggleModal('mod-modal')">Mods (M)</button>
+        <div class="join-row">
+            <input type="text" id="join-id-input" class="hud-input" placeholder="gw-XXXXXX">
+            <button class="mc-btn" style="padding:3px 8px;" onclick="joinFriend()">Join</button>
         </div>
+
+        <div id="players-count" style="color:#ffff55; font-size:11px;">Players Online: 1</div>
+    </div>
+
+    <!-- Top Right Buttons -->
+    <div id="top-right-panel">
+        <button class="mc-btn" onclick="toggleChat()">Chat (T)</button>
+        <button class="mc-btn" onclick="toggleModal('inv-modal')">Inventory (E)</button>
+        <button class="mc-btn" onclick="toggleModal('mod-modal')">Mods (M)</button>
     </div>
 
     <div id="chat-box"></div>
 
     <div id="chat-input-bar">
-        <input type="text" id="chat-input" class="mc-input" placeholder="Type message...">
+        <input type="text" id="chat-input" class="hud-input" style="flex:1; padding:8px;" placeholder="Type chat message...">
         <button class="mc-btn" onclick="sendChat()" style="padding: 8px 14px;">Send</button>
     </div>
 
@@ -375,13 +390,14 @@
     <div id="hotbar"></div>
 </div>
 
-<!-- BLOCK INVENTORY MODAL -->
+<!-- INVENTORY MODAL -->
 <div id="inv-modal" class="modal">
     <div class="modal-box">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>Classic 0.30 Blocks</strong>
-            <button class="mini-btn" onclick="toggleModal('inv-modal')">X</button>
+        <div class="inv-header">
+            <span>Gamerwost Inventory (Select Block)</span>
+            <button class="mc-btn" onclick="toggleModal('inv-modal')">X</button>
         </div>
+        <div style="font-size:11px; margin-bottom:6px;">Click any block below to put it in your active hotbar slot:</div>
         <div class="inv-grid" id="inv-grid"></div>
     </div>
 </div>
@@ -389,31 +405,31 @@
 <!-- MODS MODAL -->
 <div id="mod-modal" class="modal">
     <div class="modal-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <strong>Mamerwost Classic Mods</strong>
-            <button class="mini-btn" onclick="toggleModal('mod-modal')">X</button>
+        <div class="inv-header">
+            <span>Gamerwost Mods</span>
+            <button class="mc-btn" onclick="toggleModal('mod-modal')">X</button>
         </div>
         <div class="mod-row">
-            <span>TNT Explosive Mode (Auto-ignite)</span>
+            <span>TNT Auto-Ignite</span>
             <input type="checkbox" id="mod-tnt" checked>
         </div>
         <div class="mod-row">
-            <span>Moon Gravity (Low Gravity)</span>
+            <span>Moon Gravity</span>
             <input type="checkbox" id="mod-gravity">
         </div>
         <div class="mod-row">
-            <span>Super Speed Boost</span>
+            <span>Super Speed</span>
             <input type="checkbox" id="mod-speed">
         </div>
         <div class="mod-row">
-            <span>Night & Torch Glow Mode</span>
+            <span>Night Mode</span>
             <input type="checkbox" id="mod-night" onchange="toggleNightMode()">
         </div>
         <div class="mod-row">
             <span>Fly Mode (Hold Jump)</span>
             <input type="checkbox" id="mod-fly">
         </div>
-        <button class="mc-btn" style="width:100%; margin-top:12px;" onclick="toggleModal('mod-modal')">Done</button>
+        <button class="mc-btn" style="width:100%; margin-top:12px; padding:8px;" onclick="toggleModal('mod-modal')">Done</button>
     </div>
 </div>
 
@@ -440,18 +456,8 @@ function noiseFill(ctx, baseColors, count = 80) {
 }
 
 const BLOCKS = {
-    1: {
-        name: 'Grass',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#55b832', '#47a127', '#66cc3d', '#3e8e22'], 120);
-        })
-    },
-    2: {
-        name: 'Dirt',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#866043', '#704f36', '#966c4a', '#593d28'], 120);
-        })
-    },
+    1: { name: 'Grass', tex: createPixelTexture(ctx => noiseFill(ctx, ['#55b832', '#47a127', '#66cc3d', '#3e8e22'], 120)) },
+    2: { name: 'Dirt', tex: createPixelTexture(ctx => noiseFill(ctx, ['#866043', '#704f36', '#966c4a', '#593d28'], 120)) },
     3: {
         name: 'Cobblestone',
         tex: createPixelTexture(ctx => {
@@ -478,23 +484,12 @@ const BLOCKS = {
             for (let x = 2; x < 16; x += 4) ctx.fillRect(x, 0, 1, 16);
         })
     },
-    6: {
-        name: 'Leaves',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#2d7a1e', '#1f5c13', '#3b9628', '#15420c'], 130);
-        })
-    },
-    7: {
-        name: 'Sand',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#dfd69b', '#cfc588', '#ede4ab'], 110);
-        })
-    },
+    6: { name: 'Leaves', tex: createPixelTexture(ctx => noiseFill(ctx, ['#2d7a1e', '#1f5c13', '#3b9628', '#15420c'], 130)) },
+    7: { name: 'Sand', tex: createPixelTexture(ctx => noiseFill(ctx, ['#dfd69b', '#cfc588', '#ede4ab'], 110)) },
     8: {
         name: 'Bricks',
         tex: createPixelTexture(ctx => {
-            ctx.fillStyle = '#b5b5b5';
-            ctx.fillRect(0, 0, 16, 16);
+            ctx.fillStyle = '#b5b5b5'; ctx.fillRect(0, 0, 16, 16);
             ctx.fillStyle = '#9c4338';
             for (let y = 0; y < 16; y += 4) {
                 const offset = (y / 4) % 2 === 0 ? 0 : 4;
@@ -506,10 +501,8 @@ const BLOCKS = {
     9: {
         name: 'TNT',
         tex: createPixelTexture(ctx => {
-            ctx.fillStyle = '#db3226';
-            ctx.fillRect(0, 0, 16, 16);
-            ctx.fillStyle = '#f2f2f2';
-            ctx.fillRect(0, 5, 16, 6);
+            ctx.fillStyle = '#db3226'; ctx.fillRect(0, 0, 16, 16);
+            ctx.fillStyle = '#f2f2f2'; ctx.fillRect(0, 5, 16, 6);
             ctx.fillStyle = '#111';
             ctx.fillRect(2, 6, 3, 1); ctx.fillRect(3, 6, 1, 4);
             ctx.fillRect(6, 6, 1, 4); ctx.fillRect(7, 7, 1, 1); ctx.fillRect(8, 6, 1, 4);
@@ -520,16 +513,14 @@ const BLOCKS = {
         name: 'Gold Block',
         tex: createPixelTexture(ctx => {
             noiseFill(ctx, ['#fcee4b', '#ebd328', '#fff88f'], 80);
-            ctx.strokeStyle = '#d4af17';
-            ctx.strokeRect(0, 0, 16, 16);
+            ctx.strokeStyle = '#d4af17'; ctx.strokeRect(0, 0, 16, 16);
         })
     },
     11: {
         name: 'Diamond Block',
         tex: createPixelTexture(ctx => {
             noiseFill(ctx, ['#5cebe3', '#3cc7bf', '#9cfaf4'], 80);
-            ctx.strokeStyle = '#269e97';
-            ctx.strokeRect(0, 0, 16, 16);
+            ctx.strokeStyle = '#269e97'; ctx.strokeRect(0, 0, 16, 16);
         })
     },
     12: {
@@ -546,24 +537,26 @@ const BLOCKS = {
         transparent: true,
         tex: createPixelTexture(ctx => {
             ctx.clearRect(0, 0, 16, 16);
-            ctx.strokeStyle = '#d8f5f7';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(1, 1, 14, 14);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(3, 3, 2, 2);
-            ctx.fillRect(4, 4, 2, 2);
+            ctx.strokeStyle = '#d8f5f7'; ctx.lineWidth = 2; ctx.strokeRect(1, 1, 14, 14);
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(3, 3, 2, 2); ctx.fillRect(4, 4, 2, 2);
         })
     },
-    14: {
-        name: 'Red Wool',
+    14: { name: 'Red Wool', tex: createPixelTexture(ctx => noiseFill(ctx, ['#b82e2e', '#9e2222', '#cc3d3d'], 120)) },
+    15: { name: 'Blue Wool', tex: createPixelTexture(ctx => noiseFill(ctx, ['#2e4eb8', '#223b9e', '#3d61cc'], 120)) },
+    16: { name: 'Purple Wool', tex: createPixelTexture(ctx => noiseFill(ctx, ['#6c2eb8', '#54229e', '#823dcc'], 120)) },
+    17: { name: 'Cyan Wool', tex: createPixelTexture(ctx => noiseFill(ctx, ['#2eb8b0', '#229e97', '#3dccc4'], 120)) },
+    18: { name: 'Glowstone', tex: createPixelTexture(ctx => noiseFill(ctx, ['#ffda66', '#d99e2b', '#fff2b2', '#8f5e14'], 140)) },
+    19: { name: 'Obsidian', tex: createPixelTexture(ctx => noiseFill(ctx, ['#1b1229', '#2b1c42', '#100a1a', '#3c275c'], 130)) },
+    20: {
+        name: 'Bookshelf',
         tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#b82e2e', '#9e2222', '#cc3d3d'], 120);
-        })
-    },
-    15: {
-        name: 'Glowstone',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#ffda66', '#d99e2b', '#fff2b2', '#8f5e14'], 140);
+            ctx.fillStyle = '#b8945f'; ctx.fillRect(0, 0, 16, 16);
+            ctx.fillStyle = '#2b1e12'; ctx.fillRect(1, 2, 14, 5); ctx.fillRect(1, 9, 14, 5);
+            const cols = ['#c93b2b', '#2b7ec9', '#2bc958', '#e6c835'];
+            for (let x = 2; x < 14; x += 2) {
+                ctx.fillStyle = cols[x % 4]; ctx.fillRect(x, 3, 1, 4);
+                ctx.fillStyle = cols[(x + 1) % 4]; ctx.fillRect(x, 10, 1, 4);
+            }
         })
     }
 };
@@ -577,75 +570,32 @@ for (const [id, data] of Object.entries(BLOCKS)) {
     });
 }
 
-// ==================== THREE.JS SCENE SETUP ====================
-const canvas = document.getElementById('game-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87ceeb);
-scene.fog = new THREE.Fog(0x87ceeb, 22, 68);
-
-const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 100);
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
-scene.add(ambientLight);
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.55);
-dirLight.position.set(20, 40, 15);
-scene.add(dirLight);
-
-// ==================== CLASSIC 0.30 WORLD ENGINE ====================
-const WORLD_SIZE = 32;
-const worldBlocks = new Map();
-const blockMeshes = new Map();
-const boxGeo = new THREE.BoxGeometry(1, 1, 1);
-
-function keyOf(x, y, z) {
-    return `${x},${y},${z}`;
-}
-
-function setBlock(x, y, z, id, broadcast = false) {
-    x = Math.round(x); y = Math.round(y); z = Math.round(z);
-    const k = keyOf(x, y, z);
-
-    if (blockMeshes.has(k)) {
-        scene.remove(blockMeshes.get(k));
-        blockMeshes.delete(k);
-        worldBlocks.delete(k);
-    }
-
-    if (id && MATERIALS[id]) {
-        const mesh = new THREE.Mesh(boxGeo, MATERIALS[id]);
-        mesh.position.set(x, y, z);
-        mesh.userData = { x, y, z, id };
-        scene.add(mesh);
-        blockMeshes.set(k, mesh);
-        worldBlocks.set(k, id);
-
-        if (id === 9 && document.getElementById('mod-tnt').checked) {
-            setTimeout(() => explodeTNT(x, y, z), 1800);
+// ==================== GAMERWOST CHARACTER ARM & AVATAR TEXTURES ====================
+// Pixel texture matching your purple-top / cyan-bottom arm design
+const gamerArmTex = createPixelTexture(ctx => {
+    // Upper half: dark purple pixelated pattern
+    const purples = ['#2c1654', '#3b1d70', '#221042', '#472485'];
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 16; x++) {
+            ctx.fillStyle = purples[(x + y + Math.floor(Math.random() * 2)) % purples.length];
+            ctx.fillRect(x, y, 1, 1);
         }
     }
-
-    if (broadcast) {
-        sendPeerData({ type: 'block', x, y, z, id });
-    }
-}
-
-function explodeTNT(cx, cy, cz) {
-    if (worldBlocks.get(keyOf(cx, cy, cz)) !== 9) return;
-    addChatMessage('System', 'BOOM! TNT exploded!');
-    for (let dx = -2; dx <= 2; dx++) {
-        for (let dy = -2; dy <= 2; dy++) {
-            for (let dz = -2; dz <= 2; dz++) {
-                if (dx*dx + dy*dy + dz*dz <= 5 && (cy + dy) > -3) {
-                    setBlock(cx + dx, cy + dy, cz + dz, 0, true);
-                }
-            }
+    // Lower half: turquoise/cyan pixelated pattern
+    const cyans = ['#1b8a8f', '#24a6ab', '#156f73', '#2ec2c7'];
+    for (let y = 8; y < 16; y++) {
+        for (let x = 0; x < 16; x++) {
+            ctx.fillStyle = cyans[(x + y + Math.floor(Math.random() * 2)) % cyans.length];
+            ctx.fillRect(x, y, 1, 1);
         }
     }
-}
+}).tex;
 
-function generateClassicWorld() {
-    for (let x = -WORLD_SIZE / 2; x < WORLD_SIZE / 2; x++) {
-        for (let z = -WORLD_SIZE / 2; 
+const gamerTorsoTex = createPixelTexture(ctx => {
+    ctx.fillStyle = '#151238';
+    ctx.fillRect(0, 0, 16, 16);
+    // Stylized 'G' emblem in cyan-purple gradient
+    ctx.strokeStyle = '#7a3cff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(4, 3, 8, 10);
+    ctx.fillStyle = '#151238

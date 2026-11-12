@@ -1,358 +1,643 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>GAMERWOST</title>
-<style>
-*{box-sizing:border-box;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:#0b0b14;color:#fff;padding-bottom:140px}
-header{background:linear-gradient(90deg,#7b2ff7,#00d4ff);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-.logo{font-size:22px;font-weight:900}
-.container{max-width:1100px;margin:auto;padding:14px}
-.card{background:#171726;border:1px solid #2d2d4a;border-radius:16px;padding:14px;margin-bottom:14px}
-canvas{width:100%;height:380px;background:#87ceeb;border-radius:12px;display:block}
-input,select,textarea{width:100%;padding:14px;margin:7px 0;border-radius:10px;border:1px solid #333;background:#0f0f1e;color:#fff;font-size:16px}
-textarea{resize:vertical}
-button{cursor:pointer;border:0;border-radius:10px;padding:13px;font-weight:800;color:#fff;font-size:15px}
-.btn-primary{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
-.btn-green{background:#22c55e}.btn-red{background:#ef4444}.btn-dark{background:#2a2a45}.btn-small{padding:8px 10px;font-size:13px}
-.row{display:flex;gap:8px}.row>*{flex:1}
-.hint{font-size:13px;color:#aaa}.error{color:#ff6b6b;font-size:14px}.ok{color:#7CFC00;font-size:14px}
-.game-item{border:1px solid #333;padding:12px;border-radius:12px;margin-top:10px}
-.tag{display:inline-block;background:#2a2a45;padding:3px 8px;border-radius:20px;font-size:11px;margin:2px}
-.hidden{display:none!important}
-.grid{display:grid;grid-template-columns:1fr 340px;gap:14px}
-iframe.game-frame{width:100%;height:420px;border:0;border-radius:12px;background:#fff}
-.stat{display:flex;gap:8px;margin-bottom:12px}.stat div{flex:1;background:#171726;border-radius:12px;padding:10px;text-align:center}.stat b{font-size:20px;display:block}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mamerwost Classic 0.30</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+        #game-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
 
-/* LOGIN - TAM EKRAN, ÜSTÜNDE HİÇBİR ŞEY YOK */
-#loginScreen{position:fixed;inset:0;background:#0b0b14;z-index:9999;overflow-y:auto;padding:20px 14px}
-#loginScreen .box{background:#171726;border:1px solid #3a3a5a;border-radius:18px;padding:22px;max-width:430px;margin:20px auto;text-align:center}
-#loginScreen input{pointer-events:auto}
-#loginScreen button{pointer-events:auto}
+        /* Retro Classic Menu */
+        #menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)),
+                        repeating-linear-gradient(45deg, #3b2618 0, #3b2618 16px, #2e1d12 16px, #2e1d12 32px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            color: #fff;
+            padding: 16px;
+        }
+        .mc-title {
+            font-size: clamp(32px, 7vw, 60px);
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #e0e0e0;
+            text-shadow: 4px 4px 0 #3f3f3f, -2px -2px 0 #000;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .mc-subtitle {
+            color: #ffff55;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 #3f3f00;
+            transform: rotate(-3deg);
+        }
+        .panel {
+            background: rgba(0, 0, 0, 0.75);
+            border: 3px solid #777;
+            padding: 16px;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .mc-btn {
+            background: #727272;
+            border: 3px solid;
+            border-color: #aaa #333 #333 #aaa;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #333;
+            cursor: pointer;
+            text-align: center;
+        }
+        .mc-btn:active {
+            border-color: #333 #aaa #aaa #333;
+            background: #555;
+        }
+        .mc-btn.green {
+            background: #3b8526;
+            border-color: #6bc349 #1d4d11 #1d4d11 #6bc349;
+        }
+        .mc-input {
+            background: #000;
+            border: 2px solid #888;
+            color: #fff;
+            padding: 10px;
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+        }
+        .row {
+            display: flex;
+            gap: 8px;
+        }
+        .peer-box {
+            background: #111;
+            border: 1px dashed #666;
+            padding: 8px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #55ff55;
+        }
 
-/* DOKUNMA - SADECE OYUNDA GÖRÜNÜR */
-#touchControls{position:fixed;bottom:10px;left:0;right:0;z-index:100;display:none;justify-content:space-between;padding:0 10px;pointer-events:none}
-#touchControls div{display:flex;gap:10px;pointer-events:none}
-.touch-btn{width:76px;height:76px;border-radius:50%;background:#111;border:3px solid #fff;font-size:30px;pointer-events:auto;touch-action:none;user-select:none}
-.touch-btn:active{background:#7b2ff7}
-.touch-btn.jump{width:88px;height:88px;background:#22c55e}
-@media(max-width:900px){.grid{grid-template-columns:1fr}header{flex-direction:column}}
-</style>
+        /* HUD */
+        #hud {
+            display: none;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #crosshair {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 18px;
+            height: 18px;
+            transform: translate(-50%, -50%);
+            color: rgba(255,255,255,0.85);
+            font-size: 22px;
+            line-height: 18px;
+            text-align: center;
+            font-weight: bold;
+        }
+        #top-bar {
+            position: fixed;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            pointer-events: auto;
+        }
+        #version-tag {
+            color: #fff;
+            text-shadow: 2px 2px 0 #000;
+            font-size: 13px;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 8px;
+        }
+        .hud-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .mini-btn {
+            background: rgba(0,0,0,0.65);
+            border: 2px solid #aaa;
+            color: #fff;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Hotbar */
+        #hotbar {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            background: rgba(0,0,0,0.6);
+            border: 3px solid #444;
+            pointer-events: auto;
+        }
+        .slot {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+        }
+        .slot.active {
+            border: 3px solid #fff;
+            background: rgba(255,255,255,0.2);
+        }
+        .slot-preview {
+            width: 24px;
+            height: 24px;
+            image-rendering: pixelated;
+            background-size: cover;
+        }
+
+        /* Mobile Controls */
+        #mobile-controls {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .dpad {
+            position: fixed;
+            bottom: 65px;
+            left: 16px;
+            width: 132px;
+            height: 132px;
+            pointer-events: auto;
+        }
+        .dpad-btn {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.22);
+            border: 2px solid rgba(255,255,255,0.5);
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+        .dpad-btn:active { background: rgba(255,255,255,0.45); }
+        #btn-up { top: 0; left: 44px; }
+        #btn-down { bottom: 0; left: 44px; }
+        #btn-left { top: 44px; left: 0; }
+        #btn-right { top: 44px; right: 0; }
+
+        .action-pad {
+            position: fixed;
+            bottom: 65px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+            pointer-events: auto;
+        }
+        .act-row {
+            display: flex;
+            gap: 10px;
+        }
+        .act-btn {
+            width: 54px;
+            height: 54px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.22);
+            border: 2px solid rgba(255,255,255,0.55);
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .act-btn:active { background: rgba(255,255,255,0.5); }
+
+        /* Modals (Inventory / Mods / Chat) */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            pointer-events: auto;
+        }
+        .modal-box {
+            background: #2b2b2b;
+            border: 3px solid #999;
+            padding: 16px;
+            width: 100%;
+            max-width: 440px;
+            color: #fff;
+        }
+        .inv-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .inv-item {
+            background: #1a1a1a;
+            border: 2px solid #666;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            text-align: center;
+        }
+        .inv-item:hover, .inv-item:active {
+            border-color: #fff;
+            background: #3a3a3a;
+        }
+        .mod-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        /* Chat */
+        #chat-box {
+            position: fixed;
+            top: 48px;
+            left: 8px;
+            width: 260px;
+            max-height: 130px;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+            pointer-events: none;
+        }
+        .chat-line {
+            background: rgba(0,0,0,0.45);
+            padding: 2px 6px;
+            margin-bottom: 2px;
+        }
+        #chat-input-bar {
+            display: none;
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            z-index: 60;
+            pointer-events: auto;
+            gap: 6px;
+        }
+    </style>
 </head>
 <body>
 
-<!-- ============ LOGIN ============ -->
-<div id="loginScreen">
-  <div class="box">
-    <div style="font-size:48px">🎮</div>
-    <h1>GAMERWOST</h1>
-    <p class="hint">Create account with username + password.<br>It will be saved. Login again with same name + password.</p>
-    <div style="display:flex;gap:8px">
-      <button type="button" id="tabLogin" style="flex:1" class="btn-primary" onclick="switchTab('login')">LOGIN</button>
-      <button type="button" id="tabRegister" style="flex:1" class="btn-dark" onclick="switchTab('register')">REGISTER</button>
+<canvas id="game-canvas"></canvas>
+
+<!-- MAIN MENU -->
+<div id="menu-overlay">
+    <div class="mc-title">MAMERWOST</div>
+    <div class="mc-subtitle">Classic 0.30 Multiplayer Edition!</div>
+
+    <div class="panel">
+        <input type="text" id="username-input" class="mc-input" placeholder="Username (e.g. Steve)" maxlength="14" value="Player">
+
+        <div class="peer-box">
+            <span>Your ID: <strong id="my-peer-id">Connecting...</strong></span>
+            <button class="mini-btn" onclick="copyPeerId()">Copy</button>
+        </div>
+
+        <button class="mc-btn green" onclick="startGame()">Play Singleplayer / Host World</button>
+
+        <div class="row">
+            <input type="text" id="join-id-input" class="mc-input" placeholder="Friend's Peer ID">
+            <button class="mc-btn" onclick="joinFriend()">Join</button>
+        </div>
+        <div id="conn-status" style="font-size: 12px; color: #aaa; text-align: center;">Ready for P2P Multiplayer</div>
     </div>
-    <input id="loginUser" placeholder="Username" maxlength="20" autocomplete="off">
-    <p id="userHint" class="hint"></p>
-    <input id="loginPass" type="password" placeholder="Password (min 4)" maxlength="30" autocomplete="off">
-    <div id="pass2Wrap" class="hidden"><input id="loginPass2" type="password" placeholder="Password again" maxlength="30"></div>
-    <p id="loginError" class="error"></p>
-    <p id="loginOk" class="ok"></p>
-    <button type="button" id="loginBtn" class="btn-primary" style="width:100%;padding:16px;font-size:18px">LOGIN</button>
-    <p class="hint">First time? Tap REGISTER above, then create account.</p>
-    <button type="button" class="btn-dark" style="width:100%" onclick="guestLogin()">Continue as Guest</button>
-  </div>
 </div>
 
-<!-- ============ HEADER ============ -->
-<header>
-  <div class="logo">🎮 GAMERWOST</div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn-dark" onclick="showPage('play')">PLAY</button>
-    <button class="btn-dark" onclick="showPage('publish')">PUBLISH HTML GAME</button>
-    <button class="btn-dark" onclick="showPage('my')">MY GAMES</button>
-  </div>
-  <div>👤 <b id="headerUser">Guest</b> • ⭐ <b id="headerCoin">0</b> • <button class="btn-red btn-small" onclick="doLogout()">Logout</button></div>
-</header>
+<!-- IN-GAME HUD -->
+<div id="hud">
+    <div id="crosshair">+</div>
 
-<div class="container">
-  <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-    <span>👋 Welcome <b id="welcomeUser">Player</b>! <span id="continueInfo" class="hint"></span></span>
-    <button class="btn-green" onclick="continueGame()">▶️ Continue Where I Left Off</button>
-  </div>
-  <div class="stat"><div><b id="statGames">0</b><span>Games</span></div><div><b id="statMine">0</b><span>My Games</span></div><div><b id="statCoin">0</b><span>Coins</span></div></div>
-
-  <div class="grid">
-    <div>
-      <!-- PLAY -->
-      <div id="pagePlay">
-        <div class="card">
-          <h2>Playing: <span id="nowPlaying">Block World</span></h2>
-          <canvas id="gameCanvas" width="900" height="380"></canvas>
-          <div id="htmlPlayer" class="hidden"><iframe id="htmlFrame" class="game-frame" sandbox="allow-scripts"></iframe><br><button class="btn-dark" style="margin-top:8px" onclick="closeHtml()">❌ Close HTML Game</button></div>
-          <p class="hint">Mobile: Hold the buttons below. PC: WASD / Arrows.</p>
-          <div class="row"><div style="background:#0f0f1e;padding:10px;border-radius:10px">❤️ HP: <b id="hpText">100</b><br>⭐ Score: <b id="scoreText">0</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">🪙 Coin: <b id="coinText">0</b><br>🎯 Goal: <b id="goalText">10 coins</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">⏱ Time: <b id="timeText">00:00</b><br>💾 <span id="saveInfo">Auto-save ON</span></div></div>
-          <br><div class="row"><button class="btn-green" onclick="restartGame()">🔄 Restart</button><button class="btn-dark" onclick="saveNow()">💾 Save Now</button></div>
+    <div id="top-bar">
+        <div id="version-tag">Mamerwost 0.30<br><span id="players-count">Players: 1</span></div>
+        <div class="hud-actions">
+            <button class="mini-btn" onclick="toggleChat()">Chat (T)</button>
+            <button class="mini-btn" onclick="toggleModal('inv-modal')">Blocks (B)</button>
+            <button class="mini-btn" onclick="toggleModal('mod-modal')">Mods (M)</button>
+            <button class="mini-btn" onclick="openMenu()">Menu</button>
         </div>
-        <div class="card"><h2>💬 Chat</h2><div id="chatBox" style="height:100px;overflow:auto;background:#0a0a16;padding:10px;border-radius:10px"></div><div class="row"><input id="chatInput" placeholder="Type message..."><button class="btn-primary" onclick="sendChat()">Send</button></div></div>
-      </div>
-
-      <!-- PUBLISH -->
-      <div id="pagePublish" class="hidden">
-        <div class="card">
-          <h2>🚀 Publish HTML Game</h2>
-          <p class="hint">Paste your HTML game code. Everyone can play it. It is saved.</p>
-          <input id="pubName" placeholder="Game Name: My Click Game">
-          <input id="pubDesc" placeholder="Description: Fun click game">
-          <textarea id="pubCode" rows="12" placeholder="Paste your HTML code here..."></textarea>
-          <div class="row"><button class="btn-green" onclick="previewHtml()">👀 Preview</button><button class="btn-primary" onclick="publishHtml()">🚀 PUBLISH</button></div>
-          <div id="previewWrap" class="hidden" style="margin-top:10px"><h3>Preview:</h3><iframe id="previewFrame" class="game-frame" sandbox="allow-scripts"></iframe></div>
-          <h3>Ready Examples - Tap to load:</h3>
-          <div class="row"><button class="btn-dark btn-small" onclick="loadExample('click')">🖱️ Click Game</button><button class="btn-dark btn-small" onclick="loadExample('guess')">🎲 Guess</button></div>
-          <div class="row"><button class="btn-dark btn-small" onclick="loadExample('quiz')">🧠 Quiz</button><button class="btn-dark btn-small" onclick="loadExample('snake')">🐍 Snake</button></div>
-        </div>
-      </div>
-
-      <!-- MY GAMES -->
-      <div id="pageMy" class="hidden">
-        <div class="card"><h2>🧍 My Profile</h2><p>Username: <b id="profileUser">-</b></p><p>Coins: <b id="profileCoin">0</b></p><p class="hint">Your account and progress are saved in this browser.</p><button class="btn-dark" style="width:100%" onclick="changePass()">🔑 Change Password</button></div>
-        <div class="card"><h2>📦 My Published Games</h2><div id="myGamesList"></div></div>
-      </div>
     </div>
 
-    <!-- RIGHT -->
-    <div>
-      <div class="card"><h2>🔍 Search</h2><input id="searchInput" placeholder="Search game..." oninput="renderGames()"></div>
-      <div class="card"><h2>🔥 All Games</h2><div id="gameList"></div></div>
-      <div class="card"><h2>🎁 Daily Reward</h2><button class="btn-green" style="width:100%" onclick="claimDaily()">🎁 Get +50 Coins</button><p class="hint" id="dailyInfo"></p></div>
+    <div id="chat-box"></div>
+
+    <div id="chat-input-bar">
+        <input type="text" id="chat-input" class="mc-input" placeholder="Type message...">
+        <button class="mc-btn" onclick="sendChat()" style="padding: 8px 14px;">Send</button>
     </div>
-  </div>
+
+    <!-- Mobile Touch Controls -->
+    <div id="mobile-controls">
+        <div class="dpad">
+            <div class="dpad-btn" id="btn-up">▲</div>
+            <div class="dpad-btn" id="btn-down">▼</div>
+            <div class="dpad-btn" id="btn-left">◀</div>
+            <div class="dpad-btn" id="btn-right">▶</div>
+        </div>
+        <div class="action-pad">
+            <div class="act-row">
+                <div class="act-btn" id="btn-break">BREAK</div>
+                <div class="act-btn" id="btn-place">PLACE</div>
+            </div>
+            <div class="act-row">
+                <div class="act-btn" id="btn-jump" style="width: 118px;">JUMP</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hotbar"></div>
 </div>
 
-<!-- TOUCH CONTROLS -->
-<div id="touchControls">
-  <div><button type="button" class="touch-btn" onpointerdown="touchDown('left')" onpointerup="touchUp('left')" onpointerleave="touchUp('left')" onpointercancel="touchUp('left')">◀️</button><button type="button" class="touch-btn" onpointerdown="touchDown('right')" onpointerup="touchUp('right')" onpointerleave="touchUp('right')" onpointercancel="touchUp('right')">▶️</button></div>
-  <div><button type="button" class="touch-btn jump" onpointerdown="touchDown('jump')" onpointerup="touchUp('jump')" onpointerleave="touchUp('jump')" onpointercancel="touchUp('jump')">⬆️</button></div>
+<!-- BLOCK INVENTORY MODAL -->
+<div id="inv-modal" class="modal">
+    <div class="modal-box">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>Select Classic Block / Item</strong>
+            <button class="mini-btn" onclick="toggleModal('inv-modal')">X</button>
+        </div>
+        <div class="inv-grid" id="inv-grid"></div>
+    </div>
+</div>
+
+<!-- MODS MODAL -->
+<div id="mod-modal" class="modal">
+    <div class="modal-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong>Mamerwost Built-in Mods</strong>
+            <button class="mini-btn" onclick="toggleModal('mod-modal')">X</button>
+        </div>
+        <div class="mod-row">
+            <span>TNT Explosive Mode (Auto-ignite)</span>
+            <input type="checkbox" id="mod-tnt" checked>
+        </div>
+        <div class="mod-row">
+            <span>Moon Gravity (Low Gravity)</span>
+            <input type="checkbox" id="mod-gravity">
+        </div>
+        <div class="mod-row">
+            <span>Super Speed Boost</span>
+            <input type="checkbox" id="mod-speed">
+        </div>
+        <div class="mod-row">
+            <span>Night & Torch Glow Mode</span>
+            <input type="checkbox" id="mod-night" onchange="toggleNightMode()">
+        </div>
+        <div class="mod-row">
+            <span>Fly Mode (Hold Jump)</span>
+            <input type="checkbox" id="mod-fly">
+        </div>
+        <button class="mc-btn" style="width:100%; margin-top:12px;" onclick="toggleModal('mod-modal')">Done</button>
+    </div>
 </div>
 
 <script>
-// ---------- STORAGE KEYS ----------
-const KEY_USERS = "GW_USERS_V5";
-const KEY_ME = "GW_ME_V5";
-const KEY_GAMES = "GW_GAMES_V5";
-
-function loadJSON(key, fallback){ try{ let v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } }
-function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
-
-// ---------- DATA ----------
-let users = loadJSON(KEY_USERS, {});
-let games = loadJSON(KEY_GAMES, null);
-if(!games){
-  games = [
-    {id:1, name:"Block World", desc:"Collect 10 coins! Jump with purple character.", author:"GAMERWOST", owner:"gamerwost", likes:128, plays:542, html:null, coinGoal:10},
-    {id:2, name:"Click Game", desc:"HTML example - click to score!", author:"GAMERWOST", owner:"gamerwost", likes:95, plays:320, html:"<html><body style='font-family:Arial;text-align:center;padding:30px'><h1>Click Game</h1><p>Score: <b id='s'>0</b></p><button onclick=\"document.getElementById('s').innerText=Number(document.getElementById('s').innerText)+1\" style='padding:20px 40px;font-size:20px;background:#7b2ff7;color:#fff;border:0;border-radius:12px'>CLICK!</button></body></html>", coinGoal:5},
-    {id:3, name:"Lava Escape", desc:"Escape from lava!", author:"ProPlayer", owner:"proplayer", likes:89, plays:310, html:null, coinGoal:8}
-  ];
-  saveJSON(KEY_GAMES, games);
-}
-let me = loadJSON(KEY_ME, null);
-let mode = "login";
-
-// ---------- PAGES ----------
-function showPage(p){
-  ["play","publish","my"].forEach(x=>{
-    let el = document.getElementById("page"+x.charAt(0).toUpperCase()+x.slice(1));
-    if(el) el.classList.toggle("hidden", x!==p);
-  });
-  // Touch controls only on PLAY page
-  let tc = document.getElementById("touchControls");
-  if(me && p==="play") tc.style.display = "flex";
-  else tc.style.display = "none";
+// ==================== PIXEL TEXTURE GENERATOR ====================
+function createPixelTexture(drawFn) {
+    const c = document.createElement('canvas');
+    c.width = 16; c.height = 16;
+    const ctx = c.getContext('2d');
+    drawFn(ctx);
+    const tex = new THREE.CanvasTexture(c);
+    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.NearestFilter;
+    return { tex, url: c.toDataURL() };
 }
 
-// ---------- LOGIN - EN ÖNEMLİ KISIM ----------
-function switchTab(m){
-  mode = m;
-  document.getElementById("tabLogin").className = m==="login" ? "btn-primary" : "btn-dark";
-  document.getElementById("tabLogin").style.flex = "1";
-  document.getElementById("tabRegister").className = m==="register" ? "btn-primary" : "btn-dark";
-  document.getElementById("tabRegister").style.flex = "1";
-  document.getElementById("pass2Wrap").classList.toggle("hidden", m!=="register");
-  document.getElementById("loginBtn").innerText = m==="login" ? "LOGIN" : "REGISTER";
-  document.getElementById("loginError").innerText = "";
-  document.getElementById("loginOk").innerText = "";
-  checkUserHint();
-}
-function cleanUser(u){ return u.trim().toLowerCase().replace(/[^a-z0-9_]/g,""); }
-function hashPass(p){
-  let h = 0;
-  for(let i=0;i<p.length;i++){ h = ((h<<5)-h) + p.charCodeAt(i); h = h & h; }
-  return "h"+Math.abs(h)+"_"+p.length+"_"+p.length;
-}
-function checkUserHint(){
-  let raw = document.getElementById("loginUser").value;
-  let clean = cleanUser(raw);
-  let el = document.getElementById("userHint");
-  if(!raw){ el.innerText=""; return; }
-  if(raw!==clean){ el.innerText="Will be saved as: "+clean; el.style.color="#ffcc00"; return; }
-  if(clean.length<3){ el.innerText="Min 3 characters"; el.style.color="#ff6b6b"; return; }
-  if(mode==="register"){
-    if(users[clean]){ el.innerText="❌ '"+clean+"' is TAKEN! Pick another."; el.style.color="#ff6b6b"; }
-    else { el.innerText="✅ '"+clean+"' is AVAILABLE!"; el.style.color="#7CFC00"; }
-  } else {
-    if(users[clean]){ el.innerText="✅ Account found. Enter password."; el.style.color="#7CFC00"; }
-    else { el.innerText="ℹ️ No account. Tap REGISTER to create."; el.style.color="#aaa"; }
-  }
-}
-document.getElementById("loginUser").addEventListener("input", checkUserHint);
-
-function doLogin(){
-  let username = cleanUser(document.getElementById("loginUser").value);
-  let pass = document.getElementById("loginPass").value;
-  let err = document.getElementById("loginError");
-  let ok = document.getElementById("loginOk");
-  err.innerText=""; ok.innerText="";
-
-  if(username.length<3){ err.innerText="❌ Username min 3 characters!"; return; }
-  if(pass.length<4){ err.innerText="❌ Password min 4 characters!"; return; }
-
-  if(mode==="register"){
-    let pass2 = document.getElementById("loginPass2").value;
-    if(pass!==pass2){ err.innerText="❌ Passwords do not match!"; return; }
-    if(users[username]){ err.innerText="❌ '"+username+"' is ALREADY TAKEN! Pick another name."; return; }
-    // SAVE NEW USER - THIS IS THE IMPORTANT PART
-    let user = {username:username, passHash:hashPass(pass), coin:0, save:null, createdAt:Date.now()};
-    users[username] = user;
-    saveJSON(KEY_USERS, users);
-    me = user;
-    saveJSON(KEY_ME, me);
-    ok.innerText="✅ Account created! Saved!";
-    enterSite();
-    return;
-  } else {
-    let user = users[username];
-    if(!user){ err.innerText="❌ No account '"+username+"'. Tap REGISTER first!"; switchTab("register"); return; }
-    if(user.passHash!==hashPass(pass)){ err.innerText="❌ Wrong password! Try again."; return; }
-    me = user;
-    saveJSON(KEY_ME, me);
-    enterSite();
-    return;
-  }
-}
-function guestLogin(){
-  me = {username:"guest_"+Math.floor(Math.random()*1000), passHash:"", coin:0, save:null, isGuest:true};
-  saveJSON(KEY_ME, me);
-  enterSite();
-}
-function enterSite(){
-  document.getElementById("loginScreen").classList.add("hidden");
-  document.getElementById("loginScreen").style.display="none";
-  document.getElementById("touchControls").style.display="flex";
-  applyUser();
-  showPage("play");
-  if(me.save){
-    document.getElementById("continueInfo").innerText="Last: "+me.save.gameName+" - Coins: "+me.save.coins+" - "+new Date(me.save.time).toLocaleString();
-  }
-  alert("✅ Welcome "+me.username+"! Your account is saved.");
-}
-function doLogout(){
-  if(!confirm("Logout? Progress is saved.")) return;
-  saveProgress();
-  localStorage.removeItem(KEY_ME);
-  me = null;
-  location.reload();
-}
-function changePass(){
-  if(!me || me.isGuest) return alert("Guest cannot change password!");
-  let oldP = prompt("Old password:");
-  if(!oldP) return;
-  if(hashPass(oldP)!==me.passHash) return alert("❌ Wrong old password!");
-  let newP = prompt("New password (min 4):");
-  if(!newP || newP.length<4) return alert("Min 4!");
-  me.passHash = hashPass(newP);
-  users[me.username] = me;
-  saveJSON(KEY_USERS, users);
-  saveJSON(KEY_ME, me);
-  alert("✅ Password changed and saved!");
-}
-// Login button - 2 ways so it NEVER breaks
-document.getElementById("loginBtn").addEventListener("click", doLogin);
-document.getElementById("loginBtn").addEventListener("touchend", function(e){ e.preventDefault(); doLogin(); });
-document.getElementById("loginPass").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
-
-// ---------- USER UI ----------
-function applyUser(){
-  if(!me) return;
-  document.getElementById("headerUser").innerText = me.username;
-  document.getElementById("headerCoin").innerText = me.coin||0;
-  document.getElementById("welcomeUser").innerText = me.username;
-  document.getElementById("profileUser").innerText = me.username + (me.isGuest?" (Guest)":" - Saved ✅");
-  document.getElementById("profileCoin").innerText = me.coin||0;
-  document.getElementById("statCoin").innerText = me.coin||0;
-  player.nick = me.username;
-}
-
-// ---------- GAME ----------
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-let player = {x:60,y:310,vy:0,grounded:true,hp:100,score:0,coins:0,nick:"Player",color:"#7b2ff7"};
-let keys = {};
-let coins = [];
-let enemies = [];
-let startTime = Date.now();
-let currentGame = games[0];
-
-function spawnCoins(){
-  coins = [];
-  let goal = currentGame.coinGoal || 10;
-  for(let i=0;i<goal;i++) coins.push({x:80+Math.random()*750, y:80+Math.random()*200, taken:false});
-  enemies = [{x:400,y:310,dir:1},{x:650,y:310,dir:-1}];
-}
-spawnCoins();
-
-function draw(){
-  ctx.fillStyle = "#87ceeb"; ctx.fillRect(0,0,900,380);
-  ctx.fillStyle = "#8b5a2b"; ctx.fillRect(0,360,900,40);
-  ctx.fillStyle = "#fff"; ctx.fillRect(180,300,130,18); ctx.fillRect(420,240,130,18); ctx.fillRect(640,300,130,18);
-  coins.forEach(c=>{ if(!c.taken){ ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(c.x,c.y,12,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#fff"; ctx.font="bold 14px Arial"; ctx.fillText("C",c.x-4,c.y+5); } });
-  enemies.forEach(e=>{ ctx.fillStyle="#ef4444"; ctx.fillRect(e.x,e.y,36,36); ctx.fillStyle="#fff"; ctx.fillText("👾",e.x+4,e.y+26); });
-  // player
-  ctx.fillStyle = "rgba(0,0,0,.2)"; ctx.fillRect(player.x,player.y+48,40,6);
-  ctx.fillStyle = player.color; ctx.fillRect(player.x,player.y,40,50);
-  ctx.fillStyle = "#eee"; ctx.fillRect(player.x+5,player.y-28,30,28);
-  ctx.fillStyle = "#2563eb"; ctx.fillRect(player.x+2,player.y-38,36,12);
-  ctx.fillStyle = "#000"; ctx.fillRect(player.x+12,player.y-18,5,8); ctx.fillRect(player.x+24,player.y-18,5,8);
-  ctx.fillStyle = "white"; ctx.font="bold 13px Arial"; ctx.fillText(player.nick, player.x-5, player.y-45);
-  requestAnimationFrame(draw);
-}
-draw();
-
-document.addEventListener("keydown", e=>{
-  if(e.target.tagName!=="INPUT" && e.target.tagName!=="TEXTAREA") keys[e.key.toLowerCase()]=true;
-});
-document.addEventListener("keyup", e=>{ keys[e.key.toLowerCase()]=false; });
-
-// TOUCH - SIMPLE, NO PREVENTDEFAULT ON WHOLE PAGE
-function touchDown(k){ keys[k]=true; }
-function touchUp(k){ keys[k]=false; }
-
-setInterval(()=>{
-  if(keys["a"]||keys["arrowleft"]||keys["left"]) player.x-=5;
-  if(keys["d"]||keys["arrowright"]||keys["right"]) player.x+=5;
-  if((keys["w"]||keys["arrowup"]||keys[" "]||keys["jump"]) && player.grounded){ player.vy=-14; player.grounded=false; }
-  player.vy+=0.8; player.y+=player.vy;
-  if(player.y>=310){ player.y=310; player.vy=0; player.grounded=true; }
-  player.x=Math.max(0,Math.min(860,player.x));
-  coins.forEach(c=>{
-    if(!c.taken && Math.abs(c.x-(player.x+20))<30 && Math.abs(c.y-(player.y+20))<35){
-      c.taken=true; player.coins++; player.score+=100;
-      if(me && !me.isGuest){ me.coin=(me.coin||0)+10; }
-      document.getElementById("coinText").innerText=player.coins;
-      document.getElementById("scoreText").innerText=player.score;
-      document.getElementById("headerCoin").innerText=me?(me.coin||0):0;
-      if(player.coins>=(currentGame.coinGoal||10)){ alert("🎉 YOU WIN! "+currentGame.name); restartGame(); }
+function noiseFill(ctx, baseColors, count = 80) {
+    ctx.fillStyle = baseColors[0];
+    ctx.fillRect(0, 0, 16, 16);
+    for (let i = 0; i < count; i++) {
+        ctx.fillStyle = baseColors[Math.floor(Math.random() * baseColors.length)];
+        ctx.fillRect(Math.floor(Math.random() * 16), Math.floor(Math.random() * 16), 1, 1);
     }
-  });
-  enemies.forEach(e=>{
-  
+}
+
+const BLOCKS = {
+    1: {
+        name: 'Grass',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#55b832', '#47a127', '#66cc3d', '#3e8e22'], 120);
+        })
+    },
+    2: {
+        name: 'Dirt',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#866043', '#704f36', '#966c4a', '#593d28'], 120);
+        })
+    },
+    3: {
+        name: 'Cobblestone',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#7a7a7a', '#5c5c5c', '#949494', '#474747'], 150);
+            ctx.strokeStyle = '#3d3d3d';
+            ctx.strokeRect(1, 1, 6, 5);
+            ctx.strokeRect(8, 2, 7, 6);
+            ctx.strokeRect(2, 8, 7, 6);
+        })
+    },
+    4: {
+        name: 'Oak Planks',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#b8945f', '#a6824e', '#c7a26b'], 70);
+            ctx.fillStyle = '#6e522b';
+            for (let y = 0; y < 16; y += 4) ctx.fillRect(0, y, 16, 1);
+        })
+    },
+    5: {
+        name: 'Oak Log',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#665132', '#524026', '#78603c'], 90);
+            ctx.fillStyle = '#3d2f1b';
+            for (let x = 2; x < 16; x += 4) ctx.fillRect(x, 0, 1, 16);
+        })
+    },
+    6: {
+        name: 'Leaves',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#2d7a1e', '#1f5c13', '#3b9628', '#15420c'], 130);
+        })
+    },
+    7: {
+        name: 'Sand',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#dfd69b', '#cfc588', '#ede4ab'], 110);
+        })
+    },
+    8: {
+        name: 'Bricks',
+        tex: createPixelTexture(ctx => {
+            ctx.fillStyle = '#b5b5b5';
+            ctx.fillRect(0, 0, 16, 16);
+            ctx.fillStyle = '#9c4338';
+            for (let y = 0; y < 16; y += 4) {
+                const offset = (y / 4) % 2 === 0 ? 0 : 4;
+                ctx.fillRect(offset, y, 7, 3);
+                ctx.fillRect((offset + 8) % 16, y, 7, 3);
+            }
+        })
+    },
+    9: {
+        name: 'TNT',
+        tex: createPixelTexture(ctx => {
+            ctx.fillStyle = '#db3226';
+            ctx.fillRect(0, 0, 16, 16);
+            ctx.fillStyle = '#f2f2f2';
+            ctx.fillRect(0, 5, 16, 6);
+            ctx.fillStyle = '#111';
+            ctx.fillRect(2, 6, 3, 1); ctx.fillRect(3, 6, 1, 4);
+            ctx.fillRect(6, 6, 1, 4); ctx.fillRect(7, 7, 1, 1); ctx.fillRect(8, 6, 1, 4);
+            ctx.fillRect(10, 6, 3, 1); ctx.fillRect(11, 6, 1, 4);
+        })
+    },
+    10: {
+        name: 'Gold Block',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#fcee4b', '#ebd328', '#fff88f'], 80);
+            ctx.strokeStyle = '#d4af17';
+            ctx.strokeRect(0, 0, 16, 16);
+        })
+    },
+    11: {
+        name: 'Diamond Block',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#5cebe3', '#3cc7bf', '#9cfaf4'], 80);
+            ctx.strokeStyle = '#269e97';
+            ctx.strokeRect(0, 0, 16, 16);
+        })
+    },
+    12: {
+        name: 'Sponge',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#d9d636', '#c2bf27', '#ebe852'], 90);
+            ctx.fillStyle = '#878516';
+            ctx.fillRect(3, 3, 2, 2); ctx.fillRect(10, 4, 2, 2);
+            ctx.fillRect(5, 10, 2, 2); ctx.fillRect(11, 11, 2, 2);
+        })
+    },
+    13: {
+        name: 'Glass',
+        transparent: true,
+        tex: createPixelTexture(ctx => {
+            ctx.clearRect(0, 0, 16, 16);
+            ctx.strokeStyle = '#d8f5f7';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(1, 1, 14, 14);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(3, 3, 2, 2);
+            ctx.fillRect(4, 4, 2, 2);
+        })
+    },
+    14: {
+        name: 'Red Wool',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#b82e2e', '#9e2222', '#cc3d3d'], 120);
+        })
+    },
+    15: {
+        name: 'Glowstone',
+        tex: createPixelTexture(ctx => {
+            noiseFill(ctx, ['#ffda66', '#d99e2b', '#fff2b2', '#8f5e14'], 140);
+        })
+    }
+};
+
+const MATERIALS = {};
+for (const [id, data] of Object.entries(BLOCKS)) {
+    MATERIALS[id] = new THREE.MeshLambertMaterial({
+        map: data.tex.tex,
+        transparent: !!data.transparent,
+        opacity: data.transparent ? 0.65 : 1.0
+    });
+}
+
+// ==================== THREE.JS SCENE SETUP ====================
+const canvas = document.getElementById('game-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87ceeb);
+scene.fog = new THREE.Fog(0x87ceeb, 20, 65);
+
+const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 100);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.72);
+scene.add(ambientLight);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.55);
+dirLight.position.set(20, 40, 15);
+scene.add(dirLight);
+
+// ==================== WORLD & VOXEL ENGINE ====================
+const WORLD_SIZE = 28;
+const worldBlocks = new Map();
+const blockMeshes = new Map();
+const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+
+function keyOf(x, y, z) {
+    return `${x},${y},${z}`;

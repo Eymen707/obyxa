@@ -3,599 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamerwost</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <title>gamerwost - Mobile Multiplayer</title>
+    <!-- Include PeerJS from CDN -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: none;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        body, html {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #87ceeb;
         }
-        #game-canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* HUD */
-        #hud {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 10;
-        }
-        #crosshair {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            transform: translate(-50%, -50%);
-            color: #ffffff;
-            font-size: 22px;
-            line-height: 20px;
-            text-align: center;
-            font-weight: bold;
-            text-shadow: 1px 1px 0 #000;
-        }
-
-        /* Top Left Launcher & PeerJS Panel */
-        #top-left-panel {
-            position: fixed;
-            top: 8px;
-            left: 8px;
-            background: rgba(0, 0, 0, 0.65);
-            border: 2px solid #888;
-            padding: 8px 10px;
-            color: #fff;
-            font-size: 12px;
-            pointer-events: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            max-width: 265px;
-            text-shadow: 1px 1px 0 #000;
-        }
-        .title-main {
-            font-size: 15px;
-            font-weight: bold;
-            color: #ffff55;
-            letter-spacing: 1px;
-        }
-        .title-sub {
-            font-size: 11px;
-            color: #cccccc;
-            margin-top: -3px;
-        }
-        .peer-row {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #55ff55;
-            font-weight: bold;
-            margin-top: 2px;
-        }
-        .join-row {
-            display: flex;
-            gap: 4px;
-        }
-        .hud-input {
-            background: #111;
-            border: 1px solid #999;
-            color: #fff;
-            padding: 4px 6px;
-            font-size: 12px;
-            width: 115px;
-            outline: none;
-            user-select: text;
-            -webkit-user-select: text;
-        }
-
-        /* Top Right Action Buttons */
-        #top-right-panel {
-            position: fixed;
-            top: 8px;
-            right: 8px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            gap: 5px;
-            pointer-events: auto;
-        }
-        .mc-btn {
-            background: #6e6e6e;
-            border: 2px solid;
-            border-color: #b0b0b0 #2e2e2e #2e2e2e #b0b0b0;
-            color: #fff;
-            padding: 5px 9px;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            text-shadow: 1px 1px 0 #222;
-        }
-        .mc-btn:active {
-            border-color: #2e2e2e #b0b0b0 #b0b0b0 #2e2e2e;
-            background: #525252;
-        }
-
-        /* Hotbar */
-        #hotbar {
-            position: fixed;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            background: rgba(20, 20, 20, 0.75);
-            border: 3px solid #555;
-            pointer-events: auto;
-            z-index: 25;
-        }
-        .slot {
-            width: 38px;
-            height: 38px;
-            border: 2px solid #777;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .slot.active {
-            border: 3px solid #ffffff;
-            background: rgba(255, 255, 255, 0.25);
-        }
-        .slot-preview {
-            width: 24px;
-            height: 24px;
-            image-rendering: pixelated;
-            background-size: cover;
-        }
-
-        /* Mobile Touch Controls */
-        #mobile-controls {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 20;
-        }
-        .dpad {
-            position: fixed;
-            bottom: 64px;
-            left: 14px;
-            width: 132px;
-            height: 132px;
-            pointer-events: auto;
-        }
-        .dpad-btn {
-            position: absolute;
-            width: 44px;
-            height: 44px;
-            background: rgba(255, 255, 255, 0.22);
-            border: 2px solid rgba(255, 255, 255, 0.55);
-            color: #fff;
-            font-weight: bold;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-        }
-        .dpad-btn:active { background: rgba(255, 255, 255, 0.48); }
-        #btn-up { top: 0; left: 44px; }
-        #btn-down { bottom: 0; left: 44px; }
-        #btn-left { top: 44px; left: 0; }
-        #btn-right { top: 44px; right: 0; }
-
-        .action-pad {
-            position: fixed;
-            bottom: 64px;
-            right: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: flex-end;
-            pointer-events: auto;
-        }
-        .act-row {
-            display: flex;
-            gap: 10px;
-        }
-        .act-btn {
-            width: 54px;
-            height: 54px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.22);
-            border: 2px solid rgba(255, 255, 255, 0.55);
-            color: #fff;
-            font-weight: bold;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .act-btn:active { background: rgba(255, 255, 255, 0.5); }
-
-        /* Inventory & Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.78);
-            z-index: 50;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            pointer-events: auto;
-        }
-        .modal-box {
-            background: #c6c6c6;
-            border: 4px solid;
-            border-color: #ffffff #555555 #555555 #ffffff;
-            padding: 14px;
-            width: 100%;
-            max-width: 440px;
-            color: #222;
-        }
-        .inv-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 15px;
-        }
-        .inv-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
-            background: #8b8b8b;
-            padding: 8px;
-            border: 2px solid;
-            border-color: #373737 #ffffff #ffffff #373737;
-            max-height: 280px;
-            overflow-y: auto;
-        }
-        .inv-item {
-            background: #8b8b8b;
-            border: 2px solid;
-            border-color: #373737 #ffffff #ffffff #373737;
-            padding: 6px 2px;
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 1px 1px 0 #222;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #38bdf8;
             text-align: center;
         }
-        .inv-item:hover, .inv-item:active {
-            background: #a5a5a5;
-            border-color: #ffff55;
-        }
-        .mod-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 9px 4px;
-            border-bottom: 1px solid #999;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        /* Chat */
-        #chat-box {
-            position: fixed;
-            top: 135px;
-            left: 8px;
-            width: 250px;
-            max-height: 110px;
-            overflow-y: auto;
-            font-size: 11px;
-            color: #fff;
-            text-shadow: 1px 1px 0 #000;
-            pointer-events: none;
-        }
-        .chat-line {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 2px 6px;
-            margin-bottom: 2px;
-        }
-        #chat-input-bar {
-            display: none;
-            position: fixed;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
             max-width: 400px;
-            z-index: 60;
-            pointer-events: auto;
-            gap: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #fff;
+            font-size: 1rem;
+        }
+        button {
+            background: #0284c7;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:active {
+            background: #0369a1;
+        }
+        #chat-box {
+            height: 150px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .msg-log {
+            color: #94a3b8;
+            word-break: break-word;
+        }
+        .msg-peer {
+            color: #38bdf8;
+            word-break: break-word;
+        }
+        .msg-self {
+            color: #4ade80;
+            word-break: break-word;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #status {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-<canvas id="game-canvas"></canvas>
+    <h1>🎮 gamerwost multiplayer</h1>
+    <div id="status">Status: Disconnected</div>
 
-<div id="hud">
-    <div id="crosshair">+</div>
-
-    <!-- Top Left: Gamerwost & Classic Minecraft Launcher & PeerJS ID -->
-    <div id="top-left-panel">
-        <div class="title-main">Gamerwost</div>
-        <div class="title-sub">Classic Minecraft Launcher</div>
-
-        <div class="peer-row">
-            <span>ID: <span id="my-peer-id">Generating...</span></span>
-            <button class="mc-btn" style="padding:2px 6px;" onclick="copyPeerId()">Copy</button>
-            <button class="mc-btn" style="padding:2px 6px;" onclick="resetPeer()">New</button>
-        </div>
-
-        <div class="join-row">
-            <input type="text" id="join-id-input" class="hud-input" placeholder="gw-XXXXXX">
-            <button class="mc-btn" style="padding:3px 8px;" onclick="joinFriend()">Join</button>
-        </div>
-
-        <div id="players-count" style="color:#ffff55; font-size:11px;">Players Online: 1</div>
+    <!-- Setup Screen -->
+    <div id="setup-screen" class="card">
+        <h2>Connection Setup</h2>
+        <button id="btn-host">Host New Game</button>
+        <p style="text-align: center; margin: 10px 0; color: #64748b;">OR</p>
+        <input type="text" id="input-peer-id" placeholder="Enter Host Peer ID">
+        <button id="btn-join">Join Game</button>
     </div>
 
-    <!-- Top Right Buttons -->
-    <div id="top-right-panel">
-        <button class="mc-btn" onclick="toggleChat()">Chat (T)</button>
-        <button class="mc-btn" onclick="toggleModal('inv-modal')">Inventory (E)</button>
-        <button class="mc-btn" onclick="toggleModal('mod-modal')">Mods (M)</button>
+    <!-- Game/Lobby Screen -->
+    <div id="game-screen" class="card hidden">
+        <h2 id="connection-info">Connected Room</h2>
+        <div id="chat-box"></div>
+        <input type="text" id="input-msg" placeholder="Type a message...">
+        <button id="btn-send">Send Data</button>
     </div>
 
-    <div id="chat-box"></div>
+    <script>
+        let peer;
+        let conn;
+        let myId = '';
 
-    <div id="chat-input-bar">
-        <input type="text" id="chat-input" class="hud-input" style="flex:1; padding:8px;" placeholder="Type chat message...">
-        <button class="mc-btn" onclick="sendChat()" style="padding: 8px 14px;">Send</button>
-    </div>
+        const statusEl = document.getElementById('status');
+        const setupScreen = document.getElementById('setup-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const chatBox = document.getElementById('chat-box');
+        const connectionInfo = document.getElementById('connection-info');
 
-    <!-- Mobile Touch Controls -->
-    <div id="mobile-controls">
-        <div class="dpad">
-            <div class="dpad-btn" id="btn-up">▲</div>
-            <div class="dpad-btn" id="btn-down">▼</div>
-            <div class="dpad-btn" id="btn-left">◀</div>
-            <div class="dpad-btn" id="btn-right">▶</div>
-        </div>
-        <div class="action-pad">
-            <div class="act-row">
-                <div class="act-btn" id="btn-break">BREAK</div>
-                <div class="act-btn" id="btn-place">PLACE</div>
-            </div>
-            <div class="act-row">
-                <div class="act-btn" id="btn-jump" style="width: 118px;">JUMP</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="hotbar"></div>
-</div>
-
-<!-- INVENTORY MODAL -->
-<div id="inv-modal" class="modal">
-    <div class="modal-box">
-        <div class="inv-header">
-            <span>Gamerwost Inventory (Select Block)</span>
-            <button class="mc-btn" onclick="toggleModal('inv-modal')">X</button>
-        </div>
-        <div style="font-size:11px; margin-bottom:6px;">Click any block below to put it in your active hotbar slot:</div>
-        <div class="inv-grid" id="inv-grid"></div>
-    </div>
-</div>
-
-<!-- MODS MODAL -->
-<div id="mod-modal" class="modal">
-    <div class="modal-box">
-        <div class="inv-header">
-            <span>Gamerwost Mods</span>
-            <button class="mc-btn" onclick="toggleModal('mod-modal')">X</button>
-        </div>
-        <div class="mod-row">
-            <span>TNT Auto-Ignite</span>
-            <input type="checkbox" id="mod-tnt" checked>
-        </div>
-        <div class="mod-row">
-            <span>Moon Gravity</span>
-            <input type="checkbox" id="mod-gravity">
-        </div>
-        <div class="mod-row">
-            <span>Super Speed</span>
-            <input type="checkbox" id="mod-speed">
-        </div>
-        <div class="mod-row">
-            <span>Night Mode</span>
-            <input type="checkbox" id="mod-night" onchange="toggleNightMode()">
-        </div>
-        <div class="mod-row">
-            <span>Fly Mode (Hold Jump)</span>
-            <input type="checkbox" id="mod-fly">
-        </div>
-        <button class="mc-btn" style="width:100%; margin-top:12px; padding:8px;" onclick="toggleModal('mod-modal')">Done</button>
-    </div>
-</div>
-
-<script>
-// ==================== PIXEL TEXTURE GENERATOR ====================
-function createPixelTexture(drawFn) {
-    const c = document.createElement('canvas');
-    c.width = 16; c.height = 16;
-    const ctx = c.getContext('2d');
-    drawFn(ctx);
-    const tex = new THREE.CanvasTexture(c);
-    tex.magFilter = THREE.NearestFilter;
-    tex.minFilter = THREE.NearestFilter;
-    return { tex, url: c.toDataURL() };
-}
-
-function noiseFill(ctx, baseColors, count = 80) {
-    ctx.fillStyle = baseColors[0];
-    ctx.fillRect(0, 0, 16, 16);
-    for (let i = 0; i < count; i++) {
-        ctx.fillStyle = baseColors[Math.floor(Math.random() * baseColors.length)];
-        ctx.fillRect(Math.floor(Math.random() * 16), Math.floor(Math.random() * 16), 1, 1);
-    }
-}
-
-const BLOCKS = {
-    1: { name: 'Grass', tex: createPixelTexture(ctx => noiseFill(ctx, ['#55b832', '#47a127', '#66cc3d', '#3e8e22'], 120)) },
-    2: { name: 'Dirt', tex: createPixelTexture(ctx => noiseFill(ctx, ['#866043', '#704f36', '#966c4a', '#593d28'], 120)) },
-    3: {
-        name: 'Cobblestone',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#7a7a7a', '#5c5c5c', '#949494', '#474747'], 150);
-            ctx.strokeStyle = '#3d3d3d';
-            ctx.strokeRect(1, 1, 6, 5);
-            ctx.strokeRect(8, 2, 7, 6);
-            ctx.strokeRect(2, 8, 7, 6);
-        })
-    },
-    4: {
-        name: 'Oak Planks',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#b8945f', '#a6824e', '#c7a26b'], 70);
-            ctx.fillStyle = '#6e522b';
-            for (let y = 0; y < 16; y += 4) ctx.fillRect(0, y, 16, 1);
-        })
-    },
-    5: {
-        name: 'Oak Log',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#665132', '#524026', '#78603c'], 90);
-            ctx.fillStyle = '#3d2f1b';
-            for (let x = 2; x < 16; x += 4) ctx.fillRect(x, 0, 1, 16);
-        })
-    },
-    6: { name: 'Leaves', tex: createPixelTexture(ctx => noiseFill(ctx, ['#2d7a1e', '#1f5c13', '#3b9628', '#15420c'], 130)) },
-    7: { name: 'Sand', tex: createPixelTexture(ctx => noiseFill(ctx, ['#dfd69b', '#cfc588', '#ede4ab'], 110)) },
-    8: {
-        name: 'Bricks',
-        tex: createPixelTexture(ctx => {
-            ctx.fillStyle = '#b5b5b5'; ctx.fillRect(0, 0, 16, 16);
-            ctx.fillStyle = '#9c4338';
-            for (let y = 0; y < 16; y += 4) {
-                const offset = (y / 4) % 2 === 0 ? 0 : 4;
-                ctx.fillRect(offset, y, 7, 3);
-                ctx.fillRect((offset + 8) % 16, y, 7, 3);
-            }
-        })
-    },
-    9: {
-        name: 'TNT',
-        tex: createPixelTexture(ctx => {
-            ctx.fillStyle = '#db3226'; ctx.fillRect(0, 0, 16, 16);
-            ctx.fillStyle = '#f2f2f2'; ctx.fillRect(0, 5, 16, 6);
-            ctx.fillStyle = '#111';
-            ctx.fillRect(2, 6, 3, 1); ctx.fillRect(3, 6, 1, 4);
-            ctx.fillRect(6, 6, 1, 4); ctx.fillRect(7, 7, 1, 1); ctx.fillRect(8, 6, 1, 4);
-            ctx.fillRect(10, 6, 3, 1); ctx.fillRect(11, 6, 1, 4);
-        })
-    },
-    10: {
-        name: 'Gold Block',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#fcee4b', '#ebd328', '#fff88f'], 80);
-            ctx.strokeStyle = '#d4af17'; ctx.strokeRect(0, 0, 16, 16);
-        })
-    },
-    11: {
-        name: 'Diamond Block',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#5cebe3', '#3cc7bf', '#9cfaf4'], 80);
-            ctx.strokeStyle = '#269e97'; ctx.strokeRect(0, 0, 16, 16);
-        })
-    },
-    12: {
-        name: 'Sponge',
-        tex: createPixelTexture(ctx => {
-            noiseFill(ctx, ['#d9d636', '#c2bf27', '#ebe852'], 90);
-            ctx.fillStyle = '#878516';
-            ctx.fillRect(3, 3, 2, 2); ctx.fillRect(10, 4, 2, 2);
-            ctx.fillRect(5, 10, 2, 2); ctx.fillRect(11, 11, 2, 2);
-        })
-    },
-    13: {
-        name: 'Glass',
-        transparent: true,
-        tex: createPixelTexture(ctx => {
-            ctx.clearRect(0, 0, 16, 16);
-            ctx.strokeStyle = '#d8f5f7'; ctx.lineWidth = 2; ctx.strokeRect(1, 1, 14, 14);
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(3, 3, 2, 2); ctx.fillRect(4, 4, 2, 2);
-        })
-    },
-    14: { name: 'Red Wool', tex: createPixelTexture(ctx => noiseFill(ctx, ['#b82e2e', '#9e2222', '#cc3d3d'], 120)) },
-    15: { name: 'Blue Wool', tex: createPixelTexture(ctx => noiseFill(ctx, ['#2e4eb8', '#223b9e', '#3d61cc'], 120)) },
-    16: { name: 'Purple Wool', tex: createPixelTexture(ctx => noiseFill(ctx, ['#6c2eb8', '#54229e', '#823dcc'], 120)) },
-    17: { name: 'Cyan Wool', tex: createPixelTexture(ctx => noiseFill(ctx, ['#2eb8b0', '#229e97', '#3dccc4'], 120)) },
-    18: { name: 'Glowstone', tex: createPixelTexture(ctx => noiseFill(ctx, ['#ffda66', '#d99e2b', '#fff2b2', '#8f5e14'], 140)) },
-    19: { name: 'Obsidian', tex: createPixelTexture(ctx => noiseFill(ctx, ['#1b1229', '#2b1c42', '#100a1a', '#3c275c'], 130)) },
-    20: {
-        name: 'Bookshelf',
-        tex: createPixelTexture(ctx => {
-            ctx.fillStyle = '#b8945f'; ctx.fillRect(0, 0, 16, 16);
-            ctx.fillStyle = '#2b1e12'; ctx.fillRect(1, 2, 14, 5); ctx.fillRect(1, 9, 14, 5);
-            const cols = ['#c93b2b', '#2b7ec9', '#2bc958', '#e6c835'];
-            for (let x = 2; x < 14; x += 2) {
-                ctx.fillStyle = cols[x % 4]; ctx.fillRect(x, 3, 1, 4);
-                ctx.fillStyle = cols[(x + 1) % 4]; ctx.fillRect(x, 10, 1, 4);
-            }
-        })
-    }
-};
-
-const MATERIALS = {};
-for (const [id, data] of Object.entries(BLOCKS)) {
-    MATERIALS[id] = new THREE.MeshLambertMaterial({
-        map: data.tex.tex,
-        transparent: !!data.transparent,
-        opacity: data.transparent ? 0.65 : 1.0
-    });
-}
-
-// ==================== GAMERWOST CHARACTER ARM & AVATAR TEXTURES ====================
-// Pixel texture matching your purple-top / cyan-bottom arm design
-const gamerArmTex = createPixelTexture(ctx => {
-    // Upper half: dark purple pixelated pattern
-    const purples = ['#2c1654', '#3b1d70', '#221042', '#472485'];
-    for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 16; x++) {
-            ctx.fillStyle = purples[(x + y + Math.floor(Math.random() * 2)) % purples.length];
-            ctx.fillRect(x, y, 1, 1);
+        function logMessage(text, type = 'log') {
+            const div = document.createElement('div');
+            div.className = `msg-${type}`;
+            div.textContent = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
-    }
-    // Lower half: turquoise/cyan pixelated pattern
-    const cyans = ['#1b8a8f', '#24a6ab', '#156f73', '#2ec2c7'];
-    for (let y = 8; y < 16; y++) {
-        for (let x = 0; x < 16; x++) {
-            ctx.fillStyle = cyans[(x + y + Math.floor(Math.random() * 2)) % cyans.length];
-            ctx.fillRect(x, y, 1, 1);
-        }
-    }
-}).tex;
 
-const gamerTorsoTex = createPixelTexture(ctx => {
-    ctx.fillStyle = '#151238';
-    ctx.fillRect(0, 0, 16, 16);
-    // Stylized 'G' emblem in cyan-purple gradient
-    ctx.strokeStyle = '#7a3cff';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(4, 3, 8, 10);
-    ctx.fillStyle = '#151238
+        // 1. Host a game
+        document.getElementById('btn-host').addEventListener('click', () => {
+            // Generate a random short ID or let PeerJS handle it
+            peer = new Peer();
+
+            peer.on('open', (id) => {
+                myId = id;
+                statusEl.textContent = `Hosting! Your ID: ${id}`;
+                connectionInfo.textContent = `Room ID: ${id} (Waiting for player...)`;
+                setupScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+            });
+
+            peer.on('connection', (connection) => {
+                conn = connection;
+                setupConnectionHandlers();
+                statusEl.textContent = 'Player Connected!';
+                logMessage('Another player joined the game!', 'log');
+            });
+
+            peer.on('error', (err) => {
+                alert('Peer error: ' + err.type);
+            });
+        });
+
+        // 2. Join a game
+        document.getElementById('btn-join').addEventListener('click', () => {
+            const hostId = document.getElementById('input-peer-id').value.trim();
+            if (!hostId) {
+                alert('Please enter a valid Host Peer ID.');
+                return;
+            }
+
+            peer = new Peer();
+
+            peer.on('open', (id) => {
+                myId = id;
+                statusEl.textContent = 'Connecting to host...';
+                
+                conn = peer.connect(hostId);
+                setupConnectionHandlers();
+            });
+
+            peer.on('error', (err) => {
+                alert('Connection failed: ' + err.type);
+                statusEl.textContent = 'Status: Connection Failed';
+            });
+        });
+
+        // 3. Setup data channel handlers
+        function setupConnectionHandlers() {
+            conn.on('open', () => {
+                statusEl.textContent = 'Connected Successfully!';
+                setupScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                connectionInfo.textContent = `Connected to Peer`;
+                logMessage('Data channel open! You can chat or send sync data.', 'log');
+            });
+
+            conn.on('data', (data) => {
+                logMessage(`Peer: ${data}`, 'peer');
+            });
+
+            conn.on('close', () => {
+                statusEl.textContent = 'Disconnected';
+                logMessage('Peer disconnected.', 'log');
+                setTimeout(() => location.reload(), 2000);
+            });
+        }
+
+        // 4. Send Data
+        document.getElementById('btn-send').addEventListener('click', sendMessage);
+        document.getElementById('input-msg').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('input-msg');
+            const msg = input.value.trim();
+            if (!msg || !conn || !conn.open) return;
+
+            conn.send(msg);
+            logMessage(`You: ${msg}`, 'self');
+            input.value = '';
+        }
+    </script>
+</body>
+</html>

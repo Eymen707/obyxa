@@ -3,227 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>gamerwost - Mobile Multiplayer</title>
-    <!-- Include PeerJS from CDN -->
+    <title>gamerwost - Multiplayer Canvas Game</title>
+    <!-- Tailwind CSS for modern mobile UI styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PeerJS CDN for WebRTC P2P networking -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
         body {
+            overscroll-behavior: none;
+            touch-action: none;
             background-color: #0f172a;
             color: #f8fafc;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            font-family: system-ui, -apple-system, sans-serif;
         }
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #38bdf8;
-            text-align: center;
-        }
-        .card {
+        canvas {
+            display: block;
             background: #1e293b;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 15px;
-        }
-        h2 {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #e2e8f0;
-        }
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            font-size: 1rem;
-        }
-        button {
-            background: #0284c7;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button:active {
-            background: #0369a1;
-        }
-        #chat-box {
-            height: 150px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 10px;
-            overflow-y: auto;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .msg-log {
-            color: #94a3b8;
-            word-break: break-word;
-        }
-        .msg-peer {
-            color: #38bdf8;
-            word-break: break-word;
-        }
-        .msg-self {
-            color: #4ade80;
-            word-break: break-word;
-        }
-        .hidden {
-            display: none !important;
-        }
-        #status {
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            margin-bottom: 10px;
-            text-align: center;
+            touch-action: none;
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col h-screen w-screen overflow-hidden select-none">
 
-    <h1>🎮 gamerwost multiplayer</h1>
-    <div id="status">Status: Disconnected</div>
+    <!-- Top Header -->
+    <header class="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-10 shrink-0">
+        <h1 class="text-lg font-black tracking-wider text-cyan-400">gamerwost</h1>
+        <div id="connection-badge" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/30">
+            Offline
+        </div>
+    </header>
 
-    <!-- Setup Screen -->
-    <div id="setup-screen" class="card">
-        <h2>Connection Setup</h2>
-        <button id="btn-host">Host New Game</button>
-        <p style="text-align: center; margin: 10px 0; color: #64748b;">OR</p>
-        <input type="text" id="input-peer-id" placeholder="Enter Host Peer ID">
-        <button id="btn-join">Join Game</button>
+    <!-- Main Content Area / Canvas Container -->
+    <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-slate-950">
+        <canvas id="gameCanvas" class="w-full h-full shadow-inner"></canvas>
+
+        <!-- Menu Overlay (Host / Join screen) -->
+        <div id="menu-overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 z-20">
+            <div class="w-full max-w-sm bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl flex flex-col gap-4">
+                <div class="text-center">
+                    <h2 class="text-xl font-bold text-slate-100">Multiplayer Lobby</h2>
+                    <p class="text-xs text-slate-400 mt-1">Host a room or join a friend via PeerJS</p>
+                </div>
+
+                <!-- Host Button -->
+                <button id="btn-host" class="w-full py-3.5 px-4 bg-cyan-500 hover:bg-cyan-400 active:bg-cyan-600 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 text-sm">
+                    Host New Game
+                </button>
+
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-slate-800"></div>
+                    <span class="flex-shrink mx-4 text-xs text-slate-500 uppercase tracking-widest">or join</span>
+                    <div class="flex-grow border-t border-slate-800"></div>
+                </div>
+
+                <!-- Join Section -->
+                <div class="flex flex-col gap-2">
+                    <input type="text" id="input-host-id" placeholder="Enter Host ID..." 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition">
+                    <button id="btn-join" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm">
+                        Join Game
+                    </button>
+                </div>
+
+                <div id="status-msg" class="text-xs text-center text-slate-400 min-h-[1.5rem] flex items-center justify-center"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Game/Lobby Screen -->
-    <div id="game-screen" class="card hidden">
-        <h2 id="connection-info">Connected Room</h2>
-        <div id="chat-box"></div>
-        <input type="text" id="input-msg" placeholder="Type a message...">
-        <button id="btn-send">Send Data</button>
+    <!-- Mobile Virtual Controls / HUD footer -->
+    <div class="p-3 bg-slate-900 border-t border-slate-800 flex items-center justify-between z-10 shrink-0 text-xs text-slate-400">
+        <div>Use <span class="text-cyan-400 font-semibold">WASD / Arrow Keys</span> or <span class="text-cyan-400 font-semibold">Touch & Drag</span> to move.</div>
+        <div id="room-display" class="font-mono text-slate-300"></div>
     </div>
 
     <script>
-        let peer;
-        let conn;
+        // Game State & Networking Variables
+        let peer = null;
+        let conn = null;
+        let isHost = false;
         let myId = '';
+        
+        // Canvas Setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-        const statusEl = document.getElementById('status');
-        const setupScreen = document.getElementById('setup-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const chatBox = document.getElementById('chat-box');
-        const connectionInfo = document.getElementById('connection-info');
+        // Player objects
+        const localPlayer = {
+            x: 100,
+            y: 100,
+            size: 36,
+            color: '#38bdf8',
+            speed: 4,
+            vx: 0,
+            vy: 0
+        };
 
-        function logMessage(text, type = 'log') {
-            const div = document.createElement('div');
-            div.className = `msg-${type}`;
-            div.textContent = text;
-            chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
+        const remotePlayer = {
+            x: 200,
+            y: 200,
+            size: 36,
+            color: '#f43f5e',
+            active: false
+        };
+
+        // Input tracking
+        const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false };
+        let isTouchMoving = false;
+        let touchTargetX = 0;
+        let touchTargetY = 0;
+
+        // UI Elements
+        const menuOverlay = document.getElementById('menu-overlay');
+        const btnHost = document.getElementById('btn-host');
+        const btnJoin = document.getElementById('btn-join');
+        const inputHostId = document.getElementById('input-host-id');
+        const statusMsg = document.getElementById('status-msg');
+        const connectionBadge = document.getElementById('connection-badge');
+        const roomDisplay = document.getElementById('room-display');
+
+        // Resize Canvas dynamically to fit container
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Initialize PeerJS connection handling
+        function initPeer(customId = undefined) {
+            statusMsg.textContent = 'Initializing connection...';
+            
+            // Create Peer instance
+            peer = customId ? new Peer(customId) : new Peer();
+
+            peer.on('open', (id) => {
+                myId = id;
+                if (isHost) {
+                    statusMsg.textContent = `Room ready! ID: ${id}`;
+                    roomDisplay.textContent = `ID: ${id}`;
+                    updateConnectionBadge('Waiting for peer...', 'yellow');
+                } else {
+                    statusMsg.textContent = `Connected to server. Joining...`;
+                }
+            });
+
+            // When someone connects to us (Host mode)
+            peer.on('connection', (connection) => {
+                if (conn) {
+                    connection.close(); // Only allow 1 connection for this simple demo
+                    return;
+                }
+                conn = connection;
+                setupConnectionEvents();
+                isHost = true;
+                updateConnectionBadge('Connected', 'green');
+                menuOverlay.classList.add('hidden');
+                roomDisplay.textContent = `Connected (Host)`;
+            });
+
+            peer.on('error', (err) => {
+                console.error('Peer error:', err);
+                statusMsg.textContent = `Error: ${err.type}`;
+                updateConnectionBadge('Error', 'red');
+            });
         }
 
-        // 1. Host a game
-        document.getElementById('btn-host').addEventListener('click', () => {
-            // Generate a random short ID or let PeerJS handle it
-            peer = new Peer();
-
-            peer.on('open', (id) => {
-                myId = id;
-                statusEl.textContent = `Hosting! Your ID: ${id}`;
-                connectionInfo.textContent = `Room ID: ${id} (Waiting for player...)`;
-                setupScreen.classList.add('hidden');
-                gameScreen.classList.remove('hidden');
-            });
-
-            peer.on('connection', (connection) => {
-                conn = connection;
-                setupConnectionHandlers();
-                statusEl.textContent = 'Player Connected!';
-                logMessage('Another player joined the game!', 'log');
-            });
-
-            peer.on('error', (err) => {
-                alert('Peer error: ' + err.type);
-            });
-        });
-
-        // 2. Join a game
-        document.getElementById('btn-join').addEventListener('click', () => {
-            const hostId = document.getElementById('input-peer-id').value.trim();
-            if (!hostId) {
-                alert('Please enter a valid Host Peer ID.');
-                return;
-            }
-
-            peer = new Peer();
-
-            peer.on('open', (id) => {
-                myId = id;
-                statusEl.textContent = 'Connecting to host...';
-                
-                conn = peer.connect(hostId);
-                setupConnectionHandlers();
-            });
-
-            peer.on('error', (err) => {
-                alert('Connection failed: ' + err.type);
-                statusEl.textContent = 'Status: Connection Failed';
-            });
-        });
-
-        // 3. Setup data channel handlers
-        function setupConnectionHandlers() {
+        // Setup DataChannel event listeners
+        function setupConnectionEvents() {
             conn.on('open', () => {
-                statusEl.textContent = 'Connected Successfully!';
-                setupScreen.classList.add('hidden');
-                gameScreen.classList.remove('hidden');
-                connectionInfo.textContent = `Connected to Peer`;
-                logMessage('Data channel open! You can chat or send sync data.', 'log');
+                updateConnectionBadge('Connected', 'green');
+                menuOverlay.classList.add('hidden');
+                roomDisplay.textContent = `Connected (${isHost ? 'Host' : 'Client'})`;
             });
 
             conn.on('data', (data) => {
-                logMessage(`Peer: ${data}`, 'peer');
+                if (data.type === 'position') {
+                    remotePlayer.x = data.x;
+                    remotePlayer.y = data.y;
+                    remotePlayer.active = true;
+                }
             });
 
             conn.on('close', () => {
-                statusEl.textContent = 'Disconnected';
-                logMessage('Peer disconnected.', 'log');
-                setTimeout(() => location.reload(), 2000);
+                updateConnectionBadge('Disconnected', 'red');
+                remotePlayer.active = false;
+                statusMsg.textContent = 'Peer disconnected. Refresh to restart.';
+                setTimeout(() => location.reload(), 2500);
             });
         }
 
-        // 4. Send Data
-        document.getElementById('btn-send').addEventListener('click', sendMessage);
-        document.getElementById('input-msg').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
+        // Host Button Click
+        btnHost.addEventListener('click', () => {
+            isHost = true;
+            // Generate a short deterministic readable room code
+            const randomCode = 'gw-' + Math.random().toString(36).substring(2, 7);
+            initPeer(randomCode);
         });
 
-        function sendMessage() {
-            const input = document.getElementById('input-msg');
-            const msg = input.value.trim();
-            if (!msg || !conn || !conn.open) return;
+        // Join Button Click
+        btnJoin.addEventListener('click', () => {
+            const hostId = inputHostId.value.trim();
+            if (!hostId) {
+                statusMsg.textContent = 'Please enter a valid Host ID.';
+                return;
+            }
+            isHost = false;
+            initPeer();
+            
+            // Wait for peer open then connect
+            setTimeout(() => {
+                if (peer && !peer.destroyed) {
+                    statusMsg.textContent = `Connecting to ${hostId}...`;
+                    conn = peer.connect(hostId);
+                    setupConnectionEvents();
+                }
+            }, 1000);
+        });
 
-            conn.send(msg);
-            logMessage(`You: ${msg}`, 'self');
-            input.value = '';
+        function updateConnectionBadge(text, color) {
+            connectionBadge.textContent = text;
+            connectionBadge.className = `px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                color === 'green' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                color === 'yellow' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
+                'bg-red-500/20 text-red-400 border-red-500/30'
+            }`;
         }
+
+        // Input Listeners (Keyboard)
+        window.addEventListener('keydown', (e) => {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+        });
+
+        // Touch / Mouse Drag Listeners for Mobile movement
+        canvas.addEventListener('pointerdown', (e) => {
+            isTouchMoving = true;
+            const rect = canvas.getBoundingClientRect();
+            touchTargetX = e.clientX - rect.left;
+            touchTargetY = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!isTouchMoving) return;
+            const rect = canvas.getBoundingClientRect();
+            touchTargetX = e.clientX - rect.left;
+            touchTargetY = e.clientY - rect.top;
+        });
+
+        window.addEventListener('pointerup', () => {
+            isTouchMoving = false;
+        });
+
+        // Main Update Loop
+        function update() {
+            // Keyboard movement calculation
+            let dx = 0;
+            let dy = 0;
+
+            if (keys.w || keys.ArrowUp) dy -= 1;
+            if (keys.s || keys.ArrowDown) dy += 1;
+            if (keys.a || keys.ArrowLeft) dx -= 1;
+            if (keys.d || keys.ArrowRight) dx += 1;
+
+            if (dx !== 0 && dy !== 0) {
+                dx *= 0.7071;
+                dy *= 0.7071;
+            }
+
+            if (dx !== 0 || dy !== 0) {
+                localPlayer.x += dx * localPlayer.speed;
+                localPlayer.y += dy * localPlayer.speed;
+                isTouchMoving = false; // Keyboard overrides touch
+            } else if (isTouchMoving) {
+                // Smooth move towards touch target
+                const distX = touchTargetX - localPlayer.x;
+                const distY = touchTargetY - localPlayer.y;
+                const dist = Math.hypot(distX, distY);
+
+                if (dist > 2) {
+                    localPlayer.x += (distX / dist) * Math.min(localPlayer.speed, dist);
+                    localPlayer.y += (distY / dist) * Math.min(localPlayer.speed, dist);
+                }
+            }
+
+            // Boundary clamping
+            localPlayer.x = Math.max(localPlayer.size / 2, Math.min(canvas.width - localPlayer.size / 2, localPlayer.x));
+            localPlayer.y = Math.max(localPlayer.size / 2, Math.min(canvas.height - localPlayer.size / 2, localPlayer.y));
+
+            // Send position update via PeerJS DataChannel if connected
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'position',
+                    x: localPlayer.x,
+                    y: localPlayer.y
+                });
+            }
+        }
+
+        // Render Loop
+        function draw() {
+            // Clear screen
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw subtle background grid pattern
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            const gridSize = 40;
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Draw Remote Player if active
+            if (remotePlayer.active) {
+                ctx.shadowColor = remotePlayer.color;
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = remotePlayer.color;
+                ctx.fillRect(
+                    remotePlayer.x - remotePlayer.size / 2,
+                    remotePlayer.y - remotePlayer.size / 2,
+                    remotePlayer.size,
+                    remotePlayer.size
+                );
+                ctx.shadowBlur = 0;
+
+                // Remote label
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Peer', remotePlayer.x, remotePlayer.y - remotePlayer.size / 2 - 8);
+            }
+
+            // Draw Local Player
+            ctx.shadowColor = localPlayer.color;
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = localPlayer.color;
+            ctx.fillRect(
+                localPlayer.x - localPlayer.size / 2,
+                localPlayer.y - localPlayer.size / 2,
+                localPlayer.size,
+                localPlayer.size
+            );
+            ctx.shadowBlur = 0;
+
+            // Local label
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('You', localPlayer.x, localPlayer.y - localPlayer.size / 2 - 8);
+        }
+
+        // Core Game Engine Loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize default player positions in center
+        window.onload = () => {
+            localPlayer.x = window.innerWidth / 2;
+            localPlayer.y = window.innerHeight / 2;
+            requestAnimationFrame(gameLoop);
+        };
     </script>
 </body>
 </html>

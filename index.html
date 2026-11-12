@@ -2,158 +2,357 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GAMERWOST</title>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
-*{box-sizing:border-box;font-family:Arial,sans-serif}
-body{margin:0;background:#0b0b14;color:#fff}
-header{background:linear-gradient(90deg,#7b2ff7,#00d4ff);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-.logo{display:flex;gap:10px;align-items:center;font-size:22px;font-weight:900}
-.logo-img{width:52px;height:52px;border-radius:50%;background:#000;padding:3px}
-.container{max-width:1300px;margin:auto;padding:14px;padding-bottom:140px}
-.grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
+*{box-sizing:border-box;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#0b0b14;color:#fff;padding-bottom:140px}
+header{background:linear-gradient(90deg,#7b2ff7,#00d4ff);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.logo{font-size:22px;font-weight:900}
+.container{max-width:1100px;margin:auto;padding:14px}
 .card{background:#171726;border:1px solid #2d2d4a;border-radius:16px;padding:14px;margin-bottom:14px}
-canvas{width:100%;height:400px;background:#87ceeb;border-radius:12px;display:block}
-input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#0f0f1e;color:#fff;font-size:16px}
-button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:800;color:#fff}
+canvas{width:100%;height:380px;background:#87ceeb;border-radius:12px;display:block}
+input,select,textarea{width:100%;padding:14px;margin:7px 0;border-radius:10px;border:1px solid #333;background:#0f0f1e;color:#fff;font-size:16px}
+textarea{resize:vertical}
+button{cursor:pointer;border:0;border-radius:10px;padding:13px;font-weight:800;color:#fff;font-size:15px}
 .btn-primary{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
-.btn-green{background:#22c55e}.btn-red{background:#ef4444}.btn-dark{background:#2a2a45}.btn-small{padding:7px 10px;font-size:12px}
-.row{display:flex;gap:8px}.row>*{flex:1}.row button{flex:0 0 120px}
-.hint{font-size:13px;color:#aaa}.status{color:#7CFC00;font-size:13px}.error{color:#ff6b6b}.ok{color:#7CFC00}
-.chat-box{height:110px;overflow:auto;background:#0a0a16;padding:10px;border-radius:10px;font-size:14px}
+.btn-green{background:#22c55e}.btn-red{background:#ef4444}.btn-dark{background:#2a2a45}.btn-small{padding:8px 10px;font-size:13px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.hint{font-size:13px;color:#aaa}.error{color:#ff6b6b;font-size:14px}.ok{color:#7CFC00;font-size:14px}
 .game-item{border:1px solid #333;padding:12px;border-radius:12px;margin-top:10px}
 .tag{display:inline-block;background:#2a2a45;padding:3px 8px;border-radius:20px;font-size:11px;margin:2px}
-.palette{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.palette button{padding:10px 4px;font-size:18px;border:2px solid transparent}.palette button.selected{border-color:#fff}
 .hidden{display:none!important}
-.stat{display:flex;gap:8px;margin-bottom:12px}.stat div{flex:1;background:#171726;border-radius:12px;padding:10px;text-align:center}.stat b{font-size:20px;display:block}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:9999;padding:14px}
-.modal-box{background:#171726;border:1px solid #3a3a5a;border-radius:18px;padding:20px;width:100%;max-width:430px;text-align:center}
-.modal-box .logo-img{width:90px;height:90px;margin:0 auto 8px}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:14px}
 iframe.game-frame{width:100%;height:420px;border:0;border-radius:12px;background:#fff}
-.user-badge{background:rgba(0,0,0,.35);padding:8px 12px;border-radius:20px;font-size:13px}
-#langSelect{width:140px;padding:10px;border-radius:10px;background:#0f0f1e;color:#fff;border:1px solid #333}
-/* DOKUNMA - EN BASİT HALİ */
-#touchControls{position:fixed;bottom:10px;left:0;right:0;z-index:100;display:flex;justify-content:space-between;padding:0 10px;pointer-events:none}
+.stat{display:flex;gap:8px;margin-bottom:12px}.stat div{flex:1;background:#171726;border-radius:12px;padding:10px;text-align:center}.stat b{font-size:20px;display:block}
+
+/* LOGIN - TAM EKRAN, ÜSTÜNDE HİÇBİR ŞEY YOK */
+#loginScreen{position:fixed;inset:0;background:#0b0b14;z-index:9999;overflow-y:auto;padding:20px 14px}
+#loginScreen .box{background:#171726;border:1px solid #3a3a5a;border-radius:18px;padding:22px;max-width:430px;margin:20px auto;text-align:center}
+#loginScreen input{pointer-events:auto}
+#loginScreen button{pointer-events:auto}
+
+/* DOKUNMA - SADECE OYUNDA GÖRÜNÜR */
+#touchControls{position:fixed;bottom:10px;left:0;right:0;z-index:100;display:none;justify-content:space-between;padding:0 10px;pointer-events:none}
 #touchControls div{display:flex;gap:10px;pointer-events:none}
-.touch-btn{width:74px;height:74px;border-radius:50%;background:#111;border:3px solid #fff;font-size:30px;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.touch-btn{width:76px;height:76px;border-radius:50%;background:#111;border:3px solid #fff;font-size:30px;pointer-events:auto;touch-action:none;user-select:none}
 .touch-btn:active{background:#7b2ff7}
-.touch-btn.jump{width:86px;height:86px;background:#22c55e}
-.touch-btn.break{width:64px;height:64px;background:#ef4444;font-size:24px}
-.auth-tabs{display:flex;gap:8px;margin:10px 0}.auth-tabs button{flex:1;background:#2a2a45}.auth-tabs button.active{background:linear-gradient(90deg,#7b2ff7,#00d4ff)}
-.id-box{background:#0f0f1e;border:2px dashed #00d4ff;border-radius:12px;padding:10px;text-align:center}.id-box b{font-size:28px;letter-spacing:4px;color:#00d4ff}
-@media(max-width:900px){.grid{grid-template-columns:1fr}header{flex-direction:column}.row button{flex:0 0 100px}}
+.touch-btn.jump{width:88px;height:88px;background:#22c55e}
+@media(max-width:900px){.grid{grid-template-columns:1fr}header{flex-direction:column}}
 </style>
 </head>
 <body>
 
-<template id="logoTemplate">
-<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-<defs><linearGradient id="gGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a855f7"/><stop offset=".5" stop-color="#7b2ff7"/><stop offset="1" stop-color="#00aaff"/></linearGradient></defs>
-<circle cx="100" cy="100" r="96" fill="#000"/>
-<path d="M165 28 C110 28 55 55 35 105 C18 145 35 185 95 192 C145 198 175 165 178 125 L122 125 L112 148 L145 148 C135 168 105 175 78 162 C50 148 42 115 62 92 C78 73 115 68 140 82 L155 62 C135 48 155 28 165 28 Z" fill="url(#gGrad)"/>
-<rect x="48" y="95" width="10" height="34" rx="3" fill="#a855f7"/><rect x="40" y="103" width="26" height="10" rx="3" fill="#a855f7"/>
-<circle cx="148" cy="105" r="7" fill="#5b8cff"/><circle cx="155" cy="128" r="7" fill="#5b8cff"/><circle cx="138" cy="145" r="7" fill="#5b8cff"/><circle cx="118" cy="62" r="7" fill="#7aa2ff"/>
-</svg>
-</template>
-
-<div id="loginModal" class="modal">
-<div class="modal-box">
-<div class="logo-img"><span id="loginLogo"></span></div>
-<h2 id="loginTitle">Welcome to GAMERWOST!</h2>
-<p class="hint" id="loginSub">Pick username + password. Same name can't be taken twice. Progress saved.</p>
-<div class="auth-tabs"><button id="tabLogin" class="active" onclick="switchAuthTab('login')">🔑 LOGIN</button><button id="tabRegister" onclick="switchAuthTab('register')">📝 REGISTER</button></div>
-<input id="authUsername" placeholder="Username: e.g. GamerWost" maxlength="20" oninput="checkUsernameLive()">
-<p id="usernameStatus" class="hint"></p>
-<input id="authPassword" type="password" placeholder="Password: min 4 chars" maxlength="30">
-<div id="registerExtra" class="hidden"><input id="authPassword2" type="password" placeholder="Password again" maxlength="30"></div>
-<p id="authError" class="error"></p><p id="authOk" class="ok"></p>
-<button class="btn-primary" style="width:100%" id="authMainBtn" onclick="doAuth()">🔑 LOGIN</button>
-<p class="hint"><a href="#" style="color:#00d4ff" onclick="switchAuthTab('register');return false">Register here</a> • <a href="#" style="color:#aaa" onclick="guestLogin();return false">Guest</a></p>
-</div>
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen">
+  <div class="box">
+    <div style="font-size:48px">🎮</div>
+    <h1>GAMERWOST</h1>
+    <p class="hint">Create account with username + password.<br>It will be saved. Login again with same name + password.</p>
+    <div style="display:flex;gap:8px">
+      <button type="button" id="tabLogin" style="flex:1" class="btn-primary" onclick="switchTab('login')">LOGIN</button>
+      <button type="button" id="tabRegister" style="flex:1" class="btn-dark" onclick="switchTab('register')">REGISTER</button>
+    </div>
+    <input id="loginUser" placeholder="Username" maxlength="20" autocomplete="off">
+    <p id="userHint" class="hint"></p>
+    <input id="loginPass" type="password" placeholder="Password (min 4)" maxlength="30" autocomplete="off">
+    <div id="pass2Wrap" class="hidden"><input id="loginPass2" type="password" placeholder="Password again" maxlength="30"></div>
+    <p id="loginError" class="error"></p>
+    <p id="loginOk" class="ok"></p>
+    <button type="button" id="loginBtn" class="btn-primary" style="width:100%;padding:16px;font-size:18px">LOGIN</button>
+    <p class="hint">First time? Tap REGISTER above, then create account.</p>
+    <button type="button" class="btn-dark" style="width:100%" onclick="guestLogin()">Continue as Guest</button>
+  </div>
 </div>
 
+<!-- ============ HEADER ============ -->
 <header>
-<div class="logo"><div class="logo-img"><span id="headerLogo"></span></div><span>GAMERWOST</span></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-<button class="btn-dark" onclick="showPage('play')" id="navPlay">🎮 PLAY</button>
-<button class="btn-dark" onclick="showPage('make')" id="navMake">🛠️ MAKE GAME</button>
-<button class="btn-dark" onclick="showPage('htmlgame')" id="navHtml">💻 ADD HTML GAME</button>
-<button class="btn-dark" onclick="showPage('publish')" id="navPublish">🚀 PUBLISH</button>
-<select id="langSelect" onchange="setLanguage(this.value)"><option value="en" selected>🇬🇧 English</option><option value="tr">🇹🇷 Türkçe</option></select>
-</div>
-<div class="user-badge">👤 <span id="headerNick">Guest</span> • ⭐ <span id="headerCoin">0</span> • <button class="btn-red btn-small" onclick="logout()">Logout</button></div>
+  <div class="logo">🎮 GAMERWOST</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn-dark" onclick="showPage('play')">PLAY</button>
+    <button class="btn-dark" onclick="showPage('publish')">PUBLISH HTML GAME</button>
+    <button class="btn-dark" onclick="showPage('my')">MY GAMES</button>
+  </div>
+  <div>👤 <b id="headerUser">Guest</b> • ⭐ <b id="headerCoin">0</b> • <button class="btn-red btn-small" onclick="doLogout()">Logout</button></div>
 </header>
 
 <div class="container">
-<div style="background:#171726;border-radius:12px;padding:12px;margin-bottom:12px">📍 <b id="continueText">Welcome!</b> <button class="btn-green btn-small" style="float:right" onclick="continueGame()" id="continueBtn">▶️ Continue</button></div>
-<div class="stat"><div><b id="statGames">0</b><span>Games</span></div><div><b id="statPlayers">1</b><span>Online</span></div><div><b id="statPlays">0</b><span>Plays</span></div><div><b id="statLikes">0</b><span>Likes</span></div></div>
-<div class="grid">
-<div>
-<div id="pagePlay">
-<div class="card">
-<h2>🌍 <span id="playingLabel">Playing:</span> <span id="nowPlaying">Block World</span></h2>
-<canvas id="gameCanvas" width="900" height="400"></canvas>
-<div id="htmlPlayer" class="hidden"><iframe id="htmlFrame" class="game-frame" sandbox="allow-scripts"></iframe><button class="btn-dark" style="margin-top:8px" onclick="closeHtmlGame()">❌ Close HTML Game</button></div>
-<p class="hint">Telefonda alttaki butonlara BASILI TUTarak oyna. Klavyede WASD.</p>
-<div class="row"><div style="background:#0f0f1e;padding:10px;border-radius:10px">❤️ HP: <b id="hpText">100</b><br>⭐ Score: <b id="scoreText">0</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">🪙 Coin: <b id="coinText">0</b><br>🏆 Level: <b id="levelText">1</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">⏱ Time: <b id="timeText">00:00</b><br>🎯 Goal: <b id="goalText">10 coins</b></div></div>
-<br><div class="row"><button class="btn-green" onclick="restartGame()">🔄 Restart</button><button class="btn-dark" onclick="saveProgress(true)">💾 Save</button><button class="btn-red" onclick="leaveGame()">🚪 Exit</button></div>
-<p class="hint" id="autoSaveText">Auto-save ON</p>
-</div>
-<div class="card">
-<h2>👥 Multiplayer - Short ID</h2>
-<p class="hint">ID'n 8 haneli, herkeste farklı. İkiniz de aynı anda sitede olmalısınız!</p>
-<div class="id-box">Your ID:<br><b id="myShortId">--------</b><br><span class="hint" id="myIdStatus">Connecting...</span></div>
-<div class="row"><input id="myIdInput" readonly placeholder="Loading..."><button class="btn-dark" id="copyBtn">Copy ID</button></div>
-<div class="row"><input id="joinIdInput" placeholder="Friend's 8-digit ID" maxlength="8" inputmode="numeric"><button class="btn-primary" id="joinBtn">Join Room</button></div>
-<div class="row"><button class="btn-dark" onclick="newShortId()">🔄 New ID</button><button class="btn-green" onclick="copyShortId()">📋 Copy My ID</button></div>
-<p id="statusText" class="status">Connecting...</p><div id="onlineList"></div>
-</div>
-<div class="card"><h2>💬 Chat</h2><div id="chatBox" class="chat-box"></div><div class="row"><input id="chatInput" placeholder="Type message..."><button class="btn-primary" id="sendBtn">Send</button></div><div class="row" style="margin-top:8px"><button class="btn-dark btn-small" onclick="quickChat('GG! 🔥')">GG!</button><button class="btn-dark btn-small" onclick="quickChat('Come on!')">Come on!</button><button class="btn-dark btn-small" onclick="quickChat('Help!')">Help!</button></div></div>
-</div>
-<div id="pageMake" class="hidden">
-<div class="card"><h2>🛠️ Make Game - Map Editor</h2><p class="hint">Blok seç, haritaya dokun. Telefonda parmağınla koy.</p><div class="palette" id="palette"></div><br><canvas id="editorCanvas" width="900" height="400"></canvas><div class="row" style="margin-top:10px"><button class="btn-green" onclick="testMyMap()">▶️ Test</button><button class="btn-dark" onclick="clearMap()">🗑️ Clear</button><button class="btn-dark" onclick="randomMap()">🎲 Random</button><button class="btn-dark" onclick="loadTemplate('kolay')">Easy</button></div><div class="row"><button class="btn-dark" onclick="loadTemplate('zor')">Hard</button><button class="btn-dark" onclick="loadTemplate('parkur')">Parkour</button><button class="btn-dark" onclick="exportMap()">📤 Copy</button><button class="btn-dark" onclick="importMap()">📥 Paste</button></div><div class="row"><select id="mapDifficulty"><option>Easy</option><option>Medium</option><option>Hard</option></select><select id="mapTheme"><option>Grass</option><option>Desert</option><option>Snow</option><option>Lava</option><option>Space</option></select></div><div class="row"><input id="mapTime" type="number" value="120"><input id="mapCoinGoal" type="number" value="10"></div></div>
-</div>
-<div id="pageHtmlgame" class="hidden">
-<div class="card"><h2>💻 Add Game with HTML</h2><input id="htmlGameName" placeholder="HTML Game Name"><textarea id="htmlGameCode" rows="12" placeholder="<!DOCTYPE html><html><body><h1>My Game</h1></body></html>"></textarea><div class="row"><button class="btn-green" onclick="previewHtmlGame()">👀 Preview</button><button class="btn-primary" onclick="publishHtmlGame()">🚀 Publish HTML Game</button></div><div id="htmlPreviewWrap" class="hidden" style="margin-top:10px"><h3>Preview:</h3><iframe id="htmlPreview" class="game-frame" sandbox="allow-scripts"></iframe></div><h3>Examples</h3><div class="row"><button class="btn-dark btn-small" onclick="loadHtmlExample('click')">🖱️ Click</button><button class="btn-dark btn-small" onclick="loadHtmlExample('guess')">🎲 Guess</button><button class="btn-dark btn-small" onclick="loadHtmlExample('quiz')">🧠 Quiz</button><button class="btn-dark btn-small" onclick="loadHtmlExample('snake')">🐍 Snake</button></div></div>
-</div>
-<div id="pagePublish" class="hidden">
-<div class="card"><h2>🚀 Publish Your Game</h2><input id="gameName" placeholder="Game Name"><select id="gameType"><option>Parkour</option><option>Battle</option><option>Race</option><option>Adventure</option><option>Horror</option><option>HTML Game</option><option>Puzzle</option></select><textarea id="gameDesc" placeholder="Describe..."></textarea><input id="gameTags" placeholder="Tags: parkour, hard"><button class="btn-primary" id="publishBtn" style="width:100%;padding:15px">🚀 PUBLISH GAME</button><p class="hint" id="publishInfo"></p></div>
-</div>
-</div>
-<div>
-<div class="card"><h2>🧍 Profile</h2><input id="playerName" placeholder="Your name" readonly><div class="row"><button class="btn-dark color-btn" data-color="#7b2ff7">Purple</button><button class="btn-dark color-btn" data-color="#00d4ff">Cyan</button><button class="btn-dark color-btn" data-color="#ffcc00">Yellow</button></div><select id="avatarHat"><option value="sahin">Blue Hat</option><option value="kask">Helmet</option><option value="tac">Crown</option><option value="yok">No Hat</option></select><select id="avatarPet"><option value="yok">No Pet</option><option value="kedi">🐱 Cat</option><option value="kopek">🐶 Dog</option><option value="ejderha">🐲 Dragon</option></select><button class="btn-primary" style="width:100%" onclick="saveProfile()">Save Profile</button><p class="hint" id="profileEmailText"></p><button class="btn-dark" style="width:100%;margin-top:8px" onclick="changePassword()">🔑 Change Password</button></div>
-<div class="card"><h2>🔍 Search</h2><input id="searchInput" placeholder="Search..." oninput="renderGames()"><select id="filterType" onchange="renderGames()"><option value="">All Types</option><option>Parkour</option><option>HTML Game</option><option>Adventure</option><option>Horror</option></select><select id="sortType" onchange="renderGames()"><option value="new">Newest</option><option value="like">Most Liked</option><option value="play">Most Played</option></select></div>
-<div class="card"><h2>🔥 Published Games</h2><div id="gameList"></div></div>
-<div class="card"><h2>🏆 Leaderboard</h2><div id="leaderboard"></div></div>
-<div class="card"><h2>🎁 Daily</h2><button class="btn-green" style="width:100%" onclick="claimDaily()">🎁 Get +50 Coins</button><p class="hint" id="dailyText"></p></div>
-</div>
-</div>
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <span>👋 Welcome <b id="welcomeUser">Player</b>! <span id="continueInfo" class="hint"></span></span>
+    <button class="btn-green" onclick="continueGame()">▶️ Continue Where I Left Off</button>
+  </div>
+  <div class="stat"><div><b id="statGames">0</b><span>Games</span></div><div><b id="statMine">0</b><span>My Games</span></div><div><b id="statCoin">0</b><span>Coins</span></div></div>
+
+  <div class="grid">
+    <div>
+      <!-- PLAY -->
+      <div id="pagePlay">
+        <div class="card">
+          <h2>Playing: <span id="nowPlaying">Block World</span></h2>
+          <canvas id="gameCanvas" width="900" height="380"></canvas>
+          <div id="htmlPlayer" class="hidden"><iframe id="htmlFrame" class="game-frame" sandbox="allow-scripts"></iframe><br><button class="btn-dark" style="margin-top:8px" onclick="closeHtml()">❌ Close HTML Game</button></div>
+          <p class="hint">Mobile: Hold the buttons below. PC: WASD / Arrows.</p>
+          <div class="row"><div style="background:#0f0f1e;padding:10px;border-radius:10px">❤️ HP: <b id="hpText">100</b><br>⭐ Score: <b id="scoreText">0</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">🪙 Coin: <b id="coinText">0</b><br>🎯 Goal: <b id="goalText">10 coins</b></div><div style="background:#0f0f1e;padding:10px;border-radius:10px">⏱ Time: <b id="timeText">00:00</b><br>💾 <span id="saveInfo">Auto-save ON</span></div></div>
+          <br><div class="row"><button class="btn-green" onclick="restartGame()">🔄 Restart</button><button class="btn-dark" onclick="saveNow()">💾 Save Now</button></div>
+        </div>
+        <div class="card"><h2>💬 Chat</h2><div id="chatBox" style="height:100px;overflow:auto;background:#0a0a16;padding:10px;border-radius:10px"></div><div class="row"><input id="chatInput" placeholder="Type message..."><button class="btn-primary" onclick="sendChat()">Send</button></div></div>
+      </div>
+
+      <!-- PUBLISH -->
+      <div id="pagePublish" class="hidden">
+        <div class="card">
+          <h2>🚀 Publish HTML Game</h2>
+          <p class="hint">Paste your HTML game code. Everyone can play it. It is saved.</p>
+          <input id="pubName" placeholder="Game Name: My Click Game">
+          <input id="pubDesc" placeholder="Description: Fun click game">
+          <textarea id="pubCode" rows="12" placeholder="Paste your HTML code here..."></textarea>
+          <div class="row"><button class="btn-green" onclick="previewHtml()">👀 Preview</button><button class="btn-primary" onclick="publishHtml()">🚀 PUBLISH</button></div>
+          <div id="previewWrap" class="hidden" style="margin-top:10px"><h3>Preview:</h3><iframe id="previewFrame" class="game-frame" sandbox="allow-scripts"></iframe></div>
+          <h3>Ready Examples - Tap to load:</h3>
+          <div class="row"><button class="btn-dark btn-small" onclick="loadExample('click')">🖱️ Click Game</button><button class="btn-dark btn-small" onclick="loadExample('guess')">🎲 Guess</button></div>
+          <div class="row"><button class="btn-dark btn-small" onclick="loadExample('quiz')">🧠 Quiz</button><button class="btn-dark btn-small" onclick="loadExample('snake')">🐍 Snake</button></div>
+        </div>
+      </div>
+
+      <!-- MY GAMES -->
+      <div id="pageMy" class="hidden">
+        <div class="card"><h2>🧍 My Profile</h2><p>Username: <b id="profileUser">-</b></p><p>Coins: <b id="profileCoin">0</b></p><p class="hint">Your account and progress are saved in this browser.</p><button class="btn-dark" style="width:100%" onclick="changePass()">🔑 Change Password</button></div>
+        <div class="card"><h2>📦 My Published Games</h2><div id="myGamesList"></div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+      <div class="card"><h2>🔍 Search</h2><input id="searchInput" placeholder="Search game..." oninput="renderGames()"></div>
+      <div class="card"><h2>🔥 All Games</h2><div id="gameList"></div></div>
+      <div class="card"><h2>🎁 Daily Reward</h2><button class="btn-green" style="width:100%" onclick="claimDaily()">🎁 Get +50 Coins</button><p class="hint" id="dailyInfo"></p></div>
+    </div>
+  </div>
 </div>
 
-<!-- DOKUNMA BUTONLARI - HER ZAMAN EKRANDA, SADECE BUTONLAR TIKLANIYOR -->
+<!-- TOUCH CONTROLS -->
 <div id="touchControls">
-<div><button class="touch-btn" id="btnLeft" onpointerdown="touchDown('a')" onpointerup="touchUp('a')" onpointerleave="touchUp('a')" onpointercancel="touchUp('a')">◀️</button><button class="touch-btn" id="btnRight" onpointerdown="touchDown('d')" onpointerup="touchUp('d')" onpointerleave="touchUp('d')" onpointercancel="touchUp('d')">▶️</button></div>
-<div><button class="touch-btn break" id="btnBreak" onpointerdown="touchDown('e')" onpointerup="touchUp('e')" onpointerleave="touchUp('e')">⛏️</button><button class="touch-btn jump" id="btnJump" onpointerdown="touchDown('w')" onpointerup="touchUp('w')" onpointerleave="touchUp('w')" onpointercancel="touchUp('w')">⬆️</button></div>
+  <div><button type="button" class="touch-btn" onpointerdown="touchDown('left')" onpointerup="touchUp('left')" onpointerleave="touchUp('left')" onpointercancel="touchUp('left')">◀️</button><button type="button" class="touch-btn" onpointerdown="touchDown('right')" onpointerup="touchUp('right')" onpointerleave="touchUp('right')" onpointercancel="touchUp('right')">▶️</button></div>
+  <div><button type="button" class="touch-btn jump" onpointerdown="touchDown('jump')" onpointerup="touchUp('jump')" onpointerleave="touchUp('jump')" onpointercancel="touchUp('jump')">⬆️</button></div>
 </div>
 
 <script>
-function mountLogo(){let t=document.getElementById("logoTemplate").innerHTML;document.getElementById("headerLogo").innerHTML=t;document.getElementById("loginLogo").innerHTML=t;}
-mountLogo();
-const TRANSLATIONS={en:{welcome:"Welcome to GAMERWOST!",sub:"Pick username + password. Same name can't be taken twice.",play:"🎮 PLAY",make:"🛠️ MAKE GAME",html:"💻 ADD HTML GAME",publish:"🚀 PUBLISH",continue:"Welcome! Continue where you left off",continueBtn:"▶️ Continue",publishBtn:"🚀 PUBLISH GAME",playing:"Playing:"},tr:{welcome:"GAMERWOST'a Hoş Geldin!",sub:"İsim + şifre seç. Aynı isim 2 kişi alamaz.",play:"🎮 OYNA",make:"🛠️ OYUN YAP",html:"💻 HTML OYUN EKLE",publish:"🚀 YAYINLA",continue:"Hoş geldin! Kaldığın yerden devam et",continueBtn:"▶️ Kaldığım Yerden Devam Et",publishBtn:"🚀 OYUNU YAYINLA",playing:"Oynuyorsun:"}};
-function setLanguage(l){localStorage.setItem("GW_LANG",l);document.getElementById("langSelect").value=l;let t=TRANSLATIONS[l];document.getElementById("loginTitle").innerText=t.welcome;document.getElementById("loginSub").innerText=t.sub;document.getElementById("navPlay").innerText=t.play;document.getElementById("navMake").innerText=t.make;document.getElementById("navHtml").innerText=t.html;document.getElementById("navPublish").innerText=t.publish;document.getElementById("continueText").innerText=t.continue;document.getElementById("continueBtn").innerText=t.continueBtn;document.getElementById("publishBtn").innerText=t.publishBtn;document.getElementById("playingLabel").innerText=t.playing;}
-setLanguage(localStorage.getItem("GW_LANG")||"en");
-function safeParse(s,f){try{return JSON.parse(s)||f}catch(e){return f}}
-function showPage(p){["play","make","htmlgame","publish"].forEach(x=>{let el=document.getElementById("page"+x[0].toUpperCase()+x.slice(1));if(el)el.classList.toggle("hidden",x!==p)})}
-function hashPassword(p){let h=0;for(let i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h=h&h}return "h"+Math.abs(h)+"_"+p.length}
-function cleanUsername(u){return u.trim().toLowerCase().replace(/[^a-z0-9_]/g,"")}
-const LS_USER="GW_USER_V4",LS_USERS="GW_USERS_V4",LS_DB="GW_DB_V4",LS_PEER="GW_PEER_ID_V1";
-let DB=safeParse(localStorage.getItem(LS_DB),null);
-if(!DB||!Array.isArray(DB.games)){DB={games:[],plays:0};DB.games=[{id:1,name:"Block World",type:"Parkour",desc:"Collect 10 coins!",author:"GAMERWOST",username:"gamerwost",date:"Today",likes:128,plays:542,map:null,difficulty:"Easy",theme:"Grass",tags:["parkour"],coinGoal:10,html:null},{id:2,name:"Click Game (HTML)",type:"HTML Game",desc:"HTML example!",author:"GAMERWOST",username:"gamerwost",date:"Today",likes:95,plays:320,map:null,difficulty:"Easy",theme:"Grass",tags:["html"],coinGoal:5,html:"<html><body style='font-family:Arial;text-align:center;padding:30px'><h1>Click Game</h1><p>Score: <b id='s'>0</b></p><button onclick=\"document.getElementById('s').innerText++\" style='padding:20px 40px;font-size:20px;background:#7b2ff7;color:#fff;border:0;border-radius:12px'>CLICK!</button></body></html>"},{id:3,name:"Lava Escape",type:"Adventure",desc:"Escape lava!",author:"ProPlayer",username:"proplayer",date:"Yesterday",likes:89,plays:310,map:null,difficulty:"Hard",theme:"Lava",tags:["lava"],coinGoal:8,html:null}];}
-function saveDB(){try{localStorage.setItem(LS_DB,JSON.stringify(DB))}catch(e){}updateStats()}
-function hideLogin(){let m=document.getElementById("loginModal");m.classList.add("hidden");m.style.display="none"}
-function showLogin(){let m=document.getElementById("loginModal");m.classList.remove("hidden");m.style.display="flex"}
-let currentUser=safeParse(localStorage.getItem(LS_USER),null);
-let authMode="login";
-function switchAuthTab(mode){authMode=mode;document.getElementById("tabLogin").classList.toggle("active",mode==="login");document.getElementById("tabRegister").classList.toggle("active",mode==="register");document.getElementById("registerExtra").classList.toggle("hidden",mode!=="register");document.getElementById("authMainBtn").innerText=mode==="login"?"🔑 LOGIN":"📝 REGISTER";document.getElementById("authError").innerText="";document.getElementById("authOk").innerText="";checkUsernameLive()}
-function checkUsernameLive(){let raw=document.getElementById("authUsername").value;let clean=cleanUsername(raw);let el=document.getElementById("usernameStatus");if(!raw){el.innerText="";return}if(raw!==clean){el.innerText="Will be saved as: "+clean;el.style.color="#ffcc00";return}if(clean.length<3){e
+// ---------- STORAGE KEYS ----------
+const KEY_USERS = "GW_USERS_V5";
+const KEY_ME = "GW_ME_V5";
+const KEY_GAMES = "GW_GAMES_V5";
+
+function loadJSON(key, fallback){ try{ let v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } }
+function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+
+// ---------- DATA ----------
+let users = loadJSON(KEY_USERS, {});
+let games = loadJSON(KEY_GAMES, null);
+if(!games){
+  games = [
+    {id:1, name:"Block World", desc:"Collect 10 coins! Jump with purple character.", author:"GAMERWOST", owner:"gamerwost", likes:128, plays:542, html:null, coinGoal:10},
+    {id:2, name:"Click Game", desc:"HTML example - click to score!", author:"GAMERWOST", owner:"gamerwost", likes:95, plays:320, html:"<html><body style='font-family:Arial;text-align:center;padding:30px'><h1>Click Game</h1><p>Score: <b id='s'>0</b></p><button onclick=\"document.getElementById('s').innerText=Number(document.getElementById('s').innerText)+1\" style='padding:20px 40px;font-size:20px;background:#7b2ff7;color:#fff;border:0;border-radius:12px'>CLICK!</button></body></html>", coinGoal:5},
+    {id:3, name:"Lava Escape", desc:"Escape from lava!", author:"ProPlayer", owner:"proplayer", likes:89, plays:310, html:null, coinGoal:8}
+  ];
+  saveJSON(KEY_GAMES, games);
+}
+let me = loadJSON(KEY_ME, null);
+let mode = "login";
+
+// ---------- PAGES ----------
+function showPage(p){
+  ["play","publish","my"].forEach(x=>{
+    let el = document.getElementById("page"+x.charAt(0).toUpperCase()+x.slice(1));
+    if(el) el.classList.toggle("hidden", x!==p);
+  });
+  // Touch controls only on PLAY page
+  let tc = document.getElementById("touchControls");
+  if(me && p==="play") tc.style.display = "flex";
+  else tc.style.display = "none";
+}
+
+// ---------- LOGIN - EN ÖNEMLİ KISIM ----------
+function switchTab(m){
+  mode = m;
+  document.getElementById("tabLogin").className = m==="login" ? "btn-primary" : "btn-dark";
+  document.getElementById("tabLogin").style.flex = "1";
+  document.getElementById("tabRegister").className = m==="register" ? "btn-primary" : "btn-dark";
+  document.getElementById("tabRegister").style.flex = "1";
+  document.getElementById("pass2Wrap").classList.toggle("hidden", m!=="register");
+  document.getElementById("loginBtn").innerText = m==="login" ? "LOGIN" : "REGISTER";
+  document.getElementById("loginError").innerText = "";
+  document.getElementById("loginOk").innerText = "";
+  checkUserHint();
+}
+function cleanUser(u){ return u.trim().toLowerCase().replace(/[^a-z0-9_]/g,""); }
+function hashPass(p){
+  let h = 0;
+  for(let i=0;i<p.length;i++){ h = ((h<<5)-h) + p.charCodeAt(i); h = h & h; }
+  return "h"+Math.abs(h)+"_"+p.length+"_"+p.length;
+}
+function checkUserHint(){
+  let raw = document.getElementById("loginUser").value;
+  let clean = cleanUser(raw);
+  let el = document.getElementById("userHint");
+  if(!raw){ el.innerText=""; return; }
+  if(raw!==clean){ el.innerText="Will be saved as: "+clean; el.style.color="#ffcc00"; return; }
+  if(clean.length<3){ el.innerText="Min 3 characters"; el.style.color="#ff6b6b"; return; }
+  if(mode==="register"){
+    if(users[clean]){ el.innerText="❌ '"+clean+"' is TAKEN! Pick another."; el.style.color="#ff6b6b"; }
+    else { el.innerText="✅ '"+clean+"' is AVAILABLE!"; el.style.color="#7CFC00"; }
+  } else {
+    if(users[clean]){ el.innerText="✅ Account found. Enter password."; el.style.color="#7CFC00"; }
+    else { el.innerText="ℹ️ No account. Tap REGISTER to create."; el.style.color="#aaa"; }
+  }
+}
+document.getElementById("loginUser").addEventListener("input", checkUserHint);
+
+function doLogin(){
+  let username = cleanUser(document.getElementById("loginUser").value);
+  let pass = document.getElementById("loginPass").value;
+  let err = document.getElementById("loginError");
+  let ok = document.getElementById("loginOk");
+  err.innerText=""; ok.innerText="";
+
+  if(username.length<3){ err.innerText="❌ Username min 3 characters!"; return; }
+  if(pass.length<4){ err.innerText="❌ Password min 4 characters!"; return; }
+
+  if(mode==="register"){
+    let pass2 = document.getElementById("loginPass2").value;
+    if(pass!==pass2){ err.innerText="❌ Passwords do not match!"; return; }
+    if(users[username]){ err.innerText="❌ '"+username+"' is ALREADY TAKEN! Pick another name."; return; }
+    // SAVE NEW USER - THIS IS THE IMPORTANT PART
+    let user = {username:username, passHash:hashPass(pass), coin:0, save:null, createdAt:Date.now()};
+    users[username] = user;
+    saveJSON(KEY_USERS, users);
+    me = user;
+    saveJSON(KEY_ME, me);
+    ok.innerText="✅ Account created! Saved!";
+    enterSite();
+    return;
+  } else {
+    let user = users[username];
+    if(!user){ err.innerText="❌ No account '"+username+"'. Tap REGISTER first!"; switchTab("register"); return; }
+    if(user.passHash!==hashPass(pass)){ err.innerText="❌ Wrong password! Try again."; return; }
+    me = user;
+    saveJSON(KEY_ME, me);
+    enterSite();
+    return;
+  }
+}
+function guestLogin(){
+  me = {username:"guest_"+Math.floor(Math.random()*1000), passHash:"", coin:0, save:null, isGuest:true};
+  saveJSON(KEY_ME, me);
+  enterSite();
+}
+function enterSite(){
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("loginScreen").style.display="none";
+  document.getElementById("touchControls").style.display="flex";
+  applyUser();
+  showPage("play");
+  if(me.save){
+    document.getElementById("continueInfo").innerText="Last: "+me.save.gameName+" - Coins: "+me.save.coins+" - "+new Date(me.save.time).toLocaleString();
+  }
+  alert("✅ Welcome "+me.username+"! Your account is saved.");
+}
+function doLogout(){
+  if(!confirm("Logout? Progress is saved.")) return;
+  saveProgress();
+  localStorage.removeItem(KEY_ME);
+  me = null;
+  location.reload();
+}
+function changePass(){
+  if(!me || me.isGuest) return alert("Guest cannot change password!");
+  let oldP = prompt("Old password:");
+  if(!oldP) return;
+  if(hashPass(oldP)!==me.passHash) return alert("❌ Wrong old password!");
+  let newP = prompt("New password (min 4):");
+  if(!newP || newP.length<4) return alert("Min 4!");
+  me.passHash = hashPass(newP);
+  users[me.username] = me;
+  saveJSON(KEY_USERS, users);
+  saveJSON(KEY_ME, me);
+  alert("✅ Password changed and saved!");
+}
+// Login button - 2 ways so it NEVER breaks
+document.getElementById("loginBtn").addEventListener("click", doLogin);
+document.getElementById("loginBtn").addEventListener("touchend", function(e){ e.preventDefault(); doLogin(); });
+document.getElementById("loginPass").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+
+// ---------- USER UI ----------
+function applyUser(){
+  if(!me) return;
+  document.getElementById("headerUser").innerText = me.username;
+  document.getElementById("headerCoin").innerText = me.coin||0;
+  document.getElementById("welcomeUser").innerText = me.username;
+  document.getElementById("profileUser").innerText = me.username + (me.isGuest?" (Guest)":" - Saved ✅");
+  document.getElementById("profileCoin").innerText = me.coin||0;
+  document.getElementById("statCoin").innerText = me.coin||0;
+  player.nick = me.username;
+}
+
+// ---------- GAME ----------
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+let player = {x:60,y:310,vy:0,grounded:true,hp:100,score:0,coins:0,nick:"Player",color:"#7b2ff7"};
+let keys = {};
+let coins = [];
+let enemies = [];
+let startTime = Date.now();
+let currentGame = games[0];
+
+function spawnCoins(){
+  coins = [];
+  let goal = currentGame.coinGoal || 10;
+  for(let i=0;i<goal;i++) coins.push({x:80+Math.random()*750, y:80+Math.random()*200, taken:false});
+  enemies = [{x:400,y:310,dir:1},{x:650,y:310,dir:-1}];
+}
+spawnCoins();
+
+function draw(){
+  ctx.fillStyle = "#87ceeb"; ctx.fillRect(0,0,900,380);
+  ctx.fillStyle = "#8b5a2b"; ctx.fillRect(0,360,900,40);
+  ctx.fillStyle = "#fff"; ctx.fillRect(180,300,130,18); ctx.fillRect(420,240,130,18); ctx.fillRect(640,300,130,18);
+  coins.forEach(c=>{ if(!c.taken){ ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(c.x,c.y,12,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#fff"; ctx.font="bold 14px Arial"; ctx.fillText("C",c.x-4,c.y+5); } });
+  enemies.forEach(e=>{ ctx.fillStyle="#ef4444"; ctx.fillRect(e.x,e.y,36,36); ctx.fillStyle="#fff"; ctx.fillText("👾",e.x+4,e.y+26); });
+  // player
+  ctx.fillStyle = "rgba(0,0,0,.2)"; ctx.fillRect(player.x,player.y+48,40,6);
+  ctx.fillStyle = player.color; ctx.fillRect(player.x,player.y,40,50);
+  ctx.fillStyle = "#eee"; ctx.fillRect(player.x+5,player.y-28,30,28);
+  ctx.fillStyle = "#2563eb"; ctx.fillRect(player.x+2,player.y-38,36,12);
+  ctx.fillStyle = "#000"; ctx.fillRect(player.x+12,player.y-18,5,8); ctx.fillRect(player.x+24,player.y-18,5,8);
+  ctx.fillStyle = "white"; ctx.font="bold 13px Arial"; ctx.fillText(player.nick, player.x-5, player.y-45);
+  requestAnimationFrame(draw);
+}
+draw();
+
+document.addEventListener("keydown", e=>{
+  if(e.target.tagName!=="INPUT" && e.target.tagName!=="TEXTAREA") keys[e.key.toLowerCase()]=true;
+});
+document.addEventListener("keyup", e=>{ keys[e.key.toLowerCase()]=false; });
+
+// TOUCH - SIMPLE, NO PREVENTDEFAULT ON WHOLE PAGE
+function touchDown(k){ keys[k]=true; }
+function touchUp(k){ keys[k]=false; }
+
+setInterval(()=>{
+  if(keys["a"]||keys["arrowleft"]||keys["left"]) player.x-=5;
+  if(keys["d"]||keys["arrowright"]||keys["right"]) player.x+=5;
+  if((keys["w"]||keys["arrowup"]||keys[" "]||keys["jump"]) && player.grounded){ player.vy=-14; player.grounded=false; }
+  player.vy+=0.8; player.y+=player.vy;
+  if(player.y>=310){ player.y=310; player.vy=0; player.grounded=true; }
+  player.x=Math.max(0,Math.min(860,player.x));
+  coins.forEach(c=>{
+    if(!c.taken && Math.abs(c.x-(player.x+20))<30 && Math.abs(c.y-(player.y+20))<35){
+      c.taken=true; player.coins++; player.score+=100;
+      if(me && !me.isGuest){ me.coin=(me.coin||0)+10; }
+      document.getElementById("coinText").innerText=player.coins;
+      document.getElementById("scoreText").innerText=player.score;
+      document.getElementById("headerCoin").innerText=me?(me.coin||0):0;
+      if(player.coins>=(currentGame.coinGoal||10)){ alert("🎉 YOU WIN! "+currentGame.name); restartGame(); }
+    }
+  });
+  enemies.forEach(e=>{
+  

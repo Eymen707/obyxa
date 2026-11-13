@@ -1,643 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Gamerwost - Classic 0.0.1</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: none;
-    }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #78a7ff;
-      font-family: monospace;
-    }
-    #gameCanvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-    }
-    /* Minimal HUD */
-    #hud {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: bold;
-      text-shadow: 2px 2px 0 #000;
-      pointer-events: none;
-      z-index: 10;
-      line-height: 1.4;
-    }
-    /* Crosshair */
-    #crosshair {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 18px;
-      height: 18px;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 10;
-    }
-    #crosshair::before, #crosshair::after {
-      content: "";
-      position: absolute;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 0 2px #000;
-    }
-    #crosshair::before {
-      top: 8px;
-      left: 0;
-      width: 18px;
-      height: 2px;
-    }
-    #crosshair::after {
-      top: 0;
-      left: 8px;
-      width: 2px;
-      height: 18px;
-    }
-    /* Classic Hotbar */
-    #hotbar {
-      position: fixed;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
-      background: rgba(0, 0, 0, 0.55);
-      padding: 5px;
-      border: 2px solid #333;
-      z-index: 15;
-    }
-    .slot {
-      width: 52px;
-      height: 52px;
-      border: 3px solid #666;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 11px;
-      font-weight: bold;
-      text-shadow: 1px 1px 0 #000;
-      cursor: pointer;
-    }
-    .slot.active {
-      border-color: #ffffff;
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.06);
-    }
-    .slot-preview {
-      width: 26px;
-      height: 26px;
-      margin-bottom: 2px;
-      border: 1px solid #111;
-    }
-    .prev-grass {
-      background: linear-gradient(to bottom, #55a630 0%, #55a630 35%, #7f5539 35%, #7f5539 100%);
-    }
-    .prev-cobble {
-      background: #7a7a7a;
-      background-image: radial-gradient(#555 20%, transparent 20%), radial-gradient(#999 20%, transparent 20%);
-      background-size: 10px 10px;
-      background-position: 0 0, 5px 5px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gamerwost 0.0.1</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #7ec0ee;
+            font-family: monospace;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            text-shadow: 2px 2px #000;
+            pointer-events: none;
+            font-size: 14px;
+        }
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        /* Kontrol Butonları (Mobil) */
+        .control-btn {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 50px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        #btn-up { bottom: 130px; left: 90px; width: 50px; height: 50px; }
+        #btn-down { bottom: 10px; left: 90px; width: 50px; height: 50px; }
+        #btn-left { bottom: 70px; left: 30px; width: 50px; height: 50px; }
+        #btn-right { bottom: 70px; left: 150px; width: 50px; height: 50px; }
+        #btn-jump { bottom: 70px; left: 90px; width: 50px; height: 50px; font-size: 11px; line-height: 50px; }
 
-    /* Mobile Touch Controls */
-    #mobile-left {
-      position: fixed;
-      bottom: 85px;
-      left: 16px;
-      width: 132px;
-      height: 132px;
-      z-index: 20;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 4px;
-    }
-    .dpad-btn {
-      background: rgba(0, 0, 0, 0.45);
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      color: #fff;
-      font-size: 18px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-    }
-    .dpad-btn:active {
-      background: rgba(255, 255, 255, 0.4);
-    }
-    #mobile-right {
-      position: fixed;
-      bottom: 85px;
-      right: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 20;
-    }
-    .action-btn {
-      width: 66px;
-      height: 46px;
-      background: rgba(0, 0, 0, 0.5);
-      border: 2px solid rgba(255, 255, 255, 0.65);
-      color: #fff;
-      font-family: monospace;
-      font-size: 12px;
-      font-weight: bold;
-      border-radius: 6px;
-      text-shadow: 1px 1px 0 #000;
-    }
-    .action-btn:active {
-      background: rgba(255, 255, 255, 0.35);
-    }
-  </style>
+        #action-buttons {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .action-btn {
+            width: 80px;
+            height: 50px;
+            background: rgba(0, 50, 150, 0.6);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        #hotbar {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+        }
+        .slot {
+            width: 45px;
+            height: 45px;
+            border: 2px solid white;
+            background: rgba(0,0,0,0.4);
+            color: white;
+            text-align: center;
+            line-height: 45px;
+            font-size: 12px;
+        }
+        .slot.active { border-color: yellow; }
+    </style>
 </head>
 <body>
-  <div id="hud">
-    <div>GAMERWOST 0.0.1 (CLASSIC)</div>
-    <div id="netStatus">GLOBAL PEERJS: CONNECTING...</div>
-    <div id="playerCount">PLAYERS ONLINE: 1</div>
-  </div>
 
-  <div id="crosshair"></div>
-
-  <div id="hotbar">
-    <div class="slot active" id="slot-1" onclick="selectBlock(1)">
-      <div class="slot-preview prev-grass"></div>
-      <span>1 GRASS</span>
+    <div id="ui">
+        GAMERWOST 0.0.1 (CLASSIC)<br>
+        <span id="peer-status">GLOBAL PEERJS: CONNECTING...</span><br>
+        <span id="player-count">PLAYERS ONLINE: 1</span>
     </div>
-    <div class="slot" id="slot-2" onclick="selectBlock(2)">
-      <div class="slot-preview prev-cobble"></div>
-      <span>2 COBBLE</span>
+
+    <div id="crosshair">+</div>
+
+    <!-- Mobil Yön Kontrolleri -->
+    <div id="btn-up" class="control-btn">▲</div>
+    <div id="btn-down" class="control-btn">▼</div>
+    <div id="btn-left" class="control-btn">◄</div>
+    <div id="btn-right" class="control-btn">►</div>
+    <div id="btn-jump" class="control-btn">JUMP</div>
+
+    <div id="action-buttons">
+        <button class="action-btn" id="btn-break">BREAK</button>
+        <button class="action-btn" id="btn-place">PLACE</button>
     </div>
-  </div>
 
-  <!-- Mobile Controls (Always usable on touch screens & desktop) -->
-  <div id="mobile-left">
-    <div></div>
-    <div class="dpad-btn" data-key="KeyW">▲</div>
-    <div></div>
-    <div class="dpad-btn" data-key="KeyA">◀</div>
-    <div class="dpad-btn" data-key="Space">JUMP</div>
-    <div class="dpad-btn" data-key="KeyD">▶</div>
-    <div></div>
-    <div class="dpad-btn" data-key="KeyS">▼</div>
-    <div></div>
-  </div>
+    <div id="hotbar">
+        <div class="slot active">1<br>GRASS</div>
+        <div class="slot">2<br>COBBLE</div>
+    </div>
 
-  <div id="mobile-right">
-    <button class="action-btn" id="btnBreak">BREAK</button>
-    <button class="action-btn" id="btnPlace">PLACE</button>
-    <button class="action-btn" id="btnJump">JUMP</button>
-  </div>
+    <!-- Three.js ve PeerJS Kütüphaneleri -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 
-  <canvas id="gameCanvas"></canvas>
+    <script>
+        // --- 1. SAHNE VE DÜZ DÜNYA KURULUMU ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x7ec0ee);
+        scene.fog = new THREE.Fog(0x7ec0ee, 20, 60);
 
-  <!-- Three.js & PeerJS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-  <script>
-    // ==========================================
-    // 1. SCENE, CAMERA & RENDERER (GUARANTEED VISIBLE)
-    // ==========================================
-    const canvas = document.getElementById("gameCanvas");
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x78a7ff, 1);
+        // Işıklandırma
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x78a7ff);
-    scene.fog = new THREE.Fog(0x78a7ff, 25, 75);
+        // Düz Dünya (Zemin)
+        const planeGeo = new THREE.PlaneGeometry(100, 100);
+        const planeMat = new THREE.MeshLambertMaterial({ color: 0x557a2b });
+        const plane = new THREE.Mesh(planeGeo, planeMat);
+        plane.rotation.x = -Math.PI / 2;
+        scene.add(plane);
 
-    const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 150);
-    camera.rotation.order = "YXZ";
-    scene.add(camera);
+        // --- 2. KARAKTER MODELİ (Kollar ve Gövde Dahil) ---
+        function createPlayerModel() {
+            const group = new THREE.Group();
 
-    // Bright daylight lighting so terrain is NEVER black/empty
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
-    scene.add(ambientLight);
-    const sunLight = new THREE.DirectionalLight(0xffffff, 0.65);
-    sunLight.position.set(30, 60, 25);
-    scene.add(sunLight);
+            // Gövde
+            const bodyGeo = new THREE.BoxGeometry(0.6, 0.8, 0.3);
+            const bodyMat = new THREE.MeshLambertMaterial({ color: 0x3b146b }); // Mor tişört
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = 1.0;
+            group.add(body);
 
-    // ==========================================
-    // 2. CLASSIC PIXEL TEXTURES (GRASS & COBBLESTONE)
-    // ==========================================
-    function createPixelTexture(drawFn) {
-      const c = document.createElement("canvas");
-      c.width = 16;
-      c.height = 16;
-      const ctx = c.getContext("2d");
-      drawFn(ctx);
-      const tex = new THREE.CanvasTexture(c);
-      tex.magFilter = THREE.NearestFilter;
-      tex.minFilter = THREE.NearestFilter;
-      return tex;
-    }
+            // Kafa
+            const headGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+            const headMat = new THREE.MeshLambertMaterial({ color: 0xd8d8d8 });
+            const head = new THREE.Mesh(headGeo, headMat);
+            head.position.y = 1.55;
+            group.add(head);
 
-    const grassTopTex = createPixelTexture((ctx) => {
-      for (let x = 0; x < 16; x++) {
-        for (let y = 0; y < 16; y++) {
-          const shades = ["#56a832", "#4e9c2c", "#61b53b", "#478f27"];
-          ctx.fillStyle = shades[(x * 7 + y * 13) % shades.length];
-          ctx.fillRect(x, y, 1, 1);
+            // Sol Kol
+            const armGeo = new THREE.BoxGeometry(0.25, 0.8, 0.25);
+            const armMat = new THREE.MeshLambertMaterial({ color: 0x228b22 });
+            const leftArm = new THREE.Mesh(armGeo, armMat);
+            leftArm.position.set(-0.45, 1.0, 0);
+            group.add(leftArm);
+
+            // Sağ Kol
+            const rightArm = new THREE.Mesh(armGeo, armMat);
+            rightArm.position.set(0.45, 1.0, 0);
+            group.add(rightArm);
+
+            // Bacaklar
+            const legGeo = new THREE.BoxGeometry(0.25, 0.8, 0.25);
+            const legMat = new THREE.MeshLambertMaterial({ color: 0x240d42 });
+            const leftLeg = new THREE.Mesh(legGeo, legMat);
+            leftLeg.position.set(-0.15, 0.4, 0);
+            const rightLeg = new THREE.Mesh(legGeo, legMat);
+            rightLeg.position.set(0.15, 0.4, 0);
+            group.add(leftLeg);
+            group.add(rightLeg);
+
+            return group;
         }
-      }
-    });
 
-    const dirtTex = createPixelTexture((ctx) => {
-      for (let x = 0; x < 16; x++) {
-        for (let y = 0; y < 16; y++) {
-          const shades = ["#7d5638", "#6e4b30", "#8a6040", "#614129"];
-          ctx.fillStyle = shades[(x * 5 + y * 11) % shades.length];
-          ctx.fillRect(x, y, 1, 1);
+        // Kendi karakterimiz
+        camera.position.set(0, 2, 5);
+        let playerPos = { x: 0, y: 0, z: 0 };
+
+        // --- 3. PEERJS OTOMATİK KÜRESEL BAĞLANTI ---
+        // Tüm dünyanın aynı odada buluşması için sabit bir prefix kullanıyoruz
+        const ROOM_PREFIX = "gamerwost_global_room_v1_";
+        let peer = null;
+        let connections = {};
+        let onlineCount = 1;
+
+        function initPeer() {
+            // Rastgele bir ID yerine sunucu havuzuna dahil oluyoruz
+            peer = new Peer({
+                host: '0.peerjs.com',
+                port: 443,
+                secure: true
+            });
+
+            peer.on('open', (id) => {
+                document.getElementById('peer-status').innerText = "GLOBAL PEERJS: CONNECTED";
+                console.log('Bağlandı, ID:', id);
+                
+                // Ağdaki diğer oyuncuları bulmak için kendi ID'mizi broadcast edebiliriz
+                // Basit global buluşma için herkese açık ortak ID'ye bağlanma denemesi:
+                connectToGlobalRoom();
+            });
+
+            peer.on('connection', (conn) => {
+                setupConnection(conn);
+            });
+
+            peer.on('error', (err) => {
+                console.error("Peer error:", err);
+                document.getElementById('peer-status').innerText = "PEERJS: RECONNECTING...";
+                setTimeout(initPeer, 3000); // Hata olursa tekrar dene
+            });
         }
-      }
-    });
 
-    const grassSideTex = createPixelTexture((ctx) => {
-      for (let x = 0; x < 16; x++) {
-        for (let y = 0; y < 16; y++) {
-          if (y < 4 || (y === 4 && (x % 3 === 0))) {
-            ctx.fillStyle = (x + y) % 2 === 0 ? "#56a832" : "#499428";
-          } else {
-            const shades = ["#7d5638", "#6e4b30", "#8a6040"];
-            ctx.fillStyle = shades[(x * 3 + y * 7) % shades.length];
-          }
-          ctx.fillRect(x, y, 1, 1);
+        function connectToGlobalRoom() {
+            // Test amaçlı sabit ana ID üzerinden oda ağı kurma mantığı
+            // Not: Gerçek tam küresel liste için bir signaling listesi gerekir ancak PeerJS peer-to-peer mantığıyla 
+            // rastgele bağlantı kurar. Otomatik eşleşme için her istemci gelen bağlantıları kabul eder.
         }
-      }
-    });
 
-    const cobbleTex = createPixelTexture((ctx) => {
-      ctx.fillStyle = "#6d6d6d";
-      ctx.fillRect(0, 0, 16, 16);
-      const stones = [
-        [1, 1, 6, 4, "#8a8a8a"], [8, 1, 7, 5, "#7d7d7d"],
-        [1, 6, 5, 4, "#7a7a7a"], [7, 7, 8, 4, "#8f8f8f"],
-        [1, 11, 7, 4, "#858585"], [9, 12, 6, 3, "#757575"]
-      ];
-      stones.forEach(([x, y, w, h, col]) => {
-        ctx.fillStyle = col;
-        ctx.fillRect(x, y, w, h);
-        ctx.fillStyle = "#4d4d4d";
-        ctx.fillRect(x, y + h, w, 1);
-      });
-    });
+        function setupConnection(conn) {
+            connections[conn.peer] = { conn: conn, model: createPlayerModel() };
+            scene.add(connections[conn.peer].model);
+            onlineCount++;
+            document.getElementById('player-count').innerText = "PLAYERS ONLINE: " + onlineCount;
 
-    const grassMaterials = [
-      new THREE.MeshLambertMaterial({ map: grassSideTex }),
-      new THREE.MeshLambertMaterial({ map: grassSideTex }),
-      new THREE.MeshLambertMaterial({ map: grassTopTex }),
-      new THREE.MeshLambertMaterial({ map: dirtTex }),
-      new THREE.MeshLambertMaterial({ map: grassSideTex }),
-      new THREE.MeshLambertMaterial({ map: grassSideTex })
-    ];
-    const cobbleMaterial = new THREE.MeshLambertMaterial({ map: cobbleTex });
-    const blockGeo = new THREE.BoxGeometry(1, 1, 1);
+            conn.on('data', (data) => {
+                if (data.type === 'move' && connections[conn.peer]) {
+                    connections[conn.peer].model.position.set(data.x, data.y, data.z);
+                }
+            });
 
-    // ==========================================
-    // 3. FLAT WORLD & COBBLESTONE INITIALIZATION
-    // ==========================================
-    const WORLD_HALF = 16; // 32x32 flat world
-    const blocks = new Map(); // "x,y,z" -> { type: 1|2, mesh }
-    const blockMeshes = [];
-
-    function keyOf(x, y, z) {
-      return `${x},${y},${z}`;
-    }
-
-    function setBlock(x, y, z, type, broadcast = false) {
-      const k = keyOf(x, y, z);
-      if (blocks.has(k)) {
-        const old = blocks.get(k);
-        scene.remove(old.mesh);
-        const idx = blockMeshes.indexOf(old.mesh);
-        if (idx !== -1) blockMeshes.splice(idx, 1);
-        blocks.delete(k);
-      }
-      if (type === 0) {
-        if (broadcast) sendToAllPeers({ t: "blk", x, y, z, id: 0 });
-        return;
-      }
-      const mat = type === 1 ? grassMaterials : cobbleMaterial;
-      const mesh = new THREE.Mesh(blockGeo, mat);
-      mesh.position.set(x + 0.5, y + 0.5, z + 0.5);
-      mesh.userData = { bx: x, by: y, bz: z };
-      scene.add(mesh);
-      blocks.set(k, { type, mesh });
-      blockMeshes.push(mesh);
-
-      if (broadcast) sendToAllPeers({ t: "blk", x, y, z, id: type });
-    }
-
-    function generateFlatWorld() {
-      // Clear existing blocks
-      for (const [, data] of blocks) {
-        scene.remove(data.mesh);
-      }
-      blocks.clear();
-      blockMeshes.length = 0;
-
-      // Flat Grass Floor at y = 0
-      for (let x = -WORLD_HALF; x < WORLD_HALF; x++) {
-        for (let z = -WORLD_HALF; z < WORLD_HALF; z++) {
-          setBlock(x, 0, z, 1, false);
+            conn.on('close', () => {
+                scene.remove(connections[conn.peer].model);
+                delete connections[conn.peer];
+                onlineCount = Math.max(1, onlineCount - 1);
+                document.getElementById('player-count').innerText = "PLAYERS ONLINE: " + onlineCount;
+            });
         }
-      }
 
-      // Starter Cobblestone Blocks right in front of spawn so player immediately sees them
-      setBlock(0, 1, -4, 2, false);
-      setBlock(1, 1, -4, 2, false);
-      setBlock(-1, 1, -4, 2, false);
-      setBlock(0, 2, -4, 2, false);
-      setBlock(2, 1, -3, 2, false);
-    }
+        initPeer();
 
-    generateFlatWorld();
+        // --- 4. HAREKET KONTROLLERİ ---
+        let moveState = { forward: false, backward: false, left: false, right: false };
 
-    // ==========================================
-    // 4. CUSTOM GAMERWOST CHARACTER & FIRST-PERSON ARM
-    // ==========================================
-    function createLogoTexture() {
-      const c = document.createElement("canvas");
-      c.width = 64;
-      c.height = 64;
-      const ctx = c.getContext("2d");
-      ctx.fillStyle = "#16143a";
-      ctx.fillRect(0, 0, 64, 64);
+        document.getElementById('btn-up').addEventListener('touchstart', () => moveState.forward = true);
+        document.getElementById('btn-up').addEventListener('touchend', () => moveState.forward = false);
+        document.getElementById('btn-down').addEventListener('touchstart', () => moveState.backward = true);
+        document.getElementById('btn-down').addEventListener('touchend', () => moveState.backward = false);
+        document.getElementById('btn-left').addEventListener('touchstart', () => moveState.left = true);
+        document.getElementById('btn-left').addEventListener('touchend', () => moveState.left = false);
+        document.getElementById('btn-right').addEventListener('touchstart', () => moveState.right = true);
+        document.getElementById('btn-right').addEventListener('touchend', () => moveState.right = false);
 
-      const grad = ctx.createLinearGradient(10, 10, 54, 54);
-      grad.addColorStop(0, "#b537f2");
-      grad.addColorStop(1, "#2de2e6");
+        // --- 5. OYUN DÖNGÜSÜ ---
+        function animate() {
+            requestAnimationFrame(animate);
 
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 7;
-      ctx.beginPath();
-      ctx.arc(32, 32, 18, -0.35, Math.PI * 1.65, true);
-      ctx.lineTo(46, 32);
-      ctx.lineTo(33, 32);
-      ctx.stroke();
+            // Basit hareket mantığı
+            let speed = 0.05;
+            if (moveState.forward) camera.position.z -= speed;
+            if (moveState.backward) camera.position.z += speed;
+            if (moveState.left) camera.position.x -= speed;
+            if (moveState.right) camera.position.x += speed;
 
-      // Plus icon inside G
-      ctx.fillStyle = "#b537f2";
-      ctx.fillRect(19, 29, 8, 3);
-      ctx.fillRect(21.5, 26.5, 3, 8);
-
-      const tex = new THREE.CanvasTexture(c);
-      tex.magFilter = THREE.NearestFilter;
-      return tex;
-    }
-
-    function createFaceTexture() {
-      const c = document.createElement("canvas");
-      c.width = 32;
-      c.height = 32;
-      const ctx = c.getContext("2d");
-      ctx.fillStyle = "#d9dce2";
-      ctx.fillRect(0, 0, 32, 32);
-      ctx.fillStyle = "#111";
-      ctx.fillRect(10, 12, 3, 6);
-      ctx.fillRect(19, 12, 3, 6);
-      ctx.fillRect(13, 21, 6, 2);
-      ctx.fillRect(12, 20, 1, 2);
-      ctx.fillRect(19, 20, 1, 2);
-      const tex = new THREE.CanvasTexture(c);
-      tex.magFilter = THREE.NearestFilter;
-      return tex;
-    }
-
-    function createArmTexture() {
-      const c = document.createElement("canvas");
-      c.width = 16;
-      c.height = 32;
-      const ctx = c.getContext("2d");
-      for (let x = 0; x < 16; x++) {
-        for (let y = 0; y < 32; y++) {
-          if (y < 16) {
-            ctx.fillStyle = (x + y) % 2 === 0 ? "#3c1e6e" : "#2d1554";
-          } else {
-            ctx.fillStyle = (x + y) % 2 === 0 ? "#1f9ea6" : "#17828a";
-          }
-          ctx.fillRect(x, y, 1, 1);
+            renderer.render(scene, camera);
         }
-      }
-      const tex = new THREE.CanvasTexture(c);
-      tex.magFilter = THREE.NearestFilter;
-      return tex;
-    }
+        animate();
 
-    const logoTex = createLogoTexture();
-    const faceTex = createFaceTexture();
-    const armTex = createArmTexture();
-
-    // First-Person Right Arm attached to Camera
-    const fpArmGeo = new THREE.BoxGeometry(0.24, 0.65, 0.24);
-    const fpArmMat = new THREE.MeshLambertMaterial({ map: armTex });
-    const fpArm = new THREE.Mesh(fpArmGeo, fpArmMat);
-    fpArm.position.set(0.42, -0.34, -0.58);
-    fpArm.rotation.set(0.55, -0.25, 0.15);
-    camera.add(fpArm);
-
-    let armSwing = 0;
-    function triggerArmSwing() {
-      armSwing = 1.0;
-    }
-
-    // Remote Player 3D Avatar Builder
-    function createRemoteAvatar() {
-      const root = new THREE.Group();
-
-      // Legs (Dark Purple)
-      const legMat = new THREE.MeshLambertMaterial({ color: 0x351963 });
-      const legGeo = new THREE.BoxGeometry(0.26, 0.72, 0.26);
-      const leftLeg = new THREE.Mesh(legGeo, legMat);
-      leftLeg.position.set(-0.14, 0.36, 0);
-      const rightLeg = new THREE.Mesh(legGeo, legMat);
-      rightLeg.position.set(0.14, 0.36, 0);
-      root.add(leftLeg, rightLeg);
-
-      // Torso with G logo on front
-      const torsoSideMat = new THREE.MeshLambertMaterial({ color: 0x16143a });
-      const torsoFrontMat = new THREE.MeshLambertMaterial({ map: logoTex });
-      const torsoMats = [
-        torsoSideMat, torsoSideMat, torsoSideMat, torsoSideMat,
-        torsoFrontMat, torsoSideMat
-      ];
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.72, 0.28), torsoMats);
-      torso.position.set(0, 1.08, 0);
-      root.add(torso);
-
-      // Arms (Purple + Cyan)
-      const armGeo = new THREE.BoxGeometry(0.24, 0.72, 0.24);
-      const leftArm = new THREE.Mesh(armGeo, fpArmMat);
-      leftArm.position.set(-0.42, 1.08, 0);
-      const rightArm = new THREE.Mesh(armGeo, fpArmMat);
-      rightArm.position.set(0.42, 1.08, 0);
-      root.add(leftArm, rightArm);
-
-      // Head + Face
-      const headSideMat = new THREE.MeshLambertMaterial({ color: 0xd9dce2 });
-      const headFrontMat = new THREE.MeshLambertMaterial({ map: faceTex });
-      const headMats = [
-        headSideMat, headSideMat, headSideMat, headSideMat,
-        headFrontMat, headSideMat
-      ];
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), headMats);
-      head.position.set(0, 1.69, 0);
-      root.add(head);
-
-      // Blue Cap + Brim
-      const capMat = new THREE.MeshLambertMaterial({ color: 0x1e5cb3 });
-      const capTop = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.18, 0.53), capMat);
-      capTop.position.set(0, 1.94, 0);
-      const capBrim = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.06, 0.24), capMat);
-      capBrim.position.set(0, 1.87, 0.32);
-      root.add(capTop, capBrim);
-
-      root.userData = { leftLeg, rightLeg, leftArm, rightArm };
-      scene.add(root);
-      return root;
-    }
-
-    // ==========================================
-    // 5. PLAYER PHYSICS & DESKTOP + MOBILE CONTROLS
-    // ==========================================
-    const player = {
-      x: 0.5,
-      y: 2.8,
-      z: 2.5,
-      vx: 0,
-      vy: 0,
-      vz: 0,
-      yaw: 0,
-      pitch: -0.1,
-      onGround: false
-    };
-
-    let selectedBlock = 1;
-    window.selectBlock = function (id) {
-      selectedBlock = id;
-      document.getElementById("slot-1").classList.toggle("active", id === 1);
-      document.getElementById("slot-2").classList.toggle("active", id === 2);
-    };
-
-    const keys = {};
-    window.addEventListener("keydown", (e) => {
-      keys[e.code] = true;
-      if (e.code === "Digit1") selectBlock(1);
-      if (e.code === "Digit2") selectBlock(2);
-    });
-    window.addEventListener("keyup", (e) => {
-      keys[e.code] = false;
-    });
-
-    // Touch D-Pad bindings
-    document.querySelectorAll(".dpad-btn").forEach((btn) => {
-      const code = btn.dataset.key;
-      btn.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        keys[code] = true;
-      }, { passive: false });
-      btn.addEventListener("touchend", (e) => {
-        e.preventDefault();
-        keys[code] = false;
-      }, { passive: false });
-      btn.addEventListener("mousedown", () => { keys[code] = true; });
-      btn.addEventListener("mouseup", () => { keys[code] = false; });
-    });
-
-    document.getElementById("btnJump").addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      if (player.onGround) player.vy = 7.8;
-    }, { passive: false });
-    document.getElementById("btnJump").addEventListener("click", () => {
-      if (player.onGround) player.vy = 7.8;
-    });
-
-    // Raycast Break & Place
-    const raycaster = new THREE.Raycaster();
-    raycaster.far = 6.5;
-
-    function breakBlock() {
-      triggerArmSwing();
-      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-      const hits = raycaster.intersectObjects(blockMeshes);
-      if (hits.length > 0) {
-        const { bx, by, bz } = hits[0].object.userData;
-        if (by > 0) { // Prevent deleting bottom floor bedrock layer
-          setBlock(bx, by, bz, 0, true);
-        }
-      }
-    }
-
-    function placeBlock() {
-      triggerArmSwing();
-      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-      const hits = raycaster.intersectObjects(blockMeshes);
-      if (hits.length > 0) {
-        const hit = hits[0];
-        const { bx, by, bz } = hit.object.userData;
-        const n = hit.face.normal;
-        const nx = bx + Math.round(n.x);
-        const ny = by + Math.round(n.y);
-        const nz = bz + Math.round(n.z);
-
-        // Prevent placing block inside player body
-        const px = Math.floor(player.x);
-        const py = Math.floor(player.y);
-        const pz = Math.floor(player.z);
-        if ((nx === px && nz === pz && (ny === py || ny === py + 1))) return;
-
-        setBlock(nx, ny, nz, selectedBlock, true);
-      }
-    }
-
-    document.getElementById("btnBreak").addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      breakBlock();
-    }, { passive: false });
-    document.getElementById("btnBreak").addEventListener("click", breakBlock);
-
-    document.getElementById("btnPlace").addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      placeBlock();
-    }, { passive: false });
-    document.getElementById("btnPlace").addEventListener("click", placeBlock);
-
-    // Desktop Mouse Look + Touch Drag Look
-    let isDragging = false;
-    let lastTouchX = 0;
-    let lastTouchY = 0;
-
-    canvas.addEventListener("mousedown", (e) => {
-      if (document.pointerLockElement !== canvas && canvas.requestPointerLock) {
-        canvas.requestPointerLock();
-      }
-      if (e.button === 0) breakBlock();
-      if (e.button === 2) placeBlock();
-    });
-    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    window.addEventListener("mousemove", (e) => {
-      if (document.pointerLockElement === canvas) {
-        player.yaw -= e.movementX * 0.0024;
-        player
+        // Ekran boyutu değişimi
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

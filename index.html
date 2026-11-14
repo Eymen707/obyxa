@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GamerWost - Multiplayer 3D Voxel Sandbox</title>
+    <title>GamerWost - 3D Voxel Sandbox</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Three.js (r128) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- PeerJS -->
-    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <!-- Google Fonts: Press Start 2P & Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
@@ -19,14 +17,16 @@
             -webkit-user-select: none;
             -webkit-touch-callout: none;
         }
-        body, html {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background-color: #111827;
+            overscroll-behavior: none;
+            background-color: #0f172a;
             font-family: 'Inter', sans-serif;
+            touch-action: none;
         }
         .pixel-font {
             font-family: 'Press Start 2P', monospace;
@@ -37,35 +37,35 @@
             height: 100vh;
             touch-action: none;
         }
-        /* Minecraft tarzı blok buton gölgeleri */
+        /* Minecraft tarzı 3D blok buton gölgeleri */
         .mc-btn {
-            border: 3px solid #1f2937;
-            box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.35), inset 0 -4px 0 rgba(0, 0, 0, 0.35), 0 4px 10px rgba(0,0,0,0.4);
-            transition: transform 0.08s ease, filter 0.15s ease;
+            border: 3px solid #1e293b;
+            box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.35), inset 0 -4px 0 rgba(0, 0, 0, 0.35), 0 6px 14px rgba(0, 0, 0, 0.45);
+            transition: transform 0.08s ease, filter 0.12s ease;
         }
         .mc-btn:active {
-            transform: translateY(2px);
+            transform: translateY(2px) scale(0.97);
             box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.4);
         }
-        /* Hotbar slot */
+        /* Hotbar slot tasarımı */
         .hotbar-slot {
-            border: 3px solid #374151;
-            background: rgba(17, 24, 39, 0.75);
-            transition: all 0.12s ease;
+            border: 3px solid #334155;
+            background: rgba(15, 23, 42, 0.78);
+            transition: all 0.12s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .hotbar-slot.active {
             border-color: #facc15;
-            background: rgba(250, 204, 21, 0.25);
-            transform: scale(1.1);
-            box-shadow: 0 0 12px rgba(250, 204, 21, 0.5);
+            background: rgba(250, 204, 21, 0.22);
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 0 14px rgba(250, 204, 21, 0.55);
         }
-        /* Nişangah (Crosshair) */
+        /* Merkez Nişangah (Crosshair) */
         #crosshair {
             position: fixed;
             top: 50%;
             left: 50%;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             transform: translate(-50%, -50%);
             pointer-events: none;
             z-index: 15;
@@ -73,24 +73,24 @@
         #crosshair::before, #crosshair::after {
             content: '';
             position: absolute;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
         }
         #crosshair::before {
-            top: 9px; left: 0; width: 20px; height: 2px;
+            top: 10px; left: 0; width: 22px; height: 2px;
         }
         #crosshair::after {
-            top: 0; left: 9px; width: 2px; height: 20px;
+            top: 0; left: 10px; width: 2px; height: 22px;
         }
-        /* Sanal Joystick */
+        /* Sanal Thumbstick (Joystick) */
         #joystick-zone {
             position: fixed;
-            bottom: 90px;
-            left: 24px;
-            width: 120px;
-            height: 120px;
+            bottom: 88px;
+            left: 20px;
+            width: 124px;
+            height: 124px;
             border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.14);
+            background: rgba(15, 23, 42, 0.35);
             border: 2px solid rgba(255, 255, 255, 0.35);
             backdrop-filter: blur(4px);
             z-index: 25;
@@ -100,22 +100,14 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 48px;
-            height: 48px;
-            margin-top: -24px;
-            margin-left: -24px;
+            width: 50px;
+            height: 50px;
+            margin-top: -25px;
+            margin-left: -25px;
             border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.75);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            background: radial-gradient(circle at 35% 35%, #ffffff, #cbd5e1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             pointer-events: none;
-        }
-        /* Özel Kaydırma Çubuğu */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
         }
     </style>
 </head>
@@ -127,60 +119,44 @@
     <!-- Merkez Nişangah -->
     <div id="crosshair" class="hidden"></div>
 
-    <!-- Üst Bilgi Barı (Oyun İçi HUD) -->
+    <!-- Üst HUD (FPS, Koordinatlar, Uçuş Modu, Dokunmatik Geçişi, Ayarlar) -->
     <div id="hud-top" class="hidden fixed top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        <!-- Sol: Marka ve Bağlantı Durumu -->
-        <div class="flex items-center gap-2 bg-gray-900/80 backdrop-blur-md border border-gray-700 px-3 py-2 rounded-xl pointer-events-auto shadow-lg">
-            <div class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" id="status-dot"></div>
-            <span class="pixel-font text-xs sm:text-sm text-emerald-400 tracking-wider">GamerWost</span>
-            <span class="text-gray-500">|</span>
-            <span id="connection-badge" class="text-xs font-semibold text-gray-200">Solo / Host</span>
+        <!-- Sol: Marka, FPS & Koordinatlar -->
+        <div class="flex items-center gap-2.5 bg-slate-900/80 backdrop-blur-md border border-slate-700/80 px-3 py-2 rounded-2xl pointer-events-auto shadow-lg">
+            <span class="pixel-font text-xs sm:text-sm text-emerald-400 tracking-wide">GamerWost</span>
+            <span class="text-slate-600">|</span>
+            <div class="text-[11px] sm:text-xs font-mono text-slate-200 flex items-center gap-2">
+                <span id="hud-fps" class="text-amber-300 font-bold">60 FPS</span>
+                <span class="hidden sm:inline text-slate-500">•</span>
+                <span id="hud-coords" class="hidden sm:inline text-sky-300">X:0 Y:0 Z:0</span>
+            </div>
         </div>
 
-        <!-- Sağ: Hızlı Butonlar (ID Kopyala, Sohbet, Mobil Kontroller, Menü) -->
+        <!-- Sağ: Hızlı Kontrol Butonları -->
         <div class="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-            <button id="hud-copy-id-btn" class="bg-gray-900/85 hover:bg-gray-800 text-amber-300 border border-amber-500/40 px-2.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg transition">
-                <span>📋</span>
-                <span class="hidden sm:inline">ID Kopyala</span>
+            <button id="btn-toggle-fly" class="bg-slate-900/85 hover:bg-slate-800 text-slate-200 border border-slate-600 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg transition" title="Uçuş Modunu Aç/Kapat (F)">
+                <span>🕊️</span>
+                <span>Uçuş: Kapalı</span>
             </button>
-            <button id="toggle-chat-btn" class="bg-gray-900/85 hover:bg-gray-800 text-sky-300 border border-sky-500/40 px-2.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg transition">
-                <span>💬</span>
-                <span class="hidden sm:inline">Sohbet</span>
-            </button>
-            <button id="toggle-mobile-btn" class="bg-gray-900/85 hover:bg-gray-800 text-purple-300 border border-purple-500/40 px-2.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg transition" title="Dokunmatik Kontrolleri Aç/Kapat">
+            <button id="btn-toggle-touch" class="bg-slate-900/85 hover:bg-slate-800 text-purple-300 border border-purple-500/40 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg transition" title="Dokunmatik Kontrolleri Aç/Kapat">
                 <span>📱</span>
                 <span class="hidden sm:inline">Dokunmatik</span>
             </button>
-            <button id="open-menu-btn" class="bg-gray-900/85 hover:bg-gray-800 text-white border border-gray-600 px-2.5 py-2 rounded-xl text-xs font-bold shadow-lg transition">
+            <button id="btn-open-pause" class="bg-slate-900/85 hover:bg-slate-800 text-white border border-slate-600 px-3 py-2 rounded-xl text-xs font-bold shadow-lg transition" title="Ayarlar / Duraklat">
                 ⚙️
             </button>
         </div>
     </div>
 
-    <!-- PC Fare Kilidi Hatırlatıcısı -->
-    <div id="pointer-lock-hint" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-20 bg-black/75 text-white text-xs sm:text-sm px-4 py-2 rounded-full border border-white/20 pointer-events-none backdrop-blur-sm">
-        🖱️ Fareyi kilitlemek için ekrana tıklayın (WASD: Yürü, Boşluk: Zıpla, Sol Tık: Kır, Sağ Tık: Koy)
+    <!-- PC Fare Kilidi Bilgilendirme Bandı -->
+    <div id="pc-lock-banner" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-20 bg-slate-950/80 text-slate-100 text-xs sm:text-sm px-4 py-2 rounded-full border border-white/15 pointer-events-none backdrop-blur-md text-center whitespace-nowrap shadow-xl">
+        🖱️ Fareyi kilitlemek için ekrana tıklayın • <b>WASD</b>: Yürü • <b>Boşluk</b>: Zıpla • <b>F</b>: Uçuş
     </div>
 
     <!-- Bildirim Toast Kutusu -->
-    <div id="toast-container" class="fixed top-16 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <div id="toast-box" class="fixed top-16 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Oyun İçi Mini Sohbet Kutusu -->
-    <div id="chat-box" class="hidden fixed left-3 top-16 sm:top-20 w-72 sm:w-80 bg-gray-900/85 backdrop-blur-md border border-gray-700 rounded-xl p-3 z-30 shadow-2xl">
-        <div class="flex items-center justify-between border-b border-gray-700 pb-1.5 mb-2">
-            <span class="text-xs font-bold text-gray-300">💬 GamerWost Sohbet</span>
-            <button id="close-chat-btn" class="text-gray-400 hover:text-white text-xs font-bold px-1">✕</button>
-        </div>
-        <div id="chat-messages" class="h-32 overflow-y-auto text-xs space-y-1.5 mb-2 pr-1 text-gray-200">
-            <div class="text-emerald-400 italic">GamerWost dünyasına hoş geldin!</div>
-        </div>
-        <form id="chat-form" class="flex gap-1.5">
-            <input id="chat-input" type="text" maxlength="80" placeholder="Mesaj yaz..." class="flex-1 bg-gray-800 text-white text-xs px-2.5 py-1.5 rounded-lg border border-gray-600 focus:outline-none focus:border-emerald-400">
-            <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Gönder</button>
-        </form>
-    </div>
-
-    <!-- Mobil Dokunmatik Kontroller (Sanal Joystick + Aksiyon Butonları) -->
+    <!-- Mobil Dokunmatik Kontroller -->
     <div id="mobile-controls" class="hidden">
         <!-- Sol Alt: Sanal Joystick -->
         <div id="joystick-zone">
@@ -188,12 +164,17 @@
         </div>
 
         <!-- Sağ Alt: Zıpla, Kır, Koy Butonları -->
-        <div class="fixed bottom-24 right-4 z-25 flex flex-col items-end gap-3 touch-none">
+        <div class="fixed bottom-24 right-4 z-25 flex flex-col items-end gap-2.5 touch-none">
+            <!-- Uçuş Modunda Aşağı İnme Butonu (Sadece uçuş açıkken görünür) -->
+            <button id="btn-mobile-descend" class="hidden mc-btn w-14 h-12 rounded-2xl bg-indigo-600/90 text-white font-extrabold text-[11px] flex flex-col items-center justify-center shadow-xl">
+                <span class="text-base leading-none">⬇️</span>
+                <span class="mt-0.5">İN</span>
+            </button>
             <button id="btn-mobile-jump" class="mc-btn w-16 h-16 rounded-2xl bg-sky-500/90 text-white font-extrabold text-xs flex flex-col items-center justify-center shadow-xl">
                 <span class="text-xl leading-none">⬆️</span>
                 <span class="mt-1">ZIPLA</span>
             </button>
-            <div class="flex gap-3">
+            <div class="flex gap-2.5">
                 <button id="btn-mobile-break" class="mc-btn w-16 h-16 rounded-2xl bg-rose-600/90 text-white font-extrabold text-xs flex flex-col items-center justify-center shadow-xl">
                     <span class="text-xl leading-none">⛏️</span>
                     <span class="mt-1">KIR</span>
@@ -206,78 +187,83 @@
         </div>
     </div>
 
-    <!-- Alt Blok Seçim Çubuğu (Hotbar) -->
-    <div id="hotbar-container" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-25 flex items-center gap-1.5 sm:gap-2 bg-gray-950/80 backdrop-blur-md p-2 rounded-2xl border border-gray-700 shadow-2xl">
-        <!-- JavaScript ile 6 blok slotu dinamik olarak doldurulacak -->
+    <!-- Alt Blok Seçim Çubuğu (8 Slotlu Hotbar) -->
+    <div id="hotbar-wrapper" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-25 flex flex-col items-center gap-1 max-w-[96vw]">
+        <div id="selected-block-label" class="text-[11px] font-bold text-white bg-slate-950/75 px-2.5 py-0.5 rounded-full border border-white/10 backdrop-blur-sm">
+            Çimen
+        </div>
+        <div id="hotbar-container" class="flex items-center gap-1 sm:gap-1.5 bg-slate-950/85 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl border border-slate-700/90 shadow-2xl overflow-x-auto max-w-full">
+            <!-- JS ile 8 blok slotu oluşturulacak -->
+        </div>
     </div>
 
-    <!-- Ana Lobi / Çok Oyunculu Bağlantı Menüsü (Overlay) -->
-    <div id="lobby-overlay" class="fixed inset-0 z-40 flex items-center justify-center bg-gradient-to-b from-sky-900/90 via-gray-900/95 to-gray-950/95 backdrop-blur-md p-4 overflow-y-auto">
-        <div class="w-full max-w-md bg-gray-900/95 border-2 border-gray-700 rounded-3xl p-6 sm:p-8 shadow-2xl text-white my-auto">
-            <!-- Logo / Başlık -->
-            <div class="text-center mb-6">
+    <!-- Başlangıç & Duraklatma / Ayarlar Menüsü -->
+    <div id="menu-overlay" class="fixed inset-0 z-40 flex items-center justify-center bg-gradient-to-b from-sky-900/85 via-slate-900/92 to-slate-950/95 backdrop-blur-md p-4 overflow-y-auto">
+        <div class="w-full max-w-md bg-slate-900/95 border-2 border-slate-700 rounded-3xl p-6 sm:p-7 shadow-2xl text-white my-auto">
+            <!-- Başlık -->
+            <div class="text-center mb-5">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-700 border-4 border-emerald-300/40 shadow-lg mb-3">
                     <span class="text-3xl">🟩</span>
                 </div>
-                <h1 class="pixel-font text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-lime-300 to-amber-300 tracking-wide drop-shadow">
+                <h1 class="pixel-font text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-lime-300 to-amber-300 tracking-wide">
                     GamerWost
                 </h1>
-                <p class="text-xs sm:text-sm text-gray-400 mt-2">PC & Mobil Uyumlu PeerJS 3D Voxel Dünyası</p>
+                <p id="menu-subtitle" class="text-xs sm:text-sm text-slate-400 mt-2">3D Voxel Sandbox • Tek Oyunculu</p>
             </div>
 
-            <!-- Oyuncu İsmi -->
-            <div class="mb-4">
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Oyuncu Adın</label>
-                <input id="player-name-input" type="text" maxlength="16" placeholder="Örn: WostMaster" class="w-full bg-gray-800 border border-gray-600 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:outline-none focus:border-emerald-400">
-            </div>
-
-            <!-- Senin PeerJS ID'n -->
-            <div class="mb-5 bg-gray-800/80 border border-gray-700 rounded-2xl p-3.5">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="text-xs font-bold text-gray-400">Senin Oda Kodun (Peer ID):</span>
-                    <span id="peer-init-status" class="text-[11px] font-semibold text-amber-400">Oluşturuluyor...</span>
-                </div>
-                <div class="flex items-center gap-2 mt-1.5">
-                    <input id="my-peer-id" type="text" readonly value="Bağlanıyor..." class="flex-1 bg-gray-950 text-emerald-400 font-mono text-xs sm:text-sm px-3 py-2 rounded-xl border border-gray-700 focus:outline-none">
-                    <button id="copy-id-btn" class="mc-btn bg-amber-500 hover:bg-amber-400 text-gray-950 font-extrabold text-xs px-3.5 py-2.5 rounded-xl whitespace-nowrap">
-                        Kopyala
-                    </button>
-                </div>
-                <p class="text-[11px] text-gray-400 mt-1.5">Arkadaşının senin dünyana katılması için bu kodu paylaş.</p>
-            </div>
-
-            <!-- Tek Kişilik / Sunucu Olarak Başlat -->
-            <button id="play-solo-btn" class="mc-btn w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm sm:text-base py-3.5 rounded-2xl mb-4 flex items-center justify-center gap-2">
-                <span>🎮</span>
-                <span id="play-btn-text">Dünyaya Gir (Solo / Host)</span>
+            <!-- Ana Başlat / Devam Et Butonu -->
+            <button id="btn-start-game" class="mc-btn w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-base py-3.5 rounded-2xl mb-5 flex items-center justify-center gap-2">
+                <span>▶️</span>
+                <span id="btn-start-text">Oyuna Başla</span>
             </button>
 
-            <!-- Ayırıcı -->
-            <div class="relative flex py-2 items-center mb-4">
-                <div class="flex-grow border-t border-gray-700"></div>
-                <span class="flex-shrink mx-3 text-xs font-bold text-gray-500 uppercase">Veya Arkadaşına Katıl</span>
-                <div class="flex-grow border-t border-gray-700"></div>
-            </div>
+            <!-- Ayarlar Paneli -->
+            <div class="bg-slate-800/75 border border-slate-700/80 rounded-2xl p-4 space-y-4 mb-5">
+                <div class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Oyun Ayarları</div>
 
-            <!-- Arkadaşının ID'sine Bağlan -->
-            <div class="flex flex-col sm:flex-row gap-2">
-                <input id="friend-peer-id" type="text" placeholder="Arkadaşının Peer ID'sini yapıştır..." class="flex-1 bg-gray-800 border border-gray-600 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white font-mono focus:outline-none focus:border-sky-400">
-                <button id="join-friend-btn" class="mc-btn bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl whitespace-nowrap">
-                    Katıl 🚀
-                </button>
-            </div>
-
-            <!-- Kontroller Özeti -->
-            <div class="mt-6 pt-4 border-t border-gray-800 grid grid-cols-2 gap-2 text-[11px] text-gray-400">
-                <div class="bg-gray-800/50 p-2.5 rounded-xl">
-                    <div class="font-bold text-gray-200 mb-0.5">💻 Bilgisayar</div>
-                    <div>WASD: Hareket • Boşluk: Zıpla</div>
-                    <div>Sol Tık: Kır • Sağ Tık: Koy • 1-6: Blok</div>
+                <!-- Kamera Hassasiyeti -->
+                <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="text-slate-200">Kamera Hassasiyeti</span>
+                        <span id="val-sensitivity" class="text-emerald-400 font-mono">1.0x</span>
+                    </div>
+                    <input id="input-sensitivity" type="range" min="0.3" max="2.5" step="0.1" value="1.0" class="w-full accent-emerald-500 cursor-pointer">
                 </div>
-                <div class="bg-gray-800/50 p-2.5 rounded-xl">
-                    <div class="font-bold text-gray-200 mb-0.5">📱 Telefon / Tablet</div>
-                    <div>Sol Joystick: Yürü • Ekran: Bakış</div>
-                    <div>Sağ Butonlar: Zıpla, Kır, Koy</div>
+
+                <!-- Görüş Mesafesi / Sis -->
+                <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="text-slate-200">Görüş Mesafesi (Sis)</span>
+                        <span id="val-fog" class="text-sky-400 font-mono">Normal</span>
+                    </div>
+                    <input id="input-fog" type="range" min="1" max="3" step="1" value="2" class="w-full accent-sky-500 cursor-pointer">
+                </div>
+
+                <!-- Dünyayı Sıfırla -->
+                <div class="pt-1">
+                    <button id="btn-reset-world" class="w-full bg-rose-950/70 hover:bg-rose-900/80 text-rose-300 border border-rose-700/60 font-bold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+                        <span>🔄</span>
+                        <span>Yeni Dünya Oluştur (Sıfırla)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kontroller Rehberi -->
+            <div class="grid grid-cols-2 gap-2.5 text-[11px] text-slate-300">
+                <div class="bg-slate-800/50 border border-slate-700/50 p-3 rounded-xl">
+                    <div class="font-bold text-white mb-1">💻 Bilgisayar</div>
+                    <div>• <b>WASD</b>: Hareket</div>
+                    <div>• <b>Boşluk / Shift</b>: Zıpla / İn</div>
+                    <div>• <b>Sol / Sağ Tık</b>: Kır / Koy</div>
+                    <div>• <b>1-8 / Tekerlek</b>: Blok Seç</div>
+                    <div>• <b>F</b>: Uçuş Modu</div>
+                </div>
+                <div class="bg-slate-800/50 border border-slate-700/50 p-3 rounded-xl">
+                    <div class="font-bold text-white mb-1">📱 Telefon / Tablet</div>
+                    <div>• <b>Sol Joystick</b>: Hareket</div>
+                    <div>• <b>Ekran Sürükle</b>: Bakış</div>
+                    <div>• <b>Sağ Butonlar</b>: Zıpla, Kır, Koy</div>
+                    <div>• <b>Alt Çubuk</b>: Dokunarak Seç</div>
                 </div>
             </div>
         </div>
@@ -285,117 +271,85 @@
 
     <script>
         /**
-         * GamerWost - Cross-Platform (PC & Mobile) 3D Multiplayer Voxel Game
-         * Tek dosya mimarisi: Three.js + PeerJS + Procedural Canvas Pixel Textures
+         * GamerWost - Single-Player 3D Voxel Sandbox
+         * Tamamen istemci taraflı, sıfır dış bağımlılıklı (Three.js + Tailwind hariç),
+         * yüz gizleme (Face Culling) optimizasyonlu, DDA Raycasting ve AABB fizikli oyun motoru.
          */
 
         // ==========================================
-        // 1. BİLDİRİM & SOHBET YARDIMCILARI
+        // 1. BİLDİRİM YARDIMCISI
         // ==========================================
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const colors = {
-                info: 'bg-gray-900/90 border-sky-500 text-sky-200',
-                success: 'bg-gray-900/90 border-emerald-500 text-emerald-200',
-                warn: 'bg-gray-900/90 border-amber-500 text-amber-200',
-                error: 'bg-gray-900/90 border-rose-500 text-rose-200'
+        function showToast(msg, tone = 'info') {
+            const box = document.getElementById('toast-box');
+            const el = document.createElement('div');
+            const styles = {
+                info: 'bg-slate-900/90 border-sky-500/70 text-sky-200',
+                success: 'bg-slate-900/90 border-emerald-500/70 text-emerald-200',
+                warn: 'bg-slate-900/90 border-amber-500/70 text-amber-200'
             };
-            toast.className = `px-3.5 py-2 rounded-xl border text-xs font-semibold shadow-xl backdrop-blur-md transition-all duration-300 ${colors[type] || colors.info}`;
-            toast.textContent = message;
-            container.appendChild(toast);
+            el.className = `px-3.5 py-2 rounded-xl border text-xs font-bold shadow-xl backdrop-blur-md transition-all duration-300 ${styles[tone] || styles.info}`;
+            el.textContent = msg;
+            box.appendChild(el);
             setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-8px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function appendChatMessage(sender, text, isSystem = false) {
-            const box = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            if (isSystem) {
-                div.className = 'text-amber-300 italic';
-                div.textContent = `* ${text}`;
-            } else {
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'font-bold text-emerald-400';
-                nameSpan.textContent = `${sender}: `;
-                const msgSpan = document.createElement('span');
-                msgSpan.textContent = text;
-                div.appendChild(nameSpan);
-                div.appendChild(msgSpan);
-            }
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function copyToClipboard(text) {
-            if (!text || text === 'Bağlanıyor...') return;
-            const tempInput = document.createElement('input');
-            tempInput.value = text;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            try {
-                document.execCommand('copy');
-                showToast('Oda kodu panoya kopyalandı!', 'success');
-            } catch (err) {
-                showToast('Kopyalama başarısız oldu.', 'error');
-            }
-            document.body.removeChild(tempInput);
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-6px)';
+                setTimeout(() => el.remove(), 280);
+            }, 2200);
         }
 
         // ==========================================
-        // 2. PROSEDÜREL PİKSEL BLOK DOKULARI (CANVAS)
+        // 2. PROSEDÜREL PİKSEL DOKULAR (HTML5 CANVAS)
         // ==========================================
-        function createPixelTexture(drawFn) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 16;
-            canvas.height = 16;
-            const ctx = canvas.getContext('2d');
-            drawFn(ctx);
-            const tex = new THREE.CanvasTexture(canvas);
+        function makePixelTexture(drawCallback, transparent = false) {
+            const c = document.createElement('canvas');
+            c.width = 16;
+            c.height = 16;
+            const ctx = c.getContext('2d');
+            drawCallback(ctx);
+            const tex = new THREE.CanvasTexture(c);
             tex.magFilter = THREE.NearestFilter;
             tex.minFilter = THREE.NearestFilter;
-            return { tex, dataUrl: canvas.toDataURL() };
+            return { tex, icon: c.toDataURL(), transparent };
         }
 
-        function fillNoise(ctx, baseColors, count = 45) {
-            for (let i = 0; i < count; i++) {
-                ctx.fillStyle = baseColors[i % baseColors.length];
+        function sprinklePixels(ctx, colors, density = 65) {
+            for (let i = 0; i < density; i++) {
+                ctx.fillStyle = colors[i % colors.length];
                 const x = (i * 7 + (i % 3) * 5) % 16;
-                const y = (i * 11 + (i % 5) * 3) % 16;
+                const y = (i * 13 + (i % 5) * 3) % 16;
                 ctx.fillRect(x, y, 1, 1);
             }
         }
 
-        const BLOCK_TYPES = {
-            1: { name: 'Çimen', key: '1' },
-            2: { name: 'Toprak', key: '2' },
-            3: { name: 'Taş', key: '3' },
-            4: { name: 'Odun', key: '4' },
-            5: { name: 'Tuğla', key: '5' },
-            6: { name: 'Yaprak', key: '6' }
-        };
+        // Blok Kimlikleri:
+        // 0: Hava, 1: Çimen, 2: Toprak, 3: Taş, 4: Kum, 5: Ahşap, 6: Kütük, 7: Yaprak, 8: Tuğla, 9: Su, 10: Katman Kayası (Bedrock)
+        const BLOCK_CATALOG = [
+            { id: 1, name: 'Çimen' },
+            { id: 2, name: 'Toprak' },
+            { id: 3, name: 'Taş' },
+            { id: 4, name: 'Kum' },
+            { id: 5, name: 'Ahşap' },
+            { id: 6, name: 'Kütük' },
+            { id: 7, name: 'Yaprak' },
+            { id: 8, name: 'Tuğla' }
+        ];
 
-        const textures = {};
-        const blockIcons = {};
-
-        // 1. Çimen (Üst, Yan, Alt)
-        const grassTop = createPixelTexture((ctx) => {
+        const grassTop = makePixelTexture((ctx) => {
             ctx.fillStyle = '#4ade80';
             ctx.fillRect(0, 0, 16, 16);
-            fillNoise(ctx, ['#22c55e', '#16a34a', '#86efac'], 70);
+            sprinklePixels(ctx, ['#22c55e', '#16a34a', '#86efac'], 85);
         });
-        const dirtTex = createPixelTexture((ctx) => {
+
+        const dirtTex = makePixelTexture((ctx) => {
             ctx.fillStyle = '#854d0e';
             ctx.fillRect(0, 0, 16, 16);
-            fillNoise(ctx, ['#713f12', '#a16207', '#5c2d0c'], 75);
+            sprinklePixels(ctx, ['#713f12', '#a16207', '#5c2d0c'], 85);
         });
-        const grassSide = createPixelTexture((ctx) => {
+
+        const grassSide = makePixelTexture((ctx) => {
             ctx.fillStyle = '#854d0e';
             ctx.fillRect(0, 0, 16, 16);
-            fillNoise(ctx, ['#713f12', '#a16207'], 55);
+            sprinklePixels(ctx, ['#713f12', '#a16207'], 60);
             ctx.fillStyle = '#22c55e';
             ctx.fillRect(0, 0, 16, 4);
             for (let x = 0; x < 16; x++) {
@@ -404,11 +358,79 @@
             }
         });
 
-        // 3. Taş
-        const stoneTex = createPixelTexture((ctx) => {
-            ctx.fillStyle = '#6b7280';
+        const stoneTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = '#64748b';
             ctx.fillRect(0, 0, 16, 16);
-            fillNoise(ctx, ['#4b5563', '#9ca3af', '#374151'], 80);
+            sprinklePixels(ctx, ['#475569', '#94a3b8', '#334155'], 95);
         });
 
-        // 4
+        const sandTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = '#fde047';
+            ctx.fillRect(0, 0, 16, 16);
+            sprinklePixels(ctx, ['#facc15', '#fef08a', '#eab308'], 80);
+        });
+
+        const planksTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = '#ca8a04';
+            ctx.fillRect(0, 0, 16, 16);
+            ctx.fillStyle = '#854d0e';
+            for (let y = 0; y < 16; y += 4) {
+                ctx.fillRect(0, y, 16, 1);
+            }
+            ctx.fillRect(7, 0, 1, 4);
+            ctx.fillRect(14, 4, 1, 4);
+            ctx.fillRect(4, 8, 1, 4);
+            ctx.fillRect(11, 12, 1, 4);
+            sprinklePixels(ctx, ['#eab308', '#a16207'], 40);
+        });
+
+        const logSideTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = '#5c2d0c';
+            ctx.fillRect(0, 0, 16, 16);
+            ctx.fillStyle = '#3e1d07';
+            for (let x = 1; x < 16; x += 3) {
+                ctx.fillRect(x, 0, 1, 16);
+            }
+            sprinklePixels(ctx, ['#78350f'], 35);
+        });
+
+        const logTopTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = '#d97706';
+            ctx.fillRect(0, 0, 16, 16);
+            ctx.strokeStyle = '#78350f';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(1.5, 1.5, 13, 13);
+            ctx.strokeRect(4.5, 4.5, 7, 7);
+        });
+
+        const leavesTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(0, 0, 16, 16);
+            sprinklePixels(ctx, ['#166534', '#22c55e', '#14532d', '#4ade80'], 100);
+        });
+
+        const brickTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(0, 0, 16, 16);
+            ctx.fillStyle = '#b91c1c';
+            for (let y = 0; y < 16; y += 4) {
+                const shift = (y / 4) % 2 === 0 ? 0 : 4;
+                for (let x = -4; x < 16; x += 8) {
+                    ctx.fillRect(x + shift + 1, y + 1, 6, 3);
+                }
+            }
+        });
+
+        const waterTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = 'rgba(14, 165, 233, 0.72)';
+            ctx.fillRect(0, 0, 16, 16);
+            sprinklePixels(ctx, ['rgba(56, 189, 248, 0.85)', 'rgba(2, 132, 199, 0.8)'], 50);
+        }, true);
+
+        const bedrockTex = makePixelTexture((ctx) => {
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(0, 0, 16, 16);
+            sprinklePixels(ctx, ['#0f172a', '#475569', '#020617'], 110);
+        });
+
+        // Materyaller (Three.js BoxGeometry yüzey s

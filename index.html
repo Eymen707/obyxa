@@ -54,7 +54,7 @@ h1{font:26px/1.3 "Press Start 2P",monospace;margin:0 0 14px;color:#ffd84a;text-s
 const $=id=>document.getElementById(id),touch=matchMedia('(pointer:coarse)').matches;
 if(touch)document.body.classList.add('touch');
 // ---------- Dünya ----------
-const W=48,H=28,CS=16,NC=W/CS,B=new Uint8Array(W*W*H),ix=(x,y,z)=>(y*W+z)*W+x;
+const W=96,H=28,CS=16,NC=W/CS,B=new Uint8Array(W*W*H),ix=(x,y,z)=>(y*W+z)*W+x;
 const get=(x,y,z)=>x<0||z<0||x>=W||y>=H||z>=W?0:y<0?3:B[ix(x,y,z)];
 const C={1:['#5fa83a','#8b6a43','#8b6a43'],2:['#8b6a43'],3:['#8a8a8a'],4:['#a98652','#6b4f2a'],5:['#3f8f2f'],6:['#b88a4f'],7:['#e0d29a'],8:['#f2c230'],9:['#e6e6e6','#d32f2f'],10:['#6fe06f']};
 const NM={1:'Çimen',2:'Toprak',3:'Taş',4:'Kütük',5:'Yaprak',6:'Tahta',7:'Kum',8:'Altın',9:'TNT',10:'Slime'};
@@ -62,7 +62,7 @@ const col={};for(const b in C){const a=C[b];col[b]=[a[0],a[1]||a[0],a[2]||a[1]||
 const hf=(x,z)=>Math.max(2,Math.floor(9+4*Math.sin(x*.13)+3*Math.cos(z*.11)+2*Math.sin((x+z)*.2)+Math.sin(x*.4)*Math.cos(z*.37)));
 const hs=(x,z)=>{const n=Math.sin(x*127.1+z*311.7)*43758.5453;return n-Math.floor(n)};
 const edits=[],pend=[],dirty=new Set(),meshes=[];
-function gen(){B.fill(0);edits.length=0;
+function gen(){B.fill(0);
  for(let x=0;x<W;x++)for(let z=0;z<W;z++){const h=hf(x,z);for(let y=0;y<=h;y++)B[ix(x,y,z)]=y==h?(h<=6?7:1):y>h-3?2:3}
  for(let x=3;x<W-3;x++)for(let z=3;z<W-3;z++){const h=hf(x,z);if(hs(x,z)>.985&&B[ix(x,h,z)]==1){
   for(let y=1;y<=4;y++)B[ix(x,h+y,z)]=4;
@@ -72,7 +72,7 @@ function setB(x,y,z,b,m){if(x<0||z<0||x>=W||z>=W||y<0||y>=H)return;B[ix(x,y,z)]=
  const cx=x>>4,cz=z>>4;dirty.add(cz*NC+cx);
  if(x%CS==0&&cx>0)dirty.add(cz*NC+cx-1);if(x%CS==CS-1&&cx<NC-1)dirty.add(cz*NC+cx+1);
  if(z%CS==0&&cz>0)dirty.add((cz-1)*NC+cx);if(z%CS==CS-1&&cz<NC-1)dirty.add((cz+1)*NC+cx);
- if(m){edits.push([x,y,z,b]);if(m==1)pend.push([x,y,z,b])}}
+ if(m){edits.push([x,y,z,b,dim]);if(m==1)pend.push([x,y,z,b,dim])}}
 // ---------- Render ----------
 const cv=$('c'),R0=new THREE.WebGLRenderer({canvas:cv,antialias:false});
 R0.setPixelRatio(Math.min(devicePixelRatio,touch?1.5:2));
@@ -157,18 +157,18 @@ function onData(d,c){
  else if(d.t=='p'){if(isHost){d.i=c.peer;relay(d,c)}remote(d)}
  else if(d.t=='l')rm(d.i)}
 function drop(c){if(!conns.includes(c))return;conns=conns.filter(o=>o!==c);relay({t:'l',i:c.peer});rm(c.peer)}
-function lost(){if(!playing)return;up=null;conns=[];Object.keys(RM).forEach(rm);setSt('Yeniden bağlanıyor…');try{peer&&peer.destroy()}catch(e){}setTimeout(connect,600+Math.random()*2500)}
+function lost(){if(!playing)return;up=null;conns=[];Object.keys(RM).forEach(rm);setSt(S(12));try{peer&&peer.destroy()}catch(e){}setTimeout(connect,600+Math.random()*2500)}
 function join(){isHost=false;peer=new Peer();
  peer.on('open',()=>{const c=peer.connect(LOBBY,{reliable:true});c.on('open',()=>{up=c;setSt()});c.on('data',d=>onData(d,c));c.on('close',lost);c.on('error',lost)});
  peer.on('error',e=>{if(e.type=='peer-unavailable'||e.type=='network'||e.type=='server-error'||e.type=='socket-error'||e.type=='disconnected')lost()})}
 function connect(){
- if(typeof Peer=='undefined'){setSt('Tek başına (PeerJS yüklenemedi)');return}
- setSt('Bağlanıyor…');peer=new Peer(LOBBY);
+ if(typeof Peer=='undefined'){setSt('Solo');return}
+ setSt(S(12));peer=new Peer(LOBBY);
  peer.on('open',()=>{isHost=true;setSt()});
  peer.on('connection',c=>{c.on('open',()=>{conns.push(c);c.send({t:'hi',e:edits});setSt()});c.on('data',d=>onData(d,c));c.on('close',()=>drop(c));c.on('error',()=>drop(c))});
  peer.on('error',e=>{if(e.type=='unavailable-id'){try{peer.destroy()}catch(x){}join()}else lost()})}
 setInterval(()=>{if(!playing)return;
- const s={t:'p',n:NAME,x:+P.x.toFixed(2),y:+P.y.toFixed(2),z:+P.z.toFixed(2),r:+P.yaw.toFixed(2),h:+P.pitch.toFixed(2)};
+ const s={t:'p',n:NAME,m:dim,x:+P.x.toFixed(2),y:+P.y.toFixed(2),z:+P.z.toFixed(2),r:+P.yaw.toFixed(2),h:+P.pitch.toFixed(2)};
  if(isHost){s.i=peer&&peer.id;relay(s,null)}else if(up&&up.open)up.send(s)},80);
 // ---------- Arayüz ----------
 const bar=$('bar');
@@ -215,5 +215,7 @@ function loop(now){requestAnimationFrame(loop);const dt=Math.min((now-last)/1000
  R0.render(scene,cam)}
 requestAnimationFrame(loop);
 </script>
-</body>
-</html>
+<script>
+var dim=0,mode='survival',inv={},hp=20,cool=0,NB=21,lang=(()=>{try{return localStorage.lg}catch(e){}})()||'en';
+const LG={
+en:'Play|Mods|Camera|Break|Place|Jump|Down|Close|Click to continue|Mine, build, craft and survive. Everyone who opens this page joins the same world automatically.|Craft|Players online:|Connecting…|Survival|Creative|Hardcore|Crafting|Flight|Speed|Super jump|Golden pickaxe|Ghost|Night|Y

@@ -120,7 +120,7 @@ function ray(){const v=new THREE.Vector3();cam.getWorldDirection(v);const d=[v.x
  for(let i=0;i<40;i++){if(get(c[0],c[1],c[2]))return{c:[...c],n};
   const a=tm[0]<tm[1]?(tm[0]<tm[2]?0:2):(tm[1]<tm[2]?1:2);if(tm[a]>6)return null;c[a]+=s[a];tm[a]+=td[a];n=[0,0,0];n[a]=-s[a]}return null}
 function flash(){const f=$('fl');f.style.transition='none';f.style.opacity=.6;setTimeout(()=>{f.style.transition='opacity .5s';f.style.opacity=0},40)}
-function boom(x,y,z){const r=3;
+function boom(x,y,z){const r=mods.mega?6:3;
  for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)for(let c=-r;c<=r;c++){if(a*a+b*b+c*c>r*r+1)continue;const X=x+a,Y=y+b,Z=z+c,q=get(X,Y,Z);if(!q||Y<1)continue;setB(X,Y,Z,0,1);if(q==9)boom(X,Y,Z)}
  const dx=P.x-x-.5,dy=P.y+1-y,dz=P.z-z-.5,d=Math.hypot(dx,dy,dz);if(d<7){const f=(7-d)*2.2/(d||1);P.vx+=dx*f;P.vy+=dy*f*.8+4;P.vz+=dz*f}flash()}
 function doBreak(r){const[x,y,z]=r.c;if(y<1)return;const b=get(x,y,z);setB(x,y,z,0,1);if(b==9)boom(x,y,z)}
@@ -132,13 +132,13 @@ function update(dt,t){
  const sp=(mods.speed?8.5:4.3)*(mods.fly?1.5:1),sy=Math.sin(P.yaw),cy=Math.cos(P.yaw),e=Math.min(1,dt*(P.ground||mods.fly?12:3));
  P.vx+=((-sy*f+cy*s)*sp-P.vx)*e;P.vz+=((-cy*f-sy*s)*sp-P.vz)*e;
  const up=k.Space||jmp,dn=k.ShiftLeft||k.KeyC||dwn;
- if(mods.fly)P.vy=((up?1:0)-(dn?1:0))*9;else{P.vy=Math.max(P.vy-28*dt,-35);if(up&&P.ground)P.vy=mods.jump?15:9}
+ if(mods.fly)P.vy=((up?1:0)-(dn?1:0))*9;else{P.vy=Math.max(P.vy-(mods.moon?9:28)*dt,-35);if(up&&P.ground)P.vy=mods.jump?15:9}
  P.ground=false;
  for(let i=0;i<3;i++){const d=dt/3;mv(0,P.vx*d);mv(2,P.vz*d);mv(1,P.vy*d)}
  if(P.y<-15){P.x=W/2;P.z=W/2;P.y=hf(24,24)+3;P.vx=P.vy=P.vz=0}
  const r=ray();
  if(r){sel0.visible=true;sel0.position.set(r.c[0]+.5,r.c[1]+.5,r.c[2]+.5);
-  if(brkDown){const key=r.c.join();if(key!=bk){bk=key;bt=0}bt+=dt;if(bt>=(mods.instant?.08:.4)){doBreak(r);bt=0}}else bt=0}else{sel0.visible=false;bt=0}
+  if(brkDown){const key=r.c.join();if(key!=bk){bk=key;bt=0}bt+=dt;if(bt>=brkT()){doBreak(r);bt=0}}else bt=0}else{sel0.visible=false;bt=0}
  cam.rotation.y=P.yaw;cam.rotation.x=P.pitch;
  const ey=[P.x,P.y+1.62,P.z];
  if(tp){const v=new THREE.Vector3();cam.getWorldDirection(v);cam.position.set(ey[0]-v.x*4,ey[1]-v.y*4+.4,ey[2]-v.z*4)}else cam.position.set(...ey);
@@ -218,4 +218,4 @@ requestAnimationFrame(loop);
 <script>
 var dim=0,mode='survival',inv={},hp=20,cool=0,NB=21,lang=(()=>{try{return localStorage.lg}catch(e){}})()||'en';
 const LG={
-en:'Play|Mods|Camera|Break|Place|Jump|Down|Close|Click to continue|Mine, build, craft and survive. Everyone who opens this page joins the same world automatically.|Craft|Players online:|Connecting…|Survival|Creative|Hardcore|Crafting|Flight|Speed|Super jump|Golden pickaxe|Ghost|Night|Y
+en:'Play|Mods|Camera|Break|Place|Jump|Down|Close|Click to continue|Mine, build, craft and survive. Everyone who opens this page joins the same world automatically.|Craft|Players online:|Connecting…|Survival|Creative|Hardcore|Crafting|Flight|Speed|Super jump|Golden pickaxe|Gh

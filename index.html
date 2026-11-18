@@ -4,117 +4,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GAMERWOST - TNT MOD</title>
+
+<title>GAMERWOST | TNT MOD</title>
 
 <style>
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
-    background: #1d1c1b;
+    background: #111;
     color: white;
     font-family: Arial, sans-serif;
 }
 
 header {
-    padding: 20px;
+    background: #191919;
+    border-bottom: 2px solid #e6382d;
+    padding: 22px;
     text-align: center;
-    color: #ff4438;
+    font-size: 22px;
     font-weight: bold;
-    border-bottom: 2px solid #444;
+    color: #ff4438;
+    letter-spacing: 2px;
 }
 
-main {
-    max-width: 650px;
-    margin: auto;
-    padding: 35px 20px;
+.hero {
+    text-align: center;
+    padding: 65px 20px 35px;
+    background: linear-gradient(180deg, #29100e, #111);
+}
+
+.tag {
+    display: inline-block;
+    background: #e6382d;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
 h1 {
-    font-size: 48px;
+    font-size: clamp(42px, 9vw, 75px);
     color: #ff4438;
-    margin-bottom: 10px;
+    text-shadow: 0 0 25px #a51c16;
 }
 
-p {
+.hero p {
     color: #ccc;
+    margin: 18px auto;
+    max-width: 550px;
     line-height: 1.7;
 }
 
+.container {
+    max-width: 850px;
+    margin: auto;
+    padding: 25px 20px 60px;
+}
+
+.section-title {
+    color: #ff5145;
+    font-size: 25px;
+    margin: 35px 0 20px;
+}
+
 .blocks {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 30px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
 }
 
 .block {
-    flex: 1;
-    min-width: 65px;
-    aspect-ratio: 1;
-    background: #c8362b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
+    padding: 25px 10px;
+    background: #292929;
+    border: 2px solid #a52d25;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 22px;
     font-weight: bold;
-    border: 4px solid #84231c;
+    transition: 0.2s;
 }
 
-.block:nth-child(2) { background: #e07b1a; }
-.block:nth-child(3) { background: #d6b822; }
-.block:nth-child(4) { background: #2f6fd0; }
-.block:nth-child(5) { background: #8a2be2; }
+.block:hover {
+    background: #b92e25;
+    transform: translateY(-5px);
+}
 
 .download {
     display: block;
     width: 100%;
     padding: 20px;
-    margin-top: 25px;
-    background: #d9362b;
+    margin: 30px 0 15px;
+    background: linear-gradient(90deg, #b92720, #ff4438);
     color: white;
     text-align: center;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 21px;
     font-weight: bold;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px #9e241c66;
+    transition: 0.2s;
 }
 
 .download:hover {
-    background: #f04b3d;
+    transform: scale(1.02);
+    background: #ff5548;
 }
 
-h2 {
-    margin-top: 40px;
-    color: #ff5548;
+.info {
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    line-height: 1.8;
 }
 
-li {
-    margin-bottom: 12px;
-    color: #ddd;
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.feature {
+    background: #202020;
+    padding: 20px;
+    border: 1px solid #444;
+    border-radius: 10px;
+}
+
+.feature h3 {
+    color: #ff5145;
+    margin-bottom: 10px;
+}
+
+.feature p {
+    color: #aaa;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+ul, ol {
+    padding-left: 25px;
+    color: #ccc;
+    line-height: 2;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    background: #292725;
+    background: #202020;
+    margin-top: 15px;
 }
 
 td, th {
-    border: 1px solid #555;
-    padding: 10px;
+    padding: 14px;
+    border: 1px solid #444;
     text-align: left;
 }
 
-.note {
-    font-size: 14px;
+th {
+    color: #ff5145;
+    background: #292020;
+}
+
+footer {
+    padding: 30px;
+    text-align: center;
+    background: #191919;
+    border-top: 2px solid #e6382d;
     color: #999;
-    margin-top: 20px;
+    font-size: 13px;
+}
+
+footer strong {
+    color: #ff4438;
 }
 </style>
 </head>
@@ -125,48 +191,71 @@ td, th {
 GAMERWOST BEDROCK MODS
 </header>
 
-<main>
+<section class="hero">
+
+<div class="tag">🔥 FREE MINECRAFT ADDON</div>
 
 <h1>TNT MOD</h1>
 
 <p>
 Minecraft Bedrock için özel TNT modu!
-50X TNT, TNT Bazooka, Bugatti Chiron,
-arabalar ve mobilyalar.
+Daha güçlü patlamalar, farklı TNT çeşitleri,
+TNT Bazooka ve çok daha fazlası!
 </p>
 
+</section>
+
+<main class="container">
+
+<h2 class="section-title">💣 TNT TYPES</h2>
+
 <div class="blocks">
-<div class="block">5X</div>
-<div class="block">20X</div>
-<div class="block">25X</div>
-<div class="block">30X</div>
-<div class="block">50X</div>
+<div class="block">5X TNT</div>
+<div class="block">20X TNT</div>
+<div class="block">25X TNT</div>
+<div class="block">30X TNT</div>
+<div class="block">50X TNT</div>
 </div>
 
-<a
-class="download"
+<a class="download"
 href="./TNT_Mod.mcaddon"
 download="TNT_Mod.mcaddon">
 ⬇ DOWNLOAD TNT MOD
 </a>
 
-<p class="note">
-Free Download - Version 1.1<br>
+<div class="info">
+FREE DOWNLOAD<br>
+Version 1.1<br>
 Minecraft Bedrock 1.21.90+
-</p>
+</div>
 
-<h2>How to Install</h2>
+<h2 class="section-title">🚀 MOD FEATURES</h2>
 
-<ol>
-<li>Download TNT_Mod.mcaddon.</li>
-<li>Open the downloaded file.</li>
-<li>Minecraft will import the addon.</li>
-<li>Open your world settings.</li>
-<li>Activate Behavior Packs and Resource Packs.</li>
-<li>Enjoy the TNT Mod!</li>
-</ol>
+<div class="features">
 
-<h2>What's Inside?</h2>
+<div class="feature">
+<h3>💣 Powerful TNT</h3>
+<p>5X, 20X, 25X, 30X ve 50X TNT çeşitleri.</p>
+</div>
+
+<div class="feature">
+<h3>🚀 TNT Bazooka</h3>
+<p>Özel TNT Bazooka içeriği.</p>
+</div>
+
+<div class="feature">
+<h3>🏎️ Bugatti Chiron</h3>
+<p>Bugatti Chiron ve araba içerikleri.</p>
+</div>
+
+<div class="feature">
+<h3>🪑 Furniture</h3>
+<p>Yeni mobilyalar ve dekorasyonlar.</p>
+</div>
+
+</div>
+
+<h2 class="section-title">📦 WHAT'S INSIDE?</h2>
 
 <ul>
 <li>5X TNT</li>
@@ -181,25 +270,56 @@ Minecraft Bedrock 1.21.90+
 <li>New Textures</li>
 </ul>
 
-<h2>TNT Power</h2>
+<h2 class="section-title">💥 TNT POWER</h2>
 
 <table>
 <tr>
-<th>Block</th>
-<th>Blast Power</th>
+<th>TNT BLOCK</th>
+<th>BLAST POWER</th>
 </tr>
-<tr><td>5X TNT</td><td>8</td></tr>
-<tr><td>20X TNT</td><td>14</td></tr>
-<tr><td>25X TNT</td><td>16</td></tr>
-<tr><td>30X TNT</td><td>18</td></tr>
-<tr><td>50X TNT</td><td>24</td></tr>
+<tr>
+<td>5X TNT</td>
+<td>8</td>
+</tr>
+<tr>
+<td>20X TNT</td>
+<td>14</td>
+</tr>
+<tr>
+<td>25X TNT</td>
+<td>16</td>
+</tr>
+<tr>
+<td>30X TNT</td>
+<td>18</td>
+</tr>
+<tr>
+<td>50X TNT</td>
+<td>24</td>
+</tr>
 </table>
 
-<p class="note">
-GAMERWOST BEDROCK MODS
-</p>
+<h2 class="section-title">📲 HOW TO INSTALL</h2>
+
+<ol>
+<li>Download TNT_Mod.mcaddon.</li>
+<li>Open the downloaded file.</li>
+<li>Select Minecraft to import the addon.</li>
+<li>Wait for the import to finish.</li>
+<li>Open your Minecraft world settings.</li>
+<li>Activate Behavior Packs and Resource Packs.</li>
+<li>Enjoy the TNT MOD!</li>
+</ol>
 
 </main>
+
+<footer>
+<strong>GAMERWOST BEDROCK MODS</strong>
+<br><br>
+Made for Minecraft Bedrock Edition
+<br>
+© 2026 GAMERWOST
+</footer>
 
 </body>
 </html>

@@ -1,102 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GAMERWOST Bedrock Mods – TNT Mod</title>
-<meta name="description" content="GAMERWOST Bedrock Mods: free Minecraft Bedrock add-on with TNT up to 50x, a TNT Bazooka, a drivable Bugatti Chiron and furniture.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%A8%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap">
-<style>
-:root{--bg:#dcd9d2;--panel:#eceae4;--ink:#23211f;--muted:#5e5a54;--line:#b9b4aa;--btn:#c8362b;--btn-ink:#fff;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1c1b;--panel:#272523;--ink:#ece9e2;--muted:#a39e94;--line:#3b3835;--btn:#d9453a}}
-:root[data-theme="dark"]{--bg:#1d1c1b;--panel:#272523;--ink:#ece9e2;--muted:#a39e94;--line:#3b3835;--btn:#d9453a}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:660px;margin:0 auto;padding:40px 20px 56px}
-h1{font:700 clamp(32px,9vw,52px)/1.05 "Silkscreen","Courier New",monospace;margin:0 0 12px;letter-spacing:.01em}
-.brand{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin:0 0 36px;padding-bottom:14px;border-bottom:2px solid var(--line)}
-.brand b{font:700 clamp(20px,6vw,26px)/1 "Silkscreen","Courier New",monospace}
-.brand span{color:var(--muted)}
-.lead{color:var(--muted);margin:0 0 28px;max-width:52ch}
-.blocks{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 32px}
-.blk{position:relative;width:calc((100% - 40px)/5);min-width:54px;aspect-ratio:1;background-color:var(--c);
-background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0 3px,transparent 3px 20%);
-box-shadow:inset 0 0 0 3px rgba(0,0,0,.28),inset 0 0 0 6px rgba(255,255,255,.1)}
-.blk span{position:absolute;left:0;right:0;top:33%;height:34%;display:flex;align-items:center;justify-content:center;
-background:#ecebe0;color:#282828;border-block:2px solid #bdb7a3;font:700 clamp(11px,3.4vw,16px)/1 "Silkscreen","Courier New",monospace}
-button{font:700 18px/1 system-ui,sans-serif;background:var(--btn);color:var(--btn-ink);border:0;padding:18px 28px;cursor:pointer;
-box-shadow:inset 0 -4px 0 rgba(0,0,0,.3);width:100%}
-button:hover{filter:brightness(1.08)}
-button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-#msg{min-height:1.6em;margin:10px 0 0;color:var(--muted);font-size:15px}
-h2{font-size:20px;margin:40px 0 10px}
-ol{padding-left:22px;margin:0}
-li{margin:0 0 8px}
-dl{margin:0}
-dt{font-weight:700;margin-top:14px}
-dd{margin:2px 0 0;color:var(--muted)}
-code{background:var(--panel);border:1px solid var(--line);padding:1px 6px;font-size:.92em}
-.tw{overflow-x:auto;margin-top:16px}
-table{border-collapse:collapse;width:100%;background:var(--panel)}
-th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
-th{font-weight:600;color:var(--muted)}
-.note{color:var(--muted);font-size:15px;margin-top:14px}
-</style>
-</head>
-<body>
-<main>
-<header class="brand"><b>GAMERWOST</b><span>Bedrock Mods</span></header>
-<h1>TNT Mod</h1>
-<p class="lead">TNT blocks up to 50x, a TNT Bazooka that fires explosive rockets, drivable cars including a Bugatti Chiron, and furniture for Minecraft Bedrock Edition.</p>
 
-<div class="blocks" aria-hidden="true">
-<div class="blk" style="--c:#c8362b"><span>5X</span></div>
-<div class="blk" style="--c:#e07b1a"><span>20X</span></div>
-<div class="blk" style="--c:#d6b822"><span>25X</span></div>
-<div class="blk" style="--c:#2f6fd0"><span>30X</span></div>
-<div class="blk" style="--c:#8a2be2"><span>50X</span></div>
-</div>
+const downloadButton = document.getElementById("dl");
+const message = document.getElementById("msg");
 
-<button id="dl" type="button">Download TNT_Mod.mcaddon</button>
-<p id="msg" role="status" aria-live="polite">Free. Version 1.1. Needs Minecraft Bedrock 1.21.90 or newer.</p>
+downloadButton.addEventListener("click", () => {
+  message.textContent = "Downloading TNT Mod...";
 
-<h2>How to install</h2>
-<ol>
-<li>Download the file above.</li>
-<li>Open it. Minecraft starts and imports the add-on by itself.</li>
-<li>Edit your world, open Behavior Packs and activate “TNT + Car + Furniture Mod”. The resource pack comes with it.</li>
-<li>Create or load the world and open the Creative inventory.</li>
-</ol>
-<p class="note">If your browser saves the file as <code>.zip</code>, rename it to <code>TNT_Mod.mcaddon</code>. If blocks do not show up, turn on “Holiday Creator Features” under Experiments in the world settings.</p>
+  const link = document.createElement("a");
+  link.href = "./TNT_Mod.mcaddon";
+  link.download = "TNT_Mod.mcaddon";
 
-<h2>What’s inside</h2>
-<dl>
-<dt>TNT blocks</dt>
-<dd>5x, 20x, 25x, 30x and 50x TNT. Light them with flint and steel or a fire charge. A nearby explosion sets off the next one. Find them under Items.</dd>
-<dt>TNT Bazooka</dt>
-<dd>Right-click to fire a rocket that explodes on impact. Sneak and right-click to switch between the five TNT powers. Find it under Equipment.</dd>
-<dt>Cars</dt>
-<dd>Bugatti Chiron and Car. Use the item on the ground to place the car, right-click it to get in, drive with the movement keys and steer with your view. Sneak to get out.</dd>
-<dt>Furniture</dt>
-<dd>Chair, table, sofa, floor lamp, TV and wardrobe. Find them under Construction.</dd>
-<dt>Textures</dt>
-<dd>New textures for every block and item, plus a fresh look for vanilla TNT.</dd>
-</dl>
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 
-<div class="tw"><table>
-<tr><th>Block</th><th>Blast power</th><th>Crafting recipe</th></tr>
-<tr><td>5x TNT</td><td>8</td><td>5 TNT in a plus shape</td></tr>
-<tr><td>20x TNT</td><td>14</td><td>4 × 5x TNT in a 2×2 square</td></tr>
-<tr><td>25x TNT</td><td>16</td><td>5 × 5x TNT in a plus shape</td></tr>
-<tr><td>30x TNT</td><td>18</td><td>6 × 5x TNT in a 3×2 grid</td></tr>
-<tr><td>50x TNT</td><td>24</td><td>2 × 25x TNT side by side</td></tr>
-</table></div>
-<p class="note">Vanilla TNT has a blast power of 4. The 50x block makes a very large crater, so try it in a new world first.</p>
-<p class="note">GAMERWOST Bedrock Mods. Not affiliated with Mojang or Microsoft.</p>
-</main>
-
-<script>
-const B64 = "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
+  message.textContent = "Download started!";
+});

@@ -4,8 +4,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Gamerwost Bedrock Mods – TNT Mod</title>
-<meta name="description" content="Free Minecraft Bedrock TNT Mod with powerful TNT, a Bazooka, Bugatti and furniture.">
+<title>GAMERWOST BEDROCK MODS - TNT Mod</title>
+<meta name="description" content="Minecraft Bedrock TNT Mod with TNT blocks, Bazooka, Bugatti and furniture.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap">
 
 <style>
@@ -102,29 +102,24 @@ border-block:2px solid #bdb7a3;
 font:700 clamp(11px,3.4vw,16px)/1 "Silkscreen","Courier New",monospace;
 }
 
-button {
+.download-btn {
+display:block;
+width:100%;
 font:700 18px/1 system-ui,sans-serif;
 background:var(--btn);
 color:var(--btn-ink);
 border:0;
 padding:18px 28px;
-cursor:pointer;
+text-align:center;
+text-decoration:none;
 box-shadow:inset 0 -4px 0 rgba(0,0,0,.3);
-width:100%;
 }
 
-button:hover {filter:brightness(1.08)}
+.download-btn:hover {filter:brightness(1.08)}
 
-button:focus-visible {
+.download-btn:focus-visible {
 outline:3px solid var(--ink);
 outline-offset:3px;
-}
-
-#msg {
-min-height:1.6em;
-margin:10px 0 0;
-color:var(--muted);
-font-size:15px;
 }
 
 h2 {font-size:20px;margin:40px 0 10px}
@@ -188,9 +183,11 @@ drivable cars including a Bugatti Chiron, and furniture for Minecraft Bedrock Ed
 <div class="blk" style="--c:#8a2be2"><span>50X</span></div>
 </div>
 
-<button id="dl" type="button">Download TNT_Mod.mcaddon</button>
+<a class="download-btn" href="./TNT_Mod.mcaddon" download="TNT_Mod.mcaddon">
+Download TNT_Mod.mcaddon
+</a>
 
-<p id="msg" role="status" aria-live="polite">
+<p id="msg" class="note">
 Free. Version 1.1. Requires Minecraft Bedrock 1.21.90 or newer.
 </p>
 
@@ -244,43 +241,6 @@ Vanilla TNT has a blast power of 4. The 50x block creates a very large crater, s
 </p>
 
 </main>
-
-<script>
-document.getElementById("dl").addEventListener("click", async () => {
-const msg = document.getElementById("msg");
-const button = document.getElementById("dl");
-
-button.disabled = true;
-msg.textContent = "Preparing download...";
-
-try {
-const response = await fetch("./TNT_Mod.mcaddon");
-
-if (!response.ok) {
-throw new Error("Mod file not found");
-}
-
-const blob = await response.blob();
-const url = URL.createObjectURL(blob);
-const link = document.createElement("a");
-
-link.href = url;
-link.download = "TNT_Mod.mcaddon";
-document.body.appendChild(link);
-link.click();
-link.remove();
-
-setTimeout(() => URL.revokeObjectURL(url), 60000);
-
-msg.textContent = "Download started! Open the file with Minecraft.";
-} catch (error) {
-msg.textContent = "Download failed. Please check that TNT_Mod.mcaddon is uploaded to GitHub.";
-console.error(error);
-} finally {
-button.disabled = false;
-}
-});
-</script>
 
 </body>
 </html>

@@ -1,161 +1,120 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GAMERWOST BEDROCK MODS - TNT Mod</title>
-<meta name="description" content="Minecraft Bedrock TNT Mod with TNT blocks, Bazooka, Bugatti and furniture.">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMERWOST - TNT MOD</title>
 
 <style>
-:root {
---bg:#dcd9d2;
---panel:#eceae4;
---ink:#23211f;
---muted:#5e5a54;
---line:#b9b4aa;
---btn:#c8362b;
---btn-ink:#fff;
-box-sizing:border-box;
+* {
+    box-sizing: border-box;
 }
-
-@media (prefers-color-scheme:dark) {
-:root:not([data-theme="light"]) {
---bg:#1d1c1b;
---panel:#272523;
---ink:#ece9e2;
---muted:#a39e94;
---line:#3b3835;
---btn:#d9453a;
-}
-}
-
-* {box-sizing:border-box}
 
 body {
-margin:0;
-background:var(--bg);
-color:var(--ink);
-font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    margin: 0;
+    background: #1d1c1b;
+    color: white;
+    font-family: Arial, sans-serif;
 }
 
 header {
-text-align:center;
-padding:18px 12px;
-border-bottom:2px solid var(--line);
-}
-
-.brand {
-font:700 clamp(13px,3vw,19px)/1.4 "Silkscreen","Courier New",monospace;
-color:var(--btn);
-letter-spacing:1px;
+    padding: 20px;
+    text-align: center;
+    color: #ff4438;
+    font-weight: bold;
+    border-bottom: 2px solid #444;
 }
 
 main {
-max-width:660px;
-margin:0 auto;
-padding:40px 20px 56px;
+    max-width: 650px;
+    margin: auto;
+    padding: 35px 20px;
 }
 
 h1 {
-font:700 clamp(32px,9vw,52px)/1.05 "Silkscreen","Courier New",monospace;
-margin:0 0 12px;
-letter-spacing:.01em;
+    font-size: 48px;
+    color: #ff4438;
+    margin-bottom: 10px;
 }
 
-.lead {
-color:var(--muted);
-margin:0 0 28px;
-max-width:52ch;
+p {
+    color: #ccc;
+    line-height: 1.7;
 }
 
 .blocks {
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin:0 0 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 30px 0;
 }
 
-.blk {
-position:relative;
-width:calc((100% - 40px)/5);
-min-width:54px;
-aspect-ratio:1;
-background-color:var(--c);
-background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0 3px,transparent 3px 20%);
-box-shadow:inset 0 0 0 3px rgba(0,0,0,.28),inset 0 0 0 6px rgba(255,255,255,.1);
+.block {
+    flex: 1;
+    min-width: 65px;
+    aspect-ratio: 1;
+    background: #c8362b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    border: 4px solid #84231c;
 }
 
-.blk span {
-position:absolute;
-left:0;
-right:0;
-top:33%;
-height:34%;
-display:flex;
-align-items:center;
-justify-content:center;
-background:#ecebe0;
-color:#282828;
-border-block:2px solid #bdb7a3;
-font:700 clamp(11px,3.4vw,16px)/1 "Silkscreen","Courier New",monospace;
+.block:nth-child(2) { background: #e07b1a; }
+.block:nth-child(3) { background: #d6b822; }
+.block:nth-child(4) { background: #2f6fd0; }
+.block:nth-child(5) { background: #8a2be2; }
+
+.download {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    margin-top: 25px;
+    background: #d9362b;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
 }
 
-.download-btn {
-display:block;
-width:100%;
-font:700 18px/1 system-ui,sans-serif;
-background:var(--btn);
-color:var(--btn-ink);
-border:0;
-padding:18px 28px;
-text-align:center;
-text-decoration:none;
-box-shadow:inset 0 -4px 0 rgba(0,0,0,.3);
+.download:hover {
+    background: #f04b3d;
 }
 
-.download-btn:hover {filter:brightness(1.08)}
-
-.download-btn:focus-visible {
-outline:3px solid var(--ink);
-outline-offset:3px;
+h2 {
+    margin-top: 40px;
+    color: #ff5548;
 }
 
-h2 {font-size:20px;margin:40px 0 10px}
-ol {padding-left:22px;margin:0}
-li {margin:0 0 8px}
-dl {margin:0}
-dt {font-weight:700;margin-top:14px}
-dd {margin:2px 0 0;color:var(--muted)}
-
-code {
-background:var(--panel);
-border:1px solid var(--line);
-padding:1px 6px;
-font-size:.92em;
+li {
+    margin-bottom: 12px;
+    color: #ddd;
 }
-
-.tw {overflow-x:auto;margin-top:16px}
 
 table {
-border-collapse:collapse;
-width:100%;
-background:var(--panel);
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #292725;
 }
 
-th,td {
-text-align:left;
-padding:9px 12px;
-border-bottom:1px solid var(--line);
+td, th {
+    border: 1px solid #555;
+    padding: 10px;
+    text-align: left;
 }
-
-th {font-weight:600;color:var(--muted)}
 
 .note {
-color:var(--muted);
-font-size:15px;
-margin-top:14px;
+    font-size: 14px;
+    color: #999;
+    margin-top: 20px;
 }
 </style>
 </head>
@@ -163,81 +122,81 @@ margin-top:14px;
 <body>
 
 <header>
-<div class="brand">GAMERWOST BEDROCK MODS</div>
+GAMERWOST BEDROCK MODS
 </header>
 
 <main>
 
-<h1>TNT Mod</h1>
+<h1>TNT MOD</h1>
 
-<p class="lead">
-TNT blocks up to 50x, a TNT Bazooka that fires explosive rockets,
-drivable cars including a Bugatti Chiron, and furniture for Minecraft Bedrock Edition.
+<p>
+Minecraft Bedrock için özel TNT modu!
+50X TNT, TNT Bazooka, Bugatti Chiron,
+arabalar ve mobilyalar.
 </p>
 
-<div class="blocks" aria-hidden="true">
-<div class="blk" style="--c:#c8362b"><span>5X</span></div>
-<div class="blk" style="--c:#e07b1a"><span>20X</span></div>
-<div class="blk" style="--c:#d6b822"><span>25X</span></div>
-<div class="blk" style="--c:#2f6fd0"><span>30X</span></div>
-<div class="blk" style="--c:#8a2be2"><span>50X</span></div>
+<div class="blocks">
+<div class="block">5X</div>
+<div class="block">20X</div>
+<div class="block">25X</div>
+<div class="block">30X</div>
+<div class="block">50X</div>
 </div>
 
-<a class="download-btn" href="./TNT_Mod.mcaddon" download="TNT_Mod.mcaddon" type="application/octet-stream">
-Download TNT_Mod.mcaddon
+<a
+class="download"
+href="./TNT_Mod.mcaddon"
+download="TNT_Mod.mcaddon">
+⬇ DOWNLOAD TNT MOD
 </a>
 
-<p id="msg" class="note">
-Free. Version 1.1. Requires Minecraft Bedrock 1.21.90 or newer.
+<p class="note">
+Free Download - Version 1.1<br>
+Minecraft Bedrock 1.21.90+
 </p>
 
 <h2>How to Install</h2>
 
 <ol>
-<li>Download the file above.</li>
-<li>Open it. Minecraft will automatically import the add-on.</li>
-<li>Edit your world, open Behavior Packs and activate "TNT + Car + Furniture Mod". The resource pack comes with it.</li>
-<li>Create or load your world and open the Creative inventory.</li>
+<li>Download TNT_Mod.mcaddon.</li>
+<li>Open the downloaded file.</li>
+<li>Minecraft will import the addon.</li>
+<li>Open your world settings.</li>
+<li>Activate Behavior Packs and Resource Packs.</li>
+<li>Enjoy the TNT Mod!</li>
 </ol>
 
-<p class="note">
-If your browser saves the file as <code>.zip</code>, rename it to
-<code>TNT_Mod.mcaddon</code>. If blocks do not appear, enable
-"Holiday Creator Features" under Experiments in world settings.
-</p>
+<h2>What's Inside?</h2>
 
-<h2>What's Inside</h2>
+<ul>
+<li>5X TNT</li>
+<li>20X TNT</li>
+<li>25X TNT</li>
+<li>30X TNT</li>
+<li>50X TNT</li>
+<li>TNT Bazooka</li>
+<li>Bugatti Chiron</li>
+<li>Cars</li>
+<li>Furniture</li>
+<li>New Textures</li>
+</ul>
 
-<dl>
-<dt>TNT Blocks</dt>
-<dd>5x, 20x, 25x, 30x and 50x TNT. Light them with flint and steel or a fire charge. Nearby explosions can trigger other TNT blocks. Find them under Items.</dd>
+<h2>TNT Power</h2>
 
-<dt>TNT Bazooka</dt>
-<dd>Right-click to fire an explosive rocket. Sneak and right-click to switch between the five TNT powers. Find it under Equipment.</dd>
-
-<dt>Cars</dt>
-<dd>Bugatti Chiron and Car. Use the item on the ground to place the car, right-click to get in, drive with movement keys and steer with your view. Sneak to exit.</dd>
-
-<dt>Furniture</dt>
-<dd>Chair, table, sofa, floor lamp, TV and wardrobe. Find them under Construction.</dd>
-
-<dt>Textures</dt>
-<dd>New textures for every block and item, plus a fresh look for vanilla TNT.</dd>
-</dl>
-
-<div class="tw">
 <table>
-<tr><th>Block</th><th>Blast Power</th><th>Crafting Recipe</th></tr>
-<tr><td>5x TNT</td><td>8</td><td>5 TNT in a plus shape</td></tr>
-<tr><td>20x TNT</td><td>14</td><td>4 × 5x TNT in a 2×2 square</td></tr>
-<tr><td>25x TNT</td><td>16</td><td>5 × 5x TNT in a plus shape</td></tr>
-<tr><td>30x TNT</td><td>18</td><td>6 × 5x TNT in a 3×2 grid</td></tr>
-<tr><td>50x TNT</td><td>24</td><td>2 × 25x TNT side by side</td></tr>
+<tr>
+<th>Block</th>
+<th>Blast Power</th>
+</tr>
+<tr><td>5X TNT</td><td>8</td></tr>
+<tr><td>20X TNT</td><td>14</td></tr>
+<tr><td>25X TNT</td><td>16</td></tr>
+<tr><td>30X TNT</td><td>18</td></tr>
+<tr><td>50X TNT</td><td>24</td></tr>
 </table>
-</div>
 
 <p class="note">
-Vanilla TNT has a blast power of 4. The 50x block creates a very large crater, so try it in a new world first.
+GAMERWOST BEDROCK MODS
 </p>
 
 </main>

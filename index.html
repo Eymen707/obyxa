@@ -1,433 +1,84 @@
-
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gamerwost Bedrock Mods</title>
-
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  scroll-behavior: smooth;
-}
-
-body {
-  background: #090d12;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-header {
-  background: #111923;
-  padding: 20px 7%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  border-bottom: 2px solid #ff3838;
-}
-
-.logo {
-  font-size: 22px;
-  font-weight: bold;
-  color: #ff4545;
-}
-
-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-nav a:hover {
-  color: #ff4545;
-}
-
-.hero {
-  text-align: center;
-  padding: 90px 20px;
-  background: linear-gradient(135deg, #171e29, #3b1111);
-}
-
-.hero h1 {
-  font-size: clamp(30px, 6vw, 55px);
-  margin-bottom: 18px;
-}
-
-.hero span {
-  color: #ff4545;
-}
-
-.hero p {
-  color: #ccc;
-  margin-bottom: 25px;
-}
-
-.main-button {
-  display: inline-block;
-  background: #e52c2c;
-  color: white;
-  padding: 14px 25px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-section {
-  padding: 55px 7%;
-}
-
-.section-title {
-  text-align: center;
-  font-size: 30px;
-  margin-bottom: 35px;
-}
-
-.section-title span {
-  color: #ff4545;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.card {
-  background: #151d27;
-  border: 1px solid #303d4d;
-  border-radius: 13px;
-  padding: 25px;
-  transition: .2s;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  border-color: #ff4545;
-}
-
-.card-icon {
-  font-size: 42px;
-  margin-bottom: 15px;
-}
-
-.card h3 {
-  color: #ff5555;
-  margin-bottom: 12px;
-}
-
-.card p {
-  color: #c1c8d1;
-  line-height: 1.6;
-  font-size: 14px;
-  margin-bottom: 15px;
-}
-
-.info {
-  color: #ffd36a;
-  font-size: 13px;
-  margin-bottom: 15px;
-}
-
-.download {
-  display: block;
-  width: 100%;
-  background: #e52c2c;
-  color: white;
-  border: 0;
-  border-radius: 7px;
-  padding: 12px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.download:hover {
-  background: #ff4545;
-}
-
-.download:disabled {
-  opacity: .5;
-  cursor: wait;
-}
-
-#tester {
-  background: #111923;
-}
-
-.test-box {
-  max-width: 650px;
-  margin: auto;
-  background: #1b2633;
-  padding: 30px;
-  border-radius: 14px;
-  text-align: center;
-}
-
-select {
-  background: #0b1119;
-  color: white;
-  border: 1px solid #ff4545;
-  padding: 13px;
-  border-radius: 7px;
-  width: 100%;
-  margin: 15px 0;
-}
-
-.explosion {
-  font-size: 65px;
-  margin: 20px;
-  display: none;
-}
-
-.explosion.active {
-  display: block;
-  animation: boom .5s ease-in-out;
-}
-
-@keyframes boom {
-  0% { transform: scale(.2); }
-  70% { transform: scale(1.4); }
-  100% { transform: scale(1); }
-}
-
-.test-result {
-  color: #ffce66;
-  margin-top: 15px;
-  min-height: 25px;
-}
-
-.guide {
-  max-width: 800px;
-  margin: auto;
-}
-
-.guide-item {
-  background: #151d27;
-  border-left: 4px solid #ff4545;
-  padding: 20px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  line-height: 1.7;
-}
-
-footer {
-  background: #05080c;
-  text-align: center;
-  padding: 30px 15px;
-  color: #929ba6;
-  border-top: 1px solid #303d4d;
-}
-
-@media(max-width:600px) {
-  header {
-    justify-content: center;
-  }
-
-  nav {
-    justify-content: center;
-  }
-
-  .hero {
-    padding: 65px 15px;
-  }
-}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GAMERWOST Bedrock Mods – TNT Craft</title>
+<meta name="description" content="Play GAMERWOST TNT Craft in your browser with friends, then download the free TNT Mod for Minecraft Bedrock.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%A8%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-<header>
-  <div class="logo">💣 GAMERWOST</div>
-  <nav>
-    <a href="#home">Ana Sayfa</a>
-    <a href="#mods">Modlar</a>
-    <a href="#tester">Deneme Alanı</a>
-    <a href="#guide">Kullanım Kılavuzu</a>
-  </nav>
+<header class="top">
+  <div class="brand"><b>GAMERWOST</b><span>Bedrock Mods</span></div>
+  <a href="#download">Download mod</a>
 </header>
 
-<div class="hero" id="home">
-  <h1>Gamerwost <span>Bedrock Mods</span></h1>
-  <p>Minecraft Bedrock için özel modlar ve eğlenceli içerikler!</p>
-  <a href="#mods" class="main-button">MODLARI KEŞFET</a>
-</div>
+<main>
+<section class="wide">
+  <h1>GAMERWOST TNT Craft</h1>
+  <p class="lead">Place TNT, light it and blow up the world. Everyone who opens this page joins the same lobby automatically.</p>
 
-<section id="mods">
-  <h2 class="section-title">💥 TNT <span>MODLARI</span></h2>
-
-  <div class="grid" id="tnt-grid"></div>
-
-  <h2 class="section-title" style="margin-top:65px">
-    🎮 DİĞER <span>MODLAR</span>
-  </h2>
-
-  <div class="grid">
-    <div class="card">
-      <div class="card-icon">🛋️</div>
-      <h3>Furniture Mod</h3>
-      <p>Minecraft evlerine mobilyalar ve dekorasyon eşyaları eklemeyi hedefleyen mod.</p>
-      <div class="info">Kategori: Dekorasyon</div>
-      <button class="download" data-file="Furniture_Mod.mcaddon">İNDİR</button>
+  <div id="game">
+    <canvas id="cv" tabindex="0" aria-label="TNT Craft game"></canvas>
+    <div id="net" role="status">Connecting…</div>
+    <div id="tools">
+      <button id="boom" type="button">Ignite all TNT</button>
+      <button id="reset" type="button">New world</button>
+      <button id="retry" type="button" hidden>Retry online</button>
     </div>
-
-    <div class="card">
-      <div class="card-icon">🚗</div>
-      <h3>Car Mod</h3>
-      <p>Minecraft dünyanda araçlarla gezebilmeni sağlayan araç modu.</p>
-      <div class="info">Kategori: Araçlar</div>
-      <button class="download" data-file="Car_Mod.mcaddon">İNDİR</button>
-    </div>
+    <div id="pad"><button id="bl" type="button" aria-label="Left">◀</button><button id="br" type="button" aria-label="Right">▶</button></div>
+    <div id="pad2"><button id="bj" type="button" aria-label="Jump">▲</button></div>
+    <div id="hotbar"></div>
   </div>
+
+  <div class="opts">
+    <label>Name <input id="name" maxlength="12" autocomplete="off"></label>
+    <label>Lobby <input id="room" maxlength="20" autocomplete="off"></label>
+  </div>
+  <p class="note">Move with A/D or the arrow keys and jump with W or Space. Left click uses the selected item, right click mines. Keys 1–9 pick an item. On a phone use the on-screen buttons and tap the world. To play with friends, open the same page. If you all type the same lobby name, you land in the same game.</p>
 </section>
 
-<section id="tester">
-  <h2 class="section-title">🧪 TNT <span>DENEME ALANI</span></h2>
+<section id="download">
+  <h2>Download the TNT Mod for Minecraft Bedrock</h2>
+  <p>Free add-on with TNT up to 50x, a TNT Bazooka, a drivable Bugatti Chiron, a car and furniture.</p>
+  <a class="btn" href="TNT_Mod.mcaddon" download="TNT_Mod.mcaddon">Download TNT_Mod.mcaddon</a>
+  <p class="note">Version 1.1. Needs Minecraft Bedrock 1.21.90 or newer. If your browser saves the file as <code>.zip</code>, rename it to <code>TNT_Mod.mcaddon</code>.</p>
 
-  <div class="test-box">
-    <h3>TNT Patlama Simülatörü</h3>
-    <p>Bir TNT seç ve sanal patlama efektini dene!</p>
+  <h3>Blast power</h3>
+  <div class="tw"><table>
+    <tr><th>Block</th><th>Blast power</th><th>Crafting recipe</th></tr>
+    <tr><td>Vanilla TNT</td><td>4</td><td>For comparison</td></tr>
+    <tr><td>5x TNT</td><td>8</td><td>5 TNT in a plus shape</td></tr>
+    <tr><td>20x TNT</td><td>14</td><td>4 × 5x TNT in a 2×2 square</td></tr>
+    <tr><td>25x TNT</td><td>16</td><td>5 × 5x TNT in a plus shape</td></tr>
+    <tr><td>30x TNT</td><td>18</td><td>6 × 5x TNT in a 3×2 grid</td></tr>
+    <tr><td>50x TNT</td><td>24</td><td>2 × 25x TNT side by side</td></tr>
+  </table></div>
+  <p class="note">Light the blocks with flint and steel or a fire charge. A nearby explosion sets off the next one. The 50x block makes a huge crater, so try it in a new world first.</p>
 
-    <select id="tnt-select">
-      <option value="5">5x TNT</option>
-      <option value="10">10x TNT</option>
-      <option value="20">20x TNT</option>
-      <option value="25">25x TNT</option>
-      <option value="30">30x TNT</option>
-      <option value="50">50x TNT</option>
-    </select>
+  <h3>What’s inside</h3>
+  <dl>
+    <dt>TNT Bazooka</dt><dd>Right-click to fire a rocket that explodes on impact. Sneak and right-click to switch between the five TNT powers.</dd>
+    <dt>Cars</dt><dd>Bugatti Chiron and Car. Use the item on the ground to place the car, right-click to get in and sneak to get out.</dd>
+    <dt>Furniture</dt><dd>Chair, table, sofa, floor lamp, TV and wardrobe.</dd>
+    <dt>Textures</dt><dd>New textures for every block and item, plus a fresh look for vanilla TNT.</dd>
+  </dl>
 
-    <button class="download" id="test-button">💥 PATLAT!</button>
-
-    <div class="explosion" id="explosion">💥</div>
-    <div class="test-result" id="test-result">
-      Denemeye hazır!
-    </div>
-    <p style="margin-top:15px;color:#929ba6;font-size:12px">
-      Bu alan görsel simülasyondur. Gerçek Minecraft patlaması değildir.
-    </p>
-  </div>
+  <h3>How to install</h3>
+  <ol>
+    <li>Download the file and open it. Minecraft imports the add-on by itself.</li>
+    <li>Edit your world, open Behavior Packs and activate “TNT + Car + Furniture Mod”.</li>
+    <li>Load the world and open the Creative inventory. TNT and cars are under Items, furniture under Construction, the bazooka under Equipment.</li>
+  </ol>
+  <p class="note">If the blocks do not show up, turn on “Holiday Creator Features” under Experiments in the world settings.</p>
 </section>
+</main>
 
-<section id="guide">
-  <h2 class="section-title">📖 KULLANIM <span>KILAVUZU</span></h2>
+<footer><p class="note">GAMERWOST Bedrock Mods. Not affiliated with Mojang or Microsoft.</p></footer>
 
-  <div class="guide">
-    <div class="guide-item">
-      <h3>1. Modu indir</h3>
-      İstediğin modun İNDİR butonuna bas ve .mcaddon dosyasını indir.
-    </div>
-
-    <div class="guide-item">
-      <h3>2. Minecraft ile aç</h3>
-      İndirilen .mcaddon dosyasına dokun ve Minecraft ile aç.
-    </div>
-
-    <div class="guide-item">
-      <h3>3. İçe aktarılmasını bekle</h3>
-      Minecraft mod paketini içe aktaracaktır.
-    </div>
-
-    <div class="guide-item">
-      <h3>4. Dünyana ekle</h3>
-      Dünya ayarlarından Davranış Paketleri ve gerekiyorsa Kaynak Paketleri bölümünden modu etkinleştir.
-    </div>
-
-    <div class="guide-item">
-      <h3>5. Oyuna başla!</h3>
-      Dünyana gir ve modun özelliklerini keşfet.
-    </div>
-  </div>
-</section>
-
-<footer>
-  <h3 style="color:#ff4545">GAMERWOST BEDROCK MODS</h3>
-  <p>© 2026 Gamerwost Bedrock Mods</p>
-  <p>Minecraft Bedrock Mod Merkezi</p>
-</footer>
-
-<script>
-"use strict";
-
-const tntMods = [
-  { power: 5, description: "Standart TNT'den daha güçlü patlama modu." },
-  { power: 10, description: "Daha geniş patlama efektleri." },
-  { power: 20, description: "Yüksek güçlü TNT deneyimi." },
-  { power: 25, description: "Daha büyük patlama alanı." },
-  { power: 30, description: "Çok güçlü TNT deneyimi." },
-  { power: 50, description: "En yüksek seviyeli TNT modu." }
-];
-
-const tntGrid = document.getElementById("tnt-grid");
-
-tntMods.forEach(mod => {
-  const card = document.createElement("div");
-  card.className = "card";
-
-  const icon = document.createElement("div");
-  icon.className = "card-icon";
-  icon.textContent = "💣";
-
-  const title = document.createElement("h3");
-  title.textContent = mod.power + "x TNT";
-
-  const description = document.createElement("p");
-  description.textContent = mod.description;
-
-  const info = document.createElement("div");
-  info.className = "info";
-  info.textContent = "TNT Seviyesi: " + mod.power + "x";
-
-  const button = document.createElement("button");
-  button.className = "download";
-  button.textContent = "İNDİR";
-  button.dataset.file = "TNT_" + mod.power + "x.mcaddon";
-
-  card.append(icon, title, description, info, button);
-  tntGrid.appendChild(card);
-});
-
-document.querySelectorAll(".download").forEach(button => {
-  button.addEventListener("click", () => {
-    const file = button.dataset.file;
-
-    if (!file) return;
-
-    const link = document.createElement("a");
-    link.href = "./mods/" + encodeURIComponent(file);
-    link.download = file;
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  });
-});
-
-const testButton = document.getElementById("test-button");
-const select = document.getElementById("tnt-select");
-const explosion = document.getElementById("explosion");
-const result = document.getElementById("test-result");
-
-testButton.addEventListener("click", () => {
-  const power = Number(select.value);
-
-  explosion.classList.remove("active");
-  void explosion.offsetWidth;
-  explosion.classList.add("active");
-
-  result.textContent =
-    power + "x TNT sanal olarak patlatıldı! 💥";
-});
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="game.js"></script>
 </body>
 </html>

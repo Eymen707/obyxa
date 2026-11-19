@@ -1,99 +1,653 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GAMERWOST Bedrock Mods – TNT Craft</title>
-<meta name="description" content="Play GAMERWOST TNT Craft in your browser with friends, then download the free TNT Mod for Minecraft Bedrock.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%A8%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap">
-<style>
-:root{--bg:#dcd9d2;--panel:#eceae4;--ink:#23211f;--muted:#5e5a54;--line:#b9b4aa;--btn:#c8362b;--btn-ink:#fff;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1c1b;--panel:#272523;--ink:#ece9e2;--muted:#a39e94;--line:#3b3835;--btn:#d9453a}}
-:root[data-theme="dark"]{--bg:#1d1c1b;--panel:#272523;--ink:#ece9e2;--muted:#a39e94;--line:#3b3835;--btn:#d9453a}
-html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:980px;margin:0 auto;padding:16px 20px;border-bottom:2px solid var(--line)}
-.brand{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px}
-.brand b{font:700 clamp(18px,5vw,24px)/1 "Silkscreen","Courier New",monospace}
-.brand span{color:var(--muted);font-size:14px}
-.top a{color:var(--ink);font-weight:600}
-main{max-width:980px;margin:0 auto;padding:24px 20px 40px}
-#download{max-width:680px;margin:48px 0 0}
-h1{font:700 clamp(26px,7vw,44px)/1.05 "Silkscreen","Courier New",monospace;margin:0 0 8px}
-h2{font-size:24px;margin:0 0 8px}
-h3{font-size:18px;margin:32px 0 8px}
-.lead{color:var(--muted);margin:0 0 16px;max-width:60ch}
-#game{position:relative;height:clamp(340px,64vh,580px);background:#5aa9e6;border:3px solid var(--line);overflow:hidden;user-select:none;-webkit-user-select:none}
-#cv{display:block;width:100%;height:100%;touch-action:none;outline:none;cursor:crosshair}
-#net{position:absolute;top:8px;left:8px;max-width:58%;background:rgba(0,0,0,.62);color:#fff;font-size:13px;line-height:1.3;padding:5px 9px;pointer-events:none}
-#tools{position:absolute;top:8px;right:8px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:42%}
-#tools button{font:600 13px/1 system-ui,sans-serif;background:rgba(0,0,0,.62);color:#fff;border:0;padding:8px 10px;cursor:pointer}
-#tools button:hover:not(:disabled){background:var(--btn)}
-#tools button:disabled{opacity:.4;cursor:default}
-#hotbar{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:3px;background:rgba(0,0,0,.55);padding:4px}
-.slot{position:relative;width:clamp(30px,9.5vw,44px);aspect-ratio:1;padding:3px;border:2px solid transparent;background:rgba(255,255,255,.12);cursor:pointer}
-.slot img{width:100%;height:100%;image-rendering:pixelated;display:block}
-.slot span{position:absolute;left:3px;top:0;font-size:10px;color:#fff;text-shadow:0 0 2px #000}
-.slot.sel{border-color:#fff;background:rgba(255,255,255,.3)}
-#pad,#pad2{position:absolute;bottom:64px;display:none;gap:8px}
-#pad{left:8px}#pad2{right:8px}
-#pad button,#pad2 button{width:56px;height:56px;font-size:22px;border:0;background:rgba(0,0,0,.5);color:#fff;touch-action:none}
-@media (pointer:coarse){#pad,#pad2{display:flex}}
-.opts{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 0}
-.opts label{font-size:14px;color:var(--muted)}
-.opts input{font:inherit;padding:6px 8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);width:150px}
-.btn{display:block;text-align:center;text-decoration:none;font:700 18px/1 system-ui,sans-serif;background:var(--btn);color:var(--btn-ink);padding:18px 28px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.3);margin:16px 0 0}
-.btn:hover{filter:brightness(1.08)}
-.btn:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-ol{padding-left:22px;margin:0}
-li{margin:0 0 8px}
-dl{margin:0}
-dt{font-weight:700;margin-top:12px}
-dd{margin:2px 0 0;color:var(--muted)}
-code{background:var(--panel);border:1px solid var(--line);padding:1px 6px;font-size:.92em}
-.tw{overflow-x:auto}
-table{border-collapse:collapse;width:100%;background:var(--panel)}
-th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
-th{font-weight:600;color:var(--muted)}
-.note{color:var(--muted);font-size:15px;margin-top:12px}
-footer{max-width:980px;margin:0 auto;padding:0 20px 32px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GAMERWOST TNT craft - Bedrock Survival Multiplayer</title>
+    <!-- Piksel Font ve İkonlar -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Three.js ve PeerJS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --mc-bg: #1e1e1f;
+            --mc-panel: #2b2b2d;
+            --mc-border-light: #5a5b5e;
+            --mc-border-dark: #121213;
+            --mc-green: #3c8527;
+            --mc-green-hover: #4ca333;
+            --mc-green-shadow: #1d4d10;
+            --mc-accent: #ffaa00;
+            --mc-danger: #d93838;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0d1117;
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+            touch-action: none;
+            overscroll-behavior: none;
+        }
+
+        .pixel-font {
+            font-family: 'Press Start 2P', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        #game-container {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            touch-action: none;
+        }
+
+        /* Minecraft Bedrock Tarzı 3D Buton */
+        .mc-btn {
+            background-color: #c6c6c6;
+            color: #1e1e1e;
+            border: 3px solid #121213;
+            box-shadow: inset 3px 3px 0px #ffffff, inset -3px -3px 0px #555555;
+            padding: 12px 20px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: transform 0.05s, background-color 0.1s;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mc-btn:hover {
+            background-color: #d8d8d8;
+        }
+
+        .mc-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 2px 2px 0px #555555, inset -2px -2px 0px #ffffff;
+        }
+
+        .mc-btn-green {
+            background-color: var(--mc-green);
+            color: #ffffff;
+            text-shadow: 2px 2px 0px #1a3b10;
+            box-shadow: inset 3px 3px 0px #63c247, inset -3px -3px 0px var(--mc-green-shadow);
+        }
+
+        .mc-btn-green:hover {
+            background-color: var(--mc-green-hover);
+        }
+
+        .mc-btn-danger {
+            background-color: var(--mc-danger);
+            color: #ffffff;
+            text-shadow: 2px 2px 0px #5c1111;
+            box-shadow: inset 3px 3px 0px #ff7070, inset -3px -3px 0px #7a1616;
+        }
+
+        /* Başlangıç / Duraklatma Menüsü */
+        #overlay-menu {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(16, 22, 32, 0.72) 0%, rgba(8, 11, 16, 0.92) 100%);
+            backdrop-filter: blur(6px);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .title-logo {
+            text-align: center;
+            margin-bottom: 24px;
+            animation: floatTitle 3s ease-in-out infinite;
+        }
+
+        @keyframes floatTitle {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .title-main {
+            font-size: clamp(22px, 4vw, 44px);
+            color: #ffffff;
+            text-shadow: 4px 4px 0px #1b1b1b, 0 0 25px rgba(255, 85, 0, 0.7);
+            line-height: 1.3;
+        }
+
+        .title-badge {
+            display: inline-block;
+            background: #ffaa00;
+            color: #1a1200;
+            padding: 5px 12px;
+            font-size: 11px;
+            margin-top: 8px;
+            border: 2px solid #000;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .menu-card {
+            background: var(--mc-panel);
+            border: 4px solid #121213;
+            box-shadow: inset 3px 3px 0px var(--mc-border-light), inset -3px -3px 0px #18181a, 0 20px 50px rgba(0,0,0,0.7);
+            padding: 24px;
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 11px;
+            color: #b0b3b8;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .mc-input {
+            background: #141416;
+            border: 3px solid #0a0a0c;
+            box-shadow: inset 2px 2px 0px #000, 1px 1px 0px #4a4a4e;
+            color: #fff;
+            padding: 10px 12px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            outline: none;
+        }
+
+        /* HUD Arayüzü */
+        #hud {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Nişangah (Crosshair) */
+        #crosshair {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 22px;
+            height: 22px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            mix-blend-mode: difference;
+        }
+
+        #crosshair::before, #crosshair::after {
+            content: '';
+            position: absolute;
+            background: #ffffff;
+        }
+
+        #crosshair::before {
+            top: 10px;
+            left: 0;
+            width: 22px;
+            height: 2px;
+        }
+
+        #crosshair::after {
+            top: 0;
+            left: 10px;
+            width: 2px;
+            height: 22px;
+        }
+
+        /* Üst Bilgi Barı */
+        .top-bar {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .hud-pill {
+            background: rgba(20, 20, 24, 0.82);
+            border: 2px solid #0f0f12;
+            box-shadow: inset 1px 1px 0 rgba(255,255,255,0.15);
+            padding: 8px 12px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #ffaa00;
+            border: 1px solid #000;
+            display: inline-block;
+        }
+
+        .status-dot.online {
+            background: #3ce65a;
+            box-shadow: 0 0 8px #3ce65a;
+        }
+
+        /* Sağ Üst Kısayol Butonları */
+        .top-actions {
+            display: flex;
+            gap: 8px;
+            pointer-events: auto;
+        }
+
+        .mini-btn {
+            padding: 8px 12px;
+            font-size: 10px;
+        }
+
+        /* Hayatta Kalma Statları (Can & Açlık) */
+        .survival-bars {
+            position: fixed;
+            bottom: 84px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(92vw, 468px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+        }
+
+        .stat-group {
+            display: flex;
+            gap: 2px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 4px 6px;
+            border: 2px solid rgba(0,0,0,0.6);
+        }
+
+        .heart-icon, .hunger-icon {
+            font-size: 14px;
+            line-height: 1;
+            filter: drop-shadow(1px 1px 0 #000);
+        }
+
+        /* Seçili Eşya İsmi Bildirimi */
+        #item-name-toast {
+            position: fixed;
+            bottom: 122px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.65);
+            padding: 5px 14px;
+            font-size: 11px;
+            color: #ffff55;
+            text-shadow: 2px 2px 0 #000;
+            opacity: 0;
+            transition: opacity 0.25s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* Alt Hotbar (9 Slot) */
+        #hotbar {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            background: #1d1d1f;
+            border: 3px solid #0d0d0f;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.65);
+            padding: 3px;
+            gap: 3px;
+            pointer-events: auto;
+        }
+
+        .hotbar-slot {
+            width: clamp(36px, 9.5vw, 48px);
+            height: clamp(36px, 9.5vw, 48px);
+            background: #8b8b8b;
+            border: 2px solid #373737;
+            box-shadow: inset 2px 2px 0 #555555, inset -2px -2px 0 #c6c6c6;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .hotbar-slot.active {
+            border: 3px solid #ffffff;
+            background: #a8a8a8;
+            transform: scale(1.06);
+            z-index: 2;
+            box-shadow: 0 0 12px rgba(255,255,255,0.5);
+        }
+
+        .hotbar-slot canvas {
+            width: 30px;
+            height: 30px;
+            image-rendering: pixelated;
+        }
+
+        .slot-num {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 8px;
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        /* Bedrock Mod Manager / Eklenti Paneli */
+        #mod-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(4px);
+            z-index: 60;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .mod-window {
+            background: #262629;
+            border: 4px solid #0f0f11;
+            box-shadow: inset 3px 3px 0 #525258, inset -3px -3px 0 #161618;
+            width: 100%;
+            max-width: 720px;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .mod-header {
+            background: #1b1b1e;
+            padding: 14px 18px;
+            border-bottom: 3px solid #0f0f11;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mod-body {
+            padding: 18px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        @media (max-width: 680px) {
+            .mod-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mod-section {
+            background: #1d1d20;
+            border: 2px solid #101012;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mod-section h3 {
+            margin: 0 0 4px 0;
+            font-size: 11px;
+            color: #ffaa00;
+            font-family: 'Press Start 2P', monospace;
+            line-height: 1.4;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2a2a2e;
+            padding: 10px 12px;
+            border: 2px solid #121214;
+            font-size: 13px;
+        }
+        /* Mobil Dokunmatik Kontroller (Bedrock Touch UI) */
+        #mobile-controls {
+            display: none;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        @media (pointer: coarse), (max-width: 920px) {
+            #mobile-controls {
+                display: block;
+            }
+        }
+
+        /* Sol Alt 360 Derece Sanal Joystick */
+        #joystick-zone {
+            position: fixed;
+            bottom: 84px;
+            left: 18px;
+            width: 132px;
+            height: 132px;
+            border-radius: 50%;
+            background: rgba(20, 22, 28, 0.42);
+            border: 3px solid rgba(255, 255, 255, 0.35);
+            box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+            pointer-events: auto;
+            touch-action: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #joystick-knob {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(185, 190, 200, 0.75));
+            border: 3px solid #121214;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            transform: translate(0px, 0px);
+            pointer-events: none;
+            transition: transform 0.04s linear;
+        }
+
+        /* Sağ Alt Mobil Aksiyon Butonları */
+        .mobile-action-cluster {
+            position: fixed;
+            bottom: 84px;
+            right: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            pointer-events: auto;
+            touch-action: none;
+        }
+
+        .mobile-action-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mc-touch-action {
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            background: rgba(28, 30, 36, 0.68);
+            border: 3px solid rgba(255, 255, 255, 0.42);
+            box-shadow: inset 2px 2px 0 rgba(255,255,255,0.2), inset -2px -2px 0 rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.45);
+            color: #ffffff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            touch-action: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .mc-touch-action:active, .mc-touch-action.pressed {
+            background: rgba(255, 170, 0, 0.72);
+            border-color: #ffffff;
+            transform: scale(0.94);
+        }
+
+        .mc-touch-action.action-place {
+            background: rgba(60, 133, 39, 0.75);
+            border-color: rgba(145, 240, 115, 0.65);
+        }
+
+        .mc-touch-action.action-break {
+            background: rgba(217, 56, 56, 0.72);
+            border-color: rgba(255, 150, 150, 0.6);
+        }
+
+        .mc-touch-action.action-jump {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: rgba(45, 50, 62, 0.75);
+        }
+    </style>
 </head>
 <body>
-<header class="top">
-  <div class="brand"><b>GAMERWOST</b><span>Bedrock Mods</span></div>
-  <a href="#download">Download mod</a>
-</header>
 
-<main>
-<section class="wide">
-  <h1>GAMERWOST TNT Craft</h1>
-  <p class="lead">Place TNT, light it and blow up the world. Everyone who opens this page joins the same lobby automatically.</p>
+    <!-- 3D Oyun Sahnesi -->
+    <div id="game-container"></div>
 
-  <div id="game">
-    <canvas id="cv" tabindex="0" aria-label="TNT Craft game"></canvas>
-    <div id="net" role="status">Connecting…</div>
-    <div id="tools">
-      <button id="boom" type="button">Ignite all TNT</button>
-      <button id="reset" type="button">New world</button>
-      <button id="retry" type="button" hidden>Retry online</button>
+    <!-- Hasar Kırmızı Vignette -->
+    <div id="damage-vignette"></div>
+
+    <!-- Bildirimler -->
+    <div id="toast-container"></div>
+
+    <!-- Oyun İçi HUD -->
+    <div id="hud">
+        <div id="crosshair"></div>
+
+        <div class="top-bar">
+            <div class="hud-pill">
+                <span class="status-dot" id="mp-dot"></span>
+                <div>
+                    <div class="pixel-font" style="font-size: 10px; color: #ffaa00;">GAMERWOST TNT craft</div>
+                    <div id="mp-status-text" style="font-size: 11px; color: #d0d3d8; margin-top: 3px;">PeerJS: Bağlanıyor...</div>
+                </div>
+            </div>
+
+            <div class="top-actions">
+                <button class="mc-btn mini-btn" id="btn-open-mods" title="Mod Yöneticisi (M)">⚙️ MODLAR [M]</button>
+                <button class="mc-btn mini-btn" id="btn-pause" title="Menü (ESC)">⏸ MENÜ</button>
+            </div>
+        </div>
+
+        <!-- Hayatta Kalma Can & Açlık -->
+        <div class="survival-bars">
+            <div class="stat-group" id="health-bar" title="Can Puanı"></div>
+            <div class="stat-group" id="hunger-bar" title="Dayanıklılık / Açlık"></div>
+        </div>
+
+        <!-- Seçili Blok İsmi -->
+        <div id="item-name-toast" class="pixel-font">Çakmak ve Çelik</div>
+
+        <!-- Alt Hotbar -->
+        <div id="hotbar"></div>
+
+        <!-- Mobil / Dokunmatik Kontroller -->
+        <div id="mobile-controls">
+            <!-- Sol Alt: 360 Derece Sanal Joystick -->
+            <div id="joystick-zone" aria-label="Hareket Joystick">
+                <div id="joystick-knob"></div>
+            </div>
+
+            <!-- Sağ Alt: Zıplama, Kırma ve Koyma/Ateşleme -->
+            <div class="mobile-action-cluster">
+                <button class="mc-touch-action action-jump" id="mob-jump">
+                    <span style="font-size:18px;">⬆</span>
+                    <span>ZIPLA</span>
+                </button>
+                <div class="mobile-action-row">
+                    <button class="mc-touch-action action-break" id="mob-break">
+                        <span style="font-size:16px;">⛏️</span>
+                        <span>KIR</span>
+                    </button>
+                    <button class="mc-touch-action action-place" id="mob-place">
+                        <span style="font-size:16px;">🔥</span>
+                        <span>KOY/YAK</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="pad"><button id="bl" type="button" aria-label="Left">◀</button><button id="br" type="button" aria-label="Right">▶</button></div>
-    <div id="pad2"><button id="bj" type="button" aria-label="Jump">▲</button></div>
-    <div id="hotbar"></div>
-  </div>
 
-  <div class="opts">
-    <label>Name <input id="name" maxlength="12" autocomplete="off"></label>
-    <label>Lobby <input id="room" maxlength="20" autocomplete="off"></label>
-  </div>
-  <p class="note">Move with A/D or the arrow keys and jump with W or Space. Left click uses the selected item, right click mines. Keys 1–9 pick an item. On a phone use the on-screen buttons and tap the world. To play with friends, open the same page. If you all type the same lobby name, you land in the same game.</p>
-</section>
+    <!-- Başlangıç / Duraklatma Menüsü -->
+    <div id="overlay-menu">
+        <div class="title-logo">
+            <div class="title-main pixel-font">GAMERWOST<br><span style="color:#ff4d4d;">TNT</span> craft</div>
+            <div class="title-badge pixel-font">BEDROCK EDITION • SURVIVAL MULTIPLAYER</div>
+        </div>
 
-<section id="download">
-  <h2>Download the TNT Mod for Minecraft Bedrock</h2>
-  <p>Free add-on with TNT up to 50x, a TNT Bazooka, a drivable Bugatti Chiron, a car and furniture.</p>
-  <a id="dl" class="btn" type="application/octet-stream" href="data:application/octet-stream;base64,UEsDBBQAAAAIAKBFc118zXVncwEAAF0CAAAYAAAAVE5UX01vZF9CUC9tYW5pZmVzdC5qc29ubZJNbxshEIb/CuLUKuAA+4lPkSP11p5yqyxrFgabxAaLZS2llv972cR1oioXhObjfeYdOFMX0wHy5oRp9DHQpWJ0h2Ax0eWZBjggXdKnX0/kjjxCKuePKQWfp4TkZ7Tk2wp3cPIxfaeMWhxN8sf8pvPWNOyjeRkZme8r+BPjCzCymraQsyePO59iYMRAYsT9ky060+RtEZAWoRVtw4XTA6+rZuB6UA13tgPQStV6aEr1bfLfkkkm1owefNhg2PqAm89JJZkW60vJRzvtcSzBM82vx9mhhQwfZKGE0NJU3GLjeI2V5tD0Ax/avhWNK3AH/5EFm6Vveu+LKDV7CNsJtnPsGU5wi19JNdZC9qbYk13Ha6gl1x1KXuASddv1FcovSIxiyOn1BhrvD+DD4nmkl/X8DkcMFoPxV5NXmBVVK7RteddgseWGmvdGDbwDIYXqjO00fLHQ2db7yjbX//BQNowmgcv3I6ZS/7mLqoVYiDLI5S9QSwMEFAAAAAgAoEVzXXpH4MH0AgAA/wYAABgAAABUTlRfTW9kX0JQL3BhY2tfaWNvbi5wbmfrDPBz5+WS4mJgYOD19HAJYmBgZABhDjYgFVO0Io2Bge2Yp4tjSMWtt3fizVYlShxLbH+m6NlhovF5goCS70EFmchnihPtJ36b51zNcu1W9t3Tv76Uyv7pk3//+2vMuXtTm6/+rgxab9gptSUtsD2bP/DvMxOtvfvLUiVKg6r7XoW4B7787v9+fXR95647fzu83uv//X35dzTIDVQFAVEM677ZLT63LW7xJVaPeoaXf2XX2rvJ5tu4LmVY9vnyb+//jEvm5vVx8zJQHex7XfNb91XSc9usi/YOVvasOn/rXjKJ/uXX+Ms+iWnGP2YWqtvYMJ9J4S/j0oYl/EVLvl/P9ll06ff+e/+7vN7b793/5b2/N2NmeFsg9T36Idj+wRfHbpEJXxw7v/zrsqvfb9mr9Yt9jt2KSyv7Fu36On3Fl39Uj9gp4g27b8/eueQpD4MQgwqjA37i0nvWB+/nf9xzImvrLafnf47Oq7/4XFyWdFsP/AR6hPvBH2BYsxbUAflMFvYMDAmMc+QZGDYwnONnYPjBIHagBp0UAEUOKyjCExhBIRHhADIMv/CX38wMDGe+o5CfFTrYDaclM06rbaR6gDIsWMN4oIa/CeinGUB/RDB8Bnk1wQ7kuDPsDAw6DT9BzjIA+/QZ0D0gvzEcqAEp+3wWqOCMOVDK4D6moBxLIdagimB4Djb3M9gwgiGLNcX/Z3zw7luaXqYlcwMLgyfDBPzEl2pGi4i989W/Sk1e8frv+hWf325fsfjrcWD69Ms6H9h8TedV1ntjrb3/v/zjuy63yM/8OLCQem2+PPDlX6oHt4Y+w0vWLdqHV4hMyPurCiwZv/w5Lu0fOPeVBqjIAPF/L2dYcl+fVYIWJVPRd2Wt2gnKfxtcmSfYZUy0OzGpbv/mtdeBARF04NJvb0aNX46iVLf2KWvChVmuS/m9lojP+McAtEa+xcP7/P18v8VddRPUWDe8YPekup1TxBrq/02LfPGhqf8UiO/p6ueyzimhCQBQSwMEFAAAAAgAoEVzXasg4SqlAQAAqAQAABwAAABUTlRfTW9kX0JQL2Jsb2Nrcy9jaGFpci5qc29urVLRbtswDPyVQi/pBtewi27ZDPRLgkBQJNohJouuRHfNAv/7KLtJ0wHbw9IHGzZ05J3u7qhair1h/QwxIQXVqLq8r8t1pQrVYwAbTcvNzpP9oZqjcpBsxIFn6FGhg8DYIkQZ5MA9ucbuDcY8DWHU1jB0FA8Z/PatLIXEcbTznqlQHA1yyqA3zsEbC7KEtcMI9kQJwew8OJ1Y1snI5mLEmugwGH8xsS3UQUcSsPxpatsErJr6WzVNwmupHygIxx/ccs1FnlDp3UHLCYYuYxKIdpc0k55BJNepyi/TpVsdUA88X/T0WS7m6LM5Z7CYDxFFM4olJliYpXzOL4YXHiOcrdWD8cAMMh8hOIhadu/JCYAG8zSCmt7psOQ95lT1jl7yQorYobi4uVsXVXG3FnMS/hKCTf1Q1F+L+mH7bkECv9j4vws8dnvJz/QDLAZWcjxA7MclkJzfMbfB4ZKveirnri3x3q7+le3q083j480qUOT9Sv09TClXSEvNXzt06oOwV3KPapvLcK2ORONVOqSTH6QETOIrhNyvP0rIT7hKyPdXHfL8BlBLAwQUAAAACACgRXNddEgiuasBAADABAAAGwAAAFROVF9Nb2RfQlAvYmxvY2tzL2xhbXAuanNvbq1S0W7bMAz8lUIv2QbXsItszQz0S4JAUCTaISaLrkRvzQL/+yi7adMN28PShwQ2fMc7Hu+kWoq9Yf0dYkIKqlF1eVeX95UqVI8BbDQtN3tP9ptqTspBshEHnqEnhQ4CY4sQhciBe3KNN/2QyRBGbQ1DR/GYsa/PylJIHEc7j5kKxdEgpwx6lRy8sSBDWDuMYM+KEMzeg9OJZZxQthcUa6LDYPwFY1eoo44kYHnT1LYJWDX1ppom0bXUDxRE4zdt2XKxJ1J6f9TyBUOXMQnEu0uaSc8gknWq8vN0GVYH1APPi54fyyUbfc7mBSvRQ0SxjJKICRZmJ5/yH8MTjxFegtWD8cAMwo8QHEQtow/kBECDeRxBTW9sWPIe8031np7yQIrYoYS4vV0XVXG7lmwS/hSB7aaovxSb3Rt6Ar9k+H90j91BTif7wpJd9edX6DEtpavXQh4g9uNyqXzYU66Jw+Xw6rGcO7jc/cPqX0dffbx5eLhZBYp8WKm/X1laF9JS/+dynYsi6pXsWO1yS671kWi8yoeU9Z2cgEl8hZG7+/cy8gOuMvL12Yf8fgFQSwMEFAAAAAgAoEVzXTFj5WWkAQAApgQAABsAAABUTlRfTW9kX0JQL2Jsb2Nrcy9zb2ZhLmpzb26tUtFu2zAM/JVCL9kG17CLdekM9EuCQFAk2iEmi65Et80C//sou2nTAevD0gcbNnTkne7uqFqKvWH9CDEhBdWourypy3WlCtVjABtNy83Ok/2lmqNykGzEgWfoUaGDwNgiRBnkwD25JlFr8jCEUVvD0FE8ZOzbt7IUEsfRzmumQnE0yCmD3igHbyzIEtYOI9gTIwSz8+B0YlknI5uzEWuiw2D82cS2UAcdScDyp6ltE7Bq6rtqmoTXUj9QEI6/uOWWizyh0ruDlhMMXcYkEO0uaSY9g0iuU5W307lZHVAPPF/09Fku3uiTN69YsR4iimQUR0ywMCv5ll8MzzxGeDVWD8YDM8h8hOAgalm9JycAGszDCGp6J8OS95gz1Tt6zgspYodi4ub6rqiK67V4k/C3EGzqH0V9W9Tft+8WJPCLi/+7wGO3l/hMP8DiXyXHA8R+XPLI8R1zGRwu8aqHcm7aku6X1UfRrr5e3d9frQJF3q/Uv7OUboW0lPylQqc6CHsl96i2uQuX6kg0XqRDKvlJSsAkvkDIzfqzhDzBRUJ+vuiQ5w9QSwMEFAAAAAgAoEVzXbMWneqhAQAAqAQAABwAAABUTlRfTW9kX0JQL2Jsb2Nrcy90YWJsZS5qc29urVLRTuMwEPwV5JfenUKUIh2USHxJVVmuvUktHG9Ybw5KlX+/dUJLQbp7oEhJ5Mizs7Mze1ANUmdY/wFKHqOq1bK8WZZ3lSpU5yNYMg3X24D2UdUH5SBZ8j1P0IPyDiL7xgNJIUfu0NVstgFyNcRBW8PQIu0z+P2sLMbENNiJZywUk/GcMui9Zx+MBSFh7TyBPbaEmPmdTix0UrI+K7GGnI8mnFVsCrXXhAKWP41Nk4BVvVxV4yh9LXY9RunxqbeMOcuTVnq713LjY5sxCUS7S5pRTyCUcary93juVgvYAU+DHo/lbI4+mXMCi/lAXjR7scREC5OUX/nD8MIDwcla3ZsAzLmeIDogLdw7dALA3jwNoMYPOiyG4HOqeosvmRDJt15cXF+viqq4Xok5yb9Kg/XytpiezQeCBGG28asEwbc7yc90PcwGVnLdA3XDHEjO75C3wfk5X/VUTrs2x/tj8b9sFz+vHh6uFhGJdwv17zBluWKa1/xth477IN0rmaPa5GW4VEfC4SIdspPfpARM4guE3Nx9l5BnuEjI/ZsOef8CUEsDBBQAAAAIAKBFc12/hOby9QAAABoCAAAeAAAAVE5UX01vZF9CUC9ibG9ja3MvdG50XzIweC5qc29unZBNbsQgDIXvwrIaRclsKuUyFgEnRQVMwbQZRbl7TaaaaVV1FmXB7/uezdvUTDlohnfMxVFUoxq689A99+qkgotosp55nDyZVzVuymIx2SU+pJtyFiO72WEWkCMHsqMscO7XxmOsYDTjQvnS5Pe9coyhqH0/KUMhURSf0iT3mlKKczXsJo8wXUBeXFyapqChaAswwSEiMey7YT89oHFNnspX27cDZCyusI4GxeKHwYIUkI9ef192c/Uerql8hyRJzE57cPHqevzpqU2MK9eMt5xaRlAkQDHIGC1mEOsXsqKgpN8qKumnpj9ZpvQQtfQR/wm38QlQSwMEFAAAAAgAoEVzXXpr6bP2AAAAGgIAAB4AAABUTlRfTW9kX0JQL2Jsb2Nrcy90bnRfMjV4Lmpzb26dkN1uwyAMhd+FyymK2krTpLyMRcDJ0AAzMF2qKO8+k07tpmm9GBf8nu/YnFVNlINmOGMujqIa1LE/HfuXg+pUcBFN1hMPoyfzpoZVWSwmu8S7dFXOYmQ3OcwCcuRAdpAFTs9L4zFWMJpxpnxp8vteOcZQ1LZ1ylBIFMWnNMm9ppTiXA270SOMF5AXF+emKWgo2gJMsItIDA/9cese0LgkT+Wr7dsBMhZXWEeDYvHDYEYKyHuvvy/7qXoP11S+Q5IkZqc9uHh13f/01CbGhWvGW04tIygSoBhkjBYziPUrWVFQ0u8VlfRT058sU3qIWvqI/4Tb+ARQSwMEFAAAAAgAoEVzXRAhIHP1AAAAGgIAAB4AAABUTlRfTW9kX0JQL2Jsb2Nrcy90bnRfMzB4Lmpzb26dkN1OxCAQhd+FS7NpWr0w6ctMKEwrERiEQbtp+u4OXbOrMe6FXPB7vjPD2dRMOWiGd8zFUVSjGrrHoXvu1UkFF9FkPfM4eTKvatyUxWKyS3xIN+UsRnazwywgRw5kR1ngqV8bj7GC0YwL5XOT3/bKMYai9v2kDIVEUXxKk9xqSinO1bCbPMJ0BnlxcWmagoaiLcAEh4jEsO+G/XSHxjV5Kl9tXw+QsbjCOhoUix8GC1JAPnr9fdnN1Xu4pPIdkiQxO+3BxYvr8aeHNjGuXDNec2oZQZEAxSBjtJhBrF/IioKSfquopJ+a/mSZ0l3U0kf8J9zGJ1BLAwQUAAAACACgRXNdcPBVwfUAAAAaAgAAHgAAAFROVF9Nb2RfQlAvYmxvY2tzL3RudF81MHguanNvbp2Q3U7EIBCF34VLs2laE2PSl5lQmFYiMAiDdtP03R26Zldj3Au54Pd8Z4azqZly0AzvmIujqEY1dI9D99yrkwouosl65nHyZF7VuCmLxWSX+JBuylmM7GaHWUCOHMiOssBTvzYeYwWjGRfK5ya/7ZVjDEXt+0kZComi+JQmudWUUpyrYTd5hOkM8uLi0jQFDUVbgAkOEYlh3w376Q6Na/JUvtq+HiBjcYV1NCgWPwwWpIB89Pr7spur93BJ5TskSWJ22oOLF9fjTw9tYly5Zrzm1DKCIgGKQcZoMYNYv5AVBSX9VlFJPzX9yTKlu6ilj/hPuI1PUEsDBBQAAAAIAKBFc13J9Y+Q9AAAABYCAAAdAAAAVE5UX01vZF9CUC9ibG9ja3MvdG50XzV4Lmpzb26dkN1OxCAQhd+FS9M0WxNj0pchFKaVCDMIg3bT9N0dumZXY9wLueD3fGeGs6mZcjSs3yEXT6hGNfSPQ/98Up2KHsFmM/M4BbKvatyUg2KzT3xIN+UdIPvZQxaQkSO5URb9tDYcsGprGBbK56a+7ZVniEXte6csxUQoNqVJbiWlEudq2U8B9HTW8uJxaZoCltAVzaQPEYnhqR/27g4NawpUvrq+HnSG4gsbtCAWPwwWoAh89Pr7sp9rCPoSyndIgoTsTdAeL67Hnx7axLByzXCNSSLSReITPgM6yFqcX8iJgJJ5q6CknZr+QpnSXdLRB/6PbeMTUEsDBBQAAAAIAKBFc13Yfdq8ogEAAKAEAAAZAAAAVE5UX01vZF9CUC9ibG9ja3MvdHYuanNvbq1S0U7cMBD8FeSXK1WIElCBRuJLTifLZ29yqybeYG+A6yn/3nXMwVGpPPR4SJTIMzvj2TmolsJgWD9BiEheNaour+vyrlKFGtCDDablZtuT/aWag3IQbcCRF+hBoQPP2CIEIbLngVzDT4kKftLWMHQU9gn5/q0s+chhssuQuVAcDHJMoHfBsTcWZAhrhwHsUQ+82fbgdGQZJ5T1CcWa4NCb/oSxKdReBxKw/Glq2wismvq+mmfRtTSM5EXjL225Y7YnUnq713KCvkuYCOLdRc2kFxDJdaryx3waVQc0AC8XPX6WORmdk3lDSuwQUAyj5GG8hcXH9/RieOEpwFuoejQ9MIPwA3gHQcvgHTkB0GgeJ1DzBxOW+h7TPvWWXtJACtihRLi+ui+q4upGkon4WwTW9W1R3xS3mw/8CH2O8D/5PXY7WZ0ZRsjZVXI8QhimvIu0ukMqgsO8WvVYLh3Lm/22+mytq8uLh4eLlafAu5X69x6lVz7mer/W51gFUa/kGtUm9eBcH5Gms3xIHb/ICZjIZxi5vvsqI89wlpGfrz7k+QNQSwMEFAAAAAgAoEVzXXeZvYemAQAArgQAAB8AAABUTlRfTW9kX0JQL2Jsb2Nrcy93YXJkcm9iZS5qc29urVLRbqMwEPyVyi+5O1EE0V3TQ+qXRJFl7IVYBS9dL9emEf9+a2ja9KTrQ9MHEMi7M+OZOaoGqTes/wBFj0FVqszXZb4pVKZ6H8CSabiqO7T3qjoqB9GSH3gePSrvILBvPJAscuAeXfVoyBHWkAAgjNoahhbpkObfvpXFEJlGO0NNmWIynmMaeqMdOmNBQFg7T2BPrBBM3YHTkQVOVrZnK1bYfTDd2cYuUwdNKMPyp7FpIrCqyttimoTXYj9gEI5/uOWmizyh0vVBy4kPbZqJINpd1Ix6HkK5TpH/ms4NawF74Pmip8988Uef+/M6LxEAeZHtxRUTLMxqfqQXwxOPBK8G68F0wJz2CYID0gK/RycDOJiHEdT0TorFrvMpW13jUwJE8q0XI7fXm6zIrm/En+ifhWBb/szKm6xc794BROgWJz8L0Pl2LxGafoDFw0KOB6B+XDJJER5TIZxfIlYP+dy4JeFvq4/iXX2/uru7WgUk3q/U//OUfoW4lP2lRqdKCHsh9yh2qQ+X6og4XqRDavlFSsBEvkDIevNVQh7hIiG/X3TI8xdQSwMEFAAAAAgAoEVzXdEqv3mdAQAAYwMAACcAAABUTlRfTW9kX0JQL2VudGl0aWVzL2J1Z2F0dGlfY2hpcm9uLmpzb25tU+2OozAMfJf8RhHtabUSr7KqIhNCk7t8KTG0CPXdz27hdnstP1AYj8eOx6xiTCUAqtmU6lIUnTjI40G2ohHBRaMLjNiZiA4X0a1iMFUXl/FOXYUbODQ6UygRI4Y0dP10BkSntHWFWI1wVdUMlwi9N6IbwVfzAKcQ0oZimR6guWZTXCBZ8Bv51gidQk6RwMpVvxvDJRs1QnD+3t1++tp6URqKON1+XkUn7x3fVPXpyjkXN6AV3VEeG2GNO1sU3UH+ekqyBjyTVjGDn6jdQ9tSHK730xM1pNlw9z/Irfx8S5E9VKeJ+BSNMDsaIHUoL+D/sI6GqDKgVZRY1AWQx73NEebkhh3jKT6J/Z5ClhVJ7qVOtgtVry/wVO3DkpXt+P7859AOqX5R2VXkTXgpTDyEYIb/5dl2GAb/JhLzhOpc0hTJtxSxkFOvtN5YGlAqMntYaBqFVvB9KY7sN6mGVlyTNJvbbHuieHsqb8tDS5zofpEGCRoVmitxBR3ZiR2WLCptKtXQYrMq568ip+oe/8RX27Ty44Nex9PtdKPnL1BLAwQUAAAACACgRXNd2XVZEpQBAABYAwAAHAAAAFROVF9Nb2RfQlAvZW50aXRpZXMvY2FyLmpzb25tU+2OozAMfJf8RhHtbv/wKqsqMiGU3OVLiaFFqO9+doHb7bZISGE8Hjses4g+Zg+oJpOLjUE04iCPB1mLSngbjM7QY2MCWpxFs4jOFJ1twgd1EbbjUG9NpkQM6GPXaMiUbIsqCa4BWmdE04MrZgVH7+OGYh5X0NySydaTFriNfK+Ejj7FQGDhUt/d4JyM6sFb92hpP31tDShu4Hz/2b+Ozlm+nmrjjXOutsNBNEd5rMRg7GVA0Rzkx1PSYMAxaRETuJHaPdQ1xeH2OD1RfZwMd/+DXMvP01uObKFYTcynaIDJXoDHKq/g/rKQhqAS4KAoMasrIA95GyRM0XY7xmN8Evsz+iQLktxLnTTMVL28wGMZVk8W9uP7879FO6TaWSVbkP1/KUw8BG+63/LsO3SdexMJaUR1yXEMZFwMmMmqV1prBhpQzDI5mGkamRbvfSmO7DcphhZbkzS7W22Lonh9Cq/LqiXOdL9AgwSNCs2NuIKO7MQOSxaVQ8zF0GazKucvIsVi1z/hq65qeaL3eL6f7/T8A1BLAwQUAAAACACgRXNdy5TNuioBAAB9AgAAJwAAAFROVF9Nb2RfQlAvZW50aXRpZXMvcHJpbWVkX3RudF8yMHguanNvbnWR2Y6DMAxF/8XPVdX2aYZfqaooJQYsZVNipkWIf58Y6EJHwwvx9fWSkxGakJxm9YMpU/BQwXF/Ou4PsANHHuukG67QM/EA1QgGc50o8mwdgYykGsJUCtmzC6aKiRwaVSJ1OtxLH8oqR33z+moRqkbbjIvYOxdWlVO/iHiPKA08a7uapx3UwcXgi6jaFPqYZfY6rmwkzUV5LUw+sy7uV3Ka3tvkrZ2HiKrRjux8ycfpvM5Qy5XgMr1DqYO1JMzUNdyl7EaGO6gO+++vHXRIbcdLtCmL3ZCplgW2cp+7BcUoGF7hk8xDUtdBRcosLyDJTRsui6aZTjlAVRaxIUTy7RO8JJQJN6/wp5AQ73r4JFq8OrUomYy2gRnh7P2HvzZGfn8f6/xpvkzy/QJQSwMEFAAAAAgAoEVzXQFxS5UrAQAAfQIAACcAAABUTlRfTW9kX0JQL2VudGl0aWVzL3ByaW1lZF90bnRfMjV4Lmpzb251kdmKwzAMRf9Fz6W0hYGZ/Eopxo2VROANW11CyL+PlaRLOkxeYl1dLT4eoAnJaVZXTJmChwr228N+u4MNOPJYJ91whZ6Je6gGMJjrRJEn6wBkJNUQplLInl0wVUzk0KgSqcPXvfShrHLUN6/PFqFqtM04ixfnwqJyuswi3iNKA8/aLuZxA3VwMfgiqjaFS8wyexlXNpLmorwWJp9ZF/crOY7vbfLazn1E1WhHdrrk43RcZqj5SnAa36HUwVoSZuoc7lJ2I8MdVLvtz/cGOqS24zlalcWuz1TLAmv5krsZxSAYXuGTzENS515FyiwvIMlVGy6LpolOOUBVFrEhRPLtE7wklAk3r/BaSIh3OXwSLV6dWpRMRtvAhHDy/sNfGyO/v491/DSfRvl+AVBLAwQUAAAACACgRXNd4x/OFCoBAAB9AgAAJwAAAFROVF9Nb2RfQlAvZW50aXRpZXMvcHJpbWVkX3RudF8zMHguanNvbnWR226DMAyG38XXVdVuNxuvUk1RSgxYykmJaYsQ774Y6IFO44b49+9DvozQhOQ0qwumTMFDBcf9x3F/gB048lgn3XCFnokHqEYwmOtEkWfrCGQk1RCmUsieXTBVTOTQqBKpz8Ot9KGsctRXr88WoWq0zbiIvXNhVTn1i4i3iNLAs7aredpBHVwMvoiqTaGPWWav48pG0lyU58LkM+vifian6bVN3tp5iKga7cjOl7yfTusMtVwJfqZXKHWwloSZOoeblF3JcAfVYf/9tYMOqe14iTZlsRsy1bLAVu5zt6AYBcMzfJC5S+o8qEiZ5QUkuWnDZdE00ykHqMoiNoRIvn2Al4Qy4eoVXgoJ8a6Hd6LFq1OLksloG5gRzt5/+Gtj5Pf3sU7v5p9Jvl9QSwMEFAAAAAgAoEVzXZEpJUYrAQAAfQIAACcAAABUTlRfTW9kX0JQL2VudGl0aWVzL3ByaW1lZF90bnRfNTB4Lmpzb251kdtqwzAMht9F16W0g8GWVynDuLGSCHzCVtqGkHeflaSHdCw3sX79OvjzCE1ITrO6YMoUPFRw3H8c9wfYgSOPddINV+iZeIBqBIO5ThR5to5ARlINYSqF7NkFU8VEDo0qkfo83EofyipHffX6bBGqRtuMi9g7F1aVU7+IeIsoDTxru5qnHdTBxeCLqNoU+phl9jqubCTNRXkuTD6zLu5ncppe2+StnYeIqtGO7HzJ++m0zlDLleBneoVSB2tJmKlzuEnZlQx3UB3231876JDajpdoUxa7IVMtC2zlPncLilEwPMMHmbukzoOKlFleQJKbNlwWTTOdcoCqLGJDiOTbB3hJKBOuXuGlkBDvengnWrw6tSiZjLaBGeHs/Ye/NkZ+fx/r9G7+meT7BVBLAwQUAAAACACgRXNdR1wbYSoBAAB8AgAAJgAAAFROVF9Nb2RfQlAvZW50aXRpZXMvcHJpbWVkX3RudF81eC5qc29udZHbasMwDIbfRdeltIPBllcpw7ixkgh8wlbahpB3n5Wkh3QsN7F+/Tr48whNSE6zumDKFDxUcNx/HPcH2IEjj3XSDVfomXiAagSDuU4UebaOQEZSDWEqhezZBVPFRA6NKpH6vJU2lFWO+ur12SJUjbYZF7F3Lqwqp34R8RZR6j1ru5qnHdTBxeCLqNoU+phl9DqtLCTNRXnuSz6zLu5ncppe2+StnYeIqtGO7HzH++m0zlDLjeBnemVSB2tJkKlzuEnZlQx3UB3231876JDajpdoUxa7IVMtC2zlPncLilEwPMMHmbukzoOKlFkeQJKbNlwWTTOdcoCqLGJDiOTbB3hJKBOuXuGlkBDvengnWrw6tSiZjLaBGeHs/Ye/NkZ+fx/r9G7+meT7BVBLAwQUAAAACACgRXNdG+TGYnYBAAAGAwAAHwAAAFROVF9Nb2RfQlAvZW50aXRpZXMvcm9ja2V0Lmpzb251Ustu4zAM/BeeVcNpsRf/SlEIikTZ3FgPSMoLhv99RSVOmi7qi8XhkOJwtIANyakiT5gyBQ8D7Lr3XdeDAEcedVK2DOgLlSsMCxjMOlEsjboAGU5ZwlQLiy8umCEFfcBS6ynLHNXZq/2MMFg1Z7yBR+fCHS3peAPxEjGRq+3UfCevAnRwMfgKyjGFY8x85/2aOgk3Z+Q5KPlcVGU/k+v6vU1+peswz8Sy5T5cOHUmUyYY+u5DwIQ0TqUF6/dlxBT+oi7E4y9QaycqbRcuKl2vVk6NLbWddgIOvi5lr/RhU5zRkUzKm+CkIWsfZZvyhC6cUD7as4wYzrzo6o6AMalT86Tv+ncByo9zZVubsY1cGVvw2Yu3vtuJ/utVxnTNpHkhr/AxTzdrFrblGT792zC5v8pIufBTYFUvfUr1MjW76gGGPwLmECL58dGJE9KEs5d4qtYw9374aXHlqjSylrq32ULztHF/eRDKGP79/3o+f5K/Vv7+AVBLAwQUAAAACACgRXNdO9kY0Z8AAAD6AAAAKgAAAFROVF9Nb2RfQlAvaXRlbXMvYnVnYXR0aV9jaGlyb25fc3Bhd24uanNvbk2O0Q6CMAxF/6XPhIgxMdnPLHV02Og2snWKkv27DKL41odzz+kMNkSHoh8UEwcPCrr22LXnAzTg2JOJaEWxkAM1Q0/JRB5lJWfgnrywZYrLTry40KtLHlCEtblyDF6nEZ++ushnbVBoCPFVt/sN1Z6glAZMcGPwizRV5K9vtqDQJDlS2n6xmO/yK3+LK1tl+9zhpJOguenEbwJ1KqV8AFBLAwQUAAAACACgRXNdcRGQN5cAAADsAAAAHwAAAFROVF9Nb2RfQlAvaXRlbXMvY2FyX3NwYXduLmpzb25NjtEKwjAMRf8lz2M4EYT+TAldJkHbjiTT6ei/u27gfMvDuedkgSFLRPNPEuWcwEHXnrv2eoIGIicKgoM5NorgFuhJg/BoG7kA95SMByZZd5Ys5t4FFK8jvlIVUJp8QKNblncdHDdUpUIpDYQcx5xWk1bkLxr2itFsk5DuDww4PeyX8zW3gdV0bCPOXg3D3St/CNyllPIFUEsDBBQAAAAIAKBFc13fmCDKpwAAABABAAAhAAAAVE5UX01vZF9CUC9pdGVtcy90bnRfYmF6b29rYS5qc29uTY7RDoIwDEX/pc+EiC8m+5mlbkUb3IZbZxCyf3dAgjy1Te+95y7Qh+hQ9Idi4uBBQddeu/Z2gQYcezIRe1Es5EAtYCmZyKNsygXYkhfumWL1iRcXrKpD33EOYcA1gnzWBoUeIX5Xy38Hemceq0CglAZMcGPw9Uqr7IQ2O0tokhwp7TV6zC85oAdwDfpbHU46CZpBJ54JVHd+PtFbvVUYyYKSmKmU8gNQSwMEFAAAAAgAoEVzXbAaDlefAAAA7wAAAB8AAABUTlRfTW9kX0JQL3JlY2lwZXMvdG50XzIweC5qc29ubY3dCoMwDEbfJdciKuymdz7HGKVroyuzP6RxOKTvvuiuBrtJIPm+c3aYEgXD+oVUfIqgoG+Hru07aCD4iJbMxIrQ+oy6PExGB2oHh8WSz3xWdvAOI/vJIwmAI4fklCw9dJv+dqE2wGYuoK5wMn2cNZv7gnBrIBtmpHg8x1HMMuT6xPcBH08DY/hlXzaoAiUs68L/I6IXmE1rlEBfa/0AUEsDBBQAAAAIAKBFc122BJNMpAAAAPcAAAAfAAAAVE5UX01vZF9CUC9yZWNpcGVzL3RudF8yNXguanNvbm2OzQqDMAzHX0VyFtGBl976HGOUro2uzH7QxuGQvvuiOw12SQL/j192mGL2mtQLc3ExgIChu/Td0EML3gU0WU8kMhqXUJWHTmhB7GCxmOwSnZEdnMVAbnKYuYAC+WgFL3UZN/XNQm2B9FxAXOHsdGFWpO8Lwq2FpIkwh0NsZMNoKSXP42b1ie8DIk8Sof9ljBtULs9Y1oX+W/gNbjNxDWwYaq0fUEsDBBQAAAAIAKBFc10e06rUoQAAAPEAAAAfAAAAVE5UX01vZF9CUC9yZWNpcGVzL3RudF8zMHguanNvbm2OSwrDMAxE76J1CElLN97lHKUY11ZS0/iDrJSU4LtXSVeFbiTQzLzRBmOiYFi/kIpPERT07alr+w4aCD6iJTOyIrQ+oy4Pk9GB2sBhs
+        <div class="menu-card">
+            <div class="input-group">
+                <label>OYUNCU ADI (GAMERTAG)</label>
+                <input type="text" id="player-name-input" class="mc-input" maxlength="16" placeholder="Oyuncu Adı...">
+            </div>
+
+            <div class="input-group">
+                <label>SUNUCU ODASI (OTOMATİK BAĞLANTI)</label>
+                <input type="text" id="room-id-input" class="mc-input" value="gamerwost-tnt-global-v1">
+            </div>
+
+            <button class="mc-btn mc-btn-green" id="btn-play" style="font-size: 14px; padding: 16px;">
+                ▶ OYUNA GİR / DEVAM ET
+            </button>
+
+            <button class="mc-btn" id="btn-menu-mods">
+                🧩 BEDROCK MOD MANAGER / EKLENTİ EKLE
+            </button>
+
+            <div style="font-size: 11px; color: #a0a4ab; line-height: 1.6; background: #18181a; padding: 10px; border: 2px solid #0e0e10;">
+                <strong style="color:#ffaa00;">KONTROLLER:</strong><br>
+                • <b>PC:</b> WASD Hareket, Space Zıpla, Sol Tık Kır, Sağ Tık Koy/TNT Yak<br>
+                • <b>Mobil:</b> Sol Joystick ile Yürü, Ekrana Dokunup Kaydırarak Etrafa Bak!<br>
+                • <b>1-9 / Tekerlek / Dokunma</b>: Slot Seç &nbsp;|&nbsp; <b>M</b>: Mod Yöneticisi
+            </div>
+        </div>
+    </div>
+
+    <!-- Bedrock Mod Manager / Eklent

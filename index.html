@@ -1,284 +1,151 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>GAMERWOST – Blok Dünyası</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🧨%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"><title>Gamerwost</title>
 <style>
-*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-html,body{margin:0;height:100%;overflow:hidden;background:#0d1117;color:#fff;font:600 13px/1.5 system-ui,sans-serif;touch-action:none;overscroll-behavior:none}
-.px,.b,input{font-family:'Press Start 2P',monospace}
-#c{position:fixed;inset:0;width:100%;height:100%;display:block}
-.b{font-size:11px;background:#c6c6c6;color:#1e1e1e;border:3px solid #121213;box-shadow:inset 3px 3px #fff,inset -3px -3px #555;padding:12px 16px;cursor:pointer}
-.b:active{transform:translateY(2px)}
-.g{background:#3c8527;color:#fff;text-shadow:2px 2px #1a3b10;box-shadow:inset 3px 3px #63c247,inset -3px -3px #1d4d10}
-#hud{position:fixed;inset:0;pointer-events:none;z-index:5}
-#cross{position:fixed;top:50%;left:50%;width:20px;height:20px;margin:-10px;mix-blend-mode:difference}
-#cross:before,#cross:after{content:"";position:absolute;background:#fff}
-#cross:before{left:0;top:9px;width:20px;height:2px}
-#cross:after{left:9px;top:0;width:2px;height:20px}
-#top{position:fixed;top:max(10px,env(safe-area-inset-top));left:10px;right:10px;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-#net{pointer-events:auto;background:rgba(20,20,24,.8);border:2px solid #0f0f12;padding:8px 10px;font-size:10px}
-#top .b{pointer-events:auto;padding:8px 10px;font-size:10px}
-#hp{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);font-size:15px;white-space:nowrap;text-shadow:1px 1px #000}
-#tip{position:fixed;bottom:114px;left:50%;transform:translateX(-50%);font:11px 'Press Start 2P',monospace;color:#ffff55;text-shadow:2px 2px #000;opacity:0;transition:opacity .3s;white-space:nowrap}
-#hotbar{position:fixed;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;gap:3px;padding:3px;background:#1d1d1f;border:3px solid #0d0d0f;pointer-events:auto}
-.s{width:min(9.5vw,48px);height:min(9.5vw,48px);background:#8b8b8b;border:2px solid #373737;box-shadow:inset 2px 2px #555,inset -2px -2px #c6c6c6;display:grid;place-items:center;position:relative}
-.s.on{border:3px solid #fff;transform:scale(1.08);z-index:1;background:#a8a8a8}
-.s canvas{width:68%;height:68%;image-rendering:pixelated}
-.s i{position:absolute;top:1px;left:3px;font:8px 'Press Start 2P',monospace;text-shadow:1px 1px #000;font-style:normal}
-#dmg{position:fixed;inset:0;pointer-events:none;z-index:4;box-shadow:inset 0 0 120px 40px rgba(220,0,0,.75);opacity:0;transition:opacity .4s}
-#mob{display:none}
-.t #mob{display:block}
-#js{position:fixed;bottom:100px;left:18px;width:130px;height:130px;border-radius:50%;background:rgba(20,22,28,.4);border:3px solid rgba(255,255,255,.35);pointer-events:auto;display:grid;place-items:center}
-#kn{width:52px;height:52px;border-radius:50%;background:rgba(235,238,245,.85);border:3px solid #121214;pointer-events:none}
-.mb{position:fixed;width:64px;height:64px;border-radius:14px;border:3px solid rgba(255,255,255,.45);background:rgba(28,30,36,.7);color:#fff;font:9px 'Press Start 2P',monospace;pointer-events:auto;touch-action:none}
-.mb:active{background:rgba(255,170,0,.75)}
-#menu{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:16px;background:radial-gradient(circle,rgba(16,22,32,.65),rgba(8,11,16,.94));backdrop-filter:blur(4px)}
-h1{margin:0;text-align:center;font-size:clamp(24px,6vw,46px);line-height:1.3;text-shadow:4px 4px #1b1b1b,0 0 25px rgba(255,120,0,.7);animation:fl 3s ease-in-out infinite}
-h1 small{display:inline-block;margin-top:12px;background:#ffaa00;color:#1a1200;padding:5px 10px;font-size:10px;border:2px solid #000;box-shadow:3px 3px #000;text-shadow:none}
-@keyframes fl{50%{transform:translateY(-6px)}}
-@media(prefers-reduced-motion:reduce){h1{animation:none}}
-.card{background:#2b2b2d;border:4px solid #121213;box-shadow:inset 3px 3px #5a5b5e,inset -3px -3px #18181a,0 20px 50px #000a;padding:22px;width:100%;max-width:470px;display:flex;flex-direction:column;gap:14px}
-.card label{font:10px 'Press Start 2P',monospace;color:#b0b3b8;display:block;margin-bottom:7px}
-input{width:100%;background:#141416;border:3px solid #0a0a0c;color:#fff;padding:10px;font-size:12px;outline:0;user-select:text;-webkit-user-select:text}
-input:focus-visible,.b:focus-visible{outline:3px solid #ffaa00}
-.help{font-size:12px;color:#a0a4ab;background:#18181a;padding:10px;border:2px solid #0e0e10}
-.help b{color:#ffaa00}
-.modal{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.78)}
-.mw{background:#262629;border:4px solid #0f0f11;box-shadow:inset 3px 3px #525258,inset -3px -3px #161618;width:100%;max-width:560px;max-height:88vh;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-.mw h2{margin:0;font:12px/1.5 'Press Start 2P',monospace;color:#ffaa00}
-#ml{display:flex;flex-direction:column;gap:6px}
-.row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:#2a2a2e;border:2px solid #121214;padding:9px 11px}
-.row small{display:block;color:#a0a4ab;font-weight:500}
-.row .b{padding:6px 10px}
-.sw{width:46px;height:24px;flex:none;margin-left:auto;background:#555;border:3px solid #121214;position:relative;cursor:pointer}
-.sw:after{content:"";position:absolute;top:1px;left:1px;width:14px;height:14px;background:#ddd}
-.sw.on{background:#3c8527}.sw.on:after{left:23px}
-textarea{width:100%;min-height:90px;background:#141416;border:3px solid #0a0a0c;color:#9fe;font:12px monospace;padding:8px;user-select:text;-webkit-user-select:text}
-.inv{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:4px}
-.inv .s{width:100%;height:auto;aspect-ratio:1;cursor:pointer}
-@media(max-width:560px){#net{font-size:8px;padding:6px}#top .b{padding:6px 8px;font-size:9px}}
-#err{position:fixed;left:0;right:0;top:0;z-index:99;display:none;background:#7a1616;color:#fff;padding:10px 12px;font:12px/1.4 monospace;user-select:text;-webkit-user-select:text}
-</style>
-</head>
-<body>
-<canvas id="c"></canvas>
-<div id="err"></div>
-<div id="dmg"></div>
-<div id="hud">
-  <div id="cross"></div>
-  <div id="top"><span id="net" class="px">⚪ Çevrimdışı</span><span style="display:flex;gap:6px"><button id="bm" class="b">🧩 Mod</button><button id="bi" class="b">🎒</button><button id="pb" class="b">⏸</button></span></div>
-  <div id="hp"></div><div id="tip"></div><div id="hotbar"></div>
-  <div id="mob">
-    <div id="js"><div id="kn"></div></div>
-    <button class="mb" id="bj" style="bottom:190px;right:18px">⬆<br>Zıpla</button>
-    <button class="mb" id="bb" style="bottom:100px;right:92px;background:rgba(217,56,56,.7)">⛏<br>Kır</button>
-    <button class="mb" id="bp" style="bottom:100px;right:18px;background:rgba(60,133,39,.75)">🔥<br>Koy</button>
-  </div>
-</div>
-<div id="menu">
-  <h1 class="px">GAMERWOST<br><small class="px">Blok dünyası · Çok oyunculu</small></h1>
-  <div class="card">
-    <div><label for="nm">Oyuncu adı</label><input id="nm" maxlength="14" placeholder="Steve"></div>
-    <div><label for="rm">Sunucu odası</label><input id="rm" maxlength="24" value="gamerwost"></div>
-    <button class="b g" id="play" style="font-size:14px;padding:16px">▶ Oyna</button>
-    <button class="b" id="bmm">🧩 Mod yöneticisi</button>
-    <div class="help"><b>PC:</b> WASD yürü · Boşluk zıpla · Sol tık kır · Sağ tık koy/yak · 1-9 veya tekerlek eşya seç · Esc menü · E blok envanteri · M modlar<br><b>Mobil:</b> sol joystick yürü · ekranı kaydırarak bak<br><b>İpucu:</b> TNT koy, 🔥 çakmakla yak ve kaç! Aynı oda adını giren arkadaşın aynı dünyaya girer.</div>
-  </div>
-</div>
-
-<div class="modal" id="mods"><div class="mw">
-  <h2>🧩 Mod yöneticisi</h2><div id="ml"></div>
-  <div class="help"><b>📦 Bedrock:</b> TNT paketinin yanındaki düğmeyle indirdiğin <b>.mcaddon</b> dosyasını açınca Minecraft Bedrock'a aktarılır. TNT'leri yaratık yumurtalarından al ya da <b>/summon gw:mega_tnt</b> yaz.</div>
-  <h2>Kendi modunu ekle</h2>
-  <textarea id="mc" spellcheck="false" placeholder="GW.on('tick',()=&gt;{ if(GW.keys.KeyG) GW.V[1]=9 }) // G'ye basılı tut: jetpack"></textarea>
-  <div style="display:flex;gap:8px"><button class="b g" id="madd">Mod ekle</button><button class="b" id="mx">Kapat</button></div>
-  <div class="help">Kod, GW nesnesiyle oyuna erişir: <b>GW.on('tick',fn)</b> · GW.get(x,y,z) · GW.setB(x,y,z,id) · GW.P konum · GW.V hız · GW.keys · GW.ignite(x,y,z) · GW.explode(x,y,z) · GW.tip(metin)</div>
-</div></div>
-<div class="modal" id="inv"><div class="mw"><h2>🎒 Bloklar</h2><div class="help">Seçili slota koymak için bir bloğa dokun.</div><div class="inv" id="il"></div><button class="b" id="ic">Kapat</button></div></div>
+:root{--bg:#f2efe8;--fg:#1c1c1a;--pn:#fff;--ac:#2f9e44;--bd:#d8d4c8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#14161a;--fg:#eceae4;--pn:#21252b;--bd:#343a42}}
+:root[data-theme=dark]{--bg:#14161a;--fg:#eceae4;--pn:#21252b;--bd:#343a42}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overscroll-behavior:none}
+body{background:var(--bg);color:var(--fg);font:15px system-ui,sans-serif;display:flex;flex-direction:column}
+header{display:flex;gap:6px;align-items:center;padding:8px 10px;background:var(--pn);border-bottom:1px solid var(--bd);overflow-x:auto}
+h1{font-size:18px;margin:0 8px 0 0;letter-spacing:1px;color:var(--ac);white-space:nowrap}
+button,input{font:inherit;color:inherit}
+input{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px;max-width:100%}
+button{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;cursor:pointer;white-space:nowrap}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+#g{flex:1;position:relative;min-height:0;background:#87ceeb;overflow:hidden;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#hb{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px;max-width:96%;overflow-x:auto}
+#hb div{flex:none;width:44px;height:44px;border:2px solid #fff6;border-radius:6px;font-size:9px;color:#fff;display:flex;align-items:flex-end;justify-content:center;text-shadow:0 1px 2px #000}
+#hb .s{border-color:#fff;transform:scale(1.1)}
+#x{position:absolute;top:50%;left:50%;color:#fff;transform:translate(-50%,-50%);pointer-events:none;mix-blend-mode:difference}
+#ts{position:absolute;top:8px;left:8px;right:8px;text-align:center;color:#fff;text-shadow:0 1px 3px #000;pointer-events:none;opacity:0;transition:opacity .3s}
+#bx,#bx *{user-select:text;-webkit-user-select:text}
+#pn{position:absolute;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:10px}
+#pn.o{display:flex}
+#bx{background:var(--pn);border-radius:14px;padding:16px;max-width:480px;width:100%;max-height:100%;overflow:auto}
+#bx h3{margin:0 0 8px}#bx p{line-height:1.45}
+#jb{position:absolute;width:100px;height:100px;margin:-50px 0 0 -50px;border-radius:50%;border:2px solid #fff8;display:none;pointer-events:none}
+#jk{position:absolute;left:28px;top:28px;width:44px;height:44px;border-radius:50%;background:#fff7}
+#jp{position:absolute;right:14px;bottom:70px;width:64px;height:64px;border-radius:50%;opacity:.8;display:none;touch-action:none}
+@media(pointer:coarse){#jp{display:block}}
+</style></head><body>
+<header><h1>GAMERWOST</h1><button class="p" data-p="">▶ Oyna</button><button data-p="mod">🧩 Modlar</button><button data-p="bed">📦 Bedrock’a Aktar</button><button data-p="net">🌐 Online / Yayınla</button><button data-p="apk">📱 APK & EXE</button><button id="fs">⛶</button></header>
+<div id="g"><div id="x">+</div><div id="ts"></div><div id="hb"></div><div id="jb"><div id="jk"></div></div><button id="jp">⤒</button>
+<div id="pn"><div id="bx">
+<section id="mod" hidden><h3>🧩 Modlar</h3>
+<p><b>💥 TNT Modu</b> (açık): sol tık ateşler, yakındaki TNT’ler zincirleme patlar.</p>
+<p><label><input id="rl" type="checkbox"> <b>🌅 Gerçekçilik Shader Modu</b></label><br>Gölgeler, güneş, gün döngüsü, sis ve köşe kararması. Telefonda yavaşsa kapat.</p>
+<p><b>Özel blok modu</b><br><input id="mn" placeholder="Blok adı"> <input id="mc" type="color" value="#ff8800"> <label><input id="me" type="checkbox"> Patlar</label> <input id="mr" type="number" min="1" max="8" value="3" style="width:60px"> <button class="p" id="ma">Ekle</button></p></section>
+<section id="bed" hidden><h3>📦 Bedrock’a Aktar</h3><p>Aktarılacak modlar:</p><label><input id="e1" type="checkbox" checked> 💥 TNT Modu (+ özel bloklar)</label><br><label><input id="e2" type="checkbox" checked> 🌅 Gerçekçilik (sis, gökyüzü, su renkleri)</label>
+<p>İndirince <b>.zip</b> uzantısını <b>.mcaddon</b> yap ve Minecraft’ta aç. TNT boş elle sağ tıkla patlar (gerekirse “Beta API’leri” aç). Gerçek RenderDragon shader’ları (.material.bin) üretilemez; Gerçekçilik paketi atmosfer paketidir.</p><button class="p" id="bx2">⬇ Paketi indir</button></section>
+<section id="net" hidden><h3>🌐 Online & Yayınla</h3><p>PeerJS ile eşler arası çok oyunculu. Dünyanı yayınla, kodu arkadaşına ver.</p><button class="p" id="nh">🌍 Dünyayı yayınla</button><p id="nc"></p><input id="ni" placeholder="Oda kodu (gw-xxxxx)"> <button id="nj">Katıl</button><p id="lg"></p></section>
+<section id="apk" hidden><h3>📱💻 APK & EXE</h3><p>APK ve EXE’yi GitHub Actions açık kodla kendi sunucusunda derler. Projeyi GitHub’a yükleyip <b>v1.0.0</b> etiketi atınca dosyalar Releases’e düşer.</p><button class="p" data-d="apk">⬇ Android APK</button> <button class="p" data-d="exe">⬇ Windows EXE</button></section>
+<button data-p="" style="margin-top:10px">Kapat</button></div></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
-window.gwBoot=()=>{'use strict';
-const $=i=>document.getElementById(i),W=96,D=96,H=48,NC=6,T=16,NT=21;
-const mobile=matchMedia('(pointer:coarse)').matches;if(mobile)document.body.classList.add('t');
-
-/* ---- Doku atlası (kodla çizilen piksel dokular) ---- */
-const atl=document.createElement('canvas');atl.width=T*NT;atl.height=T;
-const ax=atl.getContext('2d');let rs=7;
-const rnd=()=>(rs=(rs*1664525+1013904223)>>>0)/4294967296;
-const sh=(r,g,b,v)=>{const k=1+(rnd()-.5)*v;return`rgb(${r*k|0},${g*k|0},${b*k|0})`};
-const tile=(i,f)=>{for(let y=0;y<T;y++)for(let x=0;x<T;x++){const c=f(x,y);if(c){ax.fillStyle=c;ax.fillRect(i*T+x,y,1,1)}}};
-const GR=()=>sh(95,160,55,.3),DI=()=>sh(134,96,67,.3);
-tile(0,GR);
-tile(1,(x,y)=>y<4||(y===4&&rnd()<.5)?GR():DI());
-tile(2,DI);
-tile(3,()=>sh(128,128,128,.25));
-tile(4,()=>sh(219,207,142,.15));
-tile(5,x=>x%4?sh(104,82,50,.15):sh(78,60,36,.15));
-tile(6,(x,y)=>{const d=Math.max(Math.abs(x-7.5),Math.abs(y-7.5));return d>6.5?sh(104,82,50,.15):(d|0)%2?sh(178,142,88,.1):sh(158,122,70,.1)});
-tile(7,()=>rnd()<.18?null:sh(60,140,40,.4));
-tile(8,(x,y)=>y%4===3?sh(110,80,40,.1):sh(170,130,75,.12));
-tile(9,(x,y)=>(x*7+y*13)%11<2?sh(70,70,70,.2):sh(125,125,125,.35));
-tile(10,()=>sh(50,50,50,.8));
-tile(11,(x,y)=>y>4&&y<11?sh(225,225,220,.08):sh(200,45,40,.12));
-ax.fillStyle='#222';ax.font='bold 7px monospace';ax.fillText('TNT',11*T+1.5,10);
-tile(12,(x,y)=>Math.abs(x-7.5)<2.5&&Math.abs(y-7.5)<2.5?sh(60,60,60,.2):sh(190,40,35,.1));
-[[60,120,230,'MINI'],[240,150,30,'MEGA'],[70,190,60,'NUKE'],[170,60,210,'KUME']].forEach((k,i)=>{
-  tile(13+i*2,(x,y)=>y>4&&y<11?sh(228,228,222,.08):sh(k[0],k[1],k[2],.14));
-  ax.fillStyle='#222';ax.font='bold 5px monospace';ax.fillText(k[3],(13+i*2)*T+1,10);
-  tile(14+i*2,(x,y)=>Math.abs(x-7.5)<2.5&&Math.abs(y-7.5)<2.5?sh(60,60,60,.2):sh(k[0],k[1],k[2],.12))});
-
-/* blok: [üst, yan, alt] doku indeksi */
-const BL={1:[0,1,2],2:[2,2,2],3:[3,3,3],4:[4,4,4],5:[6,5,6],6:[7,7,7],7:[8,8,8],8:[9,9,9],9:[10,10,10],10:[12,11,12],11:[14,13,14],12:[16,15,16],13:[18,17,18],14:[20,19,20]};
-const TK={10:{r:4,f:3},11:{r:2,f:1.2},12:{r:8,f:4},13:{r:14,f:5},14:{r:3,f:3,cl:1}};
-const NM={0:'Çakmak ve Çelik',1:'Çimen',2:'Toprak',3:'Taş',4:'Kum',5:'Odun',7:'Tahta',6:'Yaprak',8:'Kırıktaş',10:'TNT',11:'Mini TNT',12:'Mega TNT',13:'Nükleer TNT',14:'Küme TNT'};
-const HOT=[0,10,11,12,13,14,1,3,7];
-const FC=[
-{d:[1,0,0],s:.8,c:[[1,0,1],[1,0,0],[1,1,0],[1,1,1]]},
-{d:[-1,0,0],s:.8,c:[[0,0,0],[0,0,1],[0,1,1],[0,1,0]]},
-{d:[0,1,0],s:1,c:[[0,1,1],[1,1,1],[1,1,0],[0,1,0]]},
-{d:[0,-1,0],s:.5,c:[[0,0,0],[1,0,0],[1,0,1],[0,0,1]]},
-{d:[0,0,1],s:.7,c:[[0,0,1],[1,0,1],[1,1,1],[0,1,1]]},
-{d:[0,0,-1],s:.7,c:[[1,0,0],[0,0,0],[0,1,0],[1,1,0]]}];
-
-/* ---- Dünya verisi ---- */
-const wd=new Uint8Array(W*H*D),ed=new Map();
-const ix=(x,y,z)=>(y*D+z)*W+x;
-const inb=(x,y,z)=>x>=0&&x<W&&y>=0&&y<H&&z>=0&&z<D;
-const get=(x,y,z)=>y>=H?0:inb(x,y,z)?wd[ix(x,y,z)]:9;
-let seed=1;
-const hs=(x,z)=>{let h=Math.imul(x,374761393)+Math.imul(z,668265263)+seed|0;h=Math.imul(h^h>>>13,1274126177);return((h^h>>>16)>>>0)/4294967296};
-const sm=t=>t*t*(3-2*t);
-const vn=(x,z)=>{const i=Math.floor(x),j=Math.floor(z),u=sm(x-i),v=sm(z-j),a=hs(i,j),b=hs(i+1,j),c=hs(i,j+1),d=hs(i+1,j+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v};
-const hgt=(x,z)=>Math.floor(14+vn(x/40,z/40)*14+vn(x/16,z/16)*6+vn(x/7,z/7)*2.5);
-const hashStr=s=>{let h=7;for(const c of s)h=Math.imul(h,31)+c.charCodeAt(0)|0;return h};
-const topY=(x,z)=>{let y=H-1;while(y>0&&!wd[ix(x,y,z)])y--;return y+1};
-function gen(){
-  wd.fill(0);
-  for(let x=0;x<W;x++)for(let z=0;z<D;z++){const h=hgt(x,z);for(let y=0;y<=h;y++)wd[ix(x,y,z)]=y===0?9:y===h?(h<18?4:1):y>h-4?2:3}
-  for(let x=3;x<W-3;x++)for(let z=3;z<D-3;z++){
-    if(hs(x*7+1,z*13+5)<.985)continue;
-    const h=topY(x,z)-1;if(wd[ix(x,h,z)]!==1)continue;
-    const t=4+(hs(x,z+9)>.5?1:0);
-    for(let i=1;i<=t;i++)wd[ix(x,h+i,z)]=5;
-    for(let dy=t-1;dy<=t+1;dy++){const r=dy===t+1?1:2;for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++){if(r===2&&Math.abs(dx)===2&&Math.abs(dz)===2)continue;const k=ix(x+dx,h+dy,z+dz);if(!wd[k])wd[k]=6}}
-  }
-}
-
-/* ---- Sahne & render ---- */
-const cvs=$('c'),R=new THREE.WebGLRenderer({canvas:cvs,antialias:false});
-R.setPixelRatio(Math.min(devicePixelRatio,2));
-const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(75,1,.05,200);
-cam.rotation.order='YXZ';
-const sky=new THREE.Color(0x7ec8f2),NIT=new THREE.Color(0x0b1026),DAY=new THREE.Color(0x7ec8f2);
-scene.background=sky;scene.fog=new THREE.Fog(0x7ec8f2,35,110);
-const tex=new THREE.CanvasTexture(atl);tex.magFilter=tex.minFilter=THREE.NearestFilter;
-const mat=new THREE.MeshBasicMaterial({map:tex,vertexColors:true,alphaTest:.5});
-const rsz=()=>{R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()};
-addEventListener('resize',rsz);rsz();
-const hl=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.005,1.005,1.005)),new THREE.LineBasicMaterial({color:0}));
-hl.visible=false;scene.add(hl);
-
-const ch=new Array(NC*NC).fill(null),dirty=new Set();
-function build(cx,cz){
-  const Q=[],U=[],C=[],I=[];let n=0;const x0=cx*16,z0=cz*16;
-  for(let y=0;y<H;y++)for(let z=z0;z<z0+16;z++)for(let x=x0;x<x0+16;x++){
-    const b=wd[ix(x,y,z)];if(!b)continue;const bt=BL[b];
-    for(let f=0;f<6;f++){
-      const F=FC[f],nb=get(x+F.d[0],y+F.d[1],z+F.d[2]);
-      if(nb&&(nb!==6||b===6))continue;
-      const ti=f===2?bt[0]:f===3?bt[2]:bt[1],u0=ti/NT+.0004,u1=(ti+1)/NT-.0004;
-      for(let k=0;k<4;k++){const c=F.c[k];Q.push(x+c[0],y+c[1],z+c[2]);U.push(k===0||k===3?u0:u1,k<2?.002:.998);C.push(F.s,F.s,F.s)}
-      I.push(n,n+1,n+2,n,n+2,n+3);n+=4;
-    }
-  }
-  const k=cx+cz*NC;
-  if(ch[k]){scene.remove(ch[k]);ch[k].geometry.dispose();ch[k]=null}
-  if(!n)return;
-  const g=new THREE.BufferGeometry();
-  g.setAttribute('position',new THREE.Float32BufferAttribute(Q,3));
-  g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));
-  g.setAttribute('color',new THREE.Float32BufferAttribute(C,3));
-  g.setIndex(I);
-  ch[k]=new THREE.Mesh(g,mat);scene.add(ch[k]);
-}
-const mk=(x,z)=>{const cx=x>>4,cz=z>>4,l=x&15,m=z&15;[[cx,cz],[l===0?cx-1:l===15?cx+1:cx,cz],[cx,m===0?cz-1:m===15?cz+1:cz]].forEach(([a,b])=>{if(a>=0&&b>=0&&a<NC&&b<NC)dirty.add(a+b*NC)})};
-
-/* ---- Oyuncu durumu ---- */
-let started=0,paused=1,sel=0,hp=20,yaw=0,pit=0,gnd=0,fy=0,jmp=0,brk=0,cd=0,jx=0,jz=0,tm=.15,rg=0;
-let nameStr='Steve',myId='',host=0,online=0,saveD=0,room='',lr='',spawn=[48.5,30,48.5];
-const P=[0,0,0],V=[0,0,0],keys={};
-const MS={tnt:1},CM=[],hooks=[];let mo=0;
-try{const d=JSON.parse(localStorage.getItem('gw-mods')||'null');if(d){Object.assign(MS,d.s);(d.c||[]).forEach(m=>CM.push(m))}}catch(e){}
-const st=s=>{$('net').textContent=s};
-let tt;const tip=s=>{const e=$('tip');e.textContent=s;e.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>e.style.opacity=0,1600)};
-const hearts=()=>{let s='';for(let i=0;i<10;i++)s+=hp>=i*2+2?'❤️':hp===i*2+1?'💔':'🖤';$('hp').textContent=s};
-function hurt(n){
-  if(n<=0||MS.god)return;hp=Math.max(0,hp-n);
-  const d=$('dmg');d.style.opacity=1;setTimeout(()=>d.style.opacity=0,160);
-  if(!hp){tip('Öldün! Yeniden doğuyorsun…');hp=20;P[0]=spawn[0];P[1]=spawn[1];P[2]=spawn[2];V[0]=V[1]=V[2]=0;fy=P[1]}
-  hearts();
-}
-let ac;function boom(){try{ac=ac||new AudioContext();const n=ac.sampleRate*.7|0,b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);const s=ac.createBufferSource(),f=ac.createBiquadFilter();f.frequency.value=360;s.buffer=b;s.connect(f);f.connect(ac.destination);s.start()}catch(e){}}
-
-/* ---- Fizik ---- */
-const hit=()=>{const x0=Math.floor(P[0]-.3),x1=Math.floor(P[0]+.3),z0=Math.floor(P[2]-.3),z1=Math.floor(P[2]+.3),y1=Math.floor(P[1]+1.79);for(let y=Math.floor(P[1]);y<=y1;y++)for(let x=x0;x<=x1;x++)for(let z=z0;z<=z1;z++)if(get(x,y,z))return 1;return 0};
-const mv=(a,d)=>{P[a]+=d;if(hit()){P[a]-=d;if(a===1&&d<0)gnd=1;V[a]=0}};
-function upd(dt){
-  let mx=(keys.KeyD?1:0)-(keys.KeyA?1:0)+jx,mz=(keys.KeyS?1:0)-(keys.KeyW?1:0)+jz;
-  const l=Math.hypot(mx,mz);if(l>1){mx/=l;mz/=l}
-  const sp=(keys.ShiftLeft&&!MS.fly?2.4:4.4)*(MS.spd?2:1),s=Math.sin(yaw),c=Math.cos(yaw),k=Math.min(1,dt*(gnd?14:4));
-  V[0]+=((mx*c+mz*s)*sp-V[0])*k;V[2]+=((-mx*s+mz*c)*sp-V[2])*k;
-  V[1]=MS.fly?(keys.Space||jmp?7:0)-(keys.ShiftLeft?7:0)-mz*Math.sin(pit)*sp:Math.max(V[1]-(MS.jmp?9:26)*dt,-40);
-  if((keys.Space||jmp)&&gnd&&!MS.fly)V[1]=MS.jmp?9.5:8.8;
-  mv(0,V[0]*dt);mv(2,V[2]*dt);gnd=0;mv(1,V[1]*dt);
-  if(gnd){const f=fy-P[1];if(f>3.4&&!MS.jmp&&!MS.fly)hurt(Math.floor(f-3));fy=P[1]}else fy=Math.max(fy,P[1]);
-  rg+=dt;if(rg>4&&hp<20){rg=0;hp++;hearts()}
-  cam.position.set(P[0],P[1]+1.62,P[2]);cam.rotation.set(pit,yaw,0);
-}
-
-/* ---- Kırma / koyma ---- */
-const dir=new THREE.Vector3();
-function target(){
-  cam.getWorldDirection(dir);const o=cam.position;let lx=-1,ly=0,lz=0;
-  for(let t=0;t<6;t+=.04){
-    const x=Math.floor(o.x+dir.x*t),y=Math.floor(o.y+dir.y*t),z=Math.floor(o.z+dir.z*t);
-    if(get(x,y,z))return{x,y,z,px:lx,py:ly,pz:lz};
-    lx=x;ly=y;lz=z;
-  }
-  return null;
-}
-function setB(x,y,z,b,loc=true){
-  if(!inb(x,y,z)||y===0)return;
-  wd[ix(x,y,z)]=b;ed.set(x+','+y+','+z,b);saveD=1;mk(x,z);
-  if(loc)send({t:'b',x,y,z,b});
-}
-function doBreak(){const h=target();if(!h)return;const r=MS.dig?1:0;for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)for(let c=-r;c<=r;c++)setB(h.x+a,h.y+b,h.z+c,0)}
-function doPlace(){
-  if(paused)return;const h=target();if(!h)return;const id=HOT[sel];
-  if(id===0){if(TK[get(h.x,h.y,h.z)])ignite(h.x,h.y,h.z);return}
-  if(!inb(h.px,h.py,h.pz))return;
-  if(h.px+1>P[0]-.3&&h.px<P[0]+.3&&h.pz+1>P[2]-.3&&h.pz<P[2]+.3&&h.py+1>P[1]&&h.py<P[1]+1.8)return;
-  setB(h.px,h.py,h.pz,id);
-}
-
-/* ---- TNT ---- */
-const tn=[],fx=[],tg=new THREE.BoxGeometry(1.03,1.03,1.03),sg=new THREE.SphereGeometry(1,12,8);
-function ignite(x,y,z,loc=true,t){
-  const k=TK[get(x,y,z)];if(!k||tn.some(a=>a.x===x&&a.y===y&&a.z===z))return;if(t==null)t=k.f;
-  const m=new THREE.Mesh(tg,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.8}));
-  m.position.set(x+.5,y+.5,z+.5);scene.add(m);tn.push({x,y,z,t,m,k});
-  if(loc)send({t:'i',x,y,z});
-}
-function explode(x,y,z,K){
-  const Rr=K.r;for(let dx=-Rr;dx<=Rr;dx++)for(let dy=-Rr;dy<=Rr;dy++)for(let dz=-Rr;dz<=Rr;dz++){
-    if(dx*dx+dy*dy+dz*dz>Rr*Rr+1)continue;
-    const a=x+dx,b=y+dy,c=z+dz,id=get(a,b,c);
-    if(!id||b<1||!inb(a,b,c))continue;
-    if(TK[id]&&(dx||dy||dz))ignite(a,b,c,false,.2+Math.random()*.5);else setB(a,b,c,0,false);
-  }
-  const cx=x+.5,cy=y+.5,cz=z+.5,ex=P[0]-cx,ey=P[1]+.9-cy,ez=P[2]-cz,d=Math.hypot(ex,ey,ez);
-  if(d<Rr+4){const k=1-d/(Rr+4),n=Math.max(d,.5);hurt(Math.round(k*16));V[0]+=ex/n*k*16;V[1]+=ey/n*k*12+4*k;V[2]+=ez/n*k*16;gnd
+const $=id=>document.getElementById(id),N=64,H=32,C=16;
+const T=[0,{n:'Çimen',c:'#5fa83e'},{n:'Toprak',c:'#8a5a2c'},{n:'Taş',c:'#868686'},{n:'Odun',c:'#6b4a26'},{n:'Yaprak',c:'#2f7d32'},{n:'TNT',c:'#d63b2f',b:4}];
+let sel=1,me='local',peer,conns=[],host=0,rp={},tm,RL=!matchMedia('(pointer:coarse)').matches;
+const KS={},pl={x:32.5,y:30,z:32.5,vy:0,yaw:0,pit:0,g:0},W=new Uint8Array(N*H*N),ix=(x,y,z)=>(y*N+z)*N+x,dirty=new Set(),CH={},CC={};
+const get=(x,y,z)=>x<0||y<0||z<0||x>=N||y>=H||z>=N?0:W[ix(x,y,z)];
+const hs=(x,z)=>{let h=Math.imul(x,374761393)^Math.imul(z,668265263);h=Math.imul(h^h>>>13,1274126177);return((h^h>>>16)>>>0)/4294967295};
+const vn=(x,z)=>{const xi=Math.floor(x),zi=Math.floor(z),fx=x-xi,fz=z-zi,u=fx*fx*(3-2*fx),v=fz*fz*(3-2*fz),a=hs(xi,zi),b=hs(xi+1,zi),c=hs(xi,zi+1),d=hs(xi+1,zi+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v};
+const clean=a=>(Array.isArray(a)?a:[]).filter(m=>m&&typeof m=='object').slice(0,30).map(m=>({n:String(m.n||'Blok').replace(/[^\w \-ğüşıöçĞÜŞİÖÇ]/g,'').slice(0,16)||'Blok',c:/^#[0-9a-f]{6}$/i.test(m.c)?m.c:'#888888',b:Math.min(8,Math.max(0,+m.b||0))}));
+const drawHB=()=>{$('hb').innerHTML=T.slice(1).map((b,i)=>`<div class="${i+1==sel?'s':''}" data-i="${i+1}" style="background:${b.c}">${b.n.slice(0,6)}</div>`).join('')};
+const save=()=>{try{localStorage.setItem('gw',JSON.stringify({c:T.slice(7),r:RL}))}catch(e){}};
+function setMods(a){T.length=7;T.push(...clean(a));if(sel>=T.length)sel=1;drawHB();save()}
+function log(s){const t=$('ts');t.textContent=s;t.style.opacity=1;$('lg').textContent=s;clearTimeout(tm);tm=setTimeout(()=>t.style.opacity=0,6000)}
+const markAll=()=>{for(let a=0;a<N/C;a++)for(let b=0;b<N/C;b++)dirty.add(a+','+b)};
+function mark(x,z){for(const a of[-1,0,1])for(const b of[-1,0,1]){const cx=(x+a)>>4,cz=(z+b)>>4;if(cx>=0&&cz>=0&&cx<N/C&&cz<N/C)dirty.add(cx+','+cz)}}
+function gen(){W.fill(0);const hh=[];for(let x=0;x<N;x++)for(let z=0;z<N;z++){const h=Math.min(24,6+Math.floor(vn(x/24,z/24)*12+vn(x/10,z/10)*5+vn(x/4,z/4)*1.5));hh[x*N+z]=h;for(let y=0;y<=h;y++)W[ix(x,y,z)]=y==h?1:y>h-3?2:3}
+for(let i=0;i<45;i++){const x=3+Math.random()*(N-6)|0,z=3+Math.random()*(N-6)|0,h=hh[x*N+z];for(let t=1;t<=4;t++)W[ix(x,h+t,z)]=4;for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)for(let c=4;c<=6;c++)if(!W[ix(x+a,h+c,z+b)]&&(c<6||!(a&&b)))W[ix(x+a,h+c,z+b)]=5}markAll()}
+const FC=[[1,0,0,.8,[1,0,1,1,0,0,1,1,0,1,1,1]],[-1,0,0,.8,[0,0,0,0,0,1,0,1,1,0,1,0]],[0,1,0,1,[0,1,1,1,1,1,1,1,0,0,1,0]],[0,-1,0,.5,[0,0,0,1,0,0,1,0,1,0,0,1]],[0,0,1,.7,[0,0,1,1,0,1,1,1,1,0,1,1]],[0,0,-1,.7,[1,0,0,0,0,0,0,1,0,1,1,0]]];
+const sc=new THREE.Scene(),sk=new THREE.Color('#87ceeb'),cam=new THREE.PerspectiveCamera(72,1,.1,200),rd=new THREE.WebGLRenderer({antialias:true}),cv=rd.domElement;
+sc.background=sk;sc.fog=new THREE.Fog(sk,40,105);rd.setPixelRatio(Math.min(devicePixelRatio,2));rd.shadowMap.type=THREE.PCFSoftShadowMap;$('g').prepend(cv);
+const sun=new THREE.DirectionalLight(0xfff2d6,.9),hemi=new THREE.HemisphereLight(0xbfd8ff,0x5a4a3a,.6),sh=sun.shadow.camera;
+sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sh.left=sh.bottom=-48;sh.right=sh.top=48;sh.near=1;sh.far=220;sun.shadow.bias=-.0006;sc.add(sun,sun.target,hemi);
+const MS=[new THREE.MeshBasicMaterial({vertexColors:true}),new THREE.MeshLambertMaterial({vertexColors:true})];
+const hl=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.01,1.01,1.01)),new THREE.LineBasicMaterial({color:0x000000}));sc.add(hl);
+const rs=()=>{const g=$('g');rd.setSize(g.clientWidth,g.clientHeight,false);cam.aspect=g.clientWidth/Math.max(1,g.clientHeight);cam.updateProjectionMatrix()};new ResizeObserver(rs).observe($('g'));
+function setRL(v){RL=!!v;$('rl').checked=RL;rd.shadowMap.enabled=RL;rd.toneMapping=RL?THREE.ACESFilmicToneMapping:THREE.NoToneMapping;sun.visible=hemi.visible=RL;MS.forEach(m=>m.needsUpdate=true);for(const m of Object.values(CH))m.material=MS[RL?1:0];save()}
+function ao(x,y,z,n,q,i){const t=[];for(let a=0;a<3;a++)if(!n[a])t.push(a);const b=[x+n[0],y+n[1],z+n[2]],A=[0,0,0],B=[0,0,0];A[t[0]]=q[i+t[0]]*2-1;B[t[1]]=q[i+t[1]]*2-1;
+const s1=get(b[0]+A[0],b[1]+A[1],b[2]+A[2])?1:0,s2=get(b[0]+B[0],b[1]+B[1],b[2]+B[2])?1:0,c=get(b[0]+A[0]+B[0],b[1]+A[1]+B[1],b[2]+A[2]+B[2])?1:0;return s1&&s2?0:3-s1-s2-c}
+const cc=c=>CC[c]||(CC[c]=new THREE.Color(c));
+function build(cx,cz){const p=[],c=[],nm=[],ii=[];let n=0;
+for(let y=0;y<H;y++)for(let z=cz*C;z<cz*C+C;z++)for(let x=cx*C;x<cx*C+C;x++){const v=W[ix(x,y,z)],b=T[v];if(!v||!b)continue;const j=.88+.12*hs(x+y*97,z-y*53);
+FC.forEach(([f,g,h,s,q],fi)=>{if(get(x+f,y+g,z+h))return;const col=cc(v==1&&fi!=2?T[2].c:b.c),A=[];
+for(let i=0;i<12;i+=3){p.push(x+q[i],y+q[i+1],z+q[i+2]);const a=ao(x,y,z,[f,g,h],q,i);A.push(a);const m=s*j*[.5,.7,.85,1][a];c.push(col.r*m,col.g*m,col.b*m);nm.push(f,g,h)}
+ii.push(...(A[0]+A[2]>A[1]+A[3]?[n,n+1,n+2,n,n+2,n+3]:[n+1,n+2,n+3,n+1,n+3,n]));n+=4})}
+const key=cx+','+cz;if(CH[key]){sc.remove(CH[key]);CH[key].geometry.dispose()}
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nm,3));g.setIndex(ii);
+const m=new THREE.Mesh(g,MS[RL?1:0]);m.castShadow=m.receiveShadow=true;sc.add(CH[key]=m)}
+function set(x,y,z,v,r){if(x<0||y<0||z<0||x>=N||y>=H||z>=N)return;W[ix(x,y,z)]=v;mark(x,z);if(!r)send({t:'b',x,y,z,v})}
+function fuse(x,y,z,ms=1500){const id=get(x,y,z),b=T[id];if(!b||!b.b)return;setTimeout(()=>{if(get(x,y,z)!=id)return;const r=b.b;for(let a=-r;a<=r;a++)for(let e=-r;e<=r;e++)for(let c=-r;c<=r;c++)if(a*a+e*e+c*c<=r*r&&y+e>0){const q=get(x+a,y+e,z+c);if(!q)continue;if(T[q]?.b&&(a||e||c)){fuse(x+a,y+e,z+c,250);continue}set(x+a,y+e,z+c,0,1)}},ms)}
+function ray(){const d=new THREE.Vector3();cam.getWorldDirection(d);let l=null;for(let t=0;t<5;t+=.04){const x=Math.floor(cam.position.x+d.x*t),y=Math.floor(cam.position.y+d.y*t),z=Math.floor(cam.position.z+d.z*t);if(get(x,y,z))return{h:[x,y,z],a:l};l=[x,y,z]}}
+let ui=0;
+function act(){if(ui)return;const r=ray();if(!r)return;const[x,y,z]=r.h;if(T[get(x,y,z)]?.b){fuse(x,y,z);send({t:'f',x,y,z})}else if(y>0)set(x,y,z,0)}
+function put(){if(ui)return;const r=ray();if(!r||!r.a)return;const[x,y,z]=r.a,py=Math.floor(pl.y);if(Math.floor(pl.x)==x&&Math.floor(pl.z)==z&&(y==py||y==py+1))return;set(x,y,z,sel)}
+const col=(x,y,z)=>{for(const a of[-.3,.3])for(const b of[-.3,.3])for(const h of[0,.9,1.7])if(get(Math.floor(x+a),Math.floor(y+h),Math.floor(z+b)))return 1};
+const mv={x:0,y:0};
+function step(dt){let f=(KS.w?1:0)-(KS.s?1:0)-mv.y,r=(KS.d?1:0)-(KS.a?1:0)+mv.x;const m=Math.hypot(f,r);if(m>1){f/=m;r/=m}
+const s=KS.shift?7:4.5,sx=Math.sin(pl.yaw),cz=Math.cos(pl.yaw),mx=(-sx*f+cz*r)*s,mz=(-cz*f-sx*r)*s;
+pl.vy-=25*dt;if(KS[' ']&&pl.g)pl.vy=8.5;
+const nx=pl.x+mx*dt;if(!col(nx,pl.y,pl.z))pl.x=nx;const nz=pl.z+mz*dt;if(!col(pl.x,pl.y,nz))pl.z=nz;
+const ny=pl.y+pl.vy*dt;pl.g=0;if(col(pl.x,ny,pl.z)){if(pl.vy<0)pl.g=1;pl.vy=0}else pl.y=ny;
+if(pl.y<-10){pl.x=pl.z=32.5;pl.y=30;pl.vy=0}}
+const look=(dx,dy)=>{pl.yaw-=dx*.0025;pl.pit=Math.max(-1.5,Math.min(1.5,pl.pit-dy*.0025))};
+addEventListener('keydown',e=>{if(ui||/INPUT|TEXTAREA/.test(e.target.tagName))return;const q=e.key.toLowerCase();KS[q]=1;if(q>='1'&&q<='9'&&T[+q]){sel=+q;drawHB()}if(q=='q')act();if(q=='e')put();if(q==' '||q.startsWith('arrow'))e.preventDefault()});
+addEventListener('keyup',e=>{KS[e.key.toLowerCase()]=0});
+addEventListener('mousemove',e=>{if(document.pointerLockElement&&!ui)look(e.movementX,e.movementY)});
+addEventListener('wheel',e=>{if(ui)return;sel=(sel-1+(e.deltaY>0?1:T.length-2))%(T.length-1)+1;drawHB()});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+const PT={};let joy=null,nolock=0;
+const lockreq=()=>{try{Promise.resolve(cv.requestPointerLock?.()).catch(()=>nolock=1)}catch(e){nolock=1}};
+document.addEventListener('pointerlockerror',()=>{nolock=1;log('Fare kilidi yok: sürükleyerek bak, tıkla kır, sağ tık koy')});
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement)nolock=0});
+cv.addEventListener('pointerdown',e=>{if(ui)return;if(document.pointerLockElement){e.button==2?put():act();return}
+if(e.pointerType=='mouse'&&!nolock){lockreq();return}
+cv.setPointerCapture(e.pointerId);const r=cv.getBoundingClientRect(),j=e.pointerType=='touch'&&!joy&&e.clientX-r.left<r.width*.4;
+const p=PT[e.pointerId]={x:e.clientX,y:e.clientY,t:performance.now(),m:0,j,b:e.button};if(!j&&e.button!=2)p.to=setTimeout(()=>{if(p.m<8&&!ui){p.h=1;act();p.iv=setInterval(act,280)}},320);
+if(j){joy={x:e.clientX,y:e.clientY};const b=$('jb');b.style.display='block';b.style.left=e.clientX-r.left+'px';b.style.top=e.clientY-r.top+'px'}});
+cv.addEventListener('pointermove',e=>{const p=PT[e.pointerId];if(!p||ui)return;
+if(p.j){const vx=e.clientX-joy.x,vy=e.clientY-joy.y,m=Math.hypot(vx,vy)||1,s=Math.min(1,m/45);mv.x=vx/m*s;mv.y=vy/m*s;$('jk').style.transform=`translate(${mv.x*40}px,${mv.y*40}px)`;return}
+const dx=e.clientX-p.x,dy=e.clientY-p.y;look(dx*1.3,dy*1.3);p.m+=Math.abs(dx)+Math.abs(dy);if(p.m>=8){clearTimeout(p.to);clearInterval(p.iv)}p.x=e.clientX;p.y=e.clientY});
+const up=e=>{const p=PT[e.pointerId];if(!p)return;delete PT[e.pointerId];if(p.j){joy=null;mv.x=mv.y=0;$('jb').style.display='none';$('jk').style.transform='';return}clearTimeout(p.to);clearInterval(p.iv);if(p.m<8&&!ui&&!p.h)(e.pointerType=='mouse'&&p.b==0)?act():put()};
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+$('jp').onpointerdown=e=>{KS[' ']=1;e.preventDefault()};$('jp').onpointerup=$('jp').onpointerleave=()=>KS[' ']=0;
+$('hb').onclick=e=>{if(e.target.dataset.i){sel=+e.target.dataset.i;drawHB()}};
+$('fs').onclick=()=>document.documentElement.requestFullscreen?.();
+function show(id){ui=!!id;$('pn').classList.toggle('o',ui);document.querySelectorAll('#bx section').forEach(s=>s.hidden=s.id!=id);if(ui)document.exitPointerLock?.();for(const q in KS)KS[q]=0;mv.x=mv.y=0}
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>show(b.dataset.p));
+$('rl').onchange=e=>setRL(e.target.checked);
+$('ma').onclick=()=>{setMods([...T.slice(7),{n:$('mn').value,c:$('mc').value,b:$('me').checked?+$('mr').value:0}]);log('Mod eklendi')};
+const gm=location.hostname.match(/^(.+)\.github\.io$/),REPO=gm?gm[1]+'/'+(location.pathname.split('/')[1]||location.hostname):null;
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{if(!REPO)return log('Önce projeyi GitHub’a yükle (README) ve GitHub Pages’ten aç');window.open(`https://github.com/${REPO}/releases/latest/download/gamerwost.${b.dataset.d}`,'_blank','noopener')});
+/* online */
+const send=(m,ex)=>{for(const c of conns)if(c.open&&c!==ex)c.send(m)};
+function onData(m,c){if(!m||typeof m!='object')return;if(m.t=='w'){if(m.d&&m.d.byteLength==W.length){W.set(new Uint8Array(m.d));setMods(m.m);markAll();log('Dünya yüklendi')}return}
+if(m.t=='b'&&[m.x,m.y,m.z,m.v].every(Number.isInteger)&&m.v>=0&&m.v<T.length)set(m.x,m.y,m.z,m.v,1);
+else if(m.t=='f'&&[m.x,m.y,m.z].every(Number.isInteger))fuse(m.x,m.y,m.z);
+else if(m.t=='p'&&typeof m.i=='string'&&[m.x,m.y,m.z,m.r].every(Number.isFinite))upd(m);else return;
+if(host)send(m,c)}
+function upd(m){let p=rp[m.i];if(!p){let h=0;for(const ch of m.i)h=(h*31+ch.charCodeAt(0))%360;const o=new THREE.Mesh(new THREE.BoxGeometry(.6,1.8,.6),new THREE.MeshBasicMaterial({color:new THREE.Color('hsl('+h+',70%,55%)')}));sc.add(o);p=rp[m.i]={m:o}}p.t=performance.now();p.m.position.set(m.x,m.y+.9,m.z);p.m.rotation.y=m.r}
+function wire(c){conns.push(c);c.on('open',()=>{if(host)c.send({t:'w',d:W,m:T.slice(7)});log('Bir oyuncu bağlandı')});c.on('data',m=>onData(m,c));c.on('close',()=>{conns=conns.filter(x=>x!==c);log('Bir oyuncu ayrıldı')})}
+function net(join){if(!window.Peer)return log('PeerJS yüklenemedi');try{peer&&peer.destroy()}catch(e){}conns=[];host=!join;const id='gw-'+Math.random().toString(36).slice(2,7);
+try{peer=new Peer(host?id:undefined)}catch(e){return log('Bağlantı kurulamadı')}
+const to=setTimeout(()=>log('Sunucuya ulaşılamadı: ağ kısıtlı olabilir. GitHub Pages / APK / EXE sürümünde dene.'),9000);
+peer.on('error',e=>log('Bağlantı hatası: '+e.type));
+peer.on('open',pid=>{clearTimeout(to);me=pid;if(join)wire(peer.connect(join));else{{const l=location.href.split('#')[0]+'#'+pid;$('nc').innerHTML='Oda kodu: <b>'+pid+'</b> <button id="cp">📋 Kopyala</button><br><input id="nl" readonly style="width:100%">';$('nl').value=l;$('cp').onclick=()=>{const i=$('nl');i.select();i.setSelectionRange(0,999);let ok=0;try{ok=document.execCommand('copy')}catch(e){}try{navigator.clipboard.writeText(l)}catch(e){}log(ok?'Bağlantı kopyalandı':'Seçildi: uzun basıp kopyala')}};log('Yayındasın! Kod: '+pid)}});
+peer.on('connection',wire)}
+$('nh').onclick=()=>net();
+$('nj').onclick=()=>{const v=$('ni').value.trim();if(/^gw-\w+$/.test(v))net(v);else log('Geçerli bir oda kodu gir')};
+if(/^#gw-\w+$/.test(location.hash)){show('net');$('ni').value=location.hash.slice(1)}
+/* Bedrock */
+async function dl(f,b){const d=window.claude?await claude.use('downloads'):null;if(!d){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f;a.click();return}try{await d.save({filename:f,data:b})}catch(e){log('İndirme: '+(e.code||e.message))}}
+async function exp(){const Z=new JSZip(),u=()=>crypto.randomUUID(),V=[1,0,0],mf=(n,id,m,d)=>JSON.stringify({format_version:2,header:{name:n,description:'Gamerwost',uuid:id,version:V,min_engine_version:[1,21,0]},modules:m,...(d?{dependencies:d}:{})},null,1);
+if($('e1').checked){const B=Z.folder('Gamerwost_TNT_BP'),R=Z.folder('Gamerwost_TNT_RP'),bh=u(),rh=u(),ms=T.slice(6),tex={};let lang='',js="import{world}from'@minecraft/server';\nworld.beforeEvents.worldInitialize.subscribe(e=>{\n";
+ms.forEach((m,i)=>{const id=(m.n.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||'blok')+(i?'_'+i:'');
+B.file('blocks/'+id+'.json',JSON.stringify({format_version:'1.21.0','minecraft:block':{description:{identifier:'gamerwost:'+id,menu_category:{category:'construction'}},components:{'minecraft:geometry':'minecraft:geometry.full_block','minecraft:material_instances':{'*':{texture:'gw_'+id,render_method:'opaque'}},'minecraft:destructible_by_mining':{seconds_to_destroy:1},'minecraft:destructible_by_explosion':{explosion_resistance:1},...(m.b?{'minecraft:custom_components':['gamerwost:'+id]}:{})}}},null,1));
+if(m.b)js+="e.blockComponentRegistry.registerCustomComponent('ga

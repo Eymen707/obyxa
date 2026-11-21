@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>GAMERWOST – Blok Dünyası</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🧨%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
@@ -47,14 +48,30 @@ input{width:100%;background:#141416;border:3px solid #0a0a0c;color:#fff;padding:
 input:focus-visible,.b:focus-visible{outline:3px solid #ffaa00}
 .help{font-size:12px;color:#a0a4ab;background:#18181a;padding:10px;border:2px solid #0e0e10}
 .help b{color:#ffaa00}
+.modal{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.78)}
+.mw{background:#262629;border:4px solid #0f0f11;box-shadow:inset 3px 3px #525258,inset -3px -3px #161618;width:100%;max-width:560px;max-height:88vh;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.mw h2{margin:0;font:12px/1.5 'Press Start 2P',monospace;color:#ffaa00}
+#ml{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:#2a2a2e;border:2px solid #121214;padding:9px 11px}
+.row small{display:block;color:#a0a4ab;font-weight:500}
+.row .b{padding:6px 10px}
+.sw{width:46px;height:24px;flex:none;margin-left:auto;background:#555;border:3px solid #121214;position:relative;cursor:pointer}
+.sw:after{content:"";position:absolute;top:1px;left:1px;width:14px;height:14px;background:#ddd}
+.sw.on{background:#3c8527}.sw.on:after{left:23px}
+textarea{width:100%;min-height:90px;background:#141416;border:3px solid #0a0a0c;color:#9fe;font:12px monospace;padding:8px;user-select:text;-webkit-user-select:text}
+.inv{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:4px}
+.inv .s{width:100%;height:auto;aspect-ratio:1;cursor:pointer}
+@media(max-width:560px){#net{font-size:8px;padding:6px}#top .b{padding:6px 8px;font-size:9px}}
+#err{position:fixed;left:0;right:0;top:0;z-index:99;display:none;background:#7a1616;color:#fff;padding:10px 12px;font:12px/1.4 monospace;user-select:text;-webkit-user-select:text}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="err"></div>
 <div id="dmg"></div>
 <div id="hud">
   <div id="cross"></div>
-  <div id="top"><span id="net" class="px">⚪ Çevrimdışı</span><button id="pb" class="b">⏸ Menü</button></div>
+  <div id="top"><span id="net" class="px">⚪ Çevrimdışı</span><span style="display:flex;gap:6px"><button id="bm" class="b">🧩 Mod</button><button id="bi" class="b">🎒</button><button id="pb" class="b">⏸</button></span></div>
   <div id="hp"></div><div id="tip"></div><div id="hotbar"></div>
   <div id="mob">
     <div id="js"><div id="kn"></div></div>
@@ -69,15 +86,23 @@ input:focus-visible,.b:focus-visible{outline:3px solid #ffaa00}
     <div><label for="nm">Oyuncu adı</label><input id="nm" maxlength="14" placeholder="Steve"></div>
     <div><label for="rm">Sunucu odası</label><input id="rm" maxlength="24" value="gamerwost"></div>
     <button class="b g" id="play" style="font-size:14px;padding:16px">▶ Oyna</button>
-    <div class="help"><b>PC:</b> WASD yürü · Boşluk zıpla · Sol tık kır · Sağ tık koy/yak · 1-9 veya tekerlek eşya seç · Esc menü<br><b>Mobil:</b> sol joystick yürü · ekranı kaydırarak bak<br><b>İpucu:</b> TNT koy, 🔥 çakmakla yak ve kaç! Aynı oda adını giren arkadaşın aynı dünyaya girer.</div>
+    <button class="b" id="bmm">🧩 Mod yöneticisi</button>
+    <div class="help"><b>PC:</b> WASD yürü · Boşluk zıpla · Sol tık kır · Sağ tık koy/yak · 1-9 veya tekerlek eşya seç · Esc menü · E blok envanteri · M modlar<br><b>Mobil:</b> sol joystick yürü · ekranı kaydırarak bak<br><b>İpucu:</b> TNT koy, 🔥 çakmakla yak ve kaç! Aynı oda adını giren arkadaşın aynı dünyaya girer.</div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<div class="modal" id="mods"><div class="mw">
+  <h2>🧩 Mod yöneticisi</h2><div id="ml"></div>
+  <div class="help"><b>📦 Bedrock:</b> TNT paketinin yanındaki düğmeyle indirdiğin <b>.mcaddon</b> dosyasını açınca Minecraft Bedrock'a aktarılır. TNT'leri yaratık yumurtalarından al ya da <b>/summon gw:mega_tnt</b> yaz.</div>
+  <h2>Kendi modunu ekle</h2>
+  <textarea id="mc" spellcheck="false" placeholder="GW.on('tick',()=&gt;{ if(GW.keys.KeyG) GW.V[1]=9 }) // G'ye basılı tut: jetpack"></textarea>
+  <div style="display:flex;gap:8px"><button class="b g" id="madd">Mod ekle</button><button class="b" id="mx">Kapat</button></div>
+  <div class="help">Kod, GW nesnesiyle oyuna erişir: <b>GW.on('tick',fn)</b> · GW.get(x,y,z) · GW.setB(x,y,z,id) · GW.P konum · GW.V hız · GW.keys · GW.ignite(x,y,z) · GW.explode(x,y,z) · GW.tip(metin)</div>
+</div></div>
+<div class="modal" id="inv"><div class="mw"><h2>🎒 Bloklar</h2><div class="help">Seçili slota koymak için bir bloğa dokun.</div><div class="inv" id="il"></div><button class="b" id="ic">Kapat</button></div></div>
 <script>
-(()=>{'use strict';
-const $=i=>document.getElementById(i),W=96,D=96,H=48,NC=6,T=16,NT=13;
+window.gwBoot=()=>{'use strict';
+const $=i=>document.getElementById(i),W=96,D=96,H=48,NC=6,T=16,NT=21;
 const mobile=matchMedia('(pointer:coarse)').matches;if(mobile)document.body.classList.add('t');
 
 /* ---- Doku atlası (kodla çizilen piksel dokular) ---- */
@@ -101,11 +126,16 @@ tile(10,()=>sh(50,50,50,.8));
 tile(11,(x,y)=>y>4&&y<11?sh(225,225,220,.08):sh(200,45,40,.12));
 ax.fillStyle='#222';ax.font='bold 7px monospace';ax.fillText('TNT',11*T+1.5,10);
 tile(12,(x,y)=>Math.abs(x-7.5)<2.5&&Math.abs(y-7.5)<2.5?sh(60,60,60,.2):sh(190,40,35,.1));
+[[60,120,230,'MINI'],[240,150,30,'MEGA'],[70,190,60,'NUKE'],[170,60,210,'KUME']].forEach((k,i)=>{
+  tile(13+i*2,(x,y)=>y>4&&y<11?sh(228,228,222,.08):sh(k[0],k[1],k[2],.14));
+  ax.fillStyle='#222';ax.font='bold 5px monospace';ax.fillText(k[3],(13+i*2)*T+1,10);
+  tile(14+i*2,(x,y)=>Math.abs(x-7.5)<2.5&&Math.abs(y-7.5)<2.5?sh(60,60,60,.2):sh(k[0],k[1],k[2],.12))});
 
 /* blok: [üst, yan, alt] doku indeksi */
-const BL={1:[0,1,2],2:[2,2,2],3:[3,3,3],4:[4,4,4],5:[6,5,6],6:[7,7,7],7:[8,8,8],8:[9,9,9],9:[10,10,10],10:[12,11,12]};
-const NM={0:'Çakmak ve Çelik',1:'Çimen',2:'Toprak',3:'Taş',4:'Kum',5:'Odun',7:'Tahta',8:'Kırıktaş',10:'TNT'};
-const HOT=[0,10,1,2,3,4,5,7,8];
+const BL={1:[0,1,2],2:[2,2,2],3:[3,3,3],4:[4,4,4],5:[6,5,6],6:[7,7,7],7:[8,8,8],8:[9,9,9],9:[10,10,10],10:[12,11,12],11:[14,13,14],12:[16,15,16],13:[18,17,18],14:[20,19,20]};
+const TK={10:{r:4,f:3},11:{r:2,f:1.2},12:{r:8,f:4},13:{r:14,f:5},14:{r:3,f:3,cl:1}};
+const NM={0:'Çakmak ve Çelik',1:'Çimen',2:'Toprak',3:'Taş',4:'Kum',5:'Odun',7:'Tahta',6:'Yaprak',8:'Kırıktaş',10:'TNT',11:'Mini TNT',12:'Mega TNT',13:'Nükleer TNT',14:'Küme TNT'};
+const HOT=[0,10,11,12,13,14,1,3,7];
 const FC=[
 {d:[1,0,0],s:.8,c:[[1,0,1],[1,0,0],[1,1,0],[1,1,1]]},
 {d:[-1,0,0],s:.8,c:[[0,0,0],[0,0,1],[0,1,1],[0,1,0]]},
@@ -181,11 +211,13 @@ const mk=(x,z)=>{const cx=x>>4,cz=z>>4,l=x&15,m=z&15;[[cx,cz],[l===0?cx-1:l===15
 let started=0,paused=1,sel=0,hp=20,yaw=0,pit=0,gnd=0,fy=0,jmp=0,brk=0,cd=0,jx=0,jz=0,tm=.15,rg=0;
 let nameStr='Steve',myId='',host=0,online=0,saveD=0,room='',lr='',spawn=[48.5,30,48.5];
 const P=[0,0,0],V=[0,0,0],keys={};
+const MS={tnt:1},CM=[],hooks=[];let mo=0;
+try{const d=JSON.parse(localStorage.getItem('gw-mods')||'null');if(d){Object.assign(MS,d.s);(d.c||[]).forEach(m=>CM.push(m))}}catch(e){}
 const st=s=>{$('net').textContent=s};
 let tt;const tip=s=>{const e=$('tip');e.textContent=s;e.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>e.style.opacity=0,1600)};
 const hearts=()=>{let s='';for(let i=0;i<10;i++)s+=hp>=i*2+2?'❤️':hp===i*2+1?'💔':'🖤';$('hp').textContent=s};
 function hurt(n){
-  if(n<=0)return;hp=Math.max(0,hp-n);
+  if(n<=0||MS.god)return;hp=Math.max(0,hp-n);
   const d=$('dmg');d.style.opacity=1;setTimeout(()=>d.style.opacity=0,160);
   if(!hp){tip('Öldün! Yeniden doğuyorsun…');hp=20;P[0]=spawn[0];P[1]=spawn[1];P[2]=spawn[2];V[0]=V[1]=V[2]=0;fy=P[1]}
   hearts();
@@ -198,12 +230,12 @@ const mv=(a,d)=>{P[a]+=d;if(hit()){P[a]-=d;if(a===1&&d<0)gnd=1;V[a]=0}};
 function upd(dt){
   let mx=(keys.KeyD?1:0)-(keys.KeyA?1:0)+jx,mz=(keys.KeyS?1:0)-(keys.KeyW?1:0)+jz;
   const l=Math.hypot(mx,mz);if(l>1){mx/=l;mz/=l}
-  const sp=keys.ShiftLeft?2.4:4.4,s=Math.sin(yaw),c=Math.cos(yaw),k=Math.min(1,dt*(gnd?14:4));
+  const sp=(keys.ShiftLeft&&!MS.fly?2.4:4.4)*(MS.spd?2:1),s=Math.sin(yaw),c=Math.cos(yaw),k=Math.min(1,dt*(gnd?14:4));
   V[0]+=((mx*c+mz*s)*sp-V[0])*k;V[2]+=((-mx*s+mz*c)*sp-V[2])*k;
-  V[1]=Math.max(V[1]-26*dt,-40);
-  if((keys.Space||jmp)&&gnd)V[1]=8.8;
+  V[1]=MS.fly?(keys.Space||jmp?7:0)-(keys.ShiftLeft?7:0)-mz*Math.sin(pit)*sp:Math.max(V[1]-(MS.jmp?9:26)*dt,-40);
+  if((keys.Space||jmp)&&gnd&&!MS.fly)V[1]=MS.jmp?9.5:8.8;
   mv(0,V[0]*dt);mv(2,V[2]*dt);gnd=0;mv(1,V[1]*dt);
-  if(gnd){const f=fy-P[1];if(f>3.4)hurt(Math.floor(f-3));fy=P[1]}else fy=Math.max(fy,P[1]);
+  if(gnd){const f=fy-P[1];if(f>3.4&&!MS.jmp&&!MS.fly)hurt(Math.floor(f-3));fy=P[1]}else fy=Math.max(fy,P[1]);
   rg+=dt;if(rg>4&&hp<20){rg=0;hp++;hearts()}
   cam.position.set(P[0],P[1]+1.62,P[2]);cam.rotation.set(pit,yaw,0);
 }
@@ -224,10 +256,10 @@ function setB(x,y,z,b,loc=true){
   wd[ix(x,y,z)]=b;ed.set(x+','+y+','+z,b);saveD=1;mk(x,z);
   if(loc)send({t:'b',x,y,z,b});
 }
-function doBreak(){const h=target();if(h)setB(h.x,h.y,h.z,0)}
+function doBreak(){const h=target();if(!h)return;const r=MS.dig?1:0;for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)for(let c=-r;c<=r;c++)setB(h.x+a,h.y+b,h.z+c,0)}
 function doPlace(){
   if(paused)return;const h=target();if(!h)return;const id=HOT[sel];
-  if(id===0){if(get(h.x,h.y,h.z)===10)ignite(h.x,h.y,h.z);return}
+  if(id===0){if(TK[get(h.x,h.y,h.z)])ignite(h.x,h.y,h.z);return}
   if(!inb(h.px,h.py,h.pz))return;
   if(h.px+1>P[0]-.3&&h.px<P[0]+.3&&h.pz+1>P[2]-.3&&h.pz<P[2]+.3&&h.py+1>P[1]&&h.py<P[1]+1.8)return;
   setB(h.px,h.py,h.pz,id);
@@ -235,94 +267,18 @@ function doPlace(){
 
 /* ---- TNT ---- */
 const tn=[],fx=[],tg=new THREE.BoxGeometry(1.03,1.03,1.03),sg=new THREE.SphereGeometry(1,12,8);
-function ignite(x,y,z,loc=true,t=3){
-  if(get(x,y,z)!==10||tn.some(a=>a.x===x&&a.y===y&&a.z===z))return;
+function ignite(x,y,z,loc=true,t){
+  const k=TK[get(x,y,z)];if(!k||tn.some(a=>a.x===x&&a.y===y&&a.z===z))return;if(t==null)t=k.f;
   const m=new THREE.Mesh(tg,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.8}));
-  m.position.set(x+.5,y+.5,z+.5);scene.add(m);tn.push({x,y,z,t,m});
+  m.position.set(x+.5,y+.5,z+.5);scene.add(m);tn.push({x,y,z,t,m,k});
   if(loc)send({t:'i',x,y,z});
 }
-function explode(x,y,z){
-  for(let dx=-4;dx<=4;dx++)for(let dy=-4;dy<=4;dy++)for(let dz=-4;dz<=4;dz++){
-    if(dx*dx+dy*dy+dz*dz>17)continue;
+function explode(x,y,z,K){
+  const Rr=K.r;for(let dx=-Rr;dx<=Rr;dx++)for(let dy=-Rr;dy<=Rr;dy++)for(let dz=-Rr;dz<=Rr;dz++){
+    if(dx*dx+dy*dy+dz*dz>Rr*Rr+1)continue;
     const a=x+dx,b=y+dy,c=z+dz,id=get(a,b,c);
     if(!id||b<1||!inb(a,b,c))continue;
-    if(id===10&&(dx||dy||dz))ignite(a,b,c,false,.2+Math.random()*.5);else setB(a,b,c,0,false);
+    if(TK[id]&&(dx||dy||dz))ignite(a,b,c,false,.2+Math.random()*.5);else setB(a,b,c,0,false);
   }
   const cx=x+.5,cy=y+.5,cz=z+.5,ex=P[0]-cx,ey=P[1]+.9-cy,ez=P[2]-cz,d=Math.hypot(ex,ey,ez);
-  if(d<8){const k=1-d/8,n=Math.max(d,.5);hurt(Math.round(k*16));V[0]+=ex/n*k*16;V[1]+=ey/n*k*12+4*k;V[2]+=ez/n*k*16;gnd=0}
-  const m=new THREE.Mesh(sg,new THREE.MeshBasicMaterial({color:0xff9a1a,transparent:true}));
-  m.position.set(cx,cy,cz);scene.add(m);fx.push({m,t:0});boom();
-}
-
-/* ---- Çok oyunculu (PeerJS, sunucusuz) ---- */
-const rem=new Map(),conns=[];
-const send=m=>conns.forEach(c=>c.open&&c.send(m));
-function mkRemote(n){
-  const g=new THREE.Group(),col=new THREE.Color().setHSL(Math.random(),.6,.5);
-  const bx=(w,h,d,c,y,z=0)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshBasicMaterial({color:c}));m.position.set(0,y,z);g.add(m)};
-  bx(.6,1.1,.35,col,.55);bx(.5,.5,.5,0xe0b48a,1.35);bx(.3,.1,.05,0x222222,1.38,-.26);
-  const cv=document.createElement('canvas');cv.width=256;cv.height=64;const x=cv.getContext('2d');
-  x.fillStyle='rgba(0,0,0,.55)';x.fillRect(0,8,256,48);x.fillStyle='#fff';x.font='bold 30px sans-serif';x.textAlign='center';x.fillText(n,128,43);
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false}));
-  sp.scale.set(2,.5,1);sp.position.y=2.1;g.add(sp);scene.add(g);
-  return{g,tp:new THREE.Vector3(),ry:0,seen:0};
-}
-function handle(m,from){
-  if(m.t==='p'){let r=rem.get(m.id);if(!r){r=mkRemote(String(m.n).slice(0,14));r.g.position.set(m.x,m.y,m.z);rem.set(m.id,r)}r.tp.set(m.x,m.y,m.z);r.ry=m.r;r.seen=performance.now()}
-  else if(m.t==='b')setB(m.x,m.y,m.z,m.b,false);
-  else if(m.t==='i')ignite(m.x,m.y,m.z,false);
-  else if(m.t==='w')m.e.forEach(a=>setB(a[0],a[1],a[2],a[3],false));
-  if(host&&m.t!=='w')conns.forEach(c=>c!==from&&c.open&&c.send(m));
-}
-function connect(){
-  if(typeof Peer==='undefined')return st('⚪ Çevrimdışı');
-  st('🟡 Bağlanıyor…');
-  const rid='gwost-'+(room.replace(/[^a-z0-9]/g,'')||'x');
-  const hook=c=>{
-    c.on('open',()=>{conns.push(c);online=1;if(host)c.send({t:'w',e:[...ed].map(([k,b])=>[...k.split(',').map(Number),b])})});
-    c.on('data',m=>handle(m,c));
-    c.on('close',()=>{const i=conns.indexOf(c);if(i>-1)conns.splice(i,1)});
-  };
-  const pr=new Peer(rid);
-  pr.on('open',id=>{host=1;myId=id;online=1});
-  pr.on('connection',hook);
-  pr.on('error',e=>{
-    if(e.type==='unavailable-id'){const q=new Peer();q.on('open',id=>{myId=id;hook(q.connect(rid))});q.on('error',()=>st('🔴 Bağlantı hatası'))}
-    else st('🔴 Ağ hatası');
-  });
-}
-
-/* ---- Arayüz ---- */
-function pick(i){sel=i;document.querySelectorAll('.s').forEach((e,j)=>e.classList.toggle('on',j===i));tip(NM[HOT[i]])}
-HOT.forEach((id,i)=>{
-  const s=document.createElement('div');s.className='s';
-  const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d');x.imageSmoothingEnabled=false;
-  if(id)x.drawImage(atl,BL[id][1]*T,0,T,T,0,0,32,32);else{x.font='24px sans-serif';x.fillText('🔥',3,26)}
-  s.append(c);const n=document.createElement('i');n.textContent=i+1;s.append(n);
-  s.onpointerdown=()=>pick(i);$('hotbar').append(s);
-});
-pick(0);
-const locked=()=>document.pointerLockElement===cvs;
-function menu(s){
-  paused=s;$('menu').style.display=s?'flex':'none';
-  if(s){for(const k in keys)keys[k]=0;brk=0;jmp=0;jx=jz=0;$('kn').style.transform='';if(locked())document.exitPointerLock()}
-}
-function world(r){
-  if(lr===r)return;lr=r;seed=hashStr(r);ed.clear();gen();
-  try{JSON.parse(localStorage.getItem('gw-'+r)||'[]').forEach(([k,b])=>{const[a,c,d]=k.split(',').map(Number);if(inb(a,c,d)){ed.set(k,b);wd[ix(a,c,d)]=b}})}catch(e){}
-  for(let i=0;i<NC*NC;i++)build(i%NC,i/NC|0);
-  spawn=[W/2+.5,topY(W/2,D/2)+.1,D/2+.5];
-}
-$('play').onclick=()=>{
-  if(!started){
-    nameStr=($('nm').value.trim()||'Steve').slice(0,14);room=($('rm').value.trim()||'gamerwost').toLowerCase();
-    world(room);P[0]=spawn[0];P[1]=spawn[1];P[2]=spawn[2];fy=P[1];hearts();connect();started=1;
-  }
-  menu(0);if(!mobile)cvs.requestPointerLock();
-};
-$('pb').onclick=()=>menu(1);
-
-/* ---- Girdi ---- */
-addEventListener('keydown',e=>{
-  keys[e.code]=1;if(e.code==='Space')e.preventDefault();
-  if(e.code>='Digit1'&&e.code<='Digit9')pick(+e.code[5]
+  if(d<Rr+4){const k=1-d/(Rr+4),n=Math.max(d,.5);hurt(Math.round(k*16));V[0]+=ex/n*k*16;V[1]+=ey/n*k*12+4*k;V[2]+=ez/n*k*16;gnd
